@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { NAV_SECTIONS } from "../nav/menu";
 import logoUrl from "../assets/logo.png";
+import "./NavBar.scss";
 
 export function NavBar() {
   const { pathname } = useLocation();

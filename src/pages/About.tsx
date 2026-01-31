@@ -1,6 +1,8 @@
+import "./About.scss";
+
 export default function About() {
   return (
-    <section className="page">
+    <section className="page page--about">
       <h1 className="page__title">About Femved</h1>
       <p className="page__lead">
         Femved is a space built for women experts and practitioners — women who

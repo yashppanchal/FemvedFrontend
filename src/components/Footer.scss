@@ -1,0 +1,16 @@
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.footer__link {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.footer__link:hover {
+  color: var(--primaryHover);
+}

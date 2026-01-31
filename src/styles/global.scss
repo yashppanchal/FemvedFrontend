@@ -1,0 +1,206 @@
+@use "./variables" as *;
+
+:root {
+  /* Typography */
+  --fontBody: #{$font-body};
+  --fontTitle: #{$font-title};
+
+  /* Palette */
+  --primary: #{$primary};
+  --primaryHover: #{$primary-hover};
+  --secondary: #{$secondary};
+  --secondarySoft: #{$secondary-soft};
+  --white: #{$white};
+  --black: #{$black};
+
+  /* App tokens */
+  --bg: #{$bg};
+  --surface: #{$surface};
+  --surfaceAccent: #{$surface-accent};
+  --border: #{$border};
+  --text: #{$text};
+  --muted: #{$muted};
+
+  color-scheme: light;
+  font-family: var(--fontBody);
+  line-height: 1.5;
+  font-weight: 400;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+@keyframes appFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  font-family: var(--fontBody);
+  color: var(--text);
+  background: var(--bg);
+  animation: appFadeIn 220ms ease-out both;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--primaryHover);
+}
+
+code {
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Shared layout primitives */
+.container {
+  max-width: #{$container-max-width};
+  margin: 0 auto;
+  padding: 0 #{$container-padding-x};
+}
+
+/* Shared page primitives */
+.page__title {
+  margin: 0 0 10px;
+  font-size: 34px;
+  letter-spacing: -0.03em;
+  color: var(--primary);
+  font-family: var(--fontTitle);
+  font-weight: 400;
+}
+
+.page__lead {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.card__title {
+  margin: 0 0 10px;
+  font-size: 16px;
+  color: var(--black);
+  font-family: var(--fontTitle);
+  font-weight: 400;
+}
+
+.card__text {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.form {
+  display: grid;
+  gap: 12px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field__label {
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+.field__input {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--black);
+  outline: none;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.field__input:focus {
+  border-color: rgba(86, 19, 27, 0.35);
+  box-shadow: 0 0 0 4px rgba(86, 19, 27, 0.12);
+}
+
+.field__textarea {
+  height: 110px;
+  padding: 10px 12px;
+  resize: vertical;
+}
+
+.button {
+  height: 42px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 12px;
+  background: var(--primary);
+  color: var(--white);
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.button:hover {
+  background: var(--primaryHover);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(86, 19, 27, 0.18);
+}
+
+.button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 14px rgba(86, 19, 27, 0.14);
+}

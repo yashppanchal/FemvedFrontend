@@ -1,6 +1,8 @@
+import "./Contact.scss";
+
 export default function Contact() {
   return (
-    <section className="page">
+    <section className="page page--contact">
       <h1 className="page__title">Contact</h1>
       <p className="page__lead">
         Reach us at <a href="mailto:hello@femved.com">hello@femved.com</a>.

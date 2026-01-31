@@ -1,4 +1,4 @@
-import "./App.css";
+import "./App.scss";
 import { Footer } from "./components/Footer";
 import { NavBar } from "./components/NavBar";
 import type { CSSProperties, ReactNode } from "react";

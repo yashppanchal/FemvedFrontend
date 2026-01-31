@@ -1,6 +1,8 @@
+import "./Home.scss";
+
 export default function Home() {
   return (
-    <section className="page">
+    <section className="page page--home">
       <h1 className="page__title">A women-led space for holistic wellness</h1>
       <p className="page__lead">
         Femved is where two journeys meet: women practitioners who have walked

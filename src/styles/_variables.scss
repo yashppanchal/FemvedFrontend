@@ -1,0 +1,35 @@
+// Global design tokens (SCSS variables)
+
+// Typography
+$font-body:
+  "Inter",
+  system-ui,
+  -apple-system,
+  Segoe UI,
+  Roboto,
+  Helvetica,
+  Arial,
+  sans-serif;
+$font-title:
+  "Baskerville Display", "Libre Baskerville", Baskerville,
+  "Baskerville Old Face", "Hoefler Text", Garamond, "Times New Roman", serif;
+
+// Palette
+$primary: #56131b;
+$primary-hover: #71142a;
+$secondary: #a77f60;
+$secondary-soft: #e3c8ae;
+$white: #ffffff;
+$black: #0f0f10;
+
+// App tokens
+$bg: $white;
+$surface: $white;
+$surface-accent: $secondary-soft;
+$border: rgba($black, 0.12);
+$text: $black;
+$muted: rgba($black, 0.7);
+
+// Layout
+$container-max-width: 1100px;
+$container-padding-x: 20px;

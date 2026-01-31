@@ -1,0 +1,42 @@
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.layout__header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+
+.layout__main {
+  flex: 1;
+  padding: 28px 0 44px;
+}
+
+.layout__footer {
+  border-top: 1px solid var(--border);
+  padding: 18px 0;
+  background: var(--white);
+}
+
+.pageTransition {
+  will-change: opacity, transform;
+  transition:
+    opacity var(--pageTransitionMs, 180ms) ease,
+    transform var(--pageTransitionMs, 180ms) ease;
+}
+
+.pageTransition--enter {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.pageTransition--exit {
+  opacity: 0;
+  transform: translateY(4px);
+}

@@ -1,3 +1,5 @@
+import "./Placeholder.scss";
+
 type Props = {
   title: string;
   description?: string;
@@ -5,7 +7,7 @@ type Props = {
 
 export default function Placeholder({ title, description }: Props) {
   return (
-    <section className="page">
+    <section className="page page--placeholder">
       <h1 className="page__title">{title}</h1>
       <p className="page__lead">{description ?? "This page is coming soon."}</p>
       <div className="card">
