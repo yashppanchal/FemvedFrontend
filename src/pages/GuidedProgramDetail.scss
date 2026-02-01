@@ -264,6 +264,103 @@
   padding-left: 8px;
 }
 
+.guidedProgramDetail__zigzag {
+  /* Full-bleed (break out of the .container wrapper in App) */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  padding: clamp(22px, 4vw, 56px);
+  border-top: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.guidedProgramDetail__zigzagIntro {
+  max-width: 70ch;
+  margin: 0 auto clamp(26px, 4vw, 54px);
+  text-align: center;
+}
+
+.guidedProgramDetail__zigzagTitle {
+  margin: 0 0 12px;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--black);
+  font-size: clamp(28px, 3.2vw, 44px);
+  line-height: 1.06;
+}
+
+.guidedProgramDetail__zigzagSubtext {
+  margin: 0;
+  color: rgba(15, 15, 16, 0.7);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.guidedProgramDetail__zigzagRows {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  gap: clamp(26px, 4vw, 62px);
+}
+
+.guidedProgramDetail__zigzagRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(18px, 4vw, 70px);
+  align-items: center;
+  grid-template-areas: "media content";
+}
+
+.guidedProgramDetail__zigzagRow--reverse {
+  grid-template-areas: "content media";
+}
+
+.guidedProgramDetail__zigzagMedia {
+  grid-area: media;
+  border-radius: 22px;
+  border: 1px solid rgba(15, 15, 16, 0.1);
+  background: linear-gradient(135deg, rgba(243, 230, 231, 0.55), #ffffff);
+  box-shadow: 0 22px 46px rgba(15, 15, 16, 0.08),
+    0 1px 0 rgba(15, 15, 16, 0.05);
+  padding: clamp(12px, 2vw, 20px);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.guidedProgramDetail__zigzagImage {
+  width: 100%;
+  height: auto;
+  max-width: 640px;
+  display: block;
+  border-radius: 16px;
+}
+
+.guidedProgramDetail__zigzagContent {
+  grid-area: content;
+  min-width: 0;
+  max-width: 58ch;
+}
+
+.guidedProgramDetail__zigzagItemTitle {
+  margin: 0 0 12px;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--black);
+  font-size: clamp(22px, 2.6vw, 34px);
+  line-height: 1.12;
+}
+
+.guidedProgramDetail__zigzagItemBody {
+  margin: 0;
+  color: rgba(15, 15, 16, 0.7);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
 .guidedProgramDetail__carouselControls {
   position: absolute;
   left: 8px;
@@ -461,5 +558,18 @@
 
   .guidedProgramDetail__carouselTrack {
     padding-right: clamp(22px, 4vw, 56px);
+  }
+
+  .guidedProgramDetail__zigzagRow,
+  .guidedProgramDetail__zigzagRow--reverse {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "media"
+      "content";
+    gap: 16px;
+  }
+
+  .guidedProgramDetail__zigzagContent {
+    max-width: 70ch;
   }
 }

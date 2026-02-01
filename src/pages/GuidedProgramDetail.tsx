@@ -5,6 +5,7 @@ import { PrimaryButton } from "../components/PrimaryButton";
 import { SecondaryButton } from "../components/SecondaryButton";
 import dataJson from "../data/data.json";
 import heroImage from "../assets/hero-slide-2.svg";
+import appointmentMock from "../assets/appointment-mock.png";
 
 type GuidedProgramInfo = {
   slug?: string;
@@ -43,8 +44,8 @@ export default function GuidedProgramDetail() {
       <section className="page guidedProgramDetail">
         <h1 className="page__title">Guided program not found</h1>
         <p className="page__lead">
-          This guided program doesn’t exist yet. Go back <Link to="/">home</Link>
-          .
+          This guided program doesn’t exist yet. Go back{" "}
+          <Link to="/">home</Link>.
         </p>
       </section>
     );
@@ -81,6 +82,39 @@ export default function GuidedProgramDetail() {
     },
   ];
 
+  const zigzagItems = [
+    {
+      title: "Easy to connect",
+      body: "Pick the expert that best matches your needs and goals, so your care is tailored from the very first session.",
+      imageAlt: "Booking flow on tablet",
+      imageSrc: appointmentMock,
+    },
+    {
+      title: "Comprehensive and extremely personal",
+      body: "Find frequently available appointments and book in minutes—no referral required.",
+      imageAlt: "Choose your specialist on tablet",
+      imageSrc: appointmentMock,
+    },
+    {
+      title: "Freedom to co-create",
+      body: "Take your consultation from wherever you are, with a seamless online experience designed to fit real life.",
+      imageAlt: "Online consultation on tablet",
+      imageSrc: appointmentMock,
+    },
+    {
+      title: "Not algorithmic nor mass solutions",
+      body: "Leave each session with next steps that make sense for you—clear, practical, and easy to action.",
+      imageAlt: "Follow-up plan on tablet",
+      imageSrc: appointmentMock,
+    },
+    {
+      title: "Complete privacy",
+      body: "Continue with follow-ups and ongoing guidance when you need it, so you’re never left guessing what to do next.",
+      imageAlt: "Next steps summary on tablet",
+      imageSrc: appointmentMock,
+    },
+  ];
+
   return (
     <section className="page guidedProgramDetail">
       <div className="guidedProgramDetail__hero">
@@ -111,8 +145,8 @@ export default function GuidedProgramDetail() {
       <div className="guidedProgramDetail__more">
         <div className="guidedProgramDetail__moreContent">
           <h2 className="guidedProgramDetail__moreTitle">
-            You’re getting more than advice or a one-time consultation. Book your
-            online guided program now.
+            You’re getting more than advice or a one-time consultation. Book
+            your online guided program now.
           </h2>
           <p className="guidedProgramDetail__moreBody">
             We promise care that is human, not formulaic. Our experts are
@@ -126,7 +160,9 @@ export default function GuidedProgramDetail() {
         </div>
 
         <aside className="guidedProgramDetail__included card">
-          <h3 className="guidedProgramDetail__includedTitle">What’s included:</h3>
+          <h3 className="guidedProgramDetail__includedTitle">
+            What’s included:
+          </h3>
 
           {whatsIncluded.length ? (
             <ul className="guidedProgramDetail__includedList">
@@ -193,7 +229,10 @@ export default function GuidedProgramDetail() {
               className="guidedProgramDetail__carouselBtn"
               aria-label="Scroll left"
               onClick={() =>
-                carouselRef.current?.scrollBy({ left: -360, behavior: "smooth" })
+                carouselRef.current?.scrollBy({
+                  left: -360,
+                  behavior: "smooth",
+                })
               }
             >
               ‹
@@ -218,10 +257,15 @@ export default function GuidedProgramDetail() {
           >
             <div className="guidedProgramDetail__carouselTrack">
               {dummyCards.map((c) => (
-                <article className="guidedProgramDetail__productCard" key={c.name}>
+                <article
+                  className="guidedProgramDetail__productCard"
+                  key={c.name}
+                >
                   <div className="guidedProgramDetail__productMedia" />
                   <div className="guidedProgramDetail__productBody">
-                    <h4 className="guidedProgramDetail__productName">{c.name}</h4>
+                    <h4 className="guidedProgramDetail__productName">
+                      {c.name}
+                    </h4>
                     <p className="guidedProgramDetail__productSubtitle">
                       {c.subtitle}
                     </p>
@@ -237,6 +281,55 @@ export default function GuidedProgramDetail() {
         </div>
       </div>
 
+      <section
+        className="guidedProgramDetail__zigzag"
+        aria-labelledby="guidedProgramDetail-zigzag-title"
+      >
+        <div className="guidedProgramDetail__zigzagIntro">
+          <h2
+            id="guidedProgramDetail-zigzag-title"
+            className="guidedProgramDetail__zigzagTitle"
+          >
+            Your Wellness, your plan, guided by experts who understand
+          </h2>
+          <p className="guidedProgramDetail__zigzagSubtext">
+            We offer 1-1 guidance by globally accredited experts and coaches to
+            support your health with diet, lifestyle, and nutrition plans fully
+            tailored to your lifestyle and medical history. But it is more than
+            a personalised program. Here is what you can expect from our
+            platform and our experts.
+          </p>
+        </div>
+
+        <div className="guidedProgramDetail__zigzagRows">
+          {zigzagItems.map((item, idx) => (
+            <article
+              key={`${item.title}-${idx}`}
+              className={`guidedProgramDetail__zigzagRow${
+                idx % 2 ? " guidedProgramDetail__zigzagRow--reverse" : ""
+              }`}
+            >
+              <div className="guidedProgramDetail__zigzagMedia">
+                <img
+                  className="guidedProgramDetail__zigzagImage"
+                  src={item.imageSrc}
+                  alt={item.imageAlt}
+                  loading="lazy"
+                />
+              </div>
+              <div className="guidedProgramDetail__zigzagContent">
+                <h3 className="guidedProgramDetail__zigzagItemTitle">
+                  {item.title}
+                </h3>
+                <p className="guidedProgramDetail__zigzagItemBody">
+                  {item.body}
+                </p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <div className="guidedProgramDetail__ctaBanner">
         <h2 className="guidedProgramDetail__ctaBannerTitle">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
@@ -247,4 +340,3 @@ export default function GuidedProgramDetail() {
     </section>
   );
 }
-
