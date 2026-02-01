@@ -1,3 +1,5 @@
+@use "./styles/variables" as *;
+
 .layout {
   min-height: 100vh;
   display: flex;
@@ -10,12 +12,30 @@
   z-index: 10;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(10px);
+}
+
+.layout__header--atTop {
+  border-bottom: none;
+  box-shadow: none;
+}
+
+.layout__header--scrolled {
   border-bottom: 1px solid var(--border);
+  box-shadow: 0 14px 32px rgba(15, 15, 16, 0.1), 0 1px 0 rgba(15, 15, 16, 0.06);
 }
 
 .layout__main {
   flex: 1;
   padding: 28px 0 44px;
+}
+
+.layout__main--home {
+  // background: linear-gradient(90deg, var(--white) 0%, var(--secondarySoft) 100%);
+  background: linear-gradient(
+    90deg,
+    var(--white) 0%,
+    rgba(227, 200, 174, 0.1) 100%
+  );
 }
 
 .layout__footer {
@@ -26,8 +46,7 @@
 
 .pageTransition {
   will-change: opacity, transform;
-  transition:
-    opacity var(--pageTransitionMs, 180ms) ease,
+  transition: opacity var(--pageTransitionMs, 180ms) ease,
     transform var(--pageTransitionMs, 180ms) ease;
 }
 

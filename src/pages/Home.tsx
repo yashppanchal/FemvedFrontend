@@ -42,6 +42,116 @@ export default function Home() {
           </li>
         </ul>
       </div>
+
+      <div className="card">
+        <h2 className="card__title">In the platform</h2>
+        <ul className="list">
+          <li>
+            Choose experts and personalised lifestyle plans / programs /
+            classes.
+          </li>
+          <li>
+            Access credible, health-related information (including sponsored
+            ad-space).
+          </li>
+          <li>
+            Purchase pre-recorded sessions and guided practices for mental and
+            physical needs.
+          </li>
+          <li>
+            Join the community through meet-ups, events, retreats, and travel
+            experiences (hosted by Femved or local experts).
+          </li>
+        </ul>
+      </div>
+
+      <div className="card">
+        <h2 className="card__title">In the platform</h2>
+        <ul className="list">
+          <li>
+            Choose experts and personalised lifestyle plans / programs /
+            classes.
+          </li>
+          <li>
+            Access credible, health-related information (including sponsored
+            ad-space).
+          </li>
+          <li>
+            Purchase pre-recorded sessions and guided practices for mental and
+            physical needs.
+          </li>
+          <li>
+            Join the community through meet-ups, events, retreats, and travel
+            experiences (hosted by Femved or local experts).
+          </li>
+        </ul>
+      </div>
+
+      <div className="card">
+        <h2 className="card__title">In the platform</h2>
+        <ul className="list">
+          <li>
+            Choose experts and personalised lifestyle plans / programs /
+            classes.
+          </li>
+          <li>
+            Access credible, health-related information (including sponsored
+            ad-space).
+          </li>
+          <li>
+            Purchase pre-recorded sessions and guided practices for mental and
+            physical needs.
+          </li>
+          <li>
+            Join the community through meet-ups, events, retreats, and travel
+            experiences (hosted by Femved or local experts).
+          </li>
+        </ul>
+      </div>
+
+      <div className="card">
+        <h2 className="card__title">In the platform</h2>
+        <ul className="list">
+          <li>
+            Choose experts and personalised lifestyle plans / programs /
+            classes.
+          </li>
+          <li>
+            Access credible, health-related information (including sponsored
+            ad-space).
+          </li>
+          <li>
+            Purchase pre-recorded sessions and guided practices for mental and
+            physical needs.
+          </li>
+          <li>
+            Join the community through meet-ups, events, retreats, and travel
+            experiences (hosted by Femved or local experts).
+          </li>
+        </ul>
+      </div>
+
+      <div className="card">
+        <h2 className="card__title">In the platform</h2>
+        <ul className="list">
+          <li>
+            Choose experts and personalised lifestyle plans / programs /
+            classes.
+          </li>
+          <li>
+            Access credible, health-related information (including sponsored
+            ad-space).
+          </li>
+          <li>
+            Purchase pre-recorded sessions and guided practices for mental and
+            physical needs.
+          </li>
+          <li>
+            Join the community through meet-ups, events, retreats, and travel
+            experiences (hosted by Femved or local experts).
+          </li>
+        </ul>
+      </div>
     </section>
   );
 }

@@ -69,9 +69,8 @@ a:hover {
 }
 
 code {
-  font-family:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -163,9 +162,7 @@ code {
   background: var(--white);
   color: var(--black);
   outline: none;
-  transition:
-    border-color 180ms ease,
-    box-shadow 180ms ease;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
 }
 
 .field__input:focus {
@@ -188,9 +185,7 @@ code {
   color: var(--white);
   font-weight: 700;
   cursor: pointer;
-  transition:
-    background-color 180ms ease,
-    transform 180ms ease,
+  transition: background-color 180ms ease, transform 180ms ease,
     box-shadow 180ms ease;
 }
 

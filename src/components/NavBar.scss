@@ -23,8 +23,9 @@
 }
 
 .brand__logo {
-  width: 34px;
   height: 34px;
+  width: auto;
+  display: block;
   transition: transform 180ms ease;
 }
 

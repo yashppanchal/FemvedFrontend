@@ -33,16 +33,41 @@ function PageTransition({ children }: { children: ReactNode }) {
 
 export default function App() {
   const location = useLocation();
+  const [isAtTop, setIsAtTop] = useState(true);
+  const isHome = location.pathname === "/";
+
+  useEffect(() => {
+    let raf = 0;
+
+    const update = () => {
+      const atTop = window.scrollY <= 0;
+      setIsAtTop(atTop);
+    };
+
+    const onScroll = () => {
+      window.cancelAnimationFrame(raf);
+      raf = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.cancelAnimationFrame(raf);
+    };
+  }, []);
 
   return (
     <div className="layout">
-      <header className="layout__header">
+      <header
+        className={`layout__header ${isAtTop ? "layout__header--atTop" : "layout__header--scrolled"}`}
+      >
         <div className="container">
           <NavBar />
         </div>
       </header>
 
-      <main className="layout__main">
+      <main className={`layout__main ${isHome ? "layout__main--home" : ""}`}>
         <div className="container">
           <PageTransition key={location.key}>
             <Outlet />
