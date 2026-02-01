@@ -50,7 +50,18 @@
             "Gentle guidance that meets you where you are, without pressure or judgment"
           ],
           "programHeader": "",
-          "keyAreas": []
+          "keyAreas": [
+            "Emotional regulation and mental resilience",
+            "Stress, anxiety, and burnout support",
+            "Trauma informed care and emotional healing",
+            "Mindfulness and meditation practices",
+            "Hormone mood connection awareness",
+            "Self awareness and emotional intelligence",
+            "Grief, life transitions, and identity shifts",
+            "Spiritual grounding and inner clarity",
+            "Nervous system calming practices",
+            "Habit building for mental wellbeing"
+          ]
         },
         {
           "slug": "longevity-and-healthy-ageing",
@@ -68,7 +79,19 @@
             "Guidance rooted in prevention, balance, and long term wellbeing"
           ],
           "programHeader": "",
-          "keyAreas": []
+          "keyAreas": [
+            "Preventive health and lifestyle optimisation",
+            "Metabolic health and insulin sensitivity",
+            "Healthy ageing and vitality support",
+            "Nutrition for long term energy and immunity",
+            "Inflammation and gut health management",
+            "Sleep optimisation and circadian rhythm balance",
+            "Stress resilience and nervous system regulation",
+            "Bone, muscle, and joint health",
+            "Cognitive health and mental longevity",
+            "Weight and body composition management",
+            "Lifestyle guidance for chronic condition prevention"
+          ]
         },
         {
           "slug": "fitness-and-personal-care",
@@ -86,7 +109,18 @@
             "Gentle guidance that meets you where you are, without pressure or judgment"
           ],
           "programHeader": "",
-          "keyAreas": []
+          "keyAreas": [
+            "Strength and functional movement",
+            "Mobility, flexibility, and posture correction",
+            "Pain management and injury prevention",
+            "Movement for hormonal balance",
+            "Fitness during pregnancy and postpartum",
+            "Core, pelvic floor, and body alignment",
+            "Recovery, rest, and fatigue management",
+            "Body recomposition and weight support",
+            "Low impact and sustainable fitness routines",
+            "Movement for stress relief and energy"
+          ]
         }
       ]
     },
