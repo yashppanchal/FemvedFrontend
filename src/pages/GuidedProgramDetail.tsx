@@ -116,6 +116,51 @@ export default function GuidedProgramDetail() {
     },
   ];
 
+  const recordingProducts = [
+    {
+      id: "cycle-sync-reset",
+      title: "Cycle Sync Reset (60 min)",
+      subtitle: "A calming practice to support rhythm + energy",
+      price: "£19",
+      tags: ["Video", "Beginner", "60 min"],
+    },
+    {
+      id: "pcos-support",
+      title: "PCOS Support Series (3 videos)",
+      subtitle: "Food + lifestyle foundations you can repeat",
+      price: "£39",
+      tags: ["Video", "Intermediate", "3-part"],
+    },
+    {
+      id: "nervous-system-soothe",
+      title: "Soothe Your Nervous System (45 min)",
+      subtitle: "Breathwork + grounding for busy weeks",
+      price: "£15",
+      tags: ["Video", "All levels", "45 min"],
+    },
+    {
+      id: "menopause-clarity",
+      title: "Menopause Clarity (75 min)",
+      subtitle: "Practical support for sleep, mood, and heat",
+      price: "£29",
+      tags: ["Video", "All levels", "75 min"],
+    },
+    {
+      id: "fertility-foundations",
+      title: "Fertility Foundations (50 min)",
+      subtitle: "Nourishment + habit rituals to build consistency",
+      price: "£18",
+      tags: ["Video", "Beginner", "50 min"],
+    },
+    {
+      id: "deep-rest-yoga-nidra",
+      title: "Deep Rest Yoga Nidra (30 min)",
+      subtitle: "A reset for recovery and better sleep",
+      price: "£12",
+      tags: ["Video", "Beginner", "30 min"],
+    },
+  ];
+
   return (
     <section className="page guidedProgramDetail">
       <div className="guidedProgramDetail__hero">
@@ -336,6 +381,75 @@ export default function GuidedProgramDetail() {
               </div>
             </article>
           ))}
+        </div>
+      </section>
+
+      <section
+        className="guidedProgramDetail__recordings"
+        aria-labelledby="guidedProgramDetail-recordings-title"
+      >
+        <div className="container">
+          <div className="guidedProgramDetail__recordingsIntro">
+            <h2
+              id="guidedProgramDetail-recordings-title"
+              className="guidedProgramDetail__recordingsTitle"
+            >
+              Video recordings you can keep
+            </h2>
+            <p className="guidedProgramDetail__recordingsSubtext">
+              A small collection of digital products — guided sessions you can
+              return to anytime. (Dummy content for now.)
+            </p>
+          </div>
+
+          <div className="guidedProgramDetail__recordingsGrid" role="list">
+            {recordingProducts.map((p) => (
+              <article
+                key={p.id}
+                className="guidedProgramDetail__recordingCard"
+                role="listitem"
+              >
+                <div className="guidedProgramDetail__recordingMedia">
+                  <img
+                    className="guidedProgramDetail__recordingImage"
+                    src={appointmentMock}
+                    alt={`Cover for ${p.title}`}
+                    loading="lazy"
+                  />
+                  <div className="guidedProgramDetail__recordingBadges">
+                    {p.tags.map((t) => (
+                      <span
+                        key={`${p.id}-${t}`}
+                        className="guidedProgramDetail__recordingBadge"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="guidedProgramDetail__recordingBody">
+                  <h3 className="guidedProgramDetail__recordingTitle">
+                    {p.title}
+                  </h3>
+                  <p className="guidedProgramDetail__recordingSubtitle">
+                    {p.subtitle}
+                  </p>
+
+                  <div className="guidedProgramDetail__recordingFooter">
+                    <span className="guidedProgramDetail__recordingPrice">
+                      {p.price}
+                    </span>
+                    <PrimaryButton
+                      label="Add to basket"
+                      // className="guidedProgramDetail__recordingBtn"
+                      onClick={() => {}}
+                    />
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
