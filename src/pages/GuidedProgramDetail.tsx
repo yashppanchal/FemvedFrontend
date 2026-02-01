@@ -2,6 +2,7 @@ import "./GuidedProgramDetail.scss";
 import { useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { PrimaryButton } from "../components/PrimaryButton";
+import { SecondaryButton } from "../components/SecondaryButton";
 import dataJson from "../data/data.json";
 import heroImage from "../assets/hero-slide-2.svg";
 
@@ -234,6 +235,14 @@ export default function GuidedProgramDetail() {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="guidedProgramDetail__ctaBanner">
+        <h2 className="guidedProgramDetail__ctaBannerTitle">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
+          posuere, justo at facilisis consequat, nunc urna.
+        </h2>
+        <SecondaryButton label="Let’s connect" onClick={() => {}} />
       </div>
     </section>
   );

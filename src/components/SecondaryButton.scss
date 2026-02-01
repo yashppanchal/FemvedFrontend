@@ -1,0 +1,46 @@
+.secondaryButton {
+  padding: 12px 24px;
+  border: 1px solid rgba(15, 15, 16, 0.12);
+  border-radius: 8px;
+  background: var(--secondary);
+  color: var(--white);
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  min-width: 187px;
+  transition: background-color 180ms ease, transform 180ms ease,
+    box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.secondaryButton:hover {
+  background: var(--secondary);
+  color: var(--white);
+  transform: translateY(-1px);
+  border-color: rgba(86, 19, 27, 0.16);
+  box-shadow: 0 8px 22px rgba(15, 15, 16, 0.12);
+}
+
+@supports (background: color-mix(in srgb, white, black)) {
+  .secondaryButton:hover {
+    background: color-mix(in srgb, var(--secondary) 86%, #000);
+  }
+}
+
+.secondaryButton:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 14px rgba(15, 15, 16, 0.1);
+}
+
+.secondaryButton:focus-visible {
+  outline: 3px solid rgba(86, 19, 27, 0.18);
+  outline-offset: 2px;
+}
+
+.secondaryButton__icon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 8px;
+}
+
