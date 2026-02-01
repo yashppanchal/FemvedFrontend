@@ -1,4 +1,5 @@
 import "./Footer.scss";
+import { Link } from "react-router-dom";
 
 export function Footer() {
   return (
@@ -7,9 +8,9 @@ export function Footer() {
       <span className="footer__sep" aria-hidden="true">
         •
       </span>
-      <a className="footer__link" href="#/contact">
+      <Link className="footer__link" to="/contact">
         Contact
-      </a>
+      </Link>
     </div>
   );
 }

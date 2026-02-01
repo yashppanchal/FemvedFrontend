@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { createHashRouter } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
 import { INTERNAL_NAV_ROUTES } from "../nav/menu";
 import About from "../pages/About";
@@ -12,7 +12,7 @@ function placeholderForRouteTitle(title: string): ReactNode {
   return <Placeholder title={title} />;
 }
 
-export const router = createHashRouter([
+export const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
