@@ -99,18 +99,14 @@
   scroll-padding-left: 20px;
   -webkit-overflow-scrolling: touch;
   align-items: flex-start;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge legacy */
 }
 
-/* Hide scrollbar but keep it accessible */
+/* Hide scrollbar (WebKit) */
 .testimonialsCarousel__scroller::-webkit-scrollbar {
-  height: 10px;
-}
-.testimonialsCarousel__scroller::-webkit-scrollbar-thumb {
-  background: rgba(15, 15, 16, 0.16);
-  border-radius: 999px;
-}
-.testimonialsCarousel__scroller::-webkit-scrollbar-track {
-  background: transparent;
+  display: none;
+  height: 0;
 }
 
 .testimonialsCarousel__card {

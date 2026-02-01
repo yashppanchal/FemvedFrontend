@@ -52,6 +52,23 @@ function prefersReducedMotion() {
   );
 }
 
+function centerCardInScroller(scroller: HTMLElement, cardEl: HTMLElement) {
+  const scrollerRect = scroller.getBoundingClientRect();
+  const cardRect = cardEl.getBoundingClientRect();
+
+  // Card center position in scroller scroll coordinates.
+  const cardCenterX =
+    (cardRect.left - scrollerRect.left) + scroller.scrollLeft + cardRect.width / 2;
+  const targetLeft = cardCenterX - scroller.clientWidth / 2;
+  const maxLeft = Math.max(0, scroller.scrollWidth - scroller.clientWidth);
+  const nextLeft = clamp(targetLeft, 0, maxLeft);
+
+  scroller.scrollTo({
+    left: nextLeft,
+    behavior: prefersReducedMotion() ? "auto" : "smooth",
+  });
+}
+
 export function TestimonialsCarousel() {
   const testimonials = useMemo<Testimonial[]>(
     () => [
@@ -164,14 +181,16 @@ export function TestimonialsCarousel() {
   };
 
   const toggleExpanded = (id: string, cardEl?: HTMLElement | null) => {
+    const scroller = scrollerRef.current;
+    const isExpanding = expandedId !== id;
     setExpandedId((cur) => (cur === id ? null : id));
-    if (cardEl) {
-      cardEl.scrollIntoView({
-        behavior: prefersReducedMotion() ? "auto" : "smooth",
-        block: "nearest",
-        inline: "start",
-      });
-    }
+
+    if (!isExpanding || !scroller || !cardEl) return;
+
+    // Center immediately, then re-center after width transition starts.
+    centerCardInScroller(scroller, cardEl);
+    window.requestAnimationFrame(() => centerCardInScroller(scroller, cardEl));
+    window.setTimeout(() => centerCardInScroller(scroller, cardEl), 380);
   };
 
   return (
