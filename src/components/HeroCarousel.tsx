@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { FaPause, FaPlay } from "react-icons/fa";
-import slide1Url from "../assets/hero-slide-1.svg";
+import slide1Url from "../assets/hero-slide-1.jpg";
 import slide2Url from "../assets/hero-slide-2.svg";
 import { PrimaryButton } from "./PrimaryButton";
 import "./HeroCarousel.scss";
