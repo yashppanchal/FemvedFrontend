@@ -1,0 +1,29 @@
+.primaryButton {
+  // height: 42px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary);
+  color: var(--white);
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  min-width: 187px;
+  transition: background-color 180ms ease, transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.primaryButton:hover {
+  background: var(--primaryHover);
+  color: var(--white);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(86, 19, 27, 0.18);
+}
+
+.primaryButton__icon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 8px;
+}

@@ -68,11 +68,17 @@ export default function App() {
       </header>
 
       <main className={`layout__main ${isHome ? "layout__main--home" : ""}`}>
-        <div className="container">
+        {isHome ? (
           <PageTransition key={location.key}>
             <Outlet />
           </PageTransition>
-        </div>
+        ) : (
+          <div className="container">
+            <PageTransition key={location.key}>
+              <Outlet />
+            </PageTransition>
+          </div>
+        )}
       </main>
 
       <footer className="layout__footer">

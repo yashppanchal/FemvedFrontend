@@ -1,9 +1,14 @@
 import "./Home.scss";
+import { HeroCarousel } from "../components/HeroCarousel";
 
 export default function Home() {
   return (
-    <section className="page page--home">
-      <h1 className="page__title">A women-led space for holistic wellness</h1>
+    <div className="home">
+      <HeroCarousel />
+
+      <section className="page page--home">
+        <div className="container home__content">
+          <h1 className="page__title">A women-led space for holistic wellness</h1>
       <p className="page__lead">
         Femved is where two journeys meet: women practitioners who have walked
         through pain, found their way to heal, and now guide others — and women
@@ -152,6 +157,8 @@ export default function Home() {
           </li>
         </ul>
       </div>
-    </section>
+        </div>
+      </section>
+    </div>
   );
 }

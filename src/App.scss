@@ -30,11 +30,11 @@
 }
 
 .layout__main--home {
-  // background: linear-gradient(90deg, var(--white) 0%, var(--secondarySoft) 100%);
+  padding: 0 0 44px;
   background: linear-gradient(
     90deg,
     var(--white) 0%,
-    rgba(227, 200, 174, 0.1) 100%
+    rgba($secondary-soft, 1) 100%
   );
 }
 

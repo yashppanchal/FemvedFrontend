@@ -185,17 +185,21 @@ code {
   color: var(--white);
   font-weight: 700;
   cursor: pointer;
+  display: flex;
+  align-items: center;
   transition: background-color 180ms ease, transform 180ms ease,
     box-shadow 180ms ease;
 }
 
 .button:hover {
   background: var(--primaryHover);
+  color: var(--white);
   transform: translateY(-1px);
   box-shadow: 0 8px 22px rgba(86, 19, 27, 0.18);
 }
 
 .button:active {
   transform: translateY(0);
+  color: var(--white);
   box-shadow: 0 4px 14px rgba(86, 19, 27, 0.14);
 }
