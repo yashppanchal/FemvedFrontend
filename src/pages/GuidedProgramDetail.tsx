@@ -6,6 +6,10 @@ import { SecondaryButton } from "../components/SecondaryButton";
 import { TestimonialsCarousel } from "../components/TestimonialsCarousel";
 import dataJson from "../data/data.json";
 import heroImage from "../assets/hero-slide-2.svg";
+import easyConnect from "../assets/benefits-guided-care/easyconnect.jpg";
+import comprehensivePersonal from "../assets/benefits-guided-care/comprehensive.jpg";
+import freedomToCoCreate from "../assets/benefits-guided-care/cocreat.jpg";
+import completePrivacy from "../assets/benefits-guided-care/privacy.jpg";
 import appointmentMock from "../assets/appointment-mock.png";
 
 type GuidedProgramInfo = {
@@ -86,33 +90,33 @@ export default function GuidedProgramDetail() {
   const zigzagItems = [
     {
       title: "Easy to connect",
-      body: "Pick the expert that best matches your needs and goals, so your care is tailored from the very first session.",
+      body: "Choose a ready-to-start wellness program and book instantly, with no appointments or fixed timelines. You and your expert decide the pace and connect online at a time that fits your life.",
       imageAlt: "Booking flow on tablet",
-      imageSrc: appointmentMock,
+      imageSrc: easyConnect,
     },
     {
       title: "Comprehensive and extremely personal",
-      body: "Find frequently available appointments and book in minutes—no referral required.",
+      body: "Your journey starts with a one-on-one consultation and moves into a clear action plan, which may include tailored meals, routines, movement guidance, supplement recommendations, and a personalised shopping list, depending on the expert’s guidance.",
       imageAlt: "Choose your specialist on tablet",
-      imageSrc: appointmentMock,
+      imageSrc: comprehensivePersonal,
     },
     {
       title: "Freedom to co-create",
-      body: "Take your consultation from wherever you are, with a seamless online experience designed to fit real life.",
+      body: "This isn’t a fixed or algorithm-led plan. You meet the expert you choose, they understand your health and life stage, and together you co-create a wellness plan that fits you, not a mass solution.",
       imageAlt: "Online consultation on tablet",
-      imageSrc: appointmentMock,
+      imageSrc: freedomToCoCreate,
     },
-    {
-      title: "Not algorithmic nor mass solutions",
-      body: "Leave each session with next steps that make sense for you—clear, practical, and easy to action.",
-      imageAlt: "Follow-up plan on tablet",
-      imageSrc: appointmentMock,
-    },
+    // {
+    //   title: "Not algorithmic nor mass solutions",
+    //   body: "Leave each session with next steps that make sense for you—clear, practical, and easy to action.",
+    //   imageAlt: "Follow-up plan on tablet",
+    //   imageSrc: appointmentMock,
+    // },
     {
       title: "Complete privacy",
-      body: "Continue with follow-ups and ongoing guidance when you need it, so you’re never left guessing what to do next.",
+      body: "Your program is shaped only between you and your expert. We don’t store your personal health data, and your conversations remain fully private, protected by complete expert–client confidentiality.",
       imageAlt: "Next steps summary on tablet",
-      imageSrc: appointmentMock,
+      imageSrc: completePrivacy,
     },
   ];
 
@@ -344,7 +348,7 @@ export default function GuidedProgramDetail() {
             id="guidedProgramDetail-zigzag-title"
             className="guidedProgramDetail__zigzagTitle"
           >
-            Your Wellness, your plan, guided by experts who understand
+            Your wellness, your plan, guided by experts who understand
           </h2>
           <p className="guidedProgramDetail__zigzagSubtext">
             We offer 1-1 guidance by globally accredited experts and coaches to
@@ -394,12 +398,13 @@ export default function GuidedProgramDetail() {
               id="guidedProgramDetail-recordings-title"
               className="guidedProgramDetail__recordingsTitle"
             >
-              Video recordings you can keep
+              Want to explore your wellness at your own pace? Start with our
+              expert-led pre-recorded courses
             </h2>
-            <p className="guidedProgramDetail__recordingsSubtext">
+            {/* <p className="guidedProgramDetail__recordingsSubtext">
               A small collection of digital products — guided sessions you can
               return to anytime. (Dummy content for now.)
-            </p>
+            </p> */}
           </div>
 
           <div className="guidedProgramDetail__recordingsGrid" role="list">

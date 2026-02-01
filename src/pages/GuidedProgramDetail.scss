@@ -310,6 +310,7 @@
   gap: clamp(18px, 4vw, 70px);
   align-items: center;
   grid-template-areas: "media content";
+  height: 40vh;
 }
 
 .guidedProgramDetail__zigzagRow--reverse {
@@ -329,11 +330,11 @@
 }
 
 .guidedProgramDetail__zigzagImage {
-  width: 100%;
-  height: auto;
-  max-width: 640px;
+  width: 300px;
+  height: 300px;
   display: block;
   border-radius: 16px;
+  object-fit: cover;
 }
 
 .guidedProgramDetail__zigzagContent {
