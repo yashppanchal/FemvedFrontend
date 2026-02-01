@@ -281,6 +281,14 @@ export default function GuidedProgramDetail() {
         </div>
       </div>
 
+      <div className="guidedProgramDetail__ctaBanner">
+        <h2 className="guidedProgramDetail__ctaBannerTitle">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
+          posuere, justo at facilisis consequat, nunc urna.
+        </h2>
+        <SecondaryButton label="Let’s connect" onClick={() => {}} />
+      </div>
+
       <section
         className="guidedProgramDetail__zigzag"
         aria-labelledby="guidedProgramDetail-zigzag-title"
@@ -329,14 +337,6 @@ export default function GuidedProgramDetail() {
           ))}
         </div>
       </section>
-
-      <div className="guidedProgramDetail__ctaBanner">
-        <h2 className="guidedProgramDetail__ctaBannerTitle">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
-          posuere, justo at facilisis consequat, nunc urna.
-        </h2>
-        <SecondaryButton label="Let’s connect" onClick={() => {}} />
-      </div>
     </section>
   );
 }
