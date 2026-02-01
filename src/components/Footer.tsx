@@ -48,26 +48,6 @@ export function Footer() {
               <li className="footer__item">
                 <a
                   className="footer__link"
-                  href="https://facebook.com"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Facebook
-                </a>
-              </li>
-              <li className="footer__item">
-                <a
-                  className="footer__link"
-                  href="https://linkedin.com"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Linkedin
-                </a>
-              </li>
-              <li className="footer__item">
-                <a
-                  className="footer__link"
                   href="https://youtube.com"
                   target="_blank"
                   rel="noreferrer"
@@ -78,11 +58,11 @@ export function Footer() {
               <li className="footer__item">
                 <a
                   className="footer__link"
-                  href="https://x.com"
+                  href="https://linkedin.com"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  X
+                  Linkedin
                 </a>
               </li>
             </ul>
@@ -97,11 +77,6 @@ export function Footer() {
                 </Link>
               </li>
               <li className="footer__item">
-                <Link className="footer__link" to="/chat-with-us">
-                  Chat with us
-                </Link>
-              </li>
-              <li className="footer__item">
                 <Link className="footer__link" to="/contact">
                   Get in touch
                 </Link>
@@ -109,11 +84,6 @@ export function Footer() {
               <li className="footer__item">
                 <Link className="footer__link" to="/terms">
                   Terms
-                </Link>
-              </li>
-              <li className="footer__item">
-                <Link className="footer__link" to="/knowledge-centre">
-                  Knowledge Centre
                 </Link>
               </li>
             </ul>
@@ -130,7 +100,9 @@ export function Footer() {
                   id={countrySelectId}
                   className="footer__countrySelect"
                   value={country}
-                  onChange={(e) => setCountry(e.target.value as "IN" | "UK" | "US")}
+                  onChange={(e) =>
+                    setCountry(e.target.value as "IN" | "UK" | "US")
+                  }
                   aria-label="Select country"
                 >
                   <option value="IN">India</option>
@@ -173,10 +145,11 @@ export function Footer() {
       </div>
 
       <div className="footer__bottom">
-        <div className="footer__brand" aria-label="Femved">
+        <div className="footer__brandRow" aria-label="Femved">
           <img className="footer__logo" src={logo} alt="Femved" />
         </div>
-        <div className="footer__meta">
+        <div className="footer__divider" aria-hidden="true" />
+        <div className="footer__meta footer__meta--center">
           <span className="footer__copyright">
             © {new Date().getFullYear()} Femved
           </span>

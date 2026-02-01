@@ -22,21 +22,13 @@ export const router = createBrowserRouter([
       { path: "/about", element: <About /> },
       { path: "/contact", element: <Contact /> },
       { path: "/faqs", element: placeholderForRouteTitle("FAQs") },
-      {
-        path: "/chat-with-us",
-        element: placeholderForRouteTitle("Chat with us"),
-      },
       { path: "/terms", element: placeholderForRouteTitle("Terms") },
-      {
-        path: "/knowledge-centre",
-        element: placeholderForRouteTitle("Knowledge Centre"),
-      },
       { path: "/guided/:programSlug", element: <GuidedProgramDetail /> },
       ...INTERNAL_NAV_ROUTES.filter((r) => !r.path.startsWith("/guided/")).map(
         (r) => ({
           path: r.path,
           element: placeholderForRouteTitle(r.title),
-        }),
+        })
       ),
       { path: "*", element: <NotFound /> },
     ],
