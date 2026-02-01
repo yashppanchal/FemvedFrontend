@@ -3,7 +3,6 @@ import {
   useMemo,
   useRef,
   useState,
-  type CSSProperties,
 } from "react";
 import {
   FaChevronLeft,
@@ -23,15 +22,6 @@ const AUTOPLAY_MS = 6000;
 
 function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n));
-}
-
-function hashToHue(input: string) {
-  // Simple deterministic hash -> hue
-  let h = 0;
-  for (let i = 0; i < input.length; i += 1) {
-    h = (h * 31 + input.charCodeAt(i)) >>> 0;
-  }
-  return h % 360;
 }
 
 function getStepPx(scroller: HTMLElement): number {
@@ -251,8 +241,6 @@ export function TestimonialsCarousel() {
           aria-atomic="true"
         >
           {testimonials.map((t) => {
-            const hue = hashToHue(t.location);
-            const hue2 = (hue + 34) % 360;
             const isExpanded = expandedId === t.id;
             return (
               <article
@@ -261,12 +249,6 @@ export function TestimonialsCarousel() {
                   isExpanded ? "testimonialsCarousel__card--expanded" : ""
                 }`}
                 data-testimonial-card
-                style={
-                  {
-                    ["--tc-h1" as never]: `${hue}deg`,
-                    ["--tc-h2" as never]: `${hue2}deg`,
-                  } as CSSProperties
-                }
                 aria-label={`Testimonial from ${t.location}`}
               >
                 <div className="testimonialsCarousel__pills">
