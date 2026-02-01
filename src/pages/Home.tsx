@@ -1,10 +1,12 @@
 import "./Home.scss";
 import { HeroCarousel } from "../components/HeroCarousel";
+import { TestimonialsCarousel } from "../components/TestimonialsCarousel";
 
 export default function Home() {
   return (
     <div className="home">
       <HeroCarousel />
+      <TestimonialsCarousel />
 
       <section className="page page--home">
         <div className="container home__content">

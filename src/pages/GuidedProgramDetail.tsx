@@ -3,6 +3,7 @@ import { useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { SecondaryButton } from "../components/SecondaryButton";
+import { TestimonialsCarousel } from "../components/TestimonialsCarousel";
 import dataJson from "../data/data.json";
 import heroImage from "../assets/hero-slide-2.svg";
 import appointmentMock from "../assets/appointment-mock.png";
@@ -38,6 +39,7 @@ function getGuidedProgramBySlug(programSlug: string | undefined) {
 export default function GuidedProgramDetail() {
   const { programSlug } = useParams<{ programSlug: string }>();
   const program = getGuidedProgramBySlug(programSlug);
+  const carouselRef = useRef<HTMLDivElement | null>(null);
 
   if (!program) {
     return (
@@ -53,7 +55,6 @@ export default function GuidedProgramDetail() {
 
   const whatsIncluded = program.whatsIncluded ?? [];
   const keyAreas = program.keyAreas ?? [];
-  const carouselRef = useRef<HTMLDivElement | null>(null);
 
   const dummyCards = [
     {
@@ -337,6 +338,8 @@ export default function GuidedProgramDetail() {
           ))}
         </div>
       </section>
+
+      <TestimonialsCarousel />
     </section>
   );
 }
