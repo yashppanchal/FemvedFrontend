@@ -23,7 +23,7 @@
 }
 
 .brand__logo {
-  height: 34px;
+  height: 50px;
   width: auto;
   display: block;
   transition: transform 180ms ease;
@@ -63,9 +63,7 @@
   color: var(--black);
   cursor: pointer;
   font: inherit;
-  transition:
-    color 180ms ease,
-    background-color 180ms ease,
+  transition: color 180ms ease, background-color 180ms ease,
     border-color 180ms ease;
 }
 
@@ -101,9 +99,7 @@
   opacity: 0;
   transform: translateY(-6px);
   pointer-events: none;
-  transition:
-    opacity 160ms ease,
-    transform 160ms ease;
+  transition: opacity 160ms ease, transform 160ms ease;
 }
 
 .menu__section--open .menu__panel {
@@ -128,9 +124,7 @@
   border-radius: 10px;
   text-decoration: none;
   color: var(--black);
-  transition:
-    background-color 160ms ease,
-    color 160ms ease;
+  transition: background-color 160ms ease, color 160ms ease;
 }
 
 .menu__item:hover {

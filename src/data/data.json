@@ -5,6 +5,7 @@
       "info": [
         {
           "slug": "hormonal-health-support",
+          "imageSlug": "hormonal",
           "programType": "Hormonal Health Support",
           "heroTitle": "Get Guided Hormonal Care",
           "heroSubtext": "When hormonal changes feel overwhelming and social media advice leaves you confused about what to trust, you deserve grounded guidance. Get 1:1 hormonal health support and co-create a personalised wellness plan with accredited, highly experienced practitioners across the globe. Whether you’re in London or Mumbai, access credible care from home at accessible pricing.",
@@ -36,6 +37,7 @@
         },
         {
           "slug": "mental-and-spiritual-wellbeing",
+          "imageSlug": "mind",
           "programType": "Mental and Spiritual Wellbeing",
           "heroTitle": "Begin Your Personal Mind Support",
           "heroSubtext": "When constant content, opinions, and quick fixes leave your mind overstimulated and unsettled, slowing down with the right guide matters. Get 1:1 support from experienced counsellors and spiritual practitioners to create a personal path toward emotional clarity and inner balance. Wherever you are, begin from home with care that feels steady and reassuring.",
@@ -65,6 +67,7 @@
         },
         {
           "slug": "longevity-and-healthy-ageing",
+          "imageSlug": "longevity",
           "programType": "Longevity and Healthy Ageing guidance",
           "heroTitle": " Plan Your Long-Term Health",
           "heroSubtext": "When you’re curious about longevity but feel confused by social media trends, biohacks, and conflicting wellness advice, a guided approach brings clarity. Work 1:1 with globally experienced experts to create a personalised longevity plan rooted in science, lifestyle, and prevention. From London to Mumbai, access trusted care from home with transparent, democratised pricing.",
@@ -95,6 +98,7 @@
         },
         {
           "slug": "fitness-and-personal-care",
+          "imageSlug": "fitness",
           "programType": "Fitness and personal care Support",
           "heroTitle": "Book Your Personal Wellness Program",
           "heroSubtext": "When social media fitness content and online coaches leave you unsure of what your body actually needs, personalised guidance makes the difference. Get 1:1 fitness and body care support to build a plan that respects your strength, recovery, and rhythm. Wherever you live, connect with experienced coaches from home in a way that feels practical and supportive.",

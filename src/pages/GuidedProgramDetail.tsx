@@ -6,6 +6,17 @@ import { SecondaryButton } from "../components/SecondaryButton";
 import { TestimonialsCarousel } from "../components/TestimonialsCarousel";
 import dataJson from "../data/data.json";
 import heroImage from "../assets/hero-slide-2.svg";
+import hormonal from "../assets/guided-care-hero/hormonal.jpg";
+import longevity from "../assets/guided-care-hero/longevity.jpg";
+import fitness from "../assets/guided-care-hero/fitness.jpg";
+import mind from "../assets/guided-care-hero/mind.jpg";
+
+const GUIDED_CARE_HERO_IMAGES: Record<string, string> = {
+  hormonal,
+  mind,
+  longevity,
+  fitness,
+};
 import easyConnect from "../assets/benefits-guided-care/easyconnect.jpg";
 import comprehensivePersonal from "../assets/benefits-guided-care/comprehensive.jpg";
 import freedomToCoCreate from "../assets/benefits-guided-care/cocreat.jpg";
@@ -21,6 +32,7 @@ type GuidedProgramInfo = {
   ctaTo?: string;
   whatsIncluded?: string[];
   keyAreas?: string[];
+  imageSlug?: string;
 };
 
 type DataJsonShape = {
@@ -171,7 +183,11 @@ export default function GuidedProgramDetail() {
         <div className="guidedProgramDetail__heroMedia">
           <img
             className="guidedProgramDetail__heroImage"
-            src={heroImage}
+            src={
+              program.imageSlug && GUIDED_CARE_HERO_IMAGES[program.imageSlug]
+                ? GUIDED_CARE_HERO_IMAGES[program.imageSlug]
+                : heroImage
+            }
             alt={program.heroTitle}
           />
         </div>
@@ -333,10 +349,9 @@ export default function GuidedProgramDetail() {
 
       <div className="guidedProgramDetail__ctaBanner">
         <h2 className="guidedProgramDetail__ctaBannerTitle">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
-          posuere, justo at facilisis consequat, nunc urna.
+          Discover the program that truly speaks to your life and needs.
         </h2>
-        <SecondaryButton label="Let’s connect" onClick={() => {}} />
+        <SecondaryButton label="Select your plan" onClick={() => {}} />
       </div>
 
       <section
