@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaRegUser } from "react-icons/fa";
+import { IoChevronDown } from "react-icons/io5";
 import { NAV_SECTIONS } from "../nav/menu";
 import { useAuth } from "../auth/useAuth";
 import logoUrl from "../assets/logo.png";
@@ -69,9 +70,7 @@ export function NavBar() {
                 }}
               >
                 <span>{section.label}</span>
-                <span className="menu__chevron" aria-hidden="true">
-                  ▾
-                </span>
+                <IoChevronDown className="menu__chevron" aria-hidden="true" />
               </button>
 
               <div
