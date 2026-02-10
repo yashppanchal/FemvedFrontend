@@ -34,7 +34,12 @@ export const router = createBrowserRouter([
       { path: "/orders", element: <OrderHistory /> },
       { path: "/learn/founders-story", element: <FoundersStory /> },
       { path: "/guided/:programSlug", element: <GuidedProgramDetail /> },
-      ...INTERNAL_NAV_ROUTES.filter((r) => !r.path.startsWith("/guided/")).map(
+      ...INTERNAL_NAV_ROUTES.filter(
+        (r) =>
+          !r.path.startsWith("/guided/") &&
+          r.path !== "/about" &&
+          r.path !== "/learn/founders-story",
+      ).map(
         (r) => ({
           path: r.path,
           element: placeholderForRouteTitle(r.title),

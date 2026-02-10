@@ -1,3 +1,193 @@
-.page--about {
-  /* Page-specific styles for About */
+/* ================================================================
+   About – editorial layout  (mirrors Founders Story)
+   ================================================================ */
+
+/* ── Hero ── */
+.about__hero {
+  /* Full-bleed */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  padding: clamp(60px, 10vw, 120px) clamp(20px, 5vw, 60px);
+  min-height: 52vh;
+
+  background:
+    radial-gradient(
+      ellipse 120% 90% at 30% 80%,
+      rgba(86, 19, 27, 0.09) 0%,
+      rgba(86, 19, 27, 0) 60%
+    ),
+    radial-gradient(
+      ellipse 100% 80% at 80% 20%,
+      rgba(227, 200, 174, 0.5) 0%,
+      rgba(227, 200, 174, 0) 60%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(227, 200, 174, 0.18) 100%
+    );
+}
+
+.about__heroLabel {
+  margin: 0 0 16px;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--secondary);
+  font-weight: 600;
+}
+
+.about__heroTitle {
+  margin: 0;
+  max-width: 18ch;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--primary);
+  font-size: clamp(36px, 5.5vw, 64px);
+  line-height: 1.08;
+}
+
+/* ── Prose sections (shared) ── */
+.about__section {
+  /* Full-bleed */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  display: flex;
+  justify-content: center;
+  padding: clamp(38px, 6vw, 72px) clamp(20px, 5vw, 60px);
+}
+
+.about__prose {
+  max-width: 62ch;
+}
+
+.about__prose p {
+  margin: 0 0 22px;
+  font-size: clamp(16px, 1.8vw, 18px);
+  line-height: 1.85;
+  color: rgba(15, 15, 16, 0.78);
+}
+
+.about__prose p:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Section colour treatments ── */
+.about__section--searching {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.about__section--conversation {
+  background:
+    radial-gradient(
+      ellipse 80% 80% at 15% 50%,
+      rgba(227, 200, 174, 0.22) 0%,
+      rgba(227, 200, 174, 0) 60%
+    ),
+    rgba(255, 255, 255, 0.96);
+  border-top: 1px solid var(--border);
+}
+
+.about__section--healing {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding-top: clamp(32px, 5vw, 56px);
+  padding-bottom: clamp(32px, 5vw, 56px);
+}
+
+/* ── Highlight / emphasis ── */
+.about__highlight {
+  color: var(--primary);
+  font-style: italic;
+}
+
+.about__emphasis {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* ── Banner ── */
+.about__banner {
+  /* Full-bleed */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  display: grid;
+  place-items: center;
+  text-align: center;
+
+  padding: clamp(36px, 5vw, 64px) clamp(20px, 5vw, 60px);
+  background: rgba(227, 200, 174, 0.32);
+  border-top: 1px solid rgba(15, 15, 16, 0.06);
+  border-bottom: 1px solid rgba(15, 15, 16, 0.06);
+}
+
+.about__bannerText {
+  margin: 0;
+  max-width: 52ch;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: rgba(86, 19, 27, 0.82);
+  font-size: clamp(20px, 2.6vw, 28px);
+  line-height: 1.35;
+}
+
+/* ── Closing ── */
+.about__closing {
+  /* Full-bleed */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  display: grid;
+  place-items: center;
+  text-align: center;
+
+  padding: clamp(48px, 8vw, 90px) clamp(20px, 5vw, 60px);
+
+  background:
+    radial-gradient(
+      ellipse 100% 100% at 50% 100%,
+      rgba(86, 19, 27, 0.07) 0%,
+      rgba(86, 19, 27, 0) 55%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(227, 200, 174, 0.15) 0%,
+      rgba(255, 255, 255, 0.6) 100%
+    );
+  border-top: 1px solid var(--border);
+}
+
+.about__closingText {
+  margin: 0;
+  max-width: 50ch;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: rgba(15, 15, 16, 0.78);
+  font-size: clamp(18px, 2.4vw, 26px);
+  line-height: 1.55;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .about__hero {
+    min-height: 40vh;
+    padding: clamp(40px, 8vw, 80px) 20px;
+  }
 }
