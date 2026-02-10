@@ -40,7 +40,7 @@ export function Footer() {
                 <li className="footer__item">
                   <a
                     className="footer__link"
-                    href="https://instagram.com"
+                    href="https://www.instagram.com/femvedwellness/"
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -50,7 +50,7 @@ export function Footer() {
                 <li className="footer__item">
                   <a
                     className="footer__link"
-                    href="https://youtube.com"
+                    href="https://www.youtube.com/@FemvedWellness"
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -60,7 +60,7 @@ export function Footer() {
                 <li className="footer__item">
                   <a
                     className="footer__link"
-                    href="https://linkedin.com"
+                    href="https://www.linkedin.com/company/femvedwellness/"
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -73,11 +73,6 @@ export function Footer() {
             <div className="footer__col">
               <div className="footer__heading">SUPPORT</div>
               <ul className="footer__list">
-                <li className="footer__item">
-                  <Link className="footer__link" to="/faqs">
-                    FAQs
-                  </Link>
-                </li>
                 <li className="footer__item">
                   <Link className="footer__link" to="/contact">
                     Get in touch
