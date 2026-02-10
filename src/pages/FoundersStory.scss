@@ -1,0 +1,313 @@
+/* ================================================================
+   Founders Story – editorial layout
+   ================================================================ */
+
+/* ── Hero ── */
+.foundersStory__hero {
+  /* Full-bleed */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  padding: clamp(60px, 10vw, 120px) clamp(20px, 5vw, 60px);
+  min-height: 52vh;
+
+  background:
+    radial-gradient(
+      ellipse 120% 90% at 30% 80%,
+      rgba(86, 19, 27, 0.09) 0%,
+      rgba(86, 19, 27, 0) 60%
+    ),
+    radial-gradient(
+      ellipse 100% 80% at 80% 20%,
+      rgba(227, 200, 174, 0.5) 0%,
+      rgba(227, 200, 174, 0) 60%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(227, 200, 174, 0.18) 100%
+    );
+}
+
+.foundersStory__heroLabel {
+  margin: 0 0 16px;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--secondary);
+  font-weight: 600;
+}
+
+.foundersStory__heroTitle {
+  margin: 0;
+  max-width: 16ch;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--primary);
+  font-size: clamp(36px, 5.5vw, 64px);
+  line-height: 1.08;
+}
+
+/* ── Prose sections (shared) ── */
+.foundersStory__section {
+  /* Full-bleed */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  display: flex;
+  justify-content: center;
+  padding: clamp(38px, 6vw, 72px) clamp(20px, 5vw, 60px);
+}
+
+.foundersStory__prose {
+  max-width: 62ch;
+}
+
+.foundersStory__prose p {
+  margin: 0 0 22px;
+  font-size: clamp(16px, 1.8vw, 18px);
+  line-height: 1.85;
+  color: rgba(15, 15, 16, 0.78);
+}
+
+.foundersStory__prose p:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Section colour treatments ── */
+.foundersStory__section--opening {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.foundersStory__section--awakening {
+  background:
+    radial-gradient(
+      ellipse 80% 80% at 15% 50%,
+      rgba(227, 200, 174, 0.22) 0%,
+      rgba(227, 200, 174, 0) 60%
+    ),
+    rgba(255, 255, 255, 0.96);
+  border-top: 1px solid var(--border);
+}
+
+.foundersStory__section--listening {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.foundersStory__section--philosophy {
+  background:
+    radial-gradient(
+      ellipse 90% 80% at 75% 40%,
+      rgba(227, 200, 174, 0.2) 0%,
+      rgba(227, 200, 174, 0) 55%
+    ),
+    rgba(255, 255, 255, 0.96);
+  border-top: 1px solid var(--border);
+}
+
+.foundersStory__section--prakriti {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding-top: clamp(32px, 5vw, 56px);
+  padding-bottom: clamp(32px, 5vw, 56px);
+}
+
+/* ── Highlight / emphasis ── */
+.foundersStory__highlight {
+  color: var(--primary);
+  font-style: italic;
+}
+
+.foundersStory__emphasis {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* ── Pull quote ── */
+.foundersStory__pullQuote {
+  margin: 28px 0 0 !important;
+  padding-left: 22px;
+  border-left: 3px solid var(--primary);
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  font-size: clamp(22px, 2.8vw, 30px) !important;
+  line-height: 1.3 !important;
+  letter-spacing: -0.02em;
+  color: var(--primary) !important;
+}
+
+/* ── Change banner ── */
+.foundersStory__banner {
+  /* Full-bleed */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  display: grid;
+  place-items: center;
+  text-align: center;
+
+  padding: clamp(36px, 5vw, 64px) clamp(20px, 5vw, 60px);
+  background: rgba(227, 200, 174, 0.32);
+  border-top: 1px solid rgba(15, 15, 16, 0.06);
+  border-bottom: 1px solid rgba(15, 15, 16, 0.06);
+}
+
+.foundersStory__bannerText {
+  margin: 0;
+  max-width: 52ch;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: rgba(86, 19, 27, 0.82);
+  font-size: clamp(20px, 2.6vw, 28px);
+  line-height: 1.35;
+}
+
+/* ── Revolution (major section divider) ── */
+.foundersStory__revolution {
+  /* Full-bleed */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  display: grid;
+  place-items: center;
+  text-align: center;
+
+  padding: clamp(52px, 8vw, 100px) clamp(20px, 5vw, 60px);
+
+  background:
+    radial-gradient(
+      ellipse 110% 100% at 50% 50%,
+      rgba(86, 19, 27, 0.06) 0%,
+      rgba(86, 19, 27, 0) 65%
+    ),
+    radial-gradient(
+      ellipse 70% 60% at 20% 60%,
+      rgba(227, 200, 174, 0.35) 0%,
+      rgba(227, 200, 174, 0) 55%
+    ),
+    radial-gradient(
+      ellipse 80% 70% at 80% 30%,
+      rgba(227, 200, 174, 0.3) 0%,
+      rgba(227, 200, 174, 0) 55%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.6) 0%,
+      rgba(227, 200, 174, 0.12) 100%
+    );
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.foundersStory__revolutionTitle {
+  margin: 0;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--primary);
+  font-size: clamp(32px, 5vw, 56px);
+  line-height: 1.1;
+}
+
+/* ── Prakriti blockquote ── */
+.foundersStory__prakritiIntro {
+  font-size: clamp(14px, 1.4vw, 15px) !important;
+  letter-spacing: 0.02em;
+  color: rgba(15, 15, 16, 0.58) !important;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 14px !important;
+}
+
+.foundersStory__blockquote {
+  margin: 0;
+  padding: 24px 28px;
+  border-radius: 14px;
+  background:
+    radial-gradient(
+      ellipse 90% 80% at 20% 80%,
+      rgba(227, 200, 174, 0.28) 0%,
+      rgba(227, 200, 174, 0) 55%
+    ),
+    rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(227, 200, 174, 0.4);
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  font-size: clamp(18px, 2.2vw, 24px);
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+  color: rgba(15, 15, 16, 0.82);
+}
+
+.foundersStory__blockquote em {
+  color: var(--primary);
+  font-style: italic;
+}
+
+/* ── Closing ── */
+.foundersStory__closing {
+  /* Full-bleed */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  display: grid;
+  place-items: center;
+  text-align: center;
+
+  padding: clamp(48px, 8vw, 90px) clamp(20px, 5vw, 60px);
+
+  background:
+    radial-gradient(
+      ellipse 100% 100% at 50% 100%,
+      rgba(86, 19, 27, 0.07) 0%,
+      rgba(86, 19, 27, 0) 55%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(227, 200, 174, 0.15) 0%,
+      rgba(255, 255, 255, 0.6) 100%
+    );
+  border-top: 1px solid var(--border);
+}
+
+.foundersStory__closingText {
+  margin: 0;
+  max-width: 50ch;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: rgba(15, 15, 16, 0.78);
+  font-size: clamp(18px, 2.4vw, 26px);
+  line-height: 1.55;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .foundersStory__hero {
+    min-height: 40vh;
+    padding: clamp(40px, 8vw, 80px) 20px;
+  }
+
+  .foundersStory__pullQuote {
+    padding-left: 16px;
+  }
+
+  .foundersStory__blockquote {
+    padding: 18px 20px;
+  }
+}

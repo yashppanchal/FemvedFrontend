@@ -9,6 +9,7 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Dashboard from "../pages/Dashboard";
+import FoundersStory from "../pages/FoundersStory";
 import NotFound from "../pages/NotFound";
 import OrderHistory from "../pages/OrderHistory";
 import Placeholder from "../pages/Placeholder";
@@ -31,6 +32,7 @@ export const router = createBrowserRouter([
       { path: "/register", element: <Register /> },
       { path: "/dashboard", element: <Dashboard /> },
       { path: "/orders", element: <OrderHistory /> },
+      { path: "/learn/founders-story", element: <FoundersStory /> },
       { path: "/guided/:programSlug", element: <GuidedProgramDetail /> },
       ...INTERNAL_NAV_ROUTES.filter((r) => !r.path.startsWith("/guided/")).map(
         (r) => ({
