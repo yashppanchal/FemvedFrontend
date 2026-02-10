@@ -1,0 +1,185 @@
+@use "../styles/variables" as *;
+
+/* ── Hero ── */
+.experts__hero {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.experts__title {
+  font-size: 38px;
+}
+
+.experts__lead {
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ── Grid ── */
+.experts__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  margin-bottom: 60px;
+}
+
+/* ── Expert card ── */
+.expertCard {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 260ms ease, box-shadow 260ms ease;
+}
+
+.expertCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 36px rgba(15, 15, 16, 0.09);
+}
+
+.expertCard__imageWrap {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--surfaceAccent);
+}
+
+.expertCard__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 360ms ease;
+}
+
+.expertCard:hover .expertCard__image {
+  transform: scale(1.04);
+}
+
+.expertCard__body {
+  padding: 20px;
+}
+
+.expertCard__name {
+  margin: 0 0 4px;
+  font-family: var(--fontTitle);
+  font-size: 19px;
+  font-weight: 400;
+  color: var(--primary);
+}
+
+.expertCard__title {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.expertCard__bio {
+  margin: 0 0 14px;
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.65;
+}
+
+/* ── Specialty tags ── */
+.expertCard__specialties {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.expertCard__tag {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: 20px;
+  background: rgba($secondary-soft, 0.55);
+  color: $primary;
+}
+
+/* ── LinkedIn button ── */
+.expertCard__linkedin {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 10px;
+  background: var(--primary);
+  color: var(--white);
+  text-decoration: none;
+  transition: background 180ms ease, transform 180ms ease;
+
+  svg {
+    font-size: 14px;
+  }
+}
+
+.expertCard__linkedin:hover {
+  background: var(--primaryHover);
+  color: var(--white);
+  transform: translateY(-1px);
+}
+
+/* ── CTA section ── */
+.experts__cta {
+  text-align: center;
+  padding: 48px 24px;
+  border-radius: 18px;
+  background: rgba($secondary-soft, 0.3);
+  margin-bottom: 20px;
+}
+
+.experts__ctaTitle {
+  margin: 0 0 10px;
+  font-family: var(--fontTitle);
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--primary);
+}
+
+.experts__ctaText {
+  margin: 0 0 22px;
+  color: var(--muted);
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.65;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .experts__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 560px) {
+  .experts__hero {
+    margin-bottom: 32px;
+  }
+
+  .experts__title {
+    font-size: 30px;
+  }
+
+  .experts__grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .experts__cta {
+    padding: 32px 18px;
+  }
+
+  .experts__ctaTitle {
+    font-size: 22px;
+  }
+}

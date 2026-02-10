@@ -10,6 +10,7 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Dashboard from "../pages/Dashboard";
 import FoundersStory from "../pages/FoundersStory";
+import KnowYourExperts from "../pages/KnowYourExperts";
 import NotFound from "../pages/NotFound";
 import OrderHistory from "../pages/OrderHistory";
 import Placeholder from "../pages/Placeholder";
@@ -33,12 +34,14 @@ export const router = createBrowserRouter([
       { path: "/dashboard", element: <Dashboard /> },
       { path: "/orders", element: <OrderHistory /> },
       { path: "/learn/founders-story", element: <FoundersStory /> },
+      { path: "/learn/know-your-experts", element: <KnowYourExperts /> },
       { path: "/guided/:programSlug", element: <GuidedProgramDetail /> },
       ...INTERNAL_NAV_ROUTES.filter(
         (r) =>
           !r.path.startsWith("/guided/") &&
           r.path !== "/about" &&
-          r.path !== "/learn/founders-story",
+          r.path !== "/learn/founders-story" &&
+          r.path !== "/learn/know-your-experts",
       ).map(
         (r) => ({
           path: r.path,
