@@ -1,0 +1,205 @@
+/* ================================================================
+   Terms & Conditions – clean legal page
+   ================================================================ */
+
+/* ── Hero ── */
+.terms__hero {
+  /* Full-bleed */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  padding: clamp(48px, 8vw, 100px) clamp(20px, 5vw, 60px);
+
+  background:
+    radial-gradient(
+      ellipse 120% 90% at 30% 80%,
+      rgba(86, 19, 27, 0.07) 0%,
+      rgba(86, 19, 27, 0) 60%
+    ),
+    radial-gradient(
+      ellipse 100% 80% at 80% 20%,
+      rgba(227, 200, 174, 0.4) 0%,
+      rgba(227, 200, 174, 0) 60%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(227, 200, 174, 0.15) 100%
+    );
+}
+
+.terms__heroLabel {
+  margin: 0 0 12px;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--secondary);
+  font-weight: 600;
+}
+
+.terms__heroTitle {
+  margin: 0;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--primary);
+  font-size: clamp(32px, 5vw, 56px);
+  line-height: 1.1;
+}
+
+.terms__revised {
+  margin: 16px 0 0;
+  font-size: 14px;
+  color: rgba(15, 15, 16, 0.5);
+}
+
+/* ── Body ── */
+.terms__body {
+  max-width: 72ch;
+  margin: 0 auto;
+  padding: clamp(32px, 5vw, 60px) clamp(16px, 4vw, 24px);
+}
+
+.terms__body p {
+  margin: 0 0 20px;
+  font-size: clamp(15px, 1.6vw, 17px);
+  line-height: 1.8;
+  color: rgba(15, 15, 16, 0.78);
+}
+
+.terms__body p:last-child {
+  margin-bottom: 0;
+}
+
+.terms__intro {
+  font-size: clamp(16px, 1.8vw, 18px) !important;
+  color: rgba(15, 15, 16, 0.88) !important;
+  margin-bottom: 32px !important;
+}
+
+/* ── Headings ── */
+.terms__heading {
+  margin: 48px 0 20px;
+  font-family: var(--fontTitle);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--primary);
+  font-size: clamp(22px, 2.8vw, 28px);
+  line-height: 1.25;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.terms__subheading {
+  margin: 36px 0 16px;
+  font-family: var(--fontTitle);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--primary);
+  font-size: clamp(18px, 2.2vw, 22px);
+  line-height: 1.3;
+}
+
+/* ── Highlight callout ── */
+.terms__highlight {
+  padding: 16px 20px;
+  border-left: 3px solid var(--primary);
+  background: rgba(227, 200, 174, 0.12);
+  border-radius: 0 8px 8px 0;
+  color: rgba(15, 15, 16, 0.88) !important;
+  font-weight: 500;
+}
+
+/* ── Important (all-caps style callout) ── */
+.terms__important {
+  padding: 16px 20px;
+  background: rgba(86, 19, 27, 0.06);
+  border: 1px solid rgba(86, 19, 27, 0.12);
+  border-radius: 8px;
+  color: var(--primary) !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: clamp(13px, 1.4vw, 14px) !important;
+  letter-spacing: 0.02em;
+  line-height: 1.7 !important;
+}
+
+/* ── Lists ── */
+.terms__list {
+  margin: 0 0 24px;
+  padding-left: 24px;
+  font-size: clamp(15px, 1.6vw, 17px);
+  line-height: 1.8;
+  color: rgba(15, 15, 16, 0.78);
+}
+
+.terms__list li {
+  margin-bottom: 14px;
+}
+
+.terms__list li:last-child {
+  margin-bottom: 0;
+}
+
+.terms__list--roman {
+  list-style-type: lower-roman;
+}
+
+.terms__list--alpha {
+  list-style-type: lower-alpha;
+  margin-top: 12px;
+}
+
+.terms__list--nested {
+  margin-left: 8px;
+}
+
+.terms__list--bullet {
+  list-style-type: disc;
+}
+
+.terms__list--protocol {
+  padding: 20px 20px 20px 40px;
+  background: rgba(227, 200, 174, 0.1);
+  border: 1px solid rgba(227, 200, 174, 0.3);
+  border-radius: 10px;
+}
+
+/* ── Inline links ── */
+.terms__link {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity 0.15s ease;
+}
+
+.terms__link:hover {
+  opacity: 0.7;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .terms__hero {
+    padding: clamp(36px, 6vw, 60px) 20px;
+  }
+
+  .terms__body {
+    padding: 28px 16px;
+  }
+
+  .terms__heading {
+    margin-top: 36px;
+    font-size: 20px;
+  }
+
+  .terms__list {
+    padding-left: 20px;
+  }
+}

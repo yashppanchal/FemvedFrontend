@@ -14,6 +14,7 @@ import KnowYourExperts from "../pages/KnowYourExperts";
 import NotFound from "../pages/NotFound";
 import OrderHistory from "../pages/OrderHistory";
 import Placeholder from "../pages/Placeholder";
+import Terms from "../pages/Terms";
 
 function placeholderForRouteTitle(title: string): ReactNode {
   return <Placeholder title={title} />;
@@ -28,7 +29,7 @@ export const router = createBrowserRouter([
       { path: "/about", element: <About /> },
       { path: "/contact", element: <Contact /> },
       { path: "/faqs", element: placeholderForRouteTitle("FAQs") },
-      { path: "/terms", element: placeholderForRouteTitle("Terms") },
+      { path: "/terms", element: <Terms /> },
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
       { path: "/dashboard", element: <Dashboard /> },
