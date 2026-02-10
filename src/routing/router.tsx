@@ -14,6 +14,7 @@ import KnowYourExperts from "../pages/KnowYourExperts";
 import NotFound from "../pages/NotFound";
 import OrderHistory from "../pages/OrderHistory";
 import Placeholder from "../pages/Placeholder";
+import Podcast from "../pages/Podcast";
 import Terms from "../pages/Terms";
 
 function placeholderForRouteTitle(title: string): ReactNode {
@@ -36,13 +37,15 @@ export const router = createBrowserRouter([
       { path: "/orders", element: <OrderHistory /> },
       { path: "/learn/founders-story", element: <FoundersStory /> },
       { path: "/learn/know-your-experts", element: <KnowYourExperts /> },
+      { path: "/learn/podcast", element: <Podcast /> },
       { path: "/guided/:programSlug", element: <GuidedProgramDetail /> },
       ...INTERNAL_NAV_ROUTES.filter(
         (r) =>
           !r.path.startsWith("/guided/") &&
           r.path !== "/about" &&
           r.path !== "/learn/founders-story" &&
-          r.path !== "/learn/know-your-experts",
+          r.path !== "/learn/know-your-experts" &&
+          r.path !== "/learn/podcast",
       ).map(
         (r) => ({
           path: r.path,

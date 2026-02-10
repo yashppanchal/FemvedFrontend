@@ -1,3 +1,19 @@
 .page--placeholder {
-  /* Page-specific styles for Placeholder routes */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  text-align: center;
+
+  .page__title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .page__lead {
+    font-size: 3rem;
+    font-weight: 700;
+    opacity: 0.8;
+  }
 }
