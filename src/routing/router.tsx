@@ -6,6 +6,8 @@ import About from "../pages/About";
 import Contact from "../pages/Contact";
 import GuidedProgramDetail from "../pages/GuidedProgramDetail";
 import Home from "../pages/Home";
+import Login from "../pages/Login";
+import Register from "../pages/Register";
 import NotFound from "../pages/NotFound";
 import Placeholder from "../pages/Placeholder";
 
@@ -23,6 +25,8 @@ export const router = createBrowserRouter([
       { path: "/contact", element: <Contact /> },
       { path: "/faqs", element: placeholderForRouteTitle("FAQs") },
       { path: "/terms", element: placeholderForRouteTitle("Terms") },
+      { path: "/login", element: <Login /> },
+      { path: "/register", element: <Register /> },
       { path: "/guided/:programSlug", element: <GuidedProgramDetail /> },
       ...INTERNAL_NAV_ROUTES.filter((r) => !r.path.startsWith("/guided/")).map(
         (r) => ({

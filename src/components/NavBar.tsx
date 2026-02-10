@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { NAV_SECTIONS } from "../nav/menu";
+import { useAuth } from "../auth/useAuth";
 import logoUrl from "../assets/logo.png";
 import "./NavBar.scss";
 
 export function NavBar() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [openSectionId, setOpenSectionId] = useState<string | null>(null);
   const rootRef = useRef<HTMLDivElement | null>(null);
 
@@ -100,6 +103,30 @@ export function NavBar() {
             </div>
           );
         })}
+      </div>
+
+      <div className="navAuth">
+        {user ? (
+          <>
+            <span className="navAuth__greeting">
+              Hi, {user.firstName}
+            </span>
+            <button
+              type="button"
+              className="navAuth__logout"
+              onClick={() => {
+                logout();
+                navigate("/");
+              }}
+            >
+              Sign out
+            </button>
+          </>
+        ) : (
+          <Link className="navAuth__login" to="/login">
+            Login
+          </Link>
+        )}
       </div>
     </div>
   );

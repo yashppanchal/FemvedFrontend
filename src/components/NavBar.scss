@@ -138,9 +138,70 @@
   outline-offset: 2px;
 }
 
+/* ---- Auth section ---- */
+
+.navAuth {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+.navAuth__login {
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: var(--white);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  transition: background-color 180ms ease, transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.navAuth__login:hover {
+  background: var(--primaryHover);
+  color: var(--white);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(86, 19, 27, 0.18);
+}
+
+.navAuth__greeting {
+  font-size: 14px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.navAuth__logout {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--black);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 180ms ease, border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.navAuth__logout:hover {
+  color: var(--primaryHover);
+  border-color: rgba(86, 19, 27, 0.25);
+  background: rgba(86, 19, 27, 0.04);
+}
+
 @media (max-width: 720px) {
   .navBar {
     align-items: flex-start;
+    flex-wrap: wrap;
   }
 
   .menu {
@@ -152,5 +213,9 @@
     left: 0;
     right: auto;
     min-width: 240px;
+  }
+
+  .navAuth {
+    margin-left: 0;
   }
 }

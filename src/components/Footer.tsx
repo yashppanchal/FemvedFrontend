@@ -1,11 +1,12 @@
 import "./Footer.scss";
 import { Link } from "react-router-dom";
-import { useId, useState } from "react";
+import { useId } from "react";
+import { useCountry, COUNTRY_LIST, type CountryCode } from "../country/useCountry";
 import logo from "../assets/logo.png";
 
 export function Footer() {
   const countrySelectId = useId();
-  const [country, setCountry] = useState<"IN" | "UK" | "US">("IN");
+  const { country, setCountry } = useCountry();
 
   return (
     <div className="footer">
@@ -149,12 +150,14 @@ export function Footer() {
               id={countrySelectId}
               className="footer__countrySelect"
               value={country}
-              onChange={(e) => setCountry(e.target.value as "IN" | "UK" | "US")}
+              onChange={(e) => setCountry(e.target.value as CountryCode)}
               aria-label="Select country"
             >
-              <option value="IN">India</option>
-              <option value="UK">UK</option>
-              <option value="US">US</option>
+              {COUNTRY_LIST.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.name}
+                </option>
+              ))}
             </select>
           </div>
         </div>

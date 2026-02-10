@@ -1,4 +1,6 @@
 import "./App.scss";
+import { AuthProvider } from "./auth/useAuth";
+import { CountryProvider } from "./country/useCountry";
 import { Footer } from "./components/Footer";
 import { NavBar } from "./components/NavBar";
 import type { CSSProperties, ReactNode } from "react";
@@ -58,6 +60,8 @@ export default function App() {
   }, []);
 
   return (
+    <CountryProvider>
+    <AuthProvider>
     <div className="layout">
       <header
         className={`layout__header ${isAtTop ? "layout__header--atTop" : "layout__header--scrolled"}`}
@@ -87,5 +91,7 @@ export default function App() {
         </div>
       </footer>
     </div>
+    </AuthProvider>
+    </CountryProvider>
   );
 }

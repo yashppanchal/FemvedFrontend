@@ -203,3 +203,61 @@ code {
   color: var(--white);
   box-shadow: 0 4px 14px rgba(86, 19, 27, 0.14);
 }
+
+/* ------------------------------------------------------------------ */
+/*  Auth card (shared by Login & Register)                             */
+/* ------------------------------------------------------------------ */
+
+.authCard {
+  width: 100%;
+  max-width: 420px;
+  padding: 28px 24px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--white);
+  box-shadow: 0 14px 40px rgba(15, 15, 16, 0.07);
+  text-align: left;
+}
+
+.authCard__error {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(200, 30, 30, 0.08);
+  color: #a01a1a;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.authCard__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.authCard__submit {
+  width: 100%;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.authCard__footer {
+  margin: 18px 0 0;
+  text-align: center;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.authCard__footer a {
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .authCard {
+    padding: 22px 18px;
+  }
+
+  .authCard__row {
+    grid-template-columns: 1fr;
+  }
+}
