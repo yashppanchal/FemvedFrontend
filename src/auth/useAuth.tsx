@@ -19,10 +19,17 @@ export interface User {
   phone: string;
 }
 
+export interface UpdateProfileData {
+  firstName: string;
+  lastName: string;
+  phone: string;
+}
+
 interface AuthContextValue {
   user: User | null;
   login: (email: string, password: string) => string | null;
   register: (data: RegisterData) => string | null;
+  updateUser: (data: UpdateProfileData) => string | null;
   logout: () => void;
 }
 
@@ -125,11 +132,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return null;
   }, []);
 
+  /** Update the current user's profile. Returns error string or null on success. */
+  const updateUser = useCallback(
+    (data: UpdateProfileData): string | null => {
+      if (!user) return "You must be logged in to update your profile.";
+
+      const users = getStoredUsers();
+      const idx = users.findIndex(
+        (u) => u.email.toLowerCase() === user.email.toLowerCase(),
+      );
+      if (idx === -1) return "User not found.";
+
+      users[idx] = { ...users[idx], ...data };
+      saveStoredUsers(users);
+
+      const { password: _, ...safe } = users[idx];
+      setUser(safe);
+      return null;
+    },
+    [user],
+  );
+
   const logout = useCallback(() => setUser(null), []);
 
   const value = useMemo(
-    () => ({ user, login, register, logout }),
-    [user, login, register, logout],
+    () => ({ user, login, register, updateUser, logout }),
+    [user, login, register, updateUser, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

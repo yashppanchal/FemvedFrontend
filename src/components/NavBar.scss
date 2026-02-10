@@ -170,32 +170,93 @@
   box-shadow: 0 6px 18px rgba(86, 19, 27, 0.18);
 }
 
-.navAuth__greeting {
-  font-size: 14px;
-  color: var(--muted);
-  white-space: nowrap;
+/* ---- User icon dropdown ---- */
+
+.userMenu {
+  position: relative;
 }
 
-.navAuth__logout {
+.userMenu__trigger {
   display: inline-flex;
   align-items: center;
-  height: 34px;
-  padding: 0 14px;
-  border-radius: 8px;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
   border: 1px solid var(--border);
   background: transparent;
   color: var(--black);
-  font: inherit;
-  font-size: 13px;
+  font-size: 16px;
   cursor: pointer;
   transition: color 180ms ease, border-color 180ms ease,
-    background-color 180ms ease;
+    background-color 180ms ease, transform 180ms ease;
 }
 
-.navAuth__logout:hover {
+.userMenu__trigger:hover {
   color: var(--primaryHover);
   border-color: rgba(86, 19, 27, 0.25);
   background: rgba(86, 19, 27, 0.04);
+  transform: translateY(-1px);
+}
+
+.userMenu__trigger:focus-visible {
+  outline: 3px solid rgba(86, 19, 27, 0.18);
+  outline-offset: 2px;
+}
+
+.userMenu__dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  min-width: 160px;
+  padding-top: 8px;
+  z-index: 10;
+
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.userMenu--open .userMenu__dropdown {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.userMenu__dropdownInner {
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  box-shadow: 0 14px 40px rgba(15, 15, 16, 0.12);
+}
+
+.userMenu__item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  text-decoration: none;
+  color: var(--black);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.userMenu__item:hover {
+  background: var(--surfaceAccent);
+  color: var(--primaryHover);
+}
+
+.userMenu__item:focus-visible {
+  outline: 3px solid rgba(86, 19, 27, 0.18);
+  outline-offset: -2px;
 }
 
 @media (max-width: 720px) {

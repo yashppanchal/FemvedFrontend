@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { FaRegUser } from "react-icons/fa";
 import { NAV_SECTIONS } from "../nav/menu";
 import { useAuth } from "../auth/useAuth";
 import logoUrl from "../assets/logo.png";
@@ -10,11 +11,15 @@ export function NavBar() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [openSectionId, setOpenSectionId] = useState<string | null>(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     // Close any open dropdown on navigation.
-    const t = window.setTimeout(() => setOpenSectionId(null), 0);
+    const t = window.setTimeout(() => {
+      setOpenSectionId(null);
+      setUserMenuOpen(false);
+    }, 0);
     return () => window.clearTimeout(t);
   }, [pathname]);
 
@@ -22,7 +27,10 @@ export function NavBar() {
     const onPointerDown = (e: PointerEvent) => {
       if (!rootRef.current) return;
       const target = e.target as Node | null;
-      if (target && !rootRef.current.contains(target)) setOpenSectionId(null);
+      if (target && !rootRef.current.contains(target)) {
+        setOpenSectionId(null);
+        setUserMenuOpen(false);
+      }
     };
     window.addEventListener("pointerdown", onPointerDown);
     return () => window.removeEventListener("pointerdown", onPointerDown);
@@ -107,21 +115,45 @@ export function NavBar() {
 
       <div className="navAuth">
         {user ? (
-          <>
-            <span className="navAuth__greeting">
-              Hi, {user.firstName}
-            </span>
+          <div className={`userMenu ${userMenuOpen ? "userMenu--open" : ""}`}>
             <button
               type="button"
-              className="navAuth__logout"
-              onClick={() => {
-                logout();
-                navigate("/");
+              className="userMenu__trigger"
+              aria-haspopup="true"
+              aria-expanded={userMenuOpen}
+              onClick={() => setUserMenuOpen((prev) => !prev)}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") setUserMenuOpen(false);
               }}
             >
-              Sign out
+              <FaRegUser />
             </button>
-          </>
+
+            <div className="userMenu__dropdown" role="menu">
+              <div className="userMenu__dropdownInner">
+                <Link
+                  className="userMenu__item"
+                  to="/dashboard"
+                  role="menuitem"
+                  onClick={() => setUserMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+                <button
+                  type="button"
+                  className="userMenu__item"
+                  role="menuitem"
+                  onClick={() => {
+                    setUserMenuOpen(false);
+                    logout();
+                    navigate("/");
+                  }}
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+          </div>
         ) : (
           <Link className="navAuth__login" to="/login">
             Login
