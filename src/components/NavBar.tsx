@@ -138,6 +138,14 @@ export function NavBar() {
                 >
                   Dashboard
                 </Link>
+                <Link
+                  className="userMenu__item"
+                  to="/orders"
+                  role="menuitem"
+                  onClick={() => setUserMenuOpen(false)}
+                >
+                  Order History
+                </Link>
                 <button
                   type="button"
                   className="userMenu__item"

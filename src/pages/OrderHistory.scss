@@ -1,0 +1,10 @@
+.page--orderHistory {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .orderHistory__empty {
+    text-align: center;
+  }
+}
