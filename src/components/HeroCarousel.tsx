@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import { FaPause, FaPlay } from "react-icons/fa";
-import slide1Url from "../assets/hero-slide-1.jpg";
-import slide2Url from "../assets/hero-slide-2.svg";
+import { FaPause, FaPlay, FaClock } from "react-icons/fa";
+import { FiArrowUpRight } from "react-icons/fi";
 import { PrimaryButton } from "./PrimaryButton";
 import "./HeroCarousel.scss";
+import firstscroll from "../assets/homepage/firstscroll.jpg";
+import secondscroll from "../assets/homepage/secondscroll.jpg";
 
 type Slide = {
-  type: "split" | "image";
+  type: "split" | "image" | "healthcare";
   imageUrl: string;
   imageAlt: string;
   title?: string;
@@ -22,18 +23,18 @@ export function HeroCarousel() {
     () => [
       {
         type: "split",
-        imageUrl: slide1Url,
-        imageAlt: "Femved — holistic wellness",
+        imageUrl: firstscroll,
+        imageAlt: "Femved \u2014 holistic wellness",
         title:
-          "Your health doesn’t need another influencer. You deserve the right guidance.",
+          "Your health doesn\u2019t need another influencer. You deserve the right guidance.",
         body: "Create your own wellness plan with globally accredited women practitioners. Because wellness is not a trend, a hack, or a reel. It is personal. This is your body, your lifestyle, your geography, and your plan, so stop borrowing wellness from the internet.",
         ctaLabel: "Create your plan",
         ctaTo: "/about",
       },
       {
-        type: "image",
-        imageUrl: slide2Url,
-        imageAlt: "Femved — community, retreats and experiences",
+        type: "healthcare",
+        imageUrl: secondscroll,
+        imageAlt: "Reproductive health illustration",
       },
     ],
     [],
@@ -69,11 +70,7 @@ export function HeroCarousel() {
                     <h2 className="heroCarousel__title">{s.title}</h2>
                     <p className="heroCarousel__body">{s.body}</p>
                     {s.ctaTo && s.ctaLabel ? (
-                      <PrimaryButton
-                        // className="heroCarousel__cta"
-                        label={s.ctaLabel}
-                        to={s.ctaTo}
-                      />
+                      <PrimaryButton label={s.ctaLabel} to={s.ctaTo} />
                     ) : null}
                   </div>
 
@@ -83,6 +80,78 @@ export function HeroCarousel() {
                       src={s.imageUrl}
                       alt={s.imageAlt}
                       loading="eager"
+                      decoding="async"
+                    />
+                  </div>
+                </div>
+              );
+            }
+
+            if (s.type === "healthcare") {
+              return (
+                <div
+                  key={idx}
+                  className="heroCarousel__slide heroCarousel__slide--healthcare"
+                  aria-hidden={activeIndex !== idx}
+                >
+                  <div className="hc__left">
+                    <h2 className="hc__headline">
+                      Here,
+                      <br />
+                      you own your <em>wellness.</em>
+                    </h2>
+
+                    <p className="hc__subheader">
+                      Ancient science was always about the freedom to apply what
+                      fits your unique personality.
+                    </p>
+
+                    <p className="hc__subtitle">Choose where to start</p>
+
+                    <div className="hc__cards">
+                      {/* Card 1 — Test */}
+                      <div className="hc__card hc__card--test">
+                        <div className="hc__tags">
+                          <span className="hc__tag hc__tag--popular">
+                            Most popular
+                          </span>
+                          <span className="hc__tag hc__tag--time">
+                            <FaClock className="hc__tagIcon" />5 min
+                          </span>
+                        </div>
+
+                        <div className="hc__cardRow">
+                          <p className="hc__cardTitle">
+                            Advanced Hormone
+                            <br />
+                            and Fertility Test
+                          </p>
+                          <div className="hc__cardImagePlaceholder hc__cardImagePlaceholder--kit" />
+                        </div>
+
+                        <button className="hc__cardBtn" type="button">
+                          Personalise my test
+                        </button>
+                      </div>
+
+                      {/* Card 2 — Expert */}
+                      <div className="hc__card hc__card--expert">
+                        <p className="hc__cardQuestion">Need some advice?</p>
+                        <a className="hc__cardLink" href="/experts">
+                          Speak to an expert{" "}
+                          <FiArrowUpRight className="hc__linkIcon" />
+                        </a>
+                        <div className="hc__cardImagePlaceholder hc__cardImagePlaceholder--expert" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="hc__right" aria-hidden="true">
+                    <img
+                      className="hc__illustration"
+                      src={s.imageUrl}
+                      alt={s.imageAlt}
+                      loading="lazy"
                       decoding="async"
                     />
                   </div>
