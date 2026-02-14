@@ -1,4 +1,7 @@
 import "./JourneyStages.scss";
+import healthConcernsImg from "../assets/homepage/health-concerns.jpg";
+import lifestageImg from "../assets/homepage/lifestage.jpg";
+import lifestyle2Img from "../assets/homepage/lifestyle2.jpg";
 
 type StageCard = {
   title: string;
@@ -8,24 +11,22 @@ type StageCard = {
 
 const stages: StageCard[] = [
   {
-    title: "Managing symptoms",
+    title: "Health concerns",
     description:
-      "Fatigue, irritability, anxiety, feeling cold, low mood, acne...",
-    imageUrl:
-      "https://images.unsplash.com/photo-1515894203077-9cd36032142f?auto=format&fit=crop&w=800&q=80",
+      "Hormonal imbalance, Irregular periods, PMS, PCOS, Endometriosis",
+    imageUrl: healthConcernsImg,
   },
   {
-    title: "Fertility",
-    description: "Planning for the future or actively trying to conceive",
-    imageUrl:
-      "https://images.unsplash.com/photo-1491013516836-7db643ee125a?auto=format&fit=crop&w=800&q=80",
+    title: "Lifestage support",
+    description:
+      "Perimenopause, Menopause, Fertility support, Menstrual health",
+    imageUrl: lifestageImg,
   },
   {
-    title: "Perimenopause or Menopause",
+    title: "Lifestyle concerns",
     description:
-      "Menopausal or experiencing symptoms and looking for answers",
-    imageUrl:
-      "https://images.unsplash.com/photo-1447452001602-7090c7ab2db3?auto=format&fit=crop&w=800&q=80",
+      "Stress, Chronic fatigue, Thyroid issues, Gut health, immune health",
+    imageUrl: lifestyle2Img,
   },
 ];
 
@@ -36,8 +37,8 @@ export function JourneyStages() {
         {/* Left — copy */}
         <div className="journeyStages__copy">
           <h2 className="journeyStages__heading">
-            Holistic wellness plans are not meant to be curated by generic{" "}
-            <em>algorithms.</em>
+            Holistic wellness plans are not meant to be curated by <br />
+            generic <em>algorithms.</em>
           </h2>
           <p className="journeyStages__sub">
             It should evolve with every season of your life. Where are you right
