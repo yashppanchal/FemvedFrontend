@@ -1,14 +1,11 @@
 /* ─── Bento Grid section ─── */
 
-.bentoGrid {
+.benefitsBentoGrid {
   background: var(--primary);
   padding: clamp(40px, 6vw, 80px) clamp(24px, 5vw, 80px);
-  max-height: 100vh;
-  display: flex;
-  align-items: center;
 }
 
-.bentoGrid__inner {
+.benefitsBentoGrid__inner {
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
@@ -19,76 +16,61 @@
 
 /* ─── Rows ─── */
 
-.bentoGrid__row {
+.benefitsBentoGrid__row {
   display: grid;
   gap: 20px;
 }
 
-.bentoGrid__row--top {
+.benefitsBentoGrid__row--top {
   grid-template-columns: 1fr 1.3fr 1fr;
 }
 
-.bentoGrid__row--bottom {
+.benefitsBentoGrid__row--bottom {
   grid-template-columns: 1fr 1fr;
 }
 
 /* ─── Individual card ─── */
 
-.bentoGrid__card {
+.benefitsBentoGrid__card {
   border-radius: 16px;
   overflow: hidden;
   background: #f5f0eb;
 }
 
-.bentoGrid__row--top .bentoGrid__card {
-  aspect-ratio: auto;
-  min-height: clamp(240px, 22vw, 320px);
-}
-
-.bentoGrid__row--bottom .bentoGrid__card {
-  min-height: clamp(200px, 18vw, 260px);
-}
-
-.bentoGrid__cardImg {
+.benefitsBentoGrid__cardImg {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
   display: block;
 }
 
 /* ─── Responsive ─── */
 
 @media (max-width: 820px) {
-  .bentoGrid__row--top {
+  .benefitsBentoGrid__row--top {
     grid-template-columns: 1fr 1fr;
   }
 
   /* Let the 3rd card in top row span full width on tablet */
-  .bentoGrid__row--top .bentoGrid__card:nth-child(3) {
+  .benefitsBentoGrid__row--top .benefitsBentoGrid__card:nth-child(3) {
     grid-column: 1 / -1;
   }
 
-  .bentoGrid__row--bottom {
+  .benefitsBentoGrid__row--bottom {
     grid-template-columns: 1fr 1fr;
   }
 }
 
 @media (max-width: 560px) {
-  .bentoGrid {
+  .benefitsBentoGrid {
     padding: 32px 16px;
   }
 
-  .bentoGrid__row--top,
-  .bentoGrid__row--bottom {
+  .benefitsBentoGrid__row--top,
+  .benefitsBentoGrid__row--bottom {
     grid-template-columns: 1fr;
   }
 
-  .bentoGrid__row--top .bentoGrid__card:nth-child(3) {
+  .benefitsBentoGrid__row--top .benefitsBentoGrid__card:nth-child(3) {
     grid-column: auto;
-  }
-
-  .bentoGrid__row--top .bentoGrid__card,
-  .bentoGrid__row--bottom .bentoGrid__card {
-    min-height: 200px;
   }
 }

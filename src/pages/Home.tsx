@@ -1,7 +1,7 @@
 import "./Home.scss";
 import { HeroCarousel } from "../components/HeroCarousel";
 import { JourneyStages } from "../components/JourneyStages";
-import { BentoGrid } from "../components/BentoGrid";
+import { BenefitsBentoGrid } from "../components/BenefitsBentoGrid";
 import { WellnessLibrary } from "../components/WellnessLibrary";
 
 export default function Home() {
@@ -9,7 +9,7 @@ export default function Home() {
     <div className="home">
       <HeroCarousel />
       <JourneyStages />
-      <BentoGrid />
+      <BenefitsBentoGrid />
       <WellnessLibrary />
 
       <section className="page page--home">

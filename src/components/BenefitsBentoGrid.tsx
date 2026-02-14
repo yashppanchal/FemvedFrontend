@@ -1,4 +1,6 @@
-import "./BentoGrid.scss";
+import "./BenefitsBentoGrid.scss";
+import benefits1 from "../assets/homepage/benefits1.png";
+import benefits2 from "../assets/homepage/benefits2.png";
 
 // Card images will be provided later — using placeholders for now
 const placeholderImg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400'%3E%3Crect fill='%23e8e0da' width='600' height='400'/%3E%3C/svg%3E";
@@ -12,12 +14,12 @@ type BentoCard = {
 const cards: BentoCard[] = [
   {
     id: "clinical-results",
-    imageUrl: placeholderImg,
+    imageUrl: benefits1,
     alt: "Receive clinical-grade results in 6 days of testing",
   },
   {
     id: "egg-count",
-    imageUrl: placeholderImg,
+    imageUrl: benefits2,
     alt: "Get insights into your egg count",
   },
   {
@@ -37,16 +39,16 @@ const cards: BentoCard[] = [
   },
 ];
 
-export function BentoGrid() {
+export function BenefitsBentoGrid() {
   return (
-    <section className="bentoGrid">
-      <div className="bentoGrid__inner">
+    <section className="benefitsBentoGrid">
+      <div className="benefitsBentoGrid__inner">
         {/* Top row — 3 cards */}
-        <div className="bentoGrid__row bentoGrid__row--top">
+        <div className="benefitsBentoGrid__row benefitsBentoGrid__row--top">
           {cards.slice(0, 3).map((card) => (
-            <div key={card.id} className={`bentoGrid__card bentoGrid__card--${card.id}`}>
+            <div key={card.id} className={`benefitsBentoGrid__card benefitsBentoGrid__card--${card.id}`}>
               <img
-                className="bentoGrid__cardImg"
+                className="benefitsBentoGrid__cardImg"
                 src={card.imageUrl}
                 alt={card.alt}
                 loading="lazy"
@@ -57,11 +59,11 @@ export function BentoGrid() {
         </div>
 
         {/* Bottom row — 2 cards */}
-        <div className="bentoGrid__row bentoGrid__row--bottom">
+        <div className="benefitsBentoGrid__row benefitsBentoGrid__row--bottom">
           {cards.slice(3).map((card) => (
-            <div key={card.id} className={`bentoGrid__card bentoGrid__card--${card.id}`}>
+            <div key={card.id} className={`benefitsBentoGrid__card benefitsBentoGrid__card--${card.id}`}>
               <img
-                className="bentoGrid__cardImg"
+                className="benefitsBentoGrid__cardImg"
                 src={card.imageUrl}
                 alt={card.alt}
                 loading="lazy"
