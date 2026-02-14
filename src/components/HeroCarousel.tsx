@@ -27,7 +27,7 @@ export function HeroCarousel() {
         title:
           "Your health doesn\u2019t need another influencer. You deserve the right guidance.",
         body: "Create your own wellness plan with globally accredited women practitioners. Because wellness is not a trend, a hack, or a reel. It is personal. This is your body, your lifestyle, your geography, and your plan, so stop borrowing wellness from the internet.",
-        ctaLabel: "Create your plan",
+        ctaLabel: "Why Join Us",
         ctaTo: "/about",
       },
       {
@@ -108,8 +108,11 @@ export function HeroCarousel() {
                     <p className="hc__subtitle">Choose where to start</p>
 
                     <div className="hc__buttons">
-                      <PrimaryButton label="Personalise my test" to="/test" />
-                      <PrimaryButton label="Speak to an expert" to="/experts" />
+                      <PrimaryButton label="Why join us" to="/test" />
+                      <PrimaryButton
+                        label="Begin where you are"
+                        to="/experts"
+                      />
                     </div>
                   </div>
 
