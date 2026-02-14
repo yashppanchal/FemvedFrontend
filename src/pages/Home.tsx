@@ -3,6 +3,7 @@ import { HeroCarousel } from "../components/HeroCarousel";
 import { JourneyStages } from "../components/JourneyStages";
 import { BenefitsBentoGrid } from "../components/BenefitsBentoGrid";
 import { WellnessLibrary } from "../components/WellnessLibrary";
+import { PodcastSection } from "../components/PodcastSection";
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
       <JourneyStages />
       <BenefitsBentoGrid />
       <WellnessLibrary />
+      <PodcastSection />
 
       <section className="page page--home">
         <div className="container home__content">
