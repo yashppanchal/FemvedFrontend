@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { FaPause, FaPlay, FaClock } from "react-icons/fa";
-import { FiArrowUpRight } from "react-icons/fi";
+import { FaPause, FaPlay } from "react-icons/fa";
 import { PrimaryButton } from "./PrimaryButton";
 import "./HeroCarousel.scss";
 import firstscroll from "../assets/homepage/firstscroll.jpg";
@@ -108,41 +107,9 @@ export function HeroCarousel() {
 
                     <p className="hc__subtitle">Choose where to start</p>
 
-                    <div className="hc__cards">
-                      {/* Card 1 — Test */}
-                      <div className="hc__card hc__card--test">
-                        <div className="hc__tags">
-                          <span className="hc__tag hc__tag--popular">
-                            Most popular
-                          </span>
-                          <span className="hc__tag hc__tag--time">
-                            <FaClock className="hc__tagIcon" />5 min
-                          </span>
-                        </div>
-
-                        <div className="hc__cardRow">
-                          <p className="hc__cardTitle">
-                            Advanced Hormone
-                            <br />
-                            and Fertility Test
-                          </p>
-                          <div className="hc__cardImagePlaceholder hc__cardImagePlaceholder--kit" />
-                        </div>
-
-                        <button className="hc__cardBtn" type="button">
-                          Personalise my test
-                        </button>
-                      </div>
-
-                      {/* Card 2 — Expert */}
-                      <div className="hc__card hc__card--expert">
-                        <p className="hc__cardQuestion">Need some advice?</p>
-                        <a className="hc__cardLink" href="/experts">
-                          Speak to an expert{" "}
-                          <FiArrowUpRight className="hc__linkIcon" />
-                        </a>
-                        <div className="hc__cardImagePlaceholder hc__cardImagePlaceholder--expert" />
-                      </div>
+                    <div className="hc__buttons">
+                      <PrimaryButton label="Personalise my test" to="/test" />
+                      <PrimaryButton label="Speak to an expert" to="/experts" />
                     </div>
                   </div>
 

@@ -204,148 +204,10 @@
   letter-spacing: 0.01em;
 }
 
-.hc__cards {
+.hc__buttons {
   display: flex;
   gap: 16px;
   margin-top: 4px;
-}
-
-.hc__card {
-  border-radius: 16px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-width: 0;
-}
-
-.hc__card--test {
-  background: #e8ddd4;
-  flex: 1.1;
-}
-
-.hc__card--expert {
-  background: #f0ebe5;
-  flex: 1;
-}
-
-.hc__tags {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.hc__tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  white-space: nowrap;
-}
-
-.hc__tag--popular {
-  background: #1a1a1a;
-  color: #fff;
-  font-weight: 500;
-}
-
-.hc__tag--time {
-  border: 1px solid rgba(26, 26, 26, 0.25);
-  color: #1a1a1a;
-  background: transparent;
-}
-
-.hc__tagIcon {
-  width: 11px;
-  height: 11px;
-}
-
-.hc__cardRow {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.hc__cardTitle {
-  margin: 0;
-  font-size: clamp(14px, 1.3vw, 16px);
-  font-weight: 600;
-  color: #1a1a1a;
-  line-height: 1.35;
-}
-
-.hc__cardImagePlaceholder {
-  border-radius: 10px;
-  flex-shrink: 0;
-}
-
-.hc__cardImagePlaceholder--kit {
-  width: 80px;
-  height: 64px;
-  background: linear-gradient(135deg, #d4c4b0 0%, #c9b8a4 100%);
-}
-
-.hc__cardImagePlaceholder--expert {
-  width: 100%;
-  height: 80px;
-  background: linear-gradient(135deg, #d4c4b0 0%, #c9b8a4 100%);
-  margin-top: auto;
-}
-
-.hc__cardBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 999px;
-  background: #1a1a1a;
-  color: #fff;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 180ms ease;
-  white-space: nowrap;
-  align-self: flex-start;
-
-  &:hover {
-    background: #333;
-  }
-}
-
-.hc__cardQuestion {
-  margin: 0;
-  font-size: clamp(15px, 1.4vw, 18px);
-  font-weight: 600;
-  color: #1a1a1a;
-}
-
-.hc__cardLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 14px;
-  color: #1a1a1a;
-  text-decoration: none;
-  cursor: pointer;
-  transition: opacity 180ms ease;
-
-  &:hover {
-    opacity: 0.7;
-  }
-}
-
-.hc__linkIcon {
-  width: 16px;
-  height: 16px;
-  border: 1px solid rgba(26, 26, 26, 0.3);
-  border-radius: 50%;
-  padding: 2px;
 }
 
 .hc__right {
@@ -391,7 +253,7 @@
     display: none;
   }
 
-  .hc__cards {
+  .hc__buttons {
     flex-direction: column;
   }
 
