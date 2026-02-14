@@ -2,6 +2,7 @@ import "./Home.scss";
 import { HeroCarousel } from "../components/HeroCarousel";
 import { JourneyStages } from "../components/JourneyStages";
 import { BentoGrid } from "../components/BentoGrid";
+import { WellnessLibrary } from "../components/WellnessLibrary";
 
 export default function Home() {
   return (
@@ -9,6 +10,7 @@ export default function Home() {
       <HeroCarousel />
       <JourneyStages />
       <BentoGrid />
+      <WellnessLibrary />
 
       <section className="page page--home">
         <div className="container home__content">
