@@ -1,8 +1,25 @@
 /* ─── Bento Grid section ─── */
 
 .benefitsBentoGrid {
-  background: var(--primary);
+  background: linear-gradient(
+    160deg,
+    rgba(86, 19, 27, 0.85) 0%,
+    rgba(86, 19, 27, 1) 100%
+  );
   padding: clamp(40px, 6vw, 80px) clamp(24px, 5vw, 80px);
+}
+
+.benefitsBentoGrid__heading {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto clamp(28px, 4vw, 48px);
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  text-align: center;
 }
 
 .benefitsBentoGrid__inner {

@@ -26,8 +26,8 @@ export function HeroCarousel() {
         imageAlt: "Femved \u2014 holistic wellness",
         title:
           "Your health doesn\u2019t need another influencer. You deserve the right guidance.",
-        body: "Create your own wellness plan with globally accredited women practitioners. Because wellness is not a trend, a hack, or a reel. It is personal. This is your body, your lifestyle, your geography, and your plan, so stop borrowing wellness from the internet.",
-        ctaLabel: "Why Join Us",
+        body: "Create your own wellness plan with globally accredited women practitioners, because wellness isn’t a trend or a hack, it’s personal. Stop borrowing wellness from someone’s reel.",
+        ctaLabel: "Support your hormones, your way",
         ctaTo: "/about",
       },
       {
