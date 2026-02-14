@@ -1,9 +1,9 @@
 import "./BenefitsBentoGrid.scss";
 import benefits1 from "../assets/homepage/benefits1.png";
 import benefits2 from "../assets/homepage/benefits2.png";
-
-// Card images will be provided later — using placeholders for now
-const placeholderImg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400'%3E%3Crect fill='%23e8e0da' width='600' height='400'/%3E%3C/svg%3E";
+import benefits3 from "../assets/homepage/benefits3.png";
+import benefits4 from "../assets/homepage/benefits4.png";
+import benefits5 from "../assets/homepage/benefits5.png";
 
 type BentoCard = {
   id: string;
@@ -24,17 +24,17 @@ const cards: BentoCard[] = [
   },
   {
     id: "hormonal-symptoms",
-    imageUrl: placeholderImg,
+    imageUrl: benefits3,
     alt: "Find answers to your hormonal symptoms such as acne or irregular periods",
   },
   {
     id: "care-plan",
-    imageUrl: placeholderImg,
+    imageUrl: benefits4,
     alt: "Receive a doctor-written report with a clinical Care Plan",
   },
   {
     id: "expert-support",
-    imageUrl: placeholderImg,
+    imageUrl: benefits5,
     alt: "Expert support included with a Clinical Result Review Call",
   },
 ];
