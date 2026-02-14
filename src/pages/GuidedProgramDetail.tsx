@@ -19,7 +19,7 @@ const GUIDED_CARE_HERO_IMAGES: Record<string, string> = {
 };
 import easyConnect from "../assets/benefits-guided-care/easyconnect.jpg";
 import comprehensivePersonal from "../assets/benefits-guided-care/comprehensive.jpg";
-import freedomToCoCreate from "../assets/benefits-guided-care/cocreat.jpg";
+import freedomToCoCreate from "../assets/benefits-guided-care/cocreate.jpg";
 import completePrivacy from "../assets/benefits-guided-care/privacy.jpg";
 import appointmentMock from "../assets/appointment-mock.png";
 
@@ -211,8 +211,7 @@ export default function GuidedProgramDetail() {
       <div className="guidedProgramDetail__more">
         <div className="guidedProgramDetail__moreContent">
           <h2 className="guidedProgramDetail__moreTitle">
-            You’re getting more than advice or a one-time consultation. Book
-            your online guided program now.
+            You’re getting more than advice or a one-time consultation.
           </h2>
           <p className="guidedProgramDetail__moreBody">
             We promise care that is human, not formulaic. Our experts are
