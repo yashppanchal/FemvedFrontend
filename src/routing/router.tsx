@@ -13,6 +13,7 @@ import FoundersStory from "../pages/FoundersStory";
 import KnowYourExperts from "../pages/KnowYourExperts";
 import NotFound from "../pages/NotFound";
 import OrderHistory from "../pages/OrderHistory";
+import PaymentSuccess from "../pages/PaymentSuccess";
 import Placeholder from "../pages/Placeholder";
 import Podcast from "../pages/Podcast";
 import Terms from "../pages/Terms";
@@ -35,6 +36,7 @@ export const router = createBrowserRouter([
       { path: "/register", element: <Register /> },
       { path: "/dashboard", element: <Dashboard /> },
       { path: "/orders", element: <OrderHistory /> },
+      { path: "/payment/success", element: <PaymentSuccess /> },
       { path: "/learn/founders-story", element: <FoundersStory /> },
       { path: "/learn/know-your-experts", element: <KnowYourExperts /> },
       { path: "/learn/podcast", element: <Podcast /> },
