@@ -360,17 +360,50 @@
 }
 
 .mobileDrawer__section {
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
-.mobileDrawer__sectionLabel {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--textMuted, #888);
-  padding: 12px 10px 4px;
-  margin: 0;
+.mobileDrawer__sectionToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 10px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--black);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mobileDrawer__chevron {
+  font-size: 14px;
+  opacity: 0.6;
+  transition: transform 250ms ease;
+  flex-shrink: 0;
+}
+
+.mobileDrawer__section--open .mobileDrawer__chevron {
+  transform: rotate(180deg);
+}
+
+.mobileDrawer__sectionItems {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 250ms ease;
+}
+
+.mobileDrawer__section--open .mobileDrawer__sectionItems {
+  grid-template-rows: 1fr;
+}
+
+.mobileDrawer__sectionItemsInner {
+  overflow: hidden;
+  min-height: 0;
+  padding-left: 8px;
 }
 
 .mobileDrawer__item {

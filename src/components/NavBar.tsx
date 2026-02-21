@@ -15,6 +15,9 @@ export function NavBar() {
   const [openSectionId, setOpenSectionId] = useState<string | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openMobileSections, setOpenMobileSections] = useState<Set<string>>(
+    new Set(),
+  );
   const rootRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -58,7 +61,19 @@ export function NavBar() {
     : "/dashboard";
   const expertClientsPath = "/expert-dashboard/clients";
 
-  const closeMobileMenu = () => setMobileMenuOpen(false);
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+    setOpenMobileSections(new Set());
+  };
+
+  const toggleMobileSection = (id: string) => {
+    setOpenMobileSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   return (
     <div className="navBar" ref={rootRef}>
@@ -251,34 +266,56 @@ export function NavBar() {
             </div>
 
             <div className="mobileDrawer__body">
-              {NAV_SECTIONS.map((section) => (
-                <div key={section.id} className="mobileDrawer__section">
-                  <p className="mobileDrawer__sectionLabel">{section.label}</p>
-                  {section.items.map((item) =>
-                    item.type === "external" ? (
-                      <a
-                        key={item.href}
-                        className="mobileDrawer__item"
-                        href={item.href}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={closeMobileMenu}
-                      >
-                        {item.label}
-                      </a>
-                    ) : (
-                      <Link
-                        key={item.path}
-                        className={`mobileDrawer__item ${pathname.startsWith(item.path) ? "mobileDrawer__item--active" : ""}`}
-                        to={item.path}
-                        onClick={closeMobileMenu}
-                      >
-                        {item.label}
-                      </Link>
-                    ),
-                  )}
-                </div>
-              ))}
+              {NAV_SECTIONS.map((section) => {
+                const isSectionOpen = openMobileSections.has(section.id);
+                return (
+                  <div
+                    key={section.id}
+                    className={`mobileDrawer__section ${isSectionOpen ? "mobileDrawer__section--open" : ""}`}
+                  >
+                    <button
+                      type="button"
+                      className="mobileDrawer__sectionToggle"
+                      aria-expanded={isSectionOpen}
+                      onClick={() => toggleMobileSection(section.id)}
+                    >
+                      <span>{section.label}</span>
+                      <IoChevronDown
+                        className="mobileDrawer__chevron"
+                        aria-hidden="true"
+                      />
+                    </button>
+
+                    <div className="mobileDrawer__sectionItems">
+                      <div className="mobileDrawer__sectionItemsInner">
+                        {section.items.map((item) =>
+                          item.type === "external" ? (
+                            <a
+                              key={item.href}
+                              className="mobileDrawer__item"
+                              href={item.href}
+                              target="_blank"
+                              rel="noreferrer"
+                              onClick={closeMobileMenu}
+                            >
+                              {item.label}
+                            </a>
+                          ) : (
+                            <Link
+                              key={item.path}
+                              className={`mobileDrawer__item ${pathname.startsWith(item.path) ? "mobileDrawer__item--active" : ""}`}
+                              to={item.path}
+                              onClick={closeMobileMenu}
+                            >
+                              {item.label}
+                            </Link>
+                          ),
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
 
               <div className="mobileDrawer__divider" />
 
