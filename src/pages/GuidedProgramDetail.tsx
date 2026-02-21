@@ -20,7 +20,7 @@ import easyConnect from "../assets/benefits-guided-care/easyconnect.jpg";
 import comprehensivePersonal from "../assets/benefits-guided-care/comprehensive.jpg";
 import freedomToCoCreate from "../assets/benefits-guided-care/cocreate.jpg";
 import completePrivacy from "../assets/benefits-guided-care/privacy.jpg";
-import appointmentMock from "../assets/appointment-mock.png";
+// import appointmentMock from "../assets/appointment-mock.png";
 
 type GuidedProgramInfo = {
   slug?: string;
@@ -131,50 +131,50 @@ export default function GuidedProgramDetail() {
     },
   ];
 
-  const recordingProducts = [
-    {
-      id: "cycle-sync-reset",
-      title: "Cycle Sync Reset (60 min)",
-      subtitle: "A calming practice to support rhythm + energy",
-      price: "£19",
-      tags: ["Video", "Beginner", "60 min"],
-    },
-    {
-      id: "pcos-support",
-      title: "PCOS Support Series (3 videos)",
-      subtitle: "Food + lifestyle foundations you can repeat",
-      price: "£39",
-      tags: ["Video", "Intermediate", "3-part"],
-    },
-    {
-      id: "nervous-system-soothe",
-      title: "Soothe Your Nervous System (45 min)",
-      subtitle: "Breathwork + grounding for busy weeks",
-      price: "£15",
-      tags: ["Video", "All levels", "45 min"],
-    },
-    {
-      id: "menopause-clarity",
-      title: "Menopause Clarity (75 min)",
-      subtitle: "Practical support for sleep, mood, and heat",
-      price: "£29",
-      tags: ["Video", "All levels", "75 min"],
-    },
-    {
-      id: "fertility-foundations",
-      title: "Fertility Foundations (50 min)",
-      subtitle: "Nourishment + habit rituals to build consistency",
-      price: "£18",
-      tags: ["Video", "Beginner", "50 min"],
-    },
-    {
-      id: "deep-rest-yoga-nidra",
-      title: "Deep Rest Yoga Nidra (30 min)",
-      subtitle: "A reset for recovery and better sleep",
-      price: "£12",
-      tags: ["Video", "Beginner", "30 min"],
-    },
-  ];
+  // const recordingProducts = [
+  //   {
+  //     id: "cycle-sync-reset",
+  //     title: "Cycle Sync Reset (60 min)",
+  //     subtitle: "A calming practice to support rhythm + energy",
+  //     price: "£19",
+  //     tags: ["Video", "Beginner", "60 min"],
+  //   },
+  //   {
+  //     id: "pcos-support",
+  //     title: "PCOS Support Series (3 videos)",
+  //     subtitle: "Food + lifestyle foundations you can repeat",
+  //     price: "£39",
+  //     tags: ["Video", "Intermediate", "3-part"],
+  //   },
+  //   {
+  //     id: "nervous-system-soothe",
+  //     title: "Soothe Your Nervous System (45 min)",
+  //     subtitle: "Breathwork + grounding for busy weeks",
+  //     price: "£15",
+  //     tags: ["Video", "All levels", "45 min"],
+  //   },
+  //   {
+  //     id: "menopause-clarity",
+  //     title: "Menopause Clarity (75 min)",
+  //     subtitle: "Practical support for sleep, mood, and heat",
+  //     price: "£29",
+  //     tags: ["Video", "All levels", "75 min"],
+  //   },
+  //   {
+  //     id: "fertility-foundations",
+  //     title: "Fertility Foundations (50 min)",
+  //     subtitle: "Nourishment + habit rituals to build consistency",
+  //     price: "£18",
+  //     tags: ["Video", "Beginner", "50 min"],
+  //   },
+  //   {
+  //     id: "deep-rest-yoga-nidra",
+  //     title: "Deep Rest Yoga Nidra (30 min)",
+  //     subtitle: "A reset for recovery and better sleep",
+  //     price: "£12",
+  //     tags: ["Video", "Beginner", "30 min"],
+  //   },
+  // ];
 
   return (
     <section className="page guidedProgramDetail">
