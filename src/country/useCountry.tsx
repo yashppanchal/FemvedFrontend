@@ -7,21 +7,15 @@ import {
   type ReactNode,
 } from "react";
 
-/* ------------------------------------------------------------------ */
-/*  Country data                                                       */
-/* ------------------------------------------------------------------ */
-
 export type CountryCode = "IN" | "UK" | "US";
 
 export interface CountryInfo {
   code: CountryCode;
   name: string;
   dialCode: string;
-  /** Regex that the *local* part of the number (digits only) must match. */
+  currency: string;
   digitPattern: RegExp;
-  /** Human-readable format hint shown as placeholder. */
   placeholder: string;
-  /** Human-readable description of the expected format. */
   formatHint: string;
 }
 
@@ -30,6 +24,7 @@ export const COUNTRIES: Record<CountryCode, CountryInfo> = {
     code: "IN",
     name: "India",
     dialCode: "+91",
+    currency: "INR",
     digitPattern: /^\d{10}$/,
     placeholder: "98765 43210",
     formatHint: "10 digits",
@@ -38,6 +33,7 @@ export const COUNTRIES: Record<CountryCode, CountryInfo> = {
     code: "UK",
     name: "United Kingdom",
     dialCode: "+44",
+    currency: "GBP",
     digitPattern: /^\d{10}$/,
     placeholder: "7911 123456",
     formatHint: "10 digits",
@@ -46,6 +42,7 @@ export const COUNTRIES: Record<CountryCode, CountryInfo> = {
     code: "US",
     name: "United States",
     dialCode: "+1",
+    currency: "USD",
     digitPattern: /^\d{10}$/,
     placeholder: "555 000 0000",
     formatHint: "10 digits",
@@ -54,16 +51,10 @@ export const COUNTRIES: Record<CountryCode, CountryInfo> = {
 
 export const COUNTRY_LIST: CountryInfo[] = Object.values(COUNTRIES);
 
-/* ------------------------------------------------------------------ */
-/*  Validation helper                                                  */
-/* ------------------------------------------------------------------ */
-
-/**
- * Validate a phone number string for the given country.
- * Returns an error message or `null` if valid.
- * An empty string is considered valid (phone is optional).
- */
-export function validatePhone(raw: string, country: CountryCode): string | null {
+export function validatePhone(
+  raw: string,
+  country: CountryCode,
+): string | null {
   const trimmed = raw.trim();
   if (trimmed === "") return null; // optional field
 
@@ -92,10 +83,6 @@ export function validatePhone(raw: string, country: CountryCode): string | null 
   return null;
 }
 
-/* ------------------------------------------------------------------ */
-/*  Context                                                            */
-/* ------------------------------------------------------------------ */
-
 interface CountryContextValue {
   country: CountryCode;
   countryInfo: CountryInfo;
@@ -107,7 +94,10 @@ const CountryContext = createContext<CountryContextValue | null>(null);
 export function CountryProvider({ children }: { children: ReactNode }) {
   const [country, setCountryRaw] = useState<CountryCode>("IN");
 
-  const setCountry = useCallback((code: CountryCode) => setCountryRaw(code), []);
+  const setCountry = useCallback(
+    (code: CountryCode) => setCountryRaw(code),
+    [],
+  );
 
   const value = useMemo<CountryContextValue>(
     () => ({ country, countryInfo: COUNTRIES[country], setCountry }),

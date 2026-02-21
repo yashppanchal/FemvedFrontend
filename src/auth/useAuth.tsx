@@ -7,12 +7,19 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import {
+  registerUser,
+  type AuthTokens,
+  type RegisterRequest,
+} from "../api/auth";
+import { ApiError } from "../api/client";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
 /* ------------------------------------------------------------------ */
 
 export interface User {
+  userId: string;
   email: string;
   firstName: string;
   lastName: string;
@@ -27,8 +34,9 @@ export interface UpdateProfileData {
 
 interface AuthContextValue {
   user: User | null;
+  tokens: AuthTokens | null;
   login: (email: string, password: string) => string | null;
-  register: (data: RegisterData) => string | null;
+  register: (data: RegisterData) => Promise<string | null>;
   updateUser: (data: UpdateProfileData) => string | null;
   logout: () => void;
 }
@@ -39,7 +47,9 @@ export interface RegisterData {
   confirmPassword: string;
   firstName: string;
   lastName: string;
-  phone: string;
+  mobileNumber: string;
+  /** Dial code sent to the API (e.g. "+91", "+44", "+1") */
+  countryCode: string;
 }
 
 /* ------------------------------------------------------------------ */
@@ -48,6 +58,7 @@ export interface RegisterData {
 
 const USERS_KEY = "femved_users";
 const SESSION_KEY = "femved_session";
+const TOKENS_KEY = "femved_tokens";
 
 interface StoredUser extends User {
   password: string;
@@ -82,6 +93,23 @@ function saveSession(user: User | null) {
   }
 }
 
+function getTokens(): AuthTokens | null {
+  try {
+    const raw = localStorage.getItem(TOKENS_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveTokens(tokens: AuthTokens | null) {
+  if (tokens) {
+    localStorage.setItem(TOKENS_KEY, JSON.stringify(tokens));
+  } else {
+    localStorage.removeItem(TOKENS_KEY);
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /*  Context                                                            */
 /* ------------------------------------------------------------------ */
@@ -90,11 +118,16 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => getSession());
+  const [tokens, setTokens] = useState<AuthTokens | null>(() => getTokens());
 
   // Keep localStorage in sync
   useEffect(() => {
     saveSession(user);
   }, [user]);
+
+  useEffect(() => {
+    saveTokens(tokens);
+  }, [tokens]);
 
   /** Returns an error message string, or null on success. */
   const login = useCallback((email: string, password: string): string | null => {
@@ -109,27 +142,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   /** Returns an error message string, or null on success. */
-  const register = useCallback((data: RegisterData): string | null => {
+  const register = useCallback(async (data: RegisterData): Promise<string | null> => {
     if (data.password !== data.confirmPassword) return "Passwords do not match.";
     if (data.password.length < 6) return "Password must be at least 6 characters.";
 
-    const users = getStoredUsers();
-    if (users.some((u) => u.email.toLowerCase() === data.email.toLowerCase())) {
-      return "An account with this email already exists.";
+    try {
+      const payload: RegisterRequest = {
+        email: data.email,
+        password: data.password,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        countryCode: data.countryCode,
+        mobileNumber: data.mobileNumber,
+      };
+
+      const res = await registerUser(payload);
+
+      // Store tokens
+      setTokens(res.tokens);
+
+      // Build the local user object
+      const newUser: User = {
+        userId: res.userId,
+        email: res.email,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.mobileNumber
+          ? `${data.countryCode} ${data.mobileNumber}`.trim()
+          : "",
+      };
+
+      setUser(newUser);
+      return null;
+    } catch (err) {
+      if (err instanceof ApiError) {
+        return err.message;
+      }
+      return "Something went wrong. Please try again.";
     }
-
-    const newUser: StoredUser = {
-      email: data.email,
-      password: data.password,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      phone: data.phone,
-    };
-    saveStoredUsers([...users, newUser]);
-
-    const { password: _, ...safe } = newUser;
-    setUser(safe);
-    return null;
   }, []);
 
   /** Update the current user's profile. Returns error string or null on success. */
@@ -153,11 +203,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [user],
   );
 
-  const logout = useCallback(() => setUser(null), []);
+  const logout = useCallback(() => {
+    setUser(null);
+    setTokens(null);
+  }, []);
 
   const value = useMemo(
-    () => ({ user, login, register, updateUser, logout }),
-    [user, login, register, updateUser, logout],
+    () => ({ user, tokens, login, register, updateUser, logout }),
+    [user, tokens, login, register, updateUser, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

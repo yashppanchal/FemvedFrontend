@@ -9,7 +9,9 @@ export default function Register() {
   const navigate = useNavigate();
   const { country, countryInfo } = useCountry();
 
-  const [form, setForm] = useState<RegisterData>({
+  const [form, setForm] = useState<
+    Omit<RegisterData, "countryCode" | "mobileNumber"> & { phone: string }
+  >({
     email: "",
     password: "",
     confirmPassword: "",
@@ -18,9 +20,11 @@ export default function Register() {
     phone: "",
   });
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const set = (key: keyof RegisterData) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm((prev) => ({ ...prev, [key]: e.target.value }));
+  const set =
+    (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+      setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
   /** Only allow digits, spaces, dashes, and parentheses in the phone field. Max 10 digits. */
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,7 +39,7 @@ export default function Register() {
 
   const [phoneError, setPhoneError] = useState<string | null>(null);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -53,18 +57,21 @@ export default function Register() {
     }
     setPhoneError(null);
 
-    // Prefix the dial code so we store the full international number
-    const fullPhone = form.phone.trim()
-      ? `${countryInfo.dialCode} ${form.phone.trim()}`
-      : "";
+    const mobileNumber = form.phone.trim();
 
-    const err = register({
-      ...form,
+    setLoading(true);
+
+    const err = await register({
       email: email.trim(),
+      password,
+      confirmPassword,
       firstName: firstName.trim(),
       lastName: lastName.trim(),
-      phone: fullPhone,
+      countryCode: countryInfo.dialCode,
+      mobileNumber,
     });
+
+    setLoading(false);
 
     if (err) {
       setError(err);
@@ -95,6 +102,7 @@ export default function Register() {
                 onChange={set("firstName")}
                 placeholder="Jane"
                 autoComplete="given-name"
+                disabled={loading}
                 autoFocus
               />
             </label>
@@ -108,6 +116,7 @@ export default function Register() {
                 onChange={set("lastName")}
                 placeholder="Doe"
                 autoComplete="family-name"
+                disabled={loading}
               />
             </label>
           </div>
@@ -121,6 +130,7 @@ export default function Register() {
               onChange={set("email")}
               placeholder="you@example.com"
               autoComplete="email"
+              disabled={loading}
             />
           </label>
 
@@ -136,6 +146,7 @@ export default function Register() {
                 onChange={handlePhoneChange}
                 placeholder={countryInfo.placeholder}
                 autoComplete="tel-national"
+                disabled={loading}
               />
             </div>
             {phoneError && (
@@ -152,6 +163,7 @@ export default function Register() {
               onChange={set("password")}
               placeholder="At least 6 characters"
               autoComplete="new-password"
+              disabled={loading}
             />
           </label>
 
@@ -164,11 +176,16 @@ export default function Register() {
               onChange={set("confirmPassword")}
               placeholder="Repeat your password"
               autoComplete="new-password"
+              disabled={loading}
             />
           </label>
 
-          <button type="submit" className="button authCard__submit">
-            Create account
+          <button
+            type="submit"
+            className="button authCard__submit"
+            disabled={loading}
+          >
+            {loading ? "Creating account…" : "Create account"}
           </button>
         </form>
 
