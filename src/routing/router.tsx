@@ -9,6 +9,7 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Dashboard from "../pages/Dashboard";
+import ExpertClients from "../pages/ExpertClients";
 import ExpertDashboard from "../pages/ExpertDashboard";
 import FoundersStory from "../pages/FoundersStory";
 import KnowYourExperts from "../pages/KnowYourExperts";
@@ -39,7 +40,10 @@ export const router = createBrowserRouter([
       { path: "/dashboard", element: <Dashboard /> },
       {
         element: <ExpertRoute />,
-        children: [{ path: "/expert-dashboard", element: <ExpertDashboard /> }],
+        children: [
+          { path: "/expert-dashboard", element: <ExpertDashboard /> },
+          { path: "/expert-dashboard/clients", element: <ExpertClients /> },
+        ],
       },
       { path: "/orders", element: <OrderHistory /> },
       { path: "/payment/success", element: <PaymentSuccess /> },

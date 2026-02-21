@@ -39,6 +39,11 @@ export function NavBar() {
 
   const canViewExpertDashboard =
     user?.role === "expert" && hasValidAccessToken(tokens);
+  const isExpert = user?.role === "expert";
+  const expertDashboardPath = canViewExpertDashboard
+    ? "/expert-dashboard"
+    : "/dashboard";
+  const expertClientsPath = "/expert-dashboard/clients";
 
   return (
     <div className="navBar" ref={rootRef}>
@@ -133,22 +138,45 @@ export function NavBar() {
 
             <div className="userMenu__dropdown" role="menu">
               <div className="userMenu__dropdownInner">
-                <Link
-                  className="userMenu__item"
-                  to={canViewExpertDashboard ? "/expert-dashboard" : "/dashboard"}
-                  role="menuitem"
-                  onClick={() => setUserMenuOpen(false)}
-                >
-                  {canViewExpertDashboard ? "Expert Dashboard" : "Dashboard"}
-                </Link>
-                <Link
-                  className="userMenu__item"
-                  to="/orders"
-                  role="menuitem"
-                  onClick={() => setUserMenuOpen(false)}
-                >
-                  Order History
-                </Link>
+                {isExpert ? (
+                  <>
+                    <Link
+                      className="userMenu__item"
+                      to={expertDashboardPath}
+                      role="menuitem"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      Expert Dashboard
+                    </Link>
+                    <Link
+                      className="userMenu__item"
+                      to={expertClientsPath}
+                      role="menuitem"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      Clients
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      className="userMenu__item"
+                      to="/dashboard"
+                      role="menuitem"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      Dashboard
+                    </Link>
+                    <Link
+                      className="userMenu__item"
+                      to="/orders"
+                      role="menuitem"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      Order History
+                    </Link>
+                  </>
+                )}
                 <button
                   type="button"
                   className="userMenu__item"

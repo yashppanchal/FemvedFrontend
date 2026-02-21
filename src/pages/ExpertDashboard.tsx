@@ -10,17 +10,6 @@ type ExpertAccountForm = {
   bio: string;
 };
 
-const MOCK_USERS = [
-  { id: "U-101", name: "Ananya Rao", email: "ananya@example.com", status: "Active" },
-  { id: "U-102", name: "Maya Sharma", email: "maya@example.com", status: "Pending" },
-  { id: "U-103", name: "Sana Ali", email: "sana@example.com", status: "Active" },
-];
-
-const MOCK_PROGRAMS = [
-  "Hormonal Health Support",
-  "Mental and Spiritual Wellbeing",
-  "Longevity and Healthy Ageing Guidance",
-];
 
 export default function ExpertDashboard() {
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
@@ -123,41 +112,6 @@ export default function ExpertDashboard() {
           </form>
         </section>
 
-        <section className="expertSection">
-          <h2 className="expertSection__title">Users</h2>
-
-          <div className="expertTableWrap">
-            <table className="expertTable">
-              <thead>
-                <tr>
-                  <th>User ID</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {MOCK_USERS.map((user) => (
-                  <tr key={user.id}>
-                    <td>{user.id}</td>
-                    <td>{user.name}</td>
-                    <td>{user.email}</td>
-                    <td>{user.status}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="expertPrograms">
-            <h3 className="expertPrograms__title">Programs You Teach</h3>
-            <ul className="expertPrograms__list">
-              {MOCK_PROGRAMS.map((program) => (
-                <li key={program}>{program}</li>
-              ))}
-            </ul>
-          </div>
-        </section>
       </div>
     </section>
   );

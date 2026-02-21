@@ -1,6 +1,6 @@
 import { type FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../auth/useAuth";
+import { type UserRole, useAuth } from "../auth/useAuth";
 import "./Login.scss";
 
 export default function Login() {
@@ -9,6 +9,7 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState<UserRole>("user");
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (e: FormEvent) => {
@@ -20,7 +21,7 @@ export default function Login() {
       return;
     }
 
-    const err = login(email.trim(), password);
+    const err = login(email.trim(), password, role);
     if (err) {
       setError(err);
       return;
@@ -41,6 +42,7 @@ export default function Login() {
           {error && <p className="authCard__error">{error}</p>}
           <p className="authCard__footer">
             Demo login: id <strong>demo</strong> / password <strong>demo123</strong>
+            {" "}with selected role
           </p>
 
           <label className="field">
@@ -66,6 +68,18 @@ export default function Login() {
               placeholder="Your password"
               autoComplete="current-password"
             />
+          </label>
+
+          <label className="field">
+            <span className="field__label">Role (demo login)</span>
+            <select
+              className="field__input"
+              value={role}
+              onChange={(e) => setRole(e.target.value as UserRole)}
+            >
+              <option value="user">User</option>
+              <option value="expert">Expert</option>
+            </select>
           </label>
 
           <button type="submit" className="button authCard__submit">

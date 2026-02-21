@@ -38,7 +38,7 @@ export interface UpdateProfileData {
 interface AuthContextValue {
   user: User | null;
   tokens: AuthTokens | null;
-  login: (email: string, password: string) => string | null;
+  login: (email: string, password: string, role?: UserRole) => string | null;
   register: (data: RegisterData) => Promise<string | null>;
   updateUser: (data: UpdateProfileData) => string | null;
   logout: () => void;
@@ -173,47 +173,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [user, tokens]);
 
   /** Returns an error message string, or null on success. */
-  const login = useCallback((email: string, password: string): string | null => {
-    const dummyId = "demo";
-    const dummyPassword = "demo123";
+  const login = useCallback(
+    (email: string, password: string, role: UserRole = "user"): string | null => {
+      const dummyId = "demo";
+      const dummyPassword = "demo123";
 
-    if (email.trim().toLowerCase() === dummyId && password === dummyPassword) {
-      const now = Date.now();
-      const dummyUser: User = {
-        userId: "dummy-user-1",
-        email: "demo@femved.app",
-        firstName: "Demo",
-        lastName: "User",
-        phone: "",
-        role: "user",
+      if (email.trim().toLowerCase() === dummyId && password === dummyPassword) {
+        const now = Date.now();
+        const isExpert = role === "expert";
+        const dummyUser: User = {
+          userId: isExpert ? "dummy-expert-1" : "dummy-user-1",
+          email: isExpert ? "expert-demo@femved.app" : "demo@femved.app",
+          firstName: "Demo",
+          lastName: isExpert ? "Expert" : "User",
+          phone: "",
+          role,
+        };
+
+        const dummyTokens: AuthTokens = {
+          accessToken: "dummy-access-token",
+          accessTokenExpiresAt: new Date(now + 60 * 60 * 1000).toISOString(),
+          refreshToken: "dummy-refresh-token",
+          refreshTokenExpiresAt: new Date(now + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        };
+
+        setUser(dummyUser);
+        setTokens(dummyTokens);
+        return null;
+      }
+
+      const users = getStoredUsers();
+      const match = users.find(
+        (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password,
+      );
+      if (!match) return "Invalid email or password.";
+      const { password: _, ...safeUser } = match;
+      const safe: User = {
+        ...safeUser,
+        role: safeUser.role ?? "user",
       };
-
-      const dummyTokens: AuthTokens = {
-        accessToken: "dummy-access-token",
-        accessTokenExpiresAt: new Date(now + 60 * 60 * 1000).toISOString(),
-        refreshToken: "dummy-refresh-token",
-        refreshTokenExpiresAt: new Date(now + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      };
-
-      setUser(dummyUser);
-      setTokens(dummyTokens);
+      setUser(safe);
+      setTokens(null);
       return null;
-    }
-
-    const users = getStoredUsers();
-    const match = users.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password,
-    );
-    if (!match) return "Invalid email or password.";
-    const { password: _, ...safeUser } = match;
-    const safe: User = {
-      ...safeUser,
-      role: safeUser.role ?? "user",
-    };
-    setUser(safe);
-    setTokens(null);
-    return null;
-  }, []);
+    },
+    [],
+  );
 
   /** Returns an error message string, or null on success. */
   const register = useCallback(async (data: RegisterData): Promise<string | null> => {
