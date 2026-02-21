@@ -73,28 +73,28 @@ export default function GuidedProgramDetail() {
 
   const dummyCards = [
     {
-      name: "Emily Moreton",
-      subtitle: "BSc, MSc, RNutr, Registered Nurse",
+      programName: "Break the Stress – Hormone Health Triangle",
+      expertName: "Dr. Prathima Nagesh",
       tag: "Fertility Nurse",
-      body: "Support grounded in clinical experience and practical, personalised guidance.",
+      body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi porta lectus a ligula lobortis, id iaculis ex tristique.",
     },
     {
-      name: "Olivia Wall",
-      subtitle: "BSc, RD",
+      programName: "The Happy Hormone Method",
+      expertName: "Kimberly Parsons, Naturopath & Herbalist",
+      tag: "Women’s Health",
+      body: "Whole-person care focused on hormones, cycles, and long-term wellbeing.",
+    },
+    {
+      programName: "Balancing & Managing Perimenopause with Ayurveda",
+      expertName: "Dr. Prathima Nagesh",
       tag: "Registered Dietitian",
       body: "Nutrition care shaped around your goals, preferences, and real life.",
     },
     {
-      name: "Aisha Khan",
-      subtitle: "MSc, Certified Health Coach",
+      programName: "The Metabolic PCOS Reset",
+      expertName: "Kimberly Parsons, Naturopath & Herbalist",
       tag: "Lifestyle Coach",
       body: "Habit and lifestyle support with compassion, clarity, and consistency.",
-    },
-    {
-      name: "Maya Patel",
-      subtitle: "MBBS, Women’s Health",
-      tag: "Women’s Health",
-      body: "Whole-person care focused on hormones, cycles, and long-term wellbeing.",
     },
   ];
 
@@ -323,19 +323,19 @@ export default function GuidedProgramDetail() {
               {dummyCards.map((c) => (
                 <article
                   className="guidedProgramDetail__productCard"
-                  key={c.name}
+                  key={c.programName}
                 >
                   <div className="guidedProgramDetail__productMedia" />
                   <div className="guidedProgramDetail__productBody">
                     <h4 className="guidedProgramDetail__productName">
-                      {c.name}
+                      {c.programName}
                     </h4>
                     <p className="guidedProgramDetail__productSubtitle">
-                      {c.subtitle}
+                      By <strong>{c.expertName}</strong>
                     </p>
-                    <span className="guidedProgramDetail__productTag">
+                    {/* <span className="guidedProgramDetail__productTag">
                       {c.tag}
-                    </span>
+                    </span> */}
                     <p className="guidedProgramDetail__productText">{c.body}</p>
                   </div>
                 </article>

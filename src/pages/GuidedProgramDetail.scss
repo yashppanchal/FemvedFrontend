@@ -613,6 +613,7 @@
   display: flex;
   gap: 16px;
   padding: 0 26px 18px 0;
+  height: 460px;
 }
 
 .guidedProgramDetail__productCard {
@@ -629,7 +630,7 @@
 }
 
 .guidedProgramDetail__productMedia {
-  height: 160px;
+  height: 260px;
   background:
     radial-gradient(
       circle at 30% 30%,
