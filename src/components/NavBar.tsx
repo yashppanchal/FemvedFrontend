@@ -5,7 +5,7 @@ import { FaRegUser } from "react-icons/fa";
 import { IoChevronDown, IoMenu, IoClose } from "react-icons/io5";
 import { NAV_SECTIONS } from "../nav/menu";
 import { hasValidAccessToken, useAuth } from "../auth/useAuth";
-import logoUrl from "../assets/logo.png";
+import logoUrl from "../assets/femvedlogo.png";
 import "./NavBar.scss";
 
 export function NavBar() {
