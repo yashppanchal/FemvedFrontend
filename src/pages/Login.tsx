@@ -39,6 +39,9 @@ export default function Login() {
       <div className="authCard">
         <form className="form" onSubmit={handleSubmit} noValidate>
           {error && <p className="authCard__error">{error}</p>}
+          <p className="authCard__footer">
+            Demo login: id <strong>demo</strong> / password <strong>demo123</strong>
+          </p>
 
           <label className="field">
             <span className="field__label">Email</span>

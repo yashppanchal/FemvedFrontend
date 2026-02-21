@@ -62,6 +62,7 @@ export interface RegisterData {
 const USERS_KEY = "femved_users";
 const SESSION_KEY = "femved_session";
 const TOKENS_KEY = "femved_tokens";
+const AUTH_USER_WITH_TOKEN_KEY = "femved_auth_user";
 
 interface StoredUser extends User {
   password: string;
@@ -124,6 +125,21 @@ function saveTokens(tokens: AuthTokens | null) {
   }
 }
 
+function saveUserWithToken(user: User | null, tokens: AuthTokens | null) {
+  if (!user || !tokens?.accessToken) {
+    localStorage.removeItem(AUTH_USER_WITH_TOKEN_KEY);
+    return;
+  }
+
+  localStorage.setItem(
+    AUTH_USER_WITH_TOKEN_KEY,
+    JSON.stringify({
+      ...user,
+      token: tokens.accessToken,
+    }),
+  );
+}
+
 export function hasValidAccessToken(tokens: AuthTokens | null): boolean {
   if (!tokens?.accessToken) return false;
 
@@ -152,8 +168,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     saveTokens(tokens);
   }, [tokens]);
 
+  useEffect(() => {
+    saveUserWithToken(user, tokens);
+  }, [user, tokens]);
+
   /** Returns an error message string, or null on success. */
   const login = useCallback((email: string, password: string): string | null => {
+    const dummyId = "demo";
+    const dummyPassword = "demo123";
+
+    if (email.trim().toLowerCase() === dummyId && password === dummyPassword) {
+      const now = Date.now();
+      const dummyUser: User = {
+        userId: "dummy-user-1",
+        email: "demo@femved.app",
+        firstName: "Demo",
+        lastName: "User",
+        phone: "",
+        role: "user",
+      };
+
+      const dummyTokens: AuthTokens = {
+        accessToken: "dummy-access-token",
+        accessTokenExpiresAt: new Date(now + 60 * 60 * 1000).toISOString(),
+        refreshToken: "dummy-refresh-token",
+        refreshTokenExpiresAt: new Date(now + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      };
+
+      setUser(dummyUser);
+      setTokens(dummyTokens);
+      return null;
+    }
+
     const users = getStoredUsers();
     const match = users.find(
       (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password,
@@ -165,6 +211,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       role: safeUser.role ?? "user",
     };
     setUser(safe);
+    setTokens(null);
     return null;
   }, []);
 
