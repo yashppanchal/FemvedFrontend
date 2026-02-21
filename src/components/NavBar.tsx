@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaRegUser } from "react-icons/fa";
 import { IoChevronDown, IoMenu, IoClose } from "react-icons/io5";
 import { NAV_SECTIONS } from "../nav/menu";
-import { hasValidAccessToken, ROLE_EXPERT, useAuth } from "../auth/useAuth";
+import { hasValidAccessToken, ROLE_ADMIN, ROLE_EXPERT, useAuth } from "../auth/useAuth";
 import logoUrl from "../assets/femvedlogo.png";
 import "./NavBar.scss";
 
@@ -53,6 +53,7 @@ export function NavBar() {
     };
   }, [mobileMenuOpen]);
 
+  const isAdmin = user?.role.id === ROLE_ADMIN.id;
   const canViewExpertDashboard =
     user?.role.id === ROLE_EXPERT.id && hasValidAccessToken(tokens);
   const isExpert = user?.role.id === ROLE_EXPERT.id;
@@ -178,7 +179,16 @@ export function NavBar() {
 
             <div className="userMenu__dropdown" role="menu">
               <div className="userMenu__dropdownInner">
-                {isExpert ? (
+                {isAdmin ? (
+                  <Link
+                    className="userMenu__item"
+                    to="/admin-dashboard"
+                    role="menuitem"
+                    onClick={() => setUserMenuOpen(false)}
+                  >
+                    Admin Dashboard
+                  </Link>
+                ) : isExpert ? (
                   <>
                     <Link
                       className="userMenu__item"
@@ -322,7 +332,15 @@ export function NavBar() {
               {user ? (
                 <div className="mobileDrawer__section">
                   <p className="mobileDrawer__sectionLabel">Account</p>
-                  {isExpert ? (
+                  {isAdmin ? (
+                    <Link
+                      className="mobileDrawer__item"
+                      to="/admin-dashboard"
+                      onClick={closeMobileMenu}
+                    >
+                      Admin Dashboard
+                    </Link>
+                  ) : isExpert ? (
                     <>
                       <Link
                         className="mobileDrawer__item"

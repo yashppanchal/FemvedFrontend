@@ -10,6 +10,7 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Dashboard from "../pages/Dashboard";
 import ExpertClients from "../pages/ExpertClients";
+import AdminDashboard from "../pages/AdminDashboard";
 import ExpertDashboard from "../pages/ExpertDashboard";
 import FoundersStory from "../pages/FoundersStory";
 import KnowYourExperts from "../pages/KnowYourExperts";
@@ -19,6 +20,7 @@ import PaymentSuccess from "../pages/PaymentSuccess";
 import Placeholder from "../pages/Placeholder";
 import Podcast from "../pages/Podcast";
 import Terms from "../pages/Terms";
+import AdminRoute from "./AdminRoute";
 import ExpertRoute from "./ExpertRoute";
 
 function placeholderForRouteTitle(title: string): ReactNode {
@@ -38,6 +40,12 @@ export const router = createBrowserRouter([
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
       { path: "/dashboard", element: <Dashboard /> },
+      {
+        element: <AdminRoute />,
+        children: [
+          { path: "/admin-dashboard", element: <AdminDashboard /> },
+        ],
+      },
       {
         element: <ExpertRoute />,
         children: [
