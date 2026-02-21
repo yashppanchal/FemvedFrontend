@@ -2,7 +2,6 @@ import "./GuidedProgramDetail.scss";
 import { useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { PrimaryButton } from "../components/PrimaryButton";
-import { SecondaryButton } from "../components/SecondaryButton";
 import { TestimonialsCarousel } from "../components/TestimonialsCarousel";
 import dataJson from "../data/data.json";
 import heroImage from "../assets/hero-slide-2.svg";
@@ -350,7 +349,7 @@ export default function GuidedProgramDetail() {
         <h2 className="guidedProgramDetail__ctaBannerTitle">
           Discover the program that truly speaks to your life and needs.
         </h2>
-        <SecondaryButton label="Select your plan" onClick={() => {}} />
+        <PrimaryButton label="Select your plan" onClick={() => {}} />
       </div>
 
       <section
