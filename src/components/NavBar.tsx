@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaRegUser } from "react-icons/fa";
 import { IoChevronDown, IoMenu, IoClose } from "react-icons/io5";
 import { NAV_SECTIONS } from "../nav/menu";
-import { hasValidAccessToken, useAuth } from "../auth/useAuth";
+import { hasValidAccessToken, ROLE_EXPERT, useAuth } from "../auth/useAuth";
 import logoUrl from "../assets/femvedlogo.png";
 import "./NavBar.scss";
 
@@ -54,8 +54,8 @@ export function NavBar() {
   }, [mobileMenuOpen]);
 
   const canViewExpertDashboard =
-    user?.role === "expert" && hasValidAccessToken(tokens);
-  const isExpert = user?.role === "expert";
+    user?.role.id === ROLE_EXPERT.id && hasValidAccessToken(tokens);
+  const isExpert = user?.role.id === ROLE_EXPERT.id;
   const expertDashboardPath = canViewExpertDashboard
     ? "/expert-dashboard"
     : "/dashboard";

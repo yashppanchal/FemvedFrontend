@@ -1,6 +1,6 @@
 import { type FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { type UserRole, useAuth } from "../auth/useAuth";
+import { useAuth } from "../auth/useAuth";
 import "./Login.scss";
 
 export default function Login() {
@@ -9,10 +9,10 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<UserRole>("user");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -21,13 +21,17 @@ export default function Login() {
       return;
     }
 
-    const err = login(email.trim(), password, role);
-    if (err) {
-      setError(err);
-      return;
+    setLoading(true);
+    try {
+      const err = await login(email.trim(), password);
+      if (err) {
+        setError(err);
+        return;
+      }
+      navigate("/");
+    } finally {
+      setLoading(false);
     }
-
-    navigate("/");
   };
 
   return (
@@ -40,10 +44,6 @@ export default function Login() {
       <div className="authCard">
         <form className="form" onSubmit={handleSubmit} noValidate>
           {error && <p className="authCard__error">{error}</p>}
-          <p className="authCard__footer">
-            Demo login: id <strong>demo</strong> / password <strong>demo123</strong>
-            {" "}with selected role
-          </p>
 
           <label className="field">
             <span className="field__label">Email</span>
@@ -70,20 +70,8 @@ export default function Login() {
             />
           </label>
 
-          <label className="field">
-            <span className="field__label">Role (demo login)</span>
-            <select
-              className="field__input"
-              value={role}
-              onChange={(e) => setRole(e.target.value as UserRole)}
-            >
-              <option value="user">User</option>
-              <option value="expert">Expert</option>
-            </select>
-          </label>
-
-          <button type="submit" className="button authCard__submit">
-            Sign in
+          <button type="submit" className="button authCard__submit" disabled={loading}>
+            {loading ? "Signing in\u2026" : "Sign in"}
           </button>
         </form>
 

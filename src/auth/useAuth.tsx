@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import {
+  loginUser,
   registerUser,
   type AuthTokens,
   type RegisterRequest,
@@ -18,7 +19,14 @@ import { ApiError } from "../api/client";
 /*  Types                                                              */
 /* ------------------------------------------------------------------ */
 
-export type UserRole = "user" | "expert";
+export interface UserRole {
+  id: number;
+  name: string;
+}
+
+export const ROLE_ADMIN: UserRole = { id: 1, name: "admin" };
+export const ROLE_EXPERT: UserRole = { id: 2, name: "expert" };
+export const ROLE_USER: UserRole = { id: 3, name: "user" };
 
 export interface User {
   userId: string;
@@ -38,7 +46,7 @@ export interface UpdateProfileData {
 interface AuthContextValue {
   user: User | null;
   tokens: AuthTokens | null;
-  login: (email: string, password: string, role?: UserRole) => string | null;
+  login: (email: string, password: string) => Promise<string | null>;
   register: (data: RegisterData) => Promise<string | null>;
   updateUser: (data: UpdateProfileData) => string | null;
   logout: () => void;
@@ -64,18 +72,26 @@ const SESSION_KEY = "femved_session";
 const TOKENS_KEY = "femved_tokens";
 const AUTH_USER_WITH_TOKEN_KEY = "femved_auth_user";
 
+function normalizeRole(raw: unknown): UserRole {
+  if (raw && typeof raw === "object" && "id" in raw) return raw as UserRole;
+  if (typeof raw === "string") {
+    if (raw === "admin") return ROLE_ADMIN;
+    if (raw === "expert") return ROLE_EXPERT;
+    return ROLE_USER;
+  }
+  return ROLE_USER;
+}
+
 interface StoredUser extends User {
   password: string;
 }
 
 function getStoredUsers(): StoredUser[] {
   try {
-    const parsed = JSON.parse(localStorage.getItem(USERS_KEY) || "[]") as Array<
-      StoredUser & { role?: UserRole }
-    >;
+    const parsed = JSON.parse(localStorage.getItem(USERS_KEY) || "[]") as StoredUser[];
     return parsed.map((storedUser) => ({
       ...storedUser,
-      role: storedUser.role ?? "user",
+      role: normalizeRole(storedUser.role),
     }));
   } catch {
     return [];
@@ -90,10 +106,10 @@ function getSession(): User | null {
   try {
     const raw = localStorage.getItem(SESSION_KEY);
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as User & { role?: UserRole };
+    const parsed = JSON.parse(raw) as User;
     return {
       ...parsed,
-      role: parsed.role ?? "user",
+      role: normalizeRole(parsed.role),
     };
   } catch {
     return null;
@@ -174,47 +190,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   /** Returns an error message string, or null on success. */
   const login = useCallback(
-    (email: string, password: string, role: UserRole = "user"): string | null => {
-      const dummyId = "demo";
-      const dummyPassword = "demo123";
+    async (email: string, password: string): Promise<string | null> => {
+      try {
+        const res = await loginUser({ email, password });
 
-      if (email.trim().toLowerCase() === dummyId && password === dummyPassword) {
-        const now = Date.now();
-        const isExpert = role === "expert";
-        const dummyUser: User = {
-          userId: isExpert ? "dummy-expert-1" : "dummy-user-1",
-          email: isExpert ? "expert-demo@femved.app" : "demo@femved.app",
-          firstName: "Demo",
-          lastName: isExpert ? "Expert" : "User",
-          phone: "",
-          role,
+        const newUser: User = {
+          userId: res.user.id,
+          email: res.user.email,
+          firstName: res.user.firstName,
+          lastName: res.user.lastName,
+          phone: res.user.mobileNumber ?? "",
+          role: res.user.role ?? ROLE_USER,
         };
 
-        const dummyTokens: AuthTokens = {
-          accessToken: "dummy-access-token",
-          accessTokenExpiresAt: new Date(now + 60 * 60 * 1000).toISOString(),
-          refreshToken: "dummy-refresh-token",
-          refreshTokenExpiresAt: new Date(now + 7 * 24 * 60 * 60 * 1000).toISOString(),
+        const newTokens: AuthTokens = {
+          accessToken: res.token,
+          accessTokenExpiresAt: res.expiresAt,
+          refreshToken: "",
+          refreshTokenExpiresAt: "",
         };
 
-        setUser(dummyUser);
-        setTokens(dummyTokens);
+        setUser(newUser);
+        setTokens(newTokens);
         return null;
+      } catch (err) {
+        if (err instanceof ApiError) {
+          return err.message;
+        }
+        return "Something went wrong. Please try again.";
       }
-
-      const users = getStoredUsers();
-      const match = users.find(
-        (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password,
-      );
-      if (!match) return "Invalid email or password.";
-      const { password: _, ...safeUser } = match;
-      const safe: User = {
-        ...safeUser,
-        role: safeUser.role ?? "user",
-      };
-      setUser(safe);
-      setTokens(null);
-      return null;
     },
     [],
   );
@@ -240,6 +244,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setTokens(res.tokens);
 
       // Build the local user object
+      const rawRole = (res as unknown as Record<string, unknown>).role ??
+        (res as unknown as Record<string, unknown>).roleType;
+
       const newUser: User = {
         userId: res.userId,
         email: res.email,
@@ -248,9 +255,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         phone: data.mobileNumber
           ? `${data.countryCode} ${data.mobileNumber}`.trim()
           : "",
-        role: (res as { role?: UserRole; roleType?: UserRole }).role ??
-          (res as { role?: UserRole; roleType?: UserRole }).roleType ??
-          "user",
+        role: normalizeRole(rawRole),
       };
 
       setUser(newUser);

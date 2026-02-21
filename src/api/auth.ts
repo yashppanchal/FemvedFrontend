@@ -30,7 +30,36 @@ export interface RegisterResponse {
   roleType?: "user" | "expert";
 }
 
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponseUser {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  mobileNumber: string;
+  isEmailVerified: boolean;
+  isMobileVerified: boolean;
+  role: { id: number; name: string };
+}
+
+export interface LoginResponse {
+  token: string;
+  expiresAt: string;
+  user: LoginResponseUser;
+}
+
 /* ---------- Endpoints ---------- */
+
+export function loginUser(data: LoginRequest): Promise<LoginResponse> {
+  return apiFetch<LoginResponse>("/auth/login", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
 
 export function registerUser(data: RegisterRequest): Promise<RegisterResponse> {
   return apiFetch<RegisterResponse>("/auth/register", {

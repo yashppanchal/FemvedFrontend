@@ -1,17 +1,14 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { hasValidAccessToken, useAuth } from "../auth/useAuth";
+import { hasValidAccessToken, ROLE_EXPERT, useAuth } from "../auth/useAuth";
 
 export default function ExpertRoute() {
-  // TEMP: auth guard disabled while designing expert dashboard UI.
-  return <Outlet />;
-
   const { user, tokens } = useAuth();
 
   if (!user || !hasValidAccessToken(tokens)) {
     return <Navigate to="/login" replace />;
   }
 
-  if (user.role !== "expert") {
+  if (user.role.id !== ROLE_EXPERT.id) {
     return <Navigate to="/dashboard" replace />;
   }
 
