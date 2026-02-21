@@ -37,8 +37,8 @@ export function JourneyStages() {
         {/* Left — copy */}
         <div className="journeyStages__copy">
           <h2 className="journeyStages__heading">
-            Holistic wellness plans are not meant to be curated by <br />
-            generic <em>algorithms.</em>
+            Holistic wellness plans are not meant to be curated by generic{" "}
+            <em>algorithms.</em>
           </h2>
           <p className="journeyStages__sub">
             It should evolve with every season of your life. Where are you right
