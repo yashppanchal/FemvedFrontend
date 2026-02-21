@@ -401,7 +401,7 @@ export default function GuidedProgramDetail() {
         </div>
       </section>
 
-      <section
+      {/* <section
         className="guidedProgramDetail__recordings"
         aria-labelledby="guidedProgramDetail-recordings-title"
       >
@@ -414,10 +414,10 @@ export default function GuidedProgramDetail() {
               Want to explore your wellness at your own pace? Start with our
               expert-led pre-recorded courses
             </h2>
-            {/* <p className="guidedProgramDetail__recordingsSubtext">
+            <p className="guidedProgramDetail__recordingsSubtext">
               A small collection of digital products — guided sessions you can
               return to anytime. (Dummy content for now.)
-            </p> */}
+            </p>
           </div>
 
           <div className="guidedProgramDetail__recordingsGrid" role="list">
@@ -469,7 +469,7 @@ export default function GuidedProgramDetail() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       <TestimonialsCarousel />
     </section>
