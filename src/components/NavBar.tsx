@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaRegUser } from "react-icons/fa";
-import { IoChevronDown } from "react-icons/io5";
+import { IoChevronDown, IoMenu, IoClose } from "react-icons/io5";
 import { NAV_SECTIONS } from "../nav/menu";
 import { hasValidAccessToken, useAuth } from "../auth/useAuth";
 import logoUrl from "../assets/logo.png";
@@ -13,13 +14,14 @@ export function NavBar() {
   const { user, tokens, logout } = useAuth();
   const [openSectionId, setOpenSectionId] = useState<string | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    // Close any open dropdown on navigation.
     const t = window.setTimeout(() => {
       setOpenSectionId(null);
       setUserMenuOpen(false);
+      setMobileMenuOpen(false);
     }, 0);
     return () => window.clearTimeout(t);
   }, [pathname]);
@@ -37,6 +39,17 @@ export function NavBar() {
     return () => window.removeEventListener("pointerdown", onPointerDown);
   }, []);
 
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
+
   const canViewExpertDashboard =
     user?.role === "expert" && hasValidAccessToken(tokens);
   const isExpert = user?.role === "expert";
@@ -45,12 +58,24 @@ export function NavBar() {
     : "/dashboard";
   const expertClientsPath = "/expert-dashboard/clients";
 
+  const closeMobileMenu = () => setMobileMenuOpen(false);
+
   return (
     <div className="navBar" ref={rootRef}>
+      <button
+        type="button"
+        className="hamburger"
+        aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+        onClick={() => setMobileMenuOpen((prev) => !prev)}
+      >
+        {mobileMenuOpen ? <IoClose /> : <IoMenu />}
+      </button>
+
       <Link className="brand" to="/">
         <img className="brand__logo" src={logoUrl} alt="Femved" />
       </Link>
 
+      {/* ---- Desktop menu ---- */}
       <div className="menu" aria-label="Primary navigation">
         {NAV_SECTIONS.map((section) => {
           const isOpen = openSectionId === section.id;
@@ -198,6 +223,131 @@ export function NavBar() {
           </Link>
         )}
       </div>
+
+      {/* ---- Mobile drawer (portalled to body to escape backdrop-filter containing block) ---- */}
+      {createPortal(
+        <>
+          <div
+            className={`mobileOverlay ${mobileMenuOpen ? "mobileOverlay--open" : ""}`}
+            onClick={closeMobileMenu}
+            aria-hidden={!mobileMenuOpen}
+          />
+          <nav
+            className={`mobileDrawer ${mobileMenuOpen ? "mobileDrawer--open" : ""}`}
+            aria-label="Mobile navigation"
+          >
+            <div className="mobileDrawer__header">
+              <Link className="brand" to="/" onClick={closeMobileMenu}>
+                <img className="brand__logo" src={logoUrl} alt="Femved" />
+              </Link>
+              <button
+                type="button"
+                className="mobileDrawer__close"
+                aria-label="Close menu"
+                onClick={closeMobileMenu}
+              >
+                <IoClose />
+              </button>
+            </div>
+
+            <div className="mobileDrawer__body">
+              {NAV_SECTIONS.map((section) => (
+                <div key={section.id} className="mobileDrawer__section">
+                  <p className="mobileDrawer__sectionLabel">{section.label}</p>
+                  {section.items.map((item) =>
+                    item.type === "external" ? (
+                      <a
+                        key={item.href}
+                        className="mobileDrawer__item"
+                        href={item.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={closeMobileMenu}
+                      >
+                        {item.label}
+                      </a>
+                    ) : (
+                      <Link
+                        key={item.path}
+                        className={`mobileDrawer__item ${pathname.startsWith(item.path) ? "mobileDrawer__item--active" : ""}`}
+                        to={item.path}
+                        onClick={closeMobileMenu}
+                      >
+                        {item.label}
+                      </Link>
+                    ),
+                  )}
+                </div>
+              ))}
+
+              <div className="mobileDrawer__divider" />
+
+              {user ? (
+                <div className="mobileDrawer__section">
+                  <p className="mobileDrawer__sectionLabel">Account</p>
+                  {isExpert ? (
+                    <>
+                      <Link
+                        className="mobileDrawer__item"
+                        to={expertDashboardPath}
+                        onClick={closeMobileMenu}
+                      >
+                        Expert Dashboard
+                      </Link>
+                      <Link
+                        className="mobileDrawer__item"
+                        to={expertClientsPath}
+                        onClick={closeMobileMenu}
+                      >
+                        Clients
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        className="mobileDrawer__item"
+                        to="/dashboard"
+                        onClick={closeMobileMenu}
+                      >
+                        Dashboard
+                      </Link>
+                      <Link
+                        className="mobileDrawer__item"
+                        to="/orders"
+                        onClick={closeMobileMenu}
+                      >
+                        Order History
+                      </Link>
+                    </>
+                  )}
+                  <button
+                    type="button"
+                    className="mobileDrawer__item mobileDrawer__logout"
+                    onClick={() => {
+                      closeMobileMenu();
+                      logout();
+                      navigate("/");
+                    }}
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="mobileDrawer__section">
+                  <Link
+                    className="mobileDrawer__loginBtn"
+                    to="/login"
+                    onClick={closeMobileMenu}
+                  >
+                    Login
+                  </Link>
+                </div>
+              )}
+            </div>
+          </nav>
+        </>,
+        document.body,
+      )}
     </div>
   );
 }
