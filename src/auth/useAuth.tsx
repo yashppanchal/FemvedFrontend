@@ -18,12 +18,15 @@ import { ApiError } from "../api/client";
 /*  Types                                                              */
 /* ------------------------------------------------------------------ */
 
+export type UserRole = "user" | "expert";
+
 export interface User {
   userId: string;
   email: string;
   firstName: string;
   lastName: string;
   phone: string;
+  role: UserRole;
 }
 
 export interface UpdateProfileData {
@@ -66,7 +69,13 @@ interface StoredUser extends User {
 
 function getStoredUsers(): StoredUser[] {
   try {
-    return JSON.parse(localStorage.getItem(USERS_KEY) || "[]");
+    const parsed = JSON.parse(localStorage.getItem(USERS_KEY) || "[]") as Array<
+      StoredUser & { role?: UserRole }
+    >;
+    return parsed.map((storedUser) => ({
+      ...storedUser,
+      role: storedUser.role ?? "user",
+    }));
   } catch {
     return [];
   }
@@ -79,7 +88,12 @@ function saveStoredUsers(users: StoredUser[]) {
 function getSession(): User | null {
   try {
     const raw = localStorage.getItem(SESSION_KEY);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as User & { role?: UserRole };
+    return {
+      ...parsed,
+      role: parsed.role ?? "user",
+    };
   } catch {
     return null;
   }
@@ -110,6 +124,15 @@ function saveTokens(tokens: AuthTokens | null) {
   }
 }
 
+export function hasValidAccessToken(tokens: AuthTokens | null): boolean {
+  if (!tokens?.accessToken) return false;
+
+  const accessTokenExpiry = Date.parse(tokens.accessTokenExpiresAt);
+  if (Number.isNaN(accessTokenExpiry)) return false;
+
+  return accessTokenExpiry > Date.now();
+}
+
 /* ------------------------------------------------------------------ */
 /*  Context                                                            */
 /* ------------------------------------------------------------------ */
@@ -136,7 +159,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password,
     );
     if (!match) return "Invalid email or password.";
-    const { password: _, ...safe } = match;
+    const { password: _, ...safeUser } = match;
+    const safe: User = {
+      ...safeUser,
+      role: safeUser.role ?? "user",
+    };
     setUser(safe);
     return null;
   }, []);
@@ -170,6 +197,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         phone: data.mobileNumber
           ? `${data.countryCode} ${data.mobileNumber}`.trim()
           : "",
+        role: (res as { role?: UserRole; roleType?: UserRole }).role ??
+          (res as { role?: UserRole; roleType?: UserRole }).roleType ??
+          "user",
       };
 
       setUser(newUser);

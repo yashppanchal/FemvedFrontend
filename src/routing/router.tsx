@@ -9,6 +9,7 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Dashboard from "../pages/Dashboard";
+import ExpertDashboard from "../pages/ExpertDashboard";
 import FoundersStory from "../pages/FoundersStory";
 import KnowYourExperts from "../pages/KnowYourExperts";
 import NotFound from "../pages/NotFound";
@@ -17,6 +18,7 @@ import PaymentSuccess from "../pages/PaymentSuccess";
 import Placeholder from "../pages/Placeholder";
 import Podcast from "../pages/Podcast";
 import Terms from "../pages/Terms";
+import ExpertRoute from "./ExpertRoute";
 
 function placeholderForRouteTitle(title: string): ReactNode {
   return <Placeholder title={title} />;
@@ -35,6 +37,10 @@ export const router = createBrowserRouter([
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
       { path: "/dashboard", element: <Dashboard /> },
+      {
+        element: <ExpertRoute />,
+        children: [{ path: "/expert-dashboard", element: <ExpertDashboard /> }],
+      },
       { path: "/orders", element: <OrderHistory /> },
       { path: "/payment/success", element: <PaymentSuccess /> },
       { path: "/learn/founders-story", element: <FoundersStory /> },

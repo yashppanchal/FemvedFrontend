@@ -1,13 +1,19 @@
 import { type FormEvent, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { FiEdit2, FiCheck, FiX } from "react-icons/fi";
 import { useAuth, type UpdateProfileData } from "../auth/useAuth";
 import { useCountry, validatePhone } from "../country/useCountry";
 import "./Dashboard.scss";
 
+const MOCK_USER = {
+  firstName: "Jane",
+  lastName: "Doe",
+  email: "jane@example.com",
+  phone: "+91 9876543210",
+};
+
 export default function Dashboard() {
-  const { user, updateUser } = useAuth();
-  const navigate = useNavigate();
+  const { user: authUser, updateUser } = useAuth();
+  const user = authUser ?? MOCK_USER;
   const { country, countryInfo } = useCountry();
 
   const [editing, setEditing] = useState(false);
@@ -20,10 +26,7 @@ export default function Dashboard() {
   const [success, setSuccess] = useState<string | null>(null);
   const [phoneError, setPhoneError] = useState<string | null>(null);
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!user) navigate("/login", { replace: true });
-  }, [user, navigate]);
+  // TEMP: auth redirect disabled while designing dashboard UI.
 
   // Sync form state when user changes or edit mode is entered
   useEffect(() => {
@@ -39,8 +42,6 @@ export default function Dashboard() {
       });
     }
   }, [user, countryInfo.dialCode, editing]);
-
-  if (!user) return null;
 
   const startEditing = () => {
     setEditing(true);
@@ -91,11 +92,14 @@ export default function Dashboard() {
       ? `${countryInfo.dialCode} ${form.phone.trim()}`
       : "";
 
-    const err = updateUser({
-      firstName: form.firstName.trim(),
-      lastName: form.lastName.trim(),
-      phone: fullPhone,
-    });
+    // TEMP: when not authenticated, keep changes local-only for UI design.
+    const err = authUser
+      ? updateUser({
+          firstName: form.firstName.trim(),
+          lastName: form.lastName.trim(),
+          phone: fullPhone,
+        })
+      : null;
 
     if (err) {
       setError(err);

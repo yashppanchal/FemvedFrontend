@@ -3,14 +3,14 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaRegUser } from "react-icons/fa";
 import { IoChevronDown } from "react-icons/io5";
 import { NAV_SECTIONS } from "../nav/menu";
-import { useAuth } from "../auth/useAuth";
+import { hasValidAccessToken, useAuth } from "../auth/useAuth";
 import logoUrl from "../assets/logo.png";
 import "./NavBar.scss";
 
 export function NavBar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, tokens, logout } = useAuth();
   const [openSectionId, setOpenSectionId] = useState<string | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -36,6 +36,9 @@ export function NavBar() {
     window.addEventListener("pointerdown", onPointerDown);
     return () => window.removeEventListener("pointerdown", onPointerDown);
   }, []);
+
+  const canViewExpertDashboard =
+    user?.role === "expert" && hasValidAccessToken(tokens);
 
   return (
     <div className="navBar" ref={rootRef}>
@@ -132,11 +135,11 @@ export function NavBar() {
               <div className="userMenu__dropdownInner">
                 <Link
                   className="userMenu__item"
-                  to="/dashboard"
+                  to={canViewExpertDashboard ? "/expert-dashboard" : "/dashboard"}
                   role="menuitem"
                   onClick={() => setUserMenuOpen(false)}
                 >
-                  Dashboard
+                  {canViewExpertDashboard ? "Expert Dashboard" : "Dashboard"}
                 </Link>
                 <Link
                   className="userMenu__item"

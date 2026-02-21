@@ -26,6 +26,8 @@ export interface RegisterResponse {
   userId: string;
   email: string;
   tokens: AuthTokens;
+  role?: "user" | "expert";
+  roleType?: "user" | "expert";
 }
 
 /* ---------- Endpoints ---------- */
