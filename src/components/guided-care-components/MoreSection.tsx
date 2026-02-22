@@ -10,20 +10,16 @@ export function MoreSection({ whatsIncluded }: MoreSectionProps) {
           You're getting more than advice or a one-time consultation.
         </h2>
         <p className="guidedProgramDetail__moreBody">
-          We promise care that is human, not formulaic. Our experts are
-          independent, deeply specialised, and free from rigid, brand-led or
-          algorithm-driven wellness formats, so what you receive is truly
-          personalised and responsive to your life. Having guided thousands of
-          women through different life stages, our experts offer experienced,
-          empathetic support, delivered seamlessly online to make meaningful care
-          accessible and stress-free.
+          Care that feels human, not formulaic. Our independent, deeply
+          specialised experts offer truly personalised support shaped around
+          your life, not trends or algorithms. With experience guiding thousands
+          of women, we bring empathetic, meaningful care to you online, making
+          support simple and accessible
         </p>
       </div>
 
       <aside className="guidedProgramDetail__included card">
-        <h3 className="guidedProgramDetail__includedTitle">
-          What's included:
-        </h3>
+        <h3 className="guidedProgramDetail__includedTitle">What's included:</h3>
 
         {whatsIncluded.length ? (
           <ul className="guidedProgramDetail__includedList">

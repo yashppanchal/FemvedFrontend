@@ -133,8 +133,6 @@
   position: relative;
   align-self: start;
   padding: 18px;
-  margin-left: 5%;
-  margin-right: 5%;
   background: rgba(255, 255, 255, 0.86);
   backdrop-filter: blur(10px);
   box-shadow:
@@ -546,6 +544,11 @@
 }
 
 @media (max-width: 960px) {
+  .guidedProgramDetail__included {
+    margin-left: 5%;
+    margin-right: 5%;
+  }
+
   .guidedProgramDetail__recordingCard {
     width: min(320px, 82vw);
   }
