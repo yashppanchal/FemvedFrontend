@@ -1,13 +1,13 @@
 /* ─── Community Section ─── */
 
 .communitySection {
-  // background: linear-gradient(
-  //   270deg,
-  //   var(--white) 0%,
-  //   var(--secondarySoft) 100%
-  // );
-  background: var(--white);
-  padding: clamp(56px, 7vw, 100px) 0;
+  background: linear-gradient(
+    270deg,
+    var(--white) 0%,
+    var(--secondarySoft) 300%
+  );
+  // background: var(--white);
+  padding: clamp(36px, 5vw, 100px) 0;
 }
 
 .communitySection__inner {
@@ -143,6 +143,7 @@
 
 .communitySection__cta:hover {
   background: #1ebe57;
+  color: var(--white);
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(37, 211, 102, 0.3);
 }
