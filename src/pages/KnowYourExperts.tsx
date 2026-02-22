@@ -1,4 +1,4 @@
-import { FaLinkedinIn } from "react-icons/fa";
+// import { FaLinkedinIn } from "react-icons/fa";
 import { PrimaryButton } from "../components/PrimaryButton";
 import "./KnowYourExperts.scss";
 
@@ -161,7 +161,7 @@ export default function KnowYourExperts() {
                 ))}
               </div>
 
-              <a
+              {/* <a
                 className="expertCard__linkedin"
                 href={expert.linkedin}
                 target="_blank"
@@ -170,7 +170,7 @@ export default function KnowYourExperts() {
               >
                 <FaLinkedinIn />
                 <span>LinkedIn</span>
-              </a>
+              </a> */}
             </div>
           </article>
         ))}
