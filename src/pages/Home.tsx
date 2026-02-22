@@ -4,6 +4,7 @@ import { JourneyStages } from "../components/JourneyStages";
 import { BenefitsBentoGrid } from "../components/BenefitsBentoGrid";
 // import { WellnessLibrary } from "../components/WellnessLibrary";
 import { PodcastSection } from "../components/PodcastSection";
+import { CommunitySection } from "../components/CommunitySection";
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
       <BenefitsBentoGrid />
       {/* <WellnessLibrary /> */}
       <PodcastSection />
+      <CommunitySection />
     </div>
   );
 }
