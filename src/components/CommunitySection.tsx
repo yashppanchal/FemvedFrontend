@@ -1,21 +1,22 @@
 import { FaWhatsapp } from "react-icons/fa";
 import "./CommunitySection.scss";
-import community1 from "../assets/homepage/community/1.webp";
-import community2 from "../assets/homepage/community/2.webp";
-import community3 from "../assets/homepage/community/3.png.avif";
-import community4 from "../assets/homepage/community/4.webp";
-import community5 from "../assets/homepage/community/5.webp";
-import community6 from "../assets/homepage/community/6.jpg.avif";
+import community1 from "../assets/homepage/community/1.png";
+import community2 from "../assets/homepage/community/2.png";
+import community3 from "../assets/homepage/community/3.png";
+import community4 from "../assets/homepage/community/4.png";
+import community5 from "../assets/homepage/community/5.png";
+import community6 from "../assets/homepage/community/6.png";
 
-const WHATSAPP_COMMUNITY_URL = "https://chat.whatsapp.com/YOUR_COMMUNITY_LINK";
+const WHATSAPP_COMMUNITY_URL =
+  "https://chat.whatsapp.com/ESpk7Ruh6wWFlFuFfx423s";
 
 const collageImages = [
-  { id: "img1", src: community1, alt: "Community member story" },
+  { id: "img6", src: community1, alt: "Community member story" },
   { id: "img2", src: community2, alt: "Wellness workshop" },
   { id: "img3", src: community3, alt: "Group discussion" },
   { id: "img4", src: community4, alt: "Community event" },
   { id: "img5", src: community5, alt: "Expert session" },
-  { id: "img6", src: community6, alt: "Community gathering" },
+  { id: "img1", src: community6, alt: "Community gathering" },
 ];
 
 export function CommunitySection() {

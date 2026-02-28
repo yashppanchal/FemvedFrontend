@@ -5,15 +5,17 @@
 const BASE_URL = "https://api.femved.com";
 
 export class ApiError extends Error {
-  constructor(
-    public status: number,
-    public body: unknown,
-  ) {
+  status: number;
+  body: unknown;
+
+  constructor(status: number, body: unknown) {
     const msg =
       typeof body === "object" && body !== null && "message" in body
         ? String((body as Record<string, unknown>).message)
         : `Request failed with status ${status}`;
     super(msg);
+    this.status = status;
+    this.body = body;
     this.name = "ApiError";
   }
 }
