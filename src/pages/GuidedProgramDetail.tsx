@@ -55,6 +55,9 @@ type GuidedTreeResponse = {
   }>;
 };
 
+let guidedProgramsCache: GuidedProgramInfo[] | null = null;
+let guidedProgramsRequest: Promise<GuidedProgramInfo[]> | null = null;
+
 function normalizeSlug(value: string | undefined) {
   return (value ?? "")
     .trim()
@@ -93,6 +96,38 @@ function mapApiCategoryToProgram(
   };
 }
 
+async function loadGuidedPrograms(): Promise<GuidedProgramInfo[]> {
+  if (guidedProgramsCache) {
+    return guidedProgramsCache;
+  }
+
+  if (guidedProgramsRequest) {
+    return guidedProgramsRequest;
+  }
+
+  guidedProgramsRequest = (async () => {
+    const response = await fetch("https://api.femved.com/api/v1/guided/tree");
+    if (!response.ok) {
+      throw new Error(`Failed guided tree request: ${response.status}`);
+    }
+
+    const payload = (await response.json()) as GuidedTreeResponse;
+    const guidedDomain =
+      payload.domains?.find((domain) => domain.domainName === "Guided 1:1 Care") ??
+      null;
+    const mappedPrograms = (guidedDomain?.categories ?? []).map(mapApiCategoryToProgram);
+
+    guidedProgramsCache = mappedPrograms;
+    return mappedPrograms;
+  })();
+
+  try {
+    return await guidedProgramsRequest;
+  } finally {
+    guidedProgramsRequest = null;
+  }
+}
+
 export default function GuidedProgramDetail() {
   const { programSlug } = useParams<{ programSlug: string }>();
   const [programs, setPrograms] = useState<GuidedProgramInfo[]>([]);
@@ -107,22 +142,7 @@ export default function GuidedProgramDetail() {
       setHasError(false);
 
       try {
-        const response = await fetch(
-          "https://api.femved.com/api/v1/guided/tree",
-        );
-        if (!response.ok) {
-          throw new Error(`Failed guided tree request: ${response.status}`);
-        }
-
-        const payload = (await response.json()) as GuidedTreeResponse;
-        console.log(payload);
-        const guidedDomain =
-          payload.domains?.find(
-            (domain) => domain.domainName === "Guided 1:1 Care",
-          ) ?? null;
-        const mappedPrograms = (guidedDomain?.categories ?? []).map(
-          mapApiCategoryToProgram,
-        );
+        const mappedPrograms = await loadGuidedPrograms();
 
         if (isActive) {
           setPrograms(mappedPrograms);
