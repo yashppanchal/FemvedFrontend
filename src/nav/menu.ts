@@ -29,17 +29,17 @@ export const NAV_SECTIONS: NavSection[] = [
       {
         type: "internal",
         label: "Mental and Spiritual Wellbeing",
-        path: "/guided/mental-and-spiritual-wellbeing",
+        path: "/guided/mental-spiritual-wellbeing",
       },
       {
         type: "internal",
         label: "Longevity and Healthy Ageing Guidance",
-        path: "/guided/longevity-and-healthy-ageing",
+        path: "/guided/longevity-healthy-ageing",
       },
       {
         type: "internal",
         label: "Fitness and Personal Care Support",
-        path: "/guided/fitness-and-personal-care",
+        path: "/guided/fitness-personal-care",
       },
     ],
   },

@@ -1,44 +1,18 @@
 import { useRef } from "react";
 
-type DummyCard = {
+export type ProgramCard = {
   programName: string;
   expertName: string;
-  tag: string;
   body: string;
+  imageUrl?: string;
 };
-
-const DUMMY_CARDS: DummyCard[] = [
-  {
-    programName: "Break the Stress – Hormone Health Triangle",
-    expertName: "Dr. Prathima Nagesh",
-    tag: "Fertility Nurse",
-    body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi porta lectus a ligula lobortis, id iaculis ex tristique.",
-  },
-  {
-    programName: "The Happy Hormone Method",
-    expertName: "Kimberly Parsons, Naturopath & Herbalist",
-    tag: "Women's Health",
-    body: "Whole-person care focused on hormones, cycles, and long-term wellbeing.",
-  },
-  {
-    programName: "Balancing & Managing Perimenopause with Ayurveda",
-    expertName: "Dr. Prathima Nagesh",
-    tag: "Registered Dietitian",
-    body: "Nutrition care shaped around your goals, preferences, and real life.",
-  },
-  {
-    programName: "The Metabolic PCOS Reset",
-    expertName: "Kimberly Parsons, Naturopath & Herbalist",
-    tag: "Lifestyle Coach",
-    body: "Habit and lifestyle support with compassion, clarity, and consistency.",
-  },
-];
 
 type ChooseSectionProps = {
   keyAreas: string[];
+  programs: ProgramCard[];
 };
 
-export function ChooseSection({ keyAreas }: ChooseSectionProps) {
+export function ChooseSection({ keyAreas, programs }: ChooseSectionProps) {
   const carouselRef = useRef<HTMLDivElement | null>(null);
 
   return (
@@ -110,12 +84,21 @@ export function ChooseSection({ keyAreas }: ChooseSectionProps) {
           aria-label="Guided program experts"
         >
           <div className="guidedProgramDetail__carouselTrack">
-            {DUMMY_CARDS.map((c) => (
+            {programs.map((c) => (
               <article
                 className="guidedProgramDetail__productCard"
                 key={c.programName}
               >
-                <div className="guidedProgramDetail__productMedia" />
+                <div className="guidedProgramDetail__productMedia">
+                  {c.imageUrl ? (
+                    <img
+                      className="guidedProgramDetail__productMediaImage"
+                      src={c.imageUrl}
+                      alt={c.programName}
+                      loading="lazy"
+                    />
+                  ) : null}
+                </div>
                 <div className="guidedProgramDetail__productBody">
                   <h4 className="guidedProgramDetail__productName">
                     {c.programName}
@@ -123,9 +106,6 @@ export function ChooseSection({ keyAreas }: ChooseSectionProps) {
                   <p className="guidedProgramDetail__productSubtitle">
                     By <strong>{c.expertName}</strong>
                   </p>
-                  {/* <span className="guidedProgramDetail__productTag">
-                    {c.tag}
-                  </span> */}
                   <p className="guidedProgramDetail__productText">{c.body}</p>
                 </div>
               </article>

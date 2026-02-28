@@ -643,6 +643,13 @@
     linear-gradient(135deg, rgba(243, 230, 231, 0.85), rgba(255, 255, 255, 1));
 }
 
+.guidedProgramDetail__productMediaImage {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
 .guidedProgramDetail__productBody {
   padding: 14px 14px 16px;
 }
