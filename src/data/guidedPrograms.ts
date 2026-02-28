@@ -2,6 +2,9 @@ export type GuidedProgramCard = {
   programId?: string;
   programName: string;
   expertName: string;
+  expertTitle?: string;
+  expertDescription?: string;
+  expertImageUrl?: string;
   body: string;
   imageUrl?: string;
   programPageDisplayDetails?: {
@@ -50,6 +53,16 @@ type GuidedTreeResponse = {
         programGridImage?: string;
         expertId?: string;
         expertName?: string;
+        expertTitle?: string;
+        expertDescription?: string;
+        expertImage?: string;
+        expertImageUrl?: string;
+        expertDetails?: {
+          expertTitle?: string;
+          expertDescription?: string;
+          expertImage?: string;
+          expertImageUrl?: string;
+        };
         programPageDisplayDetails?: {
           overview?: string;
           whatYouGet?: string[];
@@ -92,18 +105,31 @@ function mapApiCategoryToProgram(
     imageSlug: page.categoryPageDataImage ?? "",
     whatsIncluded: page.whatsIncludedInCategory ?? [],
     keyAreas: page.categoryPageKeyAreas ?? [],
-    programsInCategory: (category.programsInCategory ?? []).map((program) => ({
-      programId: program.programId ?? "",
-      programName: program.programName ?? "",
-      expertName: program.expertName ?? "",
-      body: program.programGridDescription ?? "",
-      imageUrl: program.programGridImage ?? "",
-      programPageDisplayDetails: {
-        overview: program.programPageDisplayDetails?.overview ?? "",
-        whatYouGet: program.programPageDisplayDetails?.whatYouGet ?? [],
-        whoIsThisFor: program.programPageDisplayDetails?.whoIsThisFor ?? [],
-      },
-    })),
+    programsInCategory: (category.programsInCategory ?? []).map((program) => {
+      const expertDetails = program.expertDetails ?? {};
+
+      return {
+        programId: program.programId ?? "",
+        programName: program.programName ?? "",
+        expertName: program.expertName ?? "",
+        expertTitle: program.expertTitle ?? expertDetails.expertTitle ?? "",
+        expertDescription:
+          program.expertDescription ?? expertDetails.expertDescription ?? "",
+        expertImageUrl:
+          program.expertImageUrl ??
+          program.expertImage ??
+          expertDetails.expertImageUrl ??
+          expertDetails.expertImage ??
+          "",
+        body: program.programGridDescription ?? "",
+        imageUrl: program.programGridImage ?? "",
+        programPageDisplayDetails: {
+          overview: program.programPageDisplayDetails?.overview ?? "",
+          whatYouGet: program.programPageDisplayDetails?.whatYouGet ?? [],
+          whoIsThisFor: program.programPageDisplayDetails?.whoIsThisFor ?? [],
+        },
+      };
+    }),
   };
 }
 

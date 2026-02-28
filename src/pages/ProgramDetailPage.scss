@@ -64,29 +64,31 @@
 }
 
 .programDetailPage__content p {
-  margin: 0 0 16px;
-  color: rgba(15, 15, 16, 0.84);
-  font-size: 20px;
-  font-size: clamp(15px, 1.3vw, 26px);
-  line-height: 1.7;
+  margin: 0;
+  max-width: 52ch;
+  font-size: clamp(15px, 1.4vw, 18px);
+  color: rgba(26, 26, 26, 0.72);
+  line-height: 1.6;
 }
 
 .programDetailPage__content h2 {
-  margin: 10px 0 12px;
+  margin: 0;
   font-family: var(--fontTitle);
-  font-size: clamp(28px, 2.4vw, 42px);
-  line-height: 1.2;
   font-weight: 400;
-  color: var(--black);
+  letter-spacing: -0.03em;
+  color: var(--primary);
+  font-size: clamp(28px, 2.4vw, 42px);
+  line-height: 1.08;
+  margin-bottom: 12px;
+  margin-top: 48px;
 }
 
 .programDetailPage__content ul {
-  margin: 0 0 18px;
-  padding-left: 24px;
-  color: rgba(15, 15, 16, 0.84);
-  display: grid;
-  gap: 8px;
-  font-size: clamp(15px, 1.3vw, 26px);
+  margin: 0;
+  max-width: 52ch;
+  font-size: clamp(15px, 1.4vw, 18px);
+  color: rgba(26, 26, 26, 0.72);
+  line-height: 1.6;
 }
 
 .programDetailPage__stickyCard {
@@ -150,6 +152,67 @@
   color: rgba(15, 15, 16, 0.66);
 }
 
+.programDetailPage__expertSection {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  background: #f8f4f3;
+  padding: clamp(28px, 4vw, 56px) 0;
+}
+
+.programDetailPage__expertInner {
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+  gap: clamp(20px, 4vw, 56px);
+  align-items: start;
+}
+
+.programDetailPage__expertLeft {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.programDetailPage__expertPhoto,
+.programDetailPage__expertPhotoFallback {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.programDetailPage__expertPhotoFallback {
+  display: grid;
+  place-items: center;
+  background: #d5c3bd;
+  color: #5f4038;
+  font-size: 40px;
+  font-weight: 600;
+}
+
+.programDetailPage__expertName {
+  margin: 0;
+  font-family: var(--fontTitle);
+  font-size: clamp(22px, 2vw, 34px);
+  line-height: 1.2;
+  color: var(--black);
+}
+
+.programDetailPage__expertTitle {
+  margin: 0;
+  font-size: clamp(14px, 1.1vw, 18px);
+  line-height: 1.5;
+  color: rgba(15, 15, 16, 0.72);
+}
+
+.programDetailPage__expertRight p {
+  margin: 0;
+  font-size: clamp(15px, 1.25vw, 22px);
+  line-height: 1.8;
+  color: rgba(15, 15, 16, 0.84);
+}
+
 @media (max-width: 960px) {
   .programDetailPage__contentWrap {
     grid-template-columns: 1fr;
@@ -158,5 +221,9 @@
 
   .programDetailPage__stickyCard {
     position: static;
+  }
+
+  .programDetailPage__expertInner {
+    grid-template-columns: 1fr;
   }
 }

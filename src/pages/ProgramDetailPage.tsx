@@ -140,9 +140,7 @@ export default function ProgramDetailPage() {
         </article>
 
         <aside className="programDetailPage__stickyCard">
-          <h3 className="programDetailPage__priceTitle">
-            ₹2700 INR Value • Pay What You Want
-          </h3>
+          <h3 className="programDetailPage__priceTitle">₹2700 INR Value</h3>
           <div className="programDetailPage__priceOptions">
             <button type="button" className="programDetailPage__priceBtn">
               ₹900
@@ -167,6 +165,50 @@ export default function ProgramDetailPage() {
           </p>
         </aside>
       </div>
+
+      <section className="programDetailPage__expertSection">
+        <div className="programDetailPage__expertInner container">
+          <div className="programDetailPage__expertLeft">
+            {selectedProgram.expertImageUrl ? (
+              <img
+                src={selectedProgram.expertImageUrl}
+                alt={selectedProgram.expertName}
+                className="programDetailPage__expertPhoto"
+              />
+            ) : (
+              <div
+                className="programDetailPage__expertPhotoFallback"
+                aria-hidden="true"
+              >
+                {selectedProgram.expertName.charAt(0)}
+              </div>
+            )}
+            <h3 className="programDetailPage__expertName">
+              {selectedProgram.expertName}
+            </h3>
+            <p className="programDetailPage__expertTitle">
+              {selectedProgram.expertTitle}
+            </p>
+          </div>
+          <div className="programDetailPage__expertRight">
+            <p>{selectedProgram.expertDescription}</p>
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut a
+              fringilla sem. Etiam pretium condimentum nulla, porttitor euismod
+              urna dapibus ac. Nullam malesuada nunc metus, non sodales sapien
+              pulvinar at. Ut id magna sed tortor dignissim pulvinar. Nunc
+              blandit consectetur risus, malesuada eleifend ligula feugiat at.
+              Phasellus eu rhoncus justo. Donec ipsum enim, bibendum ut mauris
+              et, pulvinar pharetra elit. Duis iaculis felis ipsum, in volutpat
+              metus imperdiet sed. Fusce sed risus quis nisi posuere mattis.
+              Aliquam erat volutpat. Suspendisse potenti. Sed felis purus,
+              vulputate at ultrices dignissim, dapibus vel orci. Quisque semper
+              nunc euismod est ornare viverra. Donec laoreet libero in nulla
+              laoreet pulvinar.
+            </p>
+          </div>
+        </div>
+      </section>
     </section>
   );
 }
