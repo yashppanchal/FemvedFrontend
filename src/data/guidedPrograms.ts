@@ -1,4 +1,8 @@
 export type GuidedProgramCard = {
+  programDurations?: Array<{
+    durationLabel: string;
+    durationPrice: string;
+  }>;
   programId?: string;
   programName: string;
   expertName: string;
@@ -47,6 +51,10 @@ type GuidedTreeResponse = {
         categoryPageKeyAreas?: string[];
       };
       programsInCategory?: Array<{
+        programDurations?: Array<{
+          durationLabel?: string;
+          durationPrice?: string;
+        }>;
         programId?: string;
         programName?: string;
         programGridDescription?: string;
@@ -109,6 +117,10 @@ function mapApiCategoryToProgram(
       const expertDetails = program.expertDetails ?? {};
 
       return {
+        programDurations: (program.programDurations ?? []).map((duration) => ({
+          durationLabel: duration.durationLabel ?? "",
+          durationPrice: duration.durationPrice ?? "",
+        })),
         programId: program.programId ?? "",
         programName: program.programName ?? "",
         expertName: program.expertName ?? "",

@@ -15,6 +15,7 @@ export default function ProgramDetailPage() {
   const [categories, setCategories] = useState<GuidedProgramInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [selectedDurationLabel, setSelectedDurationLabel] = useState("");
 
   useEffect(() => {
     let isActive = true;
@@ -65,6 +66,22 @@ export default function ProgramDetailPage() {
       ) ?? null
     );
   }, [categories, programId, programSlug]);
+
+  useEffect(() => {
+    const firstDurationLabel =
+      selectedProgram?.programDurations?.[0]?.durationLabel ?? "";
+    setSelectedDurationLabel(firstDurationLabel);
+  }, [selectedProgram]);
+
+  const selectedDuration = useMemo(() => {
+    if (!selectedProgram?.programDurations?.length) return null;
+
+    return (
+      selectedProgram.programDurations.find(
+        (duration) => duration.durationLabel === selectedDurationLabel,
+      ) ?? selectedProgram.programDurations[0]
+    );
+  }, [selectedDurationLabel, selectedProgram]);
 
   if (loading) {
     return (
@@ -140,29 +157,34 @@ export default function ProgramDetailPage() {
         </article>
 
         <aside className="programDetailPage__stickyCard">
-          <h3 className="programDetailPage__priceTitle">₹2700 INR Value</h3>
+          <h3 className="programDetailPage__priceTitle">
+            {selectedDuration?.durationPrice ?? ""}
+          </h3>
           <div className="programDetailPage__priceOptions">
-            <button type="button" className="programDetailPage__priceBtn">
-              ₹900
-            </button>
-            <button
-              type="button"
-              className="programDetailPage__priceBtn programDetailPage__priceBtn--active"
-            >
-              ₹1800
-            </button>
-            <button type="button" className="programDetailPage__priceBtn">
-              ₹2700
-            </button>
+            {selectedProgram.programDurations?.map((duration) => {
+              const isActive = duration.durationLabel === selectedDurationLabel;
+              return (
+                <button
+                  key={duration.durationLabel}
+                  type="button"
+                  className={`programDetailPage__priceBtn${isActive ? " programDetailPage__priceBtn--active" : ""}`}
+                  onClick={() =>
+                    setSelectedDurationLabel(duration.durationLabel)
+                  }
+                >
+                  {duration.durationLabel}
+                </button>
+              );
+            })}
           </div>
-          <p className="programDetailPage__priceText">
+          {/* <p className="programDetailPage__priceText">
             This is the total amount for all lessons.
           </p>
           <p className="programDetailPage__priceSubtext">
             Pay extra to support our instructors and help create more courses.
             No matter how much you pay, you get the same course as everybody
             else.
-          </p>
+          </p> */}
         </aside>
       </div>
 
