@@ -1,6 +1,6 @@
 .programDetailPage {
   width: 100%;
-  background: #f3efef;
+  background: transparent;
 }
 
 .programDetailPage__hero {
@@ -22,9 +22,9 @@
 
 .programDetailPage__meta {
   margin: 0 0 14px;
-  font-size: 34px;
+  font-size: 18px;
   line-height: 1.4;
-  font-size: clamp(18px, 2.2vw, 32px);
+  font-size: clamp(18px, 1.2vw, 22px);
   color: rgba(255, 255, 255, 0.9);
 }
 
@@ -34,23 +34,19 @@
 
 .programDetailPage__title {
   margin: 0 0 12px;
-  max-width: 22ch;
+  width: 100%;
+  max-width: none;
   font-family: var(--fontTitle);
-  font-size: clamp(32px, 4vw, 56px);
+  font-size: clamp(24px, 2.8vw, 40px);
   letter-spacing: -0.02em;
-  line-height: 1.05;
+  line-height: 1.15;
   color: var(--white);
   font-weight: 400;
-}
-
-.programDetailPage__socialProof {
-  margin: 0;
-  font-size: clamp(17px, 1.5vw, 24px);
-  color: rgba(255, 255, 255, 0.94);
+  white-space: nowrap;
 }
 
 .programDetailPage__contentWrap {
-  margin-top: -26px;
+  margin-top: 0;
   padding-bottom: 56px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
@@ -64,6 +60,7 @@
   padding: clamp(18px, 2.2vw, 28px);
   border: 1px solid rgba(15, 15, 16, 0.08);
   box-shadow: 0 14px 34px rgba(15, 15, 16, 0.05);
+  margin-top: 48px;
 }
 
 .programDetailPage__content p {
@@ -100,6 +97,7 @@
   border: 1px solid rgba(15, 15, 16, 0.08);
   box-shadow: 0 16px 36px rgba(15, 15, 16, 0.07);
   padding: clamp(18px, 2.4vw, 30px);
+  margin-top: 48px;
 }
 
 .programDetailPage__priceTitle {
@@ -155,7 +153,7 @@
 @media (max-width: 960px) {
   .programDetailPage__contentWrap {
     grid-template-columns: 1fr;
-    margin-top: -20px;
+    margin-top: 0;
   }
 
   .programDetailPage__stickyCard {

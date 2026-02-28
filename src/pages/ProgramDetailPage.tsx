@@ -52,7 +52,9 @@ export default function ProgramDetailPage() {
     const desiredCategorySlug = normalizeSlug(programSlug);
     const selectedCategory = categories.find((category) => {
       const mappedSlug = normalizeSlug(category.slug);
-      return mappedSlug === desiredCategorySlug || category.slug === programSlug;
+      return (
+        mappedSlug === desiredCategorySlug || category.slug === programSlug
+      );
     });
 
     if (!selectedCategory) return null;
@@ -107,35 +109,34 @@ export default function ProgramDetailPage() {
         }
       >
         <div className="programDetailPage__heroInner container">
+          <h1 className="programDetailPage__title">
+            {selectedProgram.programName}
+          </h1>
           <p className="programDetailPage__meta">
-            8 Lessons <span aria-hidden="true">|</span> By{" "}
-            <strong>{selectedProgram.expertName}</strong>
+            By <strong>{selectedProgram.expertName}</strong>
           </p>
-          <h1 className="programDetailPage__title">{selectedProgram.programName}</h1>
-          <p className="programDetailPage__socialProof">Taken by 25,475 people</p>
         </div>
       </header>
 
       <div className="programDetailPage__contentWrap container">
         <article className="programDetailPage__content">
-          <p>{selectedProgram.body}</p>
-          <h2>The proven formula for better strength and confidence</h2>
-          <p>
-            This guided program focuses on practical steps you can follow at your
-            own pace. Every lesson is designed to help you build a stable routine
-            and improve daily wellbeing with expert support.
-          </p>
-          <h2>What you will learn</h2>
+          <p>{selectedProgram.programPageDisplayDetails?.overview}</p>
+          <h2>What you'll receive in this program:</h2>
           <ul>
-            <li>Clear, structured sessions with step-by-step guidance</li>
-            <li>Routines that are realistic and easy to continue</li>
-            <li>Actionable recommendations from experienced practitioners</li>
-            <li>Techniques to improve consistency and long-term outcomes</li>
+            {selectedProgram.programPageDisplayDetails?.whatYouGet?.map(
+              (item) => (
+                <li key={item}>{item}</li>
+              ),
+            )}
           </ul>
-          <p>
-            You can revisit the lessons as many times as needed and move at a pace
-            that feels right for your schedule.
-          </p>
+          <h2>Who should join this program:</h2>
+          <ul>
+            {selectedProgram.programPageDisplayDetails?.whoIsThisFor?.map(
+              (item) => (
+                <li key={item}>{item}</li>
+              ),
+            )}
+          </ul>
         </article>
 
         <aside className="programDetailPage__stickyCard">
@@ -160,8 +161,9 @@ export default function ProgramDetailPage() {
             This is the total amount for all lessons.
           </p>
           <p className="programDetailPage__priceSubtext">
-            Pay extra to support our instructors and help create more courses. No
-            matter how much you pay, you get the same course as everybody else.
+            Pay extra to support our instructors and help create more courses.
+            No matter how much you pay, you get the same course as everybody
+            else.
           </p>
         </aside>
       </div>

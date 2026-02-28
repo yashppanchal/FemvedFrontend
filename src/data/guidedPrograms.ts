@@ -4,6 +4,11 @@ export type GuidedProgramCard = {
   expertName: string;
   body: string;
   imageUrl?: string;
+  programPageDisplayDetails?: {
+    overview?: string;
+    whatYouGet?: string[];
+    whoIsThisFor?: string[];
+  };
 };
 
 export type GuidedProgramInfo = {
@@ -45,6 +50,11 @@ type GuidedTreeResponse = {
         programGridImage?: string;
         expertId?: string;
         expertName?: string;
+        programPageDisplayDetails?: {
+          overview?: string;
+          whatYouGet?: string[];
+          whoIsThisFor?: string[];
+        };
       }>;
     }>;
   }>;
@@ -88,6 +98,11 @@ function mapApiCategoryToProgram(
       expertName: program.expertName ?? "",
       body: program.programGridDescription ?? "",
       imageUrl: program.programGridImage ?? "",
+      programPageDisplayDetails: {
+        overview: program.programPageDisplayDetails?.overview ?? "",
+        whatYouGet: program.programPageDisplayDetails?.whatYouGet ?? [],
+        whoIsThisFor: program.programPageDisplayDetails?.whoIsThisFor ?? [],
+      },
     })),
   };
 }
