@@ -1,6 +1,8 @@
 import { useRef } from "react";
+import { Link } from "react-router-dom";
 
 export type ProgramCard = {
+  programId?: string;
   programName: string;
   expertName: string;
   body: string;
@@ -10,9 +12,14 @@ export type ProgramCard = {
 type ChooseSectionProps = {
   keyAreas: string[];
   programs: ProgramCard[];
+  programSlug: string;
 };
 
-export function ChooseSection({ keyAreas, programs }: ChooseSectionProps) {
+export function ChooseSection({
+  keyAreas,
+  programs,
+  programSlug,
+}: ChooseSectionProps) {
   const carouselRef = useRef<HTMLDivElement | null>(null);
 
   return (
@@ -107,6 +114,14 @@ export function ChooseSection({ keyAreas, programs }: ChooseSectionProps) {
                     By <strong>{c.expertName}</strong>
                   </p>
                   <p className="guidedProgramDetail__productText">{c.body}</p>
+                  {c.programId ? (
+                    <Link
+                      className="guidedProgramDetail__productDetailsLink"
+                      to={`/guided/${programSlug}/${c.programId}`}
+                    >
+                      View Details
+                    </Link>
+                  ) : null}
                 </div>
               </article>
             ))}

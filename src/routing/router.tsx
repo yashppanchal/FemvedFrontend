@@ -59,6 +59,7 @@ export const router = createBrowserRouter([
       { path: "/learn/know-your-experts", element: <KnowYourExperts /> },
       { path: "/learn/podcast", element: <Podcast /> },
       { path: "/guided/:programSlug", element: <GuidedProgramDetail /> },
+      { path: "/guided/:programSlug/:programId", element: <GuidedProgramDetail /> },
       ...INTERNAL_NAV_ROUTES.filter(
         (r) =>
           !r.path.startsWith("/guided/") &&

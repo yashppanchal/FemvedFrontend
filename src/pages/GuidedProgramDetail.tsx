@@ -88,6 +88,7 @@ function mapApiCategoryToProgram(
     whatsIncluded: page.whatsIncludedInCategory ?? [],
     keyAreas: page.categoryPageKeyAreas ?? [],
     programsInCategory: (category.programsInCategory ?? []).map((program) => ({
+      programId: program.programId ?? "",
       programName: program.programName ?? "",
       expertName: program.expertName ?? "",
       body: program.programGridDescription ?? "",
@@ -129,7 +130,10 @@ async function loadGuidedPrograms(): Promise<GuidedProgramInfo[]> {
 }
 
 export default function GuidedProgramDetail() {
-  const { programSlug } = useParams<{ programSlug: string }>();
+  const { programSlug, programId } = useParams<{
+    programSlug: string;
+    programId?: string;
+  }>();
   const [programs, setPrograms] = useState<GuidedProgramInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -177,6 +181,22 @@ export default function GuidedProgramDetail() {
     );
   }, [programSlug, programs]);
 
+  const selectedProgram = useMemo(() => {
+    if (!programId) return null;
+
+    for (const category of programs) {
+      const matchedProgram = (category.programsInCategory ?? []).find(
+        (item) => item.programId === programId,
+      );
+
+      if (matchedProgram) {
+        return matchedProgram;
+      }
+    }
+
+    return null;
+  }, [programId, programs]);
+
   if (loading) {
     return (
       <section className="page guidedProgramDetail">
@@ -209,9 +229,29 @@ export default function GuidedProgramDetail() {
     );
   }
 
+  if (programId) {
+    if (!selectedProgram) {
+      return (
+        <section className="page guidedProgramDetail">
+          <h1 className="page__title">Program not found</h1>
+          <p className="page__lead">
+            This program doesn't exist yet. Go back <Link to="/">home</Link>.
+          </p>
+        </section>
+      );
+    }
+
+    return (
+      <section className="page guidedProgramDetail">
+        <h1 className="page__title">{selectedProgram.programName}</h1>
+      </section>
+    );
+  }
+
   const whatsIncluded = program.whatsIncluded ?? [];
   const keyAreas = program.keyAreas ?? [];
   const programsInCategory = program.programsInCategory ?? [];
+  const categorySlugForLinks = programSlug ?? normalizeSlug(program.slug);
 
   return (
     <section className="page guidedProgramDetail">
@@ -224,7 +264,11 @@ export default function GuidedProgramDetail() {
       />
       <MoreSection whatsIncluded={whatsIncluded} />
 
-      <ChooseSection keyAreas={keyAreas} programs={programsInCategory} />
+      <ChooseSection
+        keyAreas={keyAreas}
+        programs={programsInCategory}
+        programSlug={categorySlugForLinks}
+      />
 
       <CtaBanner />
 
