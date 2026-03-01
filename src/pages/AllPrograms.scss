@@ -1,0 +1,193 @@
+.allProgramsPage {
+  padding-top: 20px;
+  padding-bottom: 56px;
+}
+
+.allProgramsPage__header {
+  margin-bottom: 18px;
+}
+
+.allProgramsPage__filters {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: end;
+}
+
+.allProgramsPage__select {
+  width: 100%;
+}
+
+.allProgramsPage__filterActions {
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+}
+
+.allProgramsPage__clearBtn {
+  width: 100%;
+  justify-content: center;
+  height: 40px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.allProgramsPage__clearBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.allProgramsPage__resultsCount {
+  margin: 0 0 14px;
+  color: rgba(15, 15, 16, 0.72);
+  font-size: 14px;
+}
+
+.allProgramsPage__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.allProgramsPage__card {
+  border: 1px solid rgba(15, 15, 16, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--white);
+  box-shadow: 0 12px 28px rgba(15, 15, 16, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.allProgramsPage__media {
+  height: 180px;
+  background:
+    radial-gradient(
+      circle at 30% 25%,
+      rgba(227, 200, 174, 0.75) 0%,
+      rgba(227, 200, 174, 0) 56%
+    ),
+    linear-gradient(135deg, rgba(243, 230, 231, 0.88), rgba(255, 255, 255, 1));
+}
+
+.allProgramsPage__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.allProgramsPage__fallbackMedia {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  font-family: var(--fontTitle);
+  font-size: 48px;
+  color: rgba(86, 19, 27, 0.45);
+}
+
+.allProgramsPage__body {
+  padding: 14px;
+  display: grid;
+  row-gap: 10px;
+  align-content: start;
+  flex: 1 1 auto;
+}
+
+.allProgramsPage__badge {
+  margin: 0;
+  width: fit-content;
+  font-size: 12px;
+  line-height: 1.3;
+  color: rgba(15, 15, 16, 0.75);
+  background: rgba(227, 200, 174, 0.36);
+  border: 1px solid rgba(86, 19, 27, 0.16);
+  padding: 4px 9px;
+  border-radius: 999px;
+}
+
+.allProgramsPage__title {
+  margin: 0;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  color: var(--black);
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.allProgramsPage__expert {
+  margin: 0;
+  color: rgba(15, 15, 16, 0.72);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.allProgramsPage__description {
+  margin: 0;
+  color: rgba(15, 15, 16, 0.72);
+  font-size: 14px;
+  line-height: 1.55;
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.allProgramsPage__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.allProgramsPage__chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 15, 16, 0.14);
+  background: rgba(255, 255, 255, 0.85);
+  color: rgba(15, 15, 16, 0.8);
+  font-size: 12px;
+  padding: 3px 9px;
+  line-height: 1.3;
+}
+
+.allProgramsPage__detailsLink {
+  margin-top: auto;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.allProgramsPage__detailsLink:hover {
+  color: var(--primaryHover);
+}
+
+.allProgramsPage__emptyState {
+  margin-top: 12px;
+}
+
+@media (max-width: 1100px) {
+  .allProgramsPage__filters {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .allProgramsPage__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .allProgramsPage__filters {
+    grid-template-columns: 1fr;
+  }
+
+  .allProgramsPage__grid {
+    grid-template-columns: 1fr;
+  }
+}

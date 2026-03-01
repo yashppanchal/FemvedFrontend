@@ -1,0 +1,372 @@
+import "./AllPrograms.scss";
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { loadGuidedPrograms, normalizeSlug } from "../data/guidedPrograms";
+
+type ParsedPrice = {
+  currency: string;
+  value: number | null;
+};
+
+type FlattenedProgram = {
+  id: string;
+  name: string;
+  expertName: string;
+  body: string;
+  imageUrl: string;
+  categoryName: string;
+  categorySlug: string;
+  categoryType: string;
+  durations: Array<{
+    label: string;
+    price: string;
+    parsed: ParsedPrice;
+  }>;
+};
+
+function parseDurationPrice(rawPrice: string): ParsedPrice {
+  const trimmed = rawPrice.trim();
+  if (!trimmed) return { currency: "Unknown", value: null };
+
+  const currencyMatch = trimmed.match(/^([^\d.,]+)/);
+  const numericMatch = trimmed.match(/[\d,]+(?:\.\d+)?/);
+  const currency = currencyMatch?.[1]?.trim() || "Unknown";
+  const value = numericMatch ? Number.parseFloat(numericMatch[0].replace(/,/g, "")) : null;
+
+  return { currency, value: Number.isFinite(value) ? value : null };
+}
+
+function normalizeText(value: string) {
+  return value.trim() || "Unknown";
+}
+
+export default function AllPrograms() {
+  const [programs, setPrograms] = useState<FlattenedProgram[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+
+  const [selectedCategoryType, setSelectedCategoryType] = useState("all");
+  const [selectedCurrency, setSelectedCurrency] = useState("all");
+  const [selectedDuration, setSelectedDuration] = useState("all");
+  const [minPriceInput, setMinPriceInput] = useState("");
+  const [maxPriceInput, setMaxPriceInput] = useState("");
+
+  useEffect(() => {
+    let isActive = true;
+
+    async function loadAllGuidedPrograms() {
+      setLoading(true);
+      setHasError(false);
+
+      try {
+        const categories = await loadGuidedPrograms();
+        const flattened: FlattenedProgram[] = [];
+
+        for (const category of categories) {
+          const categoryName = normalizeText(category.slug ?? category.programType);
+          const categorySlug = normalizeSlug(category.slug);
+          const categoryType = normalizeText(category.programType);
+
+          for (const program of category.programsInCategory ?? []) {
+            const durationRows = (program.programDurations ?? []).map((duration) => ({
+              label: normalizeText(duration.durationLabel),
+              price: normalizeText(duration.durationPrice),
+              parsed: parseDurationPrice(duration.durationPrice),
+            }));
+
+            flattened.push({
+              id: program.programId || `${categorySlug}-${normalizeSlug(program.programName)}`,
+              name: normalizeText(program.programName),
+              expertName: normalizeText(program.expertName),
+              body: program.body.trim(),
+              imageUrl: program.imageUrl?.trim() ?? "",
+              categoryName,
+              categorySlug,
+              categoryType,
+              durations: durationRows,
+            });
+          }
+        }
+
+        if (isActive) {
+          setPrograms(flattened);
+        }
+      } catch {
+        if (isActive) {
+          setHasError(true);
+        }
+      } finally {
+        if (isActive) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadAllGuidedPrograms();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  const categoryTypes = useMemo(
+    () => Array.from(new Set(programs.map((program) => program.categoryType))).sort(),
+    [programs],
+  );
+
+  const currencies = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          programs.flatMap((program) =>
+            program.durations.map((duration) => duration.parsed.currency),
+          ),
+        ),
+      ).sort(),
+    [programs],
+  );
+
+  const durationOptions = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          programs.flatMap((program) => program.durations.map((duration) => duration.label)),
+        ),
+      ).sort(),
+    [programs],
+  );
+
+  const filteredPrograms = useMemo(() => {
+    const minPrice = minPriceInput.trim() ? Number(minPriceInput) : null;
+    const maxPrice = maxPriceInput.trim() ? Number(maxPriceInput) : null;
+
+    return programs.filter((program) => {
+      const categoryMatch =
+        selectedCategoryType === "all" || program.categoryType === selectedCategoryType;
+
+      const currencyMatch =
+        selectedCurrency === "all" ||
+        program.durations.some((duration) => duration.parsed.currency === selectedCurrency);
+
+      const durationMatch =
+        selectedDuration === "all" ||
+        program.durations.some((duration) => duration.label === selectedDuration);
+
+      const priceMatch = program.durations.some((duration) => {
+        const amount = duration.parsed.value;
+        if (amount === null) return false;
+        if (minPrice !== null && Number.isFinite(minPrice) && amount < minPrice) return false;
+        if (maxPrice !== null && Number.isFinite(maxPrice) && amount > maxPrice) return false;
+        return true;
+      });
+
+      const hasPriceFilter = minPrice !== null || maxPrice !== null;
+      return categoryMatch && currencyMatch && durationMatch && (hasPriceFilter ? priceMatch : true);
+    });
+  }, [
+    maxPriceInput,
+    minPriceInput,
+    programs,
+    selectedCategoryType,
+    selectedCurrency,
+    selectedDuration,
+  ]);
+
+  const hasAnyFilter =
+    selectedCategoryType !== "all" ||
+    selectedCurrency !== "all" ||
+    selectedDuration !== "all" ||
+    minPriceInput.trim() !== "" ||
+    maxPriceInput.trim() !== "";
+
+  if (loading) {
+    return (
+      <section className="page allProgramsPage">
+        <h1 className="page__title">Loading all guided programs...</h1>
+      </section>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <section className="page allProgramsPage">
+        <h1 className="page__title">Unable to load all guided programs</h1>
+        <p className="page__lead">
+          Please refresh and try again. You can also go back <Link to="/">home</Link>.
+        </p>
+      </section>
+    );
+  }
+
+  return (
+    <section className="page allProgramsPage">
+      <header className="allProgramsPage__header">
+        <h1 className="page__title">All Guided 1:1 Care Programs</h1>
+        <p className="page__lead">
+          Explore every program across all guided care categories and filter by your preferences.
+        </p>
+      </header>
+
+      <div className="allProgramsPage__filters card">
+        <div className="field">
+          <label className="field__label" htmlFor="categoryType">
+            Category Type
+          </label>
+          <select
+            id="categoryType"
+            className="field__input allProgramsPage__select"
+            value={selectedCategoryType}
+            onChange={(event) => setSelectedCategoryType(event.target.value)}
+          >
+            <option value="all">All category types</option>
+            {categoryTypes.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="field">
+          <label className="field__label" htmlFor="currency">
+            Currency
+          </label>
+          <select
+            id="currency"
+            className="field__input allProgramsPage__select"
+            value={selectedCurrency}
+            onChange={(event) => setSelectedCurrency(event.target.value)}
+          >
+            <option value="all">All currencies</option>
+            {currencies.map((currency) => (
+              <option key={currency} value={currency}>
+                {currency}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="field">
+          <label className="field__label" htmlFor="duration">
+            Duration
+          </label>
+          <select
+            id="duration"
+            className="field__input allProgramsPage__select"
+            value={selectedDuration}
+            onChange={(event) => setSelectedDuration(event.target.value)}
+          >
+            <option value="all">All durations</option>
+            {durationOptions.map((duration) => (
+              <option key={duration} value={duration}>
+                {duration}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="field">
+          <label className="field__label" htmlFor="minPrice">
+            Min Price
+          </label>
+          <input
+            id="minPrice"
+            className="field__input"
+            type="number"
+            min="0"
+            inputMode="numeric"
+            value={minPriceInput}
+            onChange={(event) => setMinPriceInput(event.target.value)}
+            placeholder="e.g. 3000"
+          />
+        </div>
+
+        <div className="field">
+          <label className="field__label" htmlFor="maxPrice">
+            Max Price
+          </label>
+          <input
+            id="maxPrice"
+            className="field__input"
+            type="number"
+            min="0"
+            inputMode="numeric"
+            value={maxPriceInput}
+            onChange={(event) => setMaxPriceInput(event.target.value)}
+            placeholder="e.g. 12000"
+          />
+        </div>
+
+        <div className="allProgramsPage__filterActions">
+          <button
+            type="button"
+            className="button allProgramsPage__clearBtn"
+            onClick={() => {
+              setSelectedCategoryType("all");
+              setSelectedCurrency("all");
+              setSelectedDuration("all");
+              setMinPriceInput("");
+              setMaxPriceInput("");
+            }}
+            disabled={!hasAnyFilter}
+          >
+            Clear Filters
+          </button>
+        </div>
+      </div>
+
+      <p className="allProgramsPage__resultsCount">
+        Showing {filteredPrograms.length} of {programs.length} programs
+      </p>
+
+      {filteredPrograms.length ? (
+        <div className="allProgramsPage__grid">
+          {filteredPrograms.map((program) => (
+            <article className="allProgramsPage__card" key={program.id}>
+              <div className="allProgramsPage__media">
+                {program.imageUrl ? (
+                  <img src={program.imageUrl} alt={program.name} loading="lazy" />
+                ) : (
+                  <div className="allProgramsPage__fallbackMedia" aria-hidden="true">
+                    {program.name.charAt(0)}
+                  </div>
+                )}
+              </div>
+
+              <div className="allProgramsPage__body">
+                <p className="allProgramsPage__badge">{program.categoryType}</p>
+                <h2 className="allProgramsPage__title">{program.name}</h2>
+                <p className="allProgramsPage__expert">
+                  By <strong>{program.expertName}</strong>
+                </p>
+                <p className="allProgramsPage__description">{program.body}</p>
+
+                {program.durations.length ? (
+                  <div className="allProgramsPage__chips">
+                    {program.durations.slice(0, 3).map((duration) => (
+                      <span className="allProgramsPage__chip" key={`${program.id}-${duration.label}`}>
+                        {duration.label} - {duration.price}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+
+                <Link
+                  className="allProgramsPage__detailsLink"
+                  to={`/guided/${program.categorySlug}/${program.id}`}
+                >
+                  View Details
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div className="card allProgramsPage__emptyState">
+          <h2 className="card__title">No programs match these filters</h2>
+          <p className="card__text">Try clearing one or more filters to see available options.</p>
+        </div>
+      )}
+    </section>
+  );
+}

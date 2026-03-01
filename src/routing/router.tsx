@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
 import { INTERNAL_NAV_ROUTES } from "../nav/menu";
 import About from "../pages/About";
+import AllPrograms from "../pages/AllPrograms";
 import Contact from "../pages/Contact";
 import GuidedProgramDetail from "../pages/GuidedProgramDetail";
 import ProgramDetailPage from "../pages/ProgramDetailPage";
@@ -36,6 +37,7 @@ export const router = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: "/about", element: <About /> },
       { path: "/contact", element: <Contact /> },
+      { path: "/all-guided-programs", element: <AllPrograms /> },
       { path: "/faqs", element: placeholderForRouteTitle("FAQs") },
       { path: "/terms", element: <Terms /> },
       { path: "/login", element: <Login /> },
