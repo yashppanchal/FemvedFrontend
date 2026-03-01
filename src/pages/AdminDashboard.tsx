@@ -1,4 +1,7 @@
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
+import { ApiError } from "../api/client";
+import { createGuidedDomain, fetchGuidedTree } from "../api/guided";
+import { useAuth } from "../auth/useAuth";
 import "./AdminDashboard.scss";
 
 type AdminTab = "users" | "domains" | "categories" | "programs";
@@ -70,17 +73,6 @@ const registeredUsersSeed: UserRow[] = [
   },
 ];
 
-const domainsSeed: DomainRow[] = [
-  { id: "D001", name: "Hormonal Health" },
-  { id: "D002", name: "Nutrition" },
-];
-
-const categoriesSeed: CategoryRow[] = [
-  { id: "C001", name: "PCOS", domainId: "D001" },
-  { id: "C002", name: "Cycle Care", domainId: "D001" },
-  { id: "C003", name: "Gut Wellness", domainId: "D002" },
-];
-
 const programsSeed: ProgramRow[] = [
   {
     id: "P001",
@@ -124,15 +116,28 @@ const createNextId = (prefix: string, existingIds: string[]) => {
   return `${prefix}${String(maxNumericPart + 1).padStart(3, "0")}`;
 };
 
+const toHyphenatedSlug = (name: string) =>
+  name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
 export default function AdminDashboard() {
+  const { tokens } = useAuth();
   const [activeTab, setActiveTab] = useState<AdminTab>("users");
   const [registeredUsers] = useState<UserRow[]>(registeredUsersSeed);
-  const [domains, setDomains] = useState<DomainRow[]>(domainsSeed);
-  const [categories, setCategories] = useState<CategoryRow[]>(categoriesSeed);
+  const [domains, setDomains] = useState<DomainRow[]>([]);
+  const [categories, setCategories] = useState<CategoryRow[]>([]);
   const [programs, setPrograms] = useState<ProgramRow[]>(programsSeed);
 
   const [domainForm, setDomainForm] = useState<DomainForm>(initialDomainForm);
   const [editingDomainId, setEditingDomainId] = useState<string | null>(null);
+  const [domainCreateError, setDomainCreateError] = useState<string | null>(null);
+  const [domainCreateSuccess, setDomainCreateSuccess] = useState<string | null>(null);
+  const [isCreatingDomain, setIsCreatingDomain] = useState(false);
+  const [isDomainsLoading, setIsDomainsLoading] = useState(true);
+  const [domainLoadError, setDomainLoadError] = useState<string | null>(null);
 
   const [categoryForm, setCategoryForm] = useState<CategoryForm>(initialCategoryForm);
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
@@ -144,9 +149,81 @@ export default function AdminDashboard() {
     (category) => category.domainId === programForm.domainId,
   );
 
+  useEffect(() => {
+    let isActive = true;
+
+    const loadHierarchy = async () => {
+      try {
+        setIsDomainsLoading(true);
+        setDomainLoadError(null);
+
+        const response = await fetchGuidedTree();
+        const domainRows = (response.domains ?? [])
+          .map((domain, index) => {
+            const id = domain.domainId ?? domain.id ?? domain._id ?? `domain-${index + 1}`;
+            const name = domain.domainName ?? domain.name ?? "";
+            if (!id || !name.trim()) return null;
+
+            return {
+              id,
+              name: name.trim(),
+            } as DomainRow;
+          })
+          .filter((domain): domain is DomainRow => domain !== null);
+
+        const categoryRows = (response.domains ?? []).flatMap((domain, domainIndex) => {
+          const domainId =
+            domain.domainId ?? domain.id ?? domain._id ?? `domain-${domainIndex + 1}`;
+          if (!domainId) return [];
+
+          return (domain.categories ?? [])
+            .map((category, categoryIndex) => {
+              const id =
+                category.categoryId ??
+                category.id ??
+                category._id ??
+                `${domainId}-category-${categoryIndex + 1}`;
+              const name =
+                category.categoryType ??
+                category.categoryPageData?.categoryType ??
+                category.categoryName ??
+                category.name ??
+                "";
+              if (!id || !name.trim()) return null;
+
+              return {
+                id,
+                name: name.trim(),
+                domainId,
+              } as CategoryRow;
+            })
+            .filter((category): category is CategoryRow => category !== null);
+        });
+
+        if (!isActive) return;
+        setDomains(domainRows);
+        setCategories(categoryRows);
+      } catch {
+        if (!isActive) return;
+        setDomainLoadError("Unable to load domains from guided tree.");
+      } finally {
+        if (!isActive) return;
+        setIsDomainsLoading(false);
+      }
+    };
+
+    void loadHierarchy();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
   const resetDomainForm = () => {
     setDomainForm(initialDomainForm);
     setEditingDomainId(null);
+    setDomainCreateError(null);
+    setDomainCreateSuccess(null);
   };
 
   const resetCategoryForm = () => {
@@ -159,8 +236,10 @@ export default function AdminDashboard() {
     setEditingProgramId(null);
   };
 
-  const handleDomainSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleDomainSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setDomainCreateError(null);
+    setDomainCreateSuccess(null);
 
     const name = domainForm.name.trim();
     if (!name) return;
@@ -173,16 +252,53 @@ export default function AdminDashboard() {
       return;
     }
 
-    const newDomain: DomainRow = {
-      id: createNextId(
-        "D",
-        domains.map((domain) => domain.id),
-      ),
-      name,
-    };
+    const accessToken = tokens?.accessToken;
+    if (!accessToken) {
+      setDomainCreateError("You must be logged in to create a domain.");
+      return;
+    }
 
-    setDomains((prev) => [newDomain, ...prev]);
-    resetDomainForm();
+    const slug = toHyphenatedSlug(name);
+    if (!slug) {
+      setDomainCreateError("Please enter a valid domain name.");
+      return;
+    }
+
+    try {
+      setIsCreatingDomain(true);
+      const response = await createGuidedDomain(
+        {
+          name,
+          slug,
+          sortOrder: domains.length,
+        },
+        accessToken,
+      );
+
+      const newDomain: DomainRow = {
+        id:
+          response.id ??
+          response.domainId ??
+          response._id ??
+          createNextId(
+            "D",
+            domains.map((domain) => domain.id),
+          ),
+        name: response.name ?? name,
+      };
+
+      setDomains((prev) => [newDomain, ...prev]);
+      setDomainCreateSuccess(`Domain "${newDomain.name}" created.`);
+      setDomainForm(initialDomainForm);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setDomainCreateError(err.message);
+      } else {
+        setDomainCreateError("Unable to create domain. Please try again.");
+      }
+    } finally {
+      setIsCreatingDomain(false);
+    }
   };
 
   const startDomainEdit = (domain: DomainRow) => {
@@ -410,6 +526,11 @@ export default function AdminDashboard() {
               <p className="adminPanel__hint">Create top-level program domains.</p>
             </div>
 
+            {isDomainsLoading && <p className="adminPanel__hint">Loading domains...</p>}
+            {domainLoadError && <p className="adminPanel__error">{domainLoadError}</p>}
+            {domainCreateSuccess && <p className="adminPanel__success">{domainCreateSuccess}</p>}
+            {domainCreateError && <p className="adminPanel__error">{domainCreateError}</p>}
+
             <form className="form adminForm" onSubmit={handleDomainSubmit} noValidate>
               <label className="field">
                 <span className="field__label">Domain name</span>
@@ -424,8 +545,12 @@ export default function AdminDashboard() {
               </label>
 
               <div className="adminForm__actions">
-                <button type="submit" className="button">
-                  {editingDomainId ? "Update Domain" : "Add Domain"}
+                <button type="submit" className="button" disabled={isCreatingDomain}>
+                  {editingDomainId
+                    ? "Update Domain"
+                    : isCreatingDomain
+                      ? "Adding Domain..."
+                      : "Add Domain"}
                 </button>
                 {editingDomainId && (
                   <button type="button" className="adminActionButton" onClick={resetDomainForm}>

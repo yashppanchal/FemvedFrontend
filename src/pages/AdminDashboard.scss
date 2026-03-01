@@ -85,6 +85,24 @@
   color: var(--muted);
 }
 
+.adminPanel__success {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(22, 135, 50, 0.08);
+  color: #157a2e;
+  font-size: 14px;
+}
+
+.adminPanel__error {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(200, 30, 30, 0.08);
+  color: #a01a1a;
+  font-size: 14px;
+}
+
 .adminForm {
   gap: 14px;
 }
