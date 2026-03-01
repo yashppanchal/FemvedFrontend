@@ -125,6 +125,21 @@ export function ChooseSection({
                 </div>
               </article>
             ))}
+            {programs.length === 1 ? (
+              <article
+                className="guidedProgramDetail__productCard guidedProgramDetail__productCard--comingSoon"
+                key="more-coming-soon"
+              >
+                <div className="guidedProgramDetail__productBody guidedProgramDetail__productBody--comingSoon">
+                  <h4 className="guidedProgramDetail__productName guidedProgramDetail__productName--comingSoon">
+                    More coming soon
+                  </h4>
+                  <p className="guidedProgramDetail__productText">
+                    We&apos;re adding more guided programs soon. Stay tuned.
+                  </p>
+                </div>
+              </article>
+            ) : null}
           </div>
         </div>
       </div>

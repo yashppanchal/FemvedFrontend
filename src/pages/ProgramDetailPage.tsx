@@ -1,6 +1,7 @@
 import "./ProgramDetailPage.scss";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { PrimaryButton } from "../components/PrimaryButton";
 import {
   loadGuidedPrograms,
   normalizeSlug,
@@ -82,6 +83,12 @@ export default function ProgramDetailPage() {
       ) ?? selectedProgram.programDurations[0]
     );
   }, [selectedDurationLabel, selectedProgram]);
+  const programDurations = selectedProgram?.programDurations ?? [];
+  const priceOptionsClassName = `programDetailPage__priceOptions${
+    programDurations.length === 1
+      ? " programDetailPage__priceOptions--single"
+      : ""
+  }`;
 
   if (loading) {
     return (
@@ -160,31 +167,21 @@ export default function ProgramDetailPage() {
           <h3 className="programDetailPage__priceTitle">
             {selectedDuration?.durationPrice ?? ""}
           </h3>
-          <div className="programDetailPage__priceOptions">
-            {selectedProgram.programDurations?.map((duration) => {
+          <div className={priceOptionsClassName}>
+            {programDurations.map((duration) => {
               const isActive = duration.durationLabel === selectedDurationLabel;
               return (
-                <button
+                <PrimaryButton
                   key={duration.durationLabel}
-                  type="button"
-                  className={`programDetailPage__priceBtn${isActive ? " programDetailPage__priceBtn--active" : ""}`}
+                  label={duration.durationLabel}
                   onClick={() =>
                     setSelectedDurationLabel(duration.durationLabel)
                   }
-                >
-                  {duration.durationLabel}
-                </button>
+                  aria-pressed={isActive}
+                />
               );
             })}
           </div>
-          {/* <p className="programDetailPage__priceText">
-            This is the total amount for all lessons.
-          </p>
-          <p className="programDetailPage__priceSubtext">
-            Pay extra to support our instructors and help create more courses.
-            No matter how much you pay, you get the same course as everybody
-            else.
-          </p> */}
         </aside>
       </div>
 
