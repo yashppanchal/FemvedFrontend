@@ -9,18 +9,192 @@
 .adminContent {
   margin-top: 24px;
   display: grid;
-  gap: 28px;
+  gap: 20px;
 }
 
-.adminPlaceholder {
-  border: 2px dashed var(--border);
-  border-radius: 14px;
-  padding: 48px 32px;
-  text-align: center;
+.adminTabs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
 }
 
-.adminPlaceholder__text {
-  margin: 0;
-  font-size: 16px;
+.adminTabs__tab {
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--white);
   color: var(--muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 180ms ease, border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.adminTabs__tab:hover {
+  color: var(--primaryHover);
+  border-color: rgba(86, 19, 27, 0.25);
+  background: rgba(86, 19, 27, 0.05);
+}
+
+.adminTabs__tab--active {
+  color: var(--white);
+  border-color: var(--primary);
+  background: var(--primary);
+}
+
+.adminTabs__tab--active:hover {
+  color: var(--white);
+  border-color: var(--primaryHover);
+  background: var(--primaryHover);
+}
+
+.adminPanel {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--white);
+  padding: 18px;
+  display: grid;
+  gap: 16px;
+}
+
+.adminPanel__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 14px;
+}
+
+.adminPanel__title {
+  margin: 0;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  font-size: 24px;
+  color: var(--black);
+}
+
+.adminPanel__hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.adminProgramForm {
+  gap: 14px;
+}
+
+.adminProgramForm__row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.adminProgramForm__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.adminTableWrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.adminTable {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+}
+
+.adminTable th,
+.adminTable td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-size: 14px;
+  color: var(--black);
+}
+
+.adminTable th {
+  background: rgba(15, 15, 16, 0.03);
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.adminTable tr:last-child td {
+  border-bottom: none;
+}
+
+.adminTable__empty {
+  text-align: center !important;
+  color: var(--muted) !important;
+}
+
+.adminActionGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.adminActionButton {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--black);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 180ms ease, border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.adminActionButton:hover {
+  color: var(--primaryHover);
+  border-color: rgba(86, 19, 27, 0.25);
+  background: rgba(86, 19, 27, 0.05);
+}
+
+.adminActionButton--danger {
+  color: #a01a1a;
+  border-color: rgba(160, 26, 26, 0.2);
+}
+
+.adminActionButton--danger:hover {
+  color: #8d1111;
+  border-color: rgba(160, 26, 26, 0.34);
+  background: rgba(160, 26, 26, 0.07);
+}
+
+@media (max-width: 900px) {
+  .adminProgramForm__row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .adminPanel {
+    padding: 14px;
+  }
+
+  .adminProgramForm__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .adminProgramForm__actions .button,
+  .adminProgramForm__actions .adminActionButton {
+    justify-content: center;
+  }
 }
