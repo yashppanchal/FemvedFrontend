@@ -7,11 +7,23 @@
   margin-bottom: 18px;
 }
 
+.allProgramsPage__filtersWrap {
+  margin-bottom: 16px;
+}
+
+.allProgramsPage__filtersToggle {
+  width: 100%;
+  justify-content: center;
+  height: 40px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
 .allProgramsPage__filters {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 12px;
-  margin-bottom: 16px;
   align-items: end;
 }
 

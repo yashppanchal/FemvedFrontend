@@ -41,6 +41,7 @@ function normalizeText(value: string) {
 }
 
 export default function AllPrograms() {
+  const filterPanelId = "all-programs-filters";
   const [programs, setPrograms] = useState<FlattenedProgram[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -50,6 +51,25 @@ export default function AllPrograms() {
   const [selectedDuration, setSelectedDuration] = useState("all");
   const [minPriceInput, setMinPriceInput] = useState("");
   const [maxPriceInput, setMaxPriceInput] = useState("");
+  const [isCompactFiltersView, setIsCompactFiltersView] = useState(false);
+  const [areFiltersOpen, setAreFiltersOpen] = useState(true);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 1100px)");
+
+    const handleMediaChange = (event: MediaQueryListEvent) => {
+      setIsCompactFiltersView(event.matches);
+      setAreFiltersOpen(event.matches ? false : true);
+    };
+
+    setIsCompactFiltersView(mediaQuery.matches);
+    setAreFiltersOpen(mediaQuery.matches ? false : true);
+
+    mediaQuery.addEventListener("change", handleMediaChange);
+    return () => {
+      mediaQuery.removeEventListener("change", handleMediaChange);
+    };
+  }, []);
 
   useEffect(() => {
     let isActive = true;
@@ -207,112 +227,128 @@ export default function AllPrograms() {
         </p>
       </header>
 
-      <div className="allProgramsPage__filters card">
-        <div className="field">
-          <label className="field__label" htmlFor="categoryType">
-            Category Type
-          </label>
-          <select
-            id="categoryType"
-            className="field__input allProgramsPage__select"
-            value={selectedCategoryType}
-            onChange={(event) => setSelectedCategoryType(event.target.value)}
-          >
-            <option value="all">All category types</option>
-            {categoryTypes.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="field">
-          <label className="field__label" htmlFor="currency">
-            Currency
-          </label>
-          <select
-            id="currency"
-            className="field__input allProgramsPage__select"
-            value={selectedCurrency}
-            onChange={(event) => setSelectedCurrency(event.target.value)}
-          >
-            <option value="all">All currencies</option>
-            {currencies.map((currency) => (
-              <option key={currency} value={currency}>
-                {currency}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="field">
-          <label className="field__label" htmlFor="duration">
-            Duration
-          </label>
-          <select
-            id="duration"
-            className="field__input allProgramsPage__select"
-            value={selectedDuration}
-            onChange={(event) => setSelectedDuration(event.target.value)}
-          >
-            <option value="all">All durations</option>
-            {durationOptions.map((duration) => (
-              <option key={duration} value={duration}>
-                {duration}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="field">
-          <label className="field__label" htmlFor="minPrice">
-            Min Price
-          </label>
-          <input
-            id="minPrice"
-            className="field__input"
-            type="number"
-            min="0"
-            inputMode="numeric"
-            value={minPriceInput}
-            onChange={(event) => setMinPriceInput(event.target.value)}
-            placeholder="e.g. 3000"
-          />
-        </div>
-
-        <div className="field">
-          <label className="field__label" htmlFor="maxPrice">
-            Max Price
-          </label>
-          <input
-            id="maxPrice"
-            className="field__input"
-            type="number"
-            min="0"
-            inputMode="numeric"
-            value={maxPriceInput}
-            onChange={(event) => setMaxPriceInput(event.target.value)}
-            placeholder="e.g. 12000"
-          />
-        </div>
-
-        <div className="allProgramsPage__filterActions">
+      <div className="allProgramsPage__filtersWrap">
+        {isCompactFiltersView ? (
           <button
             type="button"
-            className="button allProgramsPage__clearBtn"
-            onClick={() => {
-              setSelectedCategoryType("all");
-              setSelectedCurrency("all");
-              setSelectedDuration("all");
-              setMinPriceInput("");
-              setMaxPriceInput("");
-            }}
-            disabled={!hasAnyFilter}
+            className="button allProgramsPage__filtersToggle"
+            aria-expanded={areFiltersOpen}
+            aria-controls={filterPanelId}
+            onClick={() => setAreFiltersOpen((currentValue) => !currentValue)}
           >
-            Clear Filters
+            {areFiltersOpen ? "Hide Filters" : "Show Filters"}
           </button>
-        </div>
+        ) : null}
+
+        {(!isCompactFiltersView || areFiltersOpen) && (
+          <div className="allProgramsPage__filters card" id={filterPanelId}>
+            <div className="field">
+              <label className="field__label" htmlFor="categoryType">
+                Category Type
+              </label>
+              <select
+                id="categoryType"
+                className="field__input allProgramsPage__select"
+                value={selectedCategoryType}
+                onChange={(event) => setSelectedCategoryType(event.target.value)}
+              >
+                <option value="all">All category types</option>
+                {categoryTypes.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="field">
+              <label className="field__label" htmlFor="currency">
+                Currency
+              </label>
+              <select
+                id="currency"
+                className="field__input allProgramsPage__select"
+                value={selectedCurrency}
+                onChange={(event) => setSelectedCurrency(event.target.value)}
+              >
+                <option value="all">All currencies</option>
+                {currencies.map((currency) => (
+                  <option key={currency} value={currency}>
+                    {currency}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="field">
+              <label className="field__label" htmlFor="duration">
+                Duration
+              </label>
+              <select
+                id="duration"
+                className="field__input allProgramsPage__select"
+                value={selectedDuration}
+                onChange={(event) => setSelectedDuration(event.target.value)}
+              >
+                <option value="all">All durations</option>
+                {durationOptions.map((duration) => (
+                  <option key={duration} value={duration}>
+                    {duration}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="field">
+              <label className="field__label" htmlFor="minPrice">
+                Min Price
+              </label>
+              <input
+                id="minPrice"
+                className="field__input"
+                type="number"
+                min="0"
+                inputMode="numeric"
+                value={minPriceInput}
+                onChange={(event) => setMinPriceInput(event.target.value)}
+                placeholder="e.g. 3000"
+              />
+            </div>
+
+            <div className="field">
+              <label className="field__label" htmlFor="maxPrice">
+                Max Price
+              </label>
+              <input
+                id="maxPrice"
+                className="field__input"
+                type="number"
+                min="0"
+                inputMode="numeric"
+                value={maxPriceInput}
+                onChange={(event) => setMaxPriceInput(event.target.value)}
+                placeholder="e.g. 12000"
+              />
+            </div>
+
+            <div className="allProgramsPage__filterActions">
+              <button
+                type="button"
+                className="button allProgramsPage__clearBtn"
+                onClick={() => {
+                  setSelectedCategoryType("all");
+                  setSelectedCurrency("all");
+                  setSelectedDuration("all");
+                  setMinPriceInput("");
+                  setMaxPriceInput("");
+                }}
+                disabled={!hasAnyFilter}
+              >
+                Clear Filters
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <p className="allProgramsPage__resultsCount">
