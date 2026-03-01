@@ -100,14 +100,28 @@
   box-shadow: 0 16px 36px rgba(15, 15, 16, 0.07);
   padding: clamp(18px, 2.4vw, 30px);
   margin-top: 48px;
+
+  p {
+    text-align: center;
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+}
+
+.programDetailPage__priceDivider {
+  margin: 12px;
+  border: none;
+  border-top: 1px solid rgba(15, 15, 16, 0.12);
+  margin-bottom: 24px;
 }
 
 .programDetailPage__priceTitle {
   margin: 0 0 18px;
   text-align: center;
-  font-size: clamp(22px, 1.9vw, 32px);
+  font-size: clamp(32px, 2.8vw, 48px);
   line-height: 1.2;
-  color: rgba(15, 15, 16, 0.86);
+  color: var(--primary);
+  font-weight: 600;
 }
 
 .programDetailPage__priceOptions {
@@ -121,6 +135,32 @@
   max-width: 220px;
   margin-left: auto;
   margin-right: auto;
+}
+
+.programDetailPage__stickyPointers {
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  width: fit-content;
+}
+
+.programDetailPage__stickyPointers li {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  color: rgba(15, 15, 16, 0.78);
+  font-size: clamp(15px, 1.1vw, 20px);
+  line-height: 1.35;
+  text-align: left;
+}
+
+.programDetailPage__stickyPointers li::before {
+  content: "\2713";
+  color: #5e9463;
+  line-height: 1;
 }
 
 .programDetailPage__priceBtn {

@@ -1,0 +1,29 @@
+.primaryOutlineButton {
+  padding: 12px 24px;
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-width: 187px;
+  transition: background-color 180ms ease, color 180ms ease,
+    transform 180ms ease, box-shadow 180ms ease;
+}
+
+.primaryOutlineButton:hover {
+  background: rgba(86, 19, 27, 0.08);
+  color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(86, 19, 27, 0.12);
+}
+
+.primaryOutlineButton__icon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 8px;
+}

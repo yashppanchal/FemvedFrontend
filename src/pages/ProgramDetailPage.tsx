@@ -1,12 +1,12 @@
 import "./ProgramDetailPage.scss";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { PrimaryButton } from "../components/PrimaryButton";
 import {
   loadGuidedPrograms,
   normalizeSlug,
   type GuidedProgramInfo,
 } from "../data/guidedPrograms";
+import { PrimaryOutlineButton } from "../components/PrimaryOutlineButton";
 
 export default function ProgramDetailPage() {
   const { programSlug, programId } = useParams<{
@@ -164,14 +164,16 @@ export default function ProgramDetailPage() {
         </article>
 
         <aside className="programDetailPage__stickyCard">
+          <p>Course Fee:</p>
           <h3 className="programDetailPage__priceTitle">
             {selectedDuration?.durationPrice ?? ""}
           </h3>
+          <hr className="programDetailPage__priceDivider" />
           <div className={priceOptionsClassName}>
             {programDurations.map((duration) => {
               const isActive = duration.durationLabel === selectedDurationLabel;
               return (
-                <PrimaryButton
+                <PrimaryOutlineButton
                   key={duration.durationLabel}
                   label={duration.durationLabel}
                   onClick={() =>
@@ -182,6 +184,11 @@ export default function ProgramDetailPage() {
               );
             })}
           </div>
+          <ul className="programDetailPage__stickyPointers">
+            <li>Personalized plan</li>
+            <li>Complete privacy</li>
+            <li>Client-Expert confidentiality</li>
+          </ul>
         </aside>
       </div>
 
