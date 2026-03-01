@@ -31,7 +31,9 @@
   font-weight: 600;
   line-height: 1.2;
   cursor: pointer;
-  transition: background-color 180ms ease, border-color 180ms ease;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease;
 }
 
 .programDetailPage__backButton:hover {

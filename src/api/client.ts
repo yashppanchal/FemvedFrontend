@@ -2,7 +2,7 @@
 /*  Lightweight fetch wrapper for the Femved API                       */
 /* ------------------------------------------------------------------ */
 
-const BASE_URL = "https://api.femved.com";
+const BASE_URL = "https://api.femved.com/api/v1";
 
 export class ApiError extends Error {
   status: number;

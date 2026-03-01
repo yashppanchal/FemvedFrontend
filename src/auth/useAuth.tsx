@@ -73,12 +73,60 @@ const TOKENS_KEY = "femved_tokens";
 const AUTH_USER_WITH_TOKEN_KEY = "femved_auth_user";
 
 function normalizeRole(raw: unknown): UserRole {
-  if (raw && typeof raw === "object" && "id" in raw) return raw as UserRole;
+  if (raw && typeof raw === "object") {
+    const roleObj = raw as Record<string, unknown>;
+    const roleNameCandidate = roleObj.name ?? roleObj.role ?? roleObj.type;
+    const roleName =
+      typeof roleNameCandidate === "string"
+        ? roleNameCandidate.toLowerCase()
+        : "";
+
+    // Prefer role name mapping so UI checks stay stable even if backend ids differ.
+    if (roleName.includes("admin")) return ROLE_ADMIN;
+    if (roleName.includes("expert")) return ROLE_EXPERT;
+    if (roleName.includes("user")) return ROLE_USER;
+
+    const roleId =
+      typeof roleObj.id === "number"
+        ? roleObj.id
+        : typeof roleObj.id === "string"
+          ? Number(roleObj.id)
+          : NaN;
+    if (!Number.isNaN(roleId)) {
+      if (roleId === ROLE_ADMIN.id) return ROLE_ADMIN;
+      if (roleId === ROLE_EXPERT.id) return ROLE_EXPERT;
+      if (roleId === ROLE_USER.id) return ROLE_USER;
+    }
+  }
+
   if (typeof raw === "string") {
-    if (raw === "admin") return ROLE_ADMIN;
-    if (raw === "expert") return ROLE_EXPERT;
+    const value = raw.toLowerCase().trim();
+    if (value.includes("admin")) return ROLE_ADMIN;
+    if (value.includes("expert")) return ROLE_EXPERT;
     return ROLE_USER;
   }
+  return ROLE_USER;
+}
+
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const parts = token.split(".");
+    if (parts.length < 2) return null;
+    const base64Url = parts[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const padLen = (4 - (base64.length % 4)) % 4;
+    const padded = `${base64}${"=".repeat(padLen)}`;
+    const json = atob(padded);
+    return JSON.parse(json) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+function resolveRole(candidates: unknown[]): UserRole {
+  const normalized = candidates.map((candidate) => normalizeRole(candidate));
+  if (normalized.some((role) => role.id === ROLE_ADMIN.id)) return ROLE_ADMIN;
+  if (normalized.some((role) => role.id === ROLE_EXPERT.id)) return ROLE_EXPERT;
   return ROLE_USER;
 }
 
@@ -193,6 +241,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (email: string, password: string): Promise<string | null> => {
       try {
         const res = await loginUser({ email, password });
+        const accessToken = res.accessToken ?? res.token ?? "";
+        const accessTokenExpiresAt = res.accessTokenExpiresAt ?? res.expiresAt ?? "";
+        if (!accessToken || !accessTokenExpiresAt) {
+          return "Login response is missing token information.";
+        }
+        const jwtPayload = decodeJwtPayload(accessToken);
+        const resolvedRole = resolveRole([
+          res.user.role,
+          (res as unknown as Record<string, unknown>).role,
+          (res as unknown as Record<string, unknown>).roleType,
+          jwtPayload?.role,
+          jwtPayload?.roles,
+          jwtPayload?.authorities,
+          jwtPayload?.scope,
+        ]);
 
         const newUser: User = {
           userId: res.user.id,
@@ -200,14 +263,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           firstName: res.user.firstName,
           lastName: res.user.lastName,
           phone: res.user.mobileNumber ?? "",
-          role: res.user.role ?? ROLE_USER,
+          role: resolvedRole,
         };
 
         const newTokens: AuthTokens = {
-          accessToken: res.token,
-          accessTokenExpiresAt: res.expiresAt,
-          refreshToken: "",
-          refreshTokenExpiresAt: "",
+          accessToken,
+          accessTokenExpiresAt,
+          refreshToken: res.refreshToken ?? "",
+          refreshTokenExpiresAt: res.refreshTokenExpiresAt ?? "",
         };
 
         setUser(newUser);

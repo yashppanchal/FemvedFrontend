@@ -40,15 +40,21 @@ export interface LoginResponseUser {
   email: string;
   firstName: string;
   lastName: string;
-  mobileNumber: string;
-  isEmailVerified: boolean;
-  isMobileVerified: boolean;
-  role: { id: number; name: string };
+  mobileNumber?: string;
+  isEmailVerified?: boolean;
+  isMobileVerified?: boolean;
+  role: string | { id: number; name: string };
 }
 
 export interface LoginResponse {
-  token: string;
-  expiresAt: string;
+  accessToken?: string;
+  refreshToken?: string;
+  accessTokenExpiresAt?: string;
+  refreshTokenExpiresAt?: string;
+  // Backward compatibility for older response shape.
+  token?: string;
+  expiresAt?: string;
+  role?: "admin" | "expert" | "user" | string;
   user: LoginResponseUser;
 }
 
