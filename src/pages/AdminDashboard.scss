@@ -15,6 +15,7 @@
 .adminTabs {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
   border-bottom: 1px solid var(--border);
   padding-bottom: 12px;
@@ -84,17 +85,21 @@
   color: var(--muted);
 }
 
-.adminProgramForm {
+.adminForm {
   gap: 14px;
 }
 
-.adminProgramForm__row {
+.adminForm__row {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
 }
 
-.adminProgramForm__actions {
+.adminForm__row--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.adminForm__actions {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -178,7 +183,8 @@
 }
 
 @media (max-width: 900px) {
-  .adminProgramForm__row {
+  .adminForm__row,
+  .adminForm__row--two {
     grid-template-columns: 1fr;
   }
 }
@@ -188,13 +194,13 @@
     padding: 14px;
   }
 
-  .adminProgramForm__actions {
+  .adminForm__actions {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .adminProgramForm__actions .button,
-  .adminProgramForm__actions .adminActionButton {
+  .adminForm__actions .button,
+  .adminForm__actions .adminActionButton {
     justify-content: center;
   }
 }
