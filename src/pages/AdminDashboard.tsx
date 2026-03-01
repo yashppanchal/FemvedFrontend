@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { ApiError } from "../api/client";
-import { createGuidedDomain, fetchGuidedTree } from "../api/guided";
+import { createGuidedDomain, fetchGuidedTree, updateGuidedDomain } from "../api/guided";
 import { useAuth } from "../auth/useAuth";
 import "./AdminDashboard.scss";
 
@@ -47,6 +47,11 @@ type ProgramForm = {
   domainId: string;
   categoryId: string;
   status: "Draft" | "Published";
+};
+
+type GuidedHierarchyRows = {
+  domainRows: DomainRow[];
+  categoryRows: CategoryRow[];
 };
 
 const registeredUsersSeed: UserRow[] = [
@@ -123,6 +128,52 @@ const toHyphenatedSlug = (name: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
+const mapGuidedTreeToRows = (response: Awaited<ReturnType<typeof fetchGuidedTree>>): GuidedHierarchyRows => {
+  const domainRows = (response.domains ?? [])
+    .map((domain, index) => {
+      // Prefer backend domainId so edit/delete operations always use API identifiers.
+      const id = domain.domainId ?? domain.id ?? domain._id ?? `domain-${index + 1}`;
+      const name = domain.domainName ?? domain.name ?? "";
+      if (!id || !name.trim()) return null;
+
+      return {
+        id,
+        name: name.trim(),
+      } as DomainRow;
+    })
+    .filter((domain): domain is DomainRow => domain !== null);
+
+  const categoryRows = (response.domains ?? []).flatMap((domain, domainIndex) => {
+    const domainId = domain.domainId ?? domain.id ?? domain._id ?? `domain-${domainIndex + 1}`;
+    if (!domainId) return [];
+
+    return (domain.categories ?? [])
+      .map((category, categoryIndex) => {
+        const id =
+          category.categoryId ??
+          category.id ??
+          category._id ??
+          `${domainId}-category-${categoryIndex + 1}`;
+        const name =
+          category.categoryType ??
+          category.categoryPageData?.categoryType ??
+          category.categoryName ??
+          category.name ??
+          "";
+        if (!id || !name.trim()) return null;
+
+        return {
+          id,
+          name: name.trim(),
+          domainId,
+        } as CategoryRow;
+      })
+      .filter((category): category is CategoryRow => category !== null);
+  });
+
+  return { domainRows, categoryRows };
+};
+
 export default function AdminDashboard() {
   const { tokens } = useAuth();
   const [activeTab, setActiveTab] = useState<AdminTab>("users");
@@ -158,47 +209,7 @@ export default function AdminDashboard() {
         setDomainLoadError(null);
 
         const response = await fetchGuidedTree();
-        const domainRows = (response.domains ?? [])
-          .map((domain, index) => {
-            const id = domain.domainId ?? domain.id ?? domain._id ?? `domain-${index + 1}`;
-            const name = domain.domainName ?? domain.name ?? "";
-            if (!id || !name.trim()) return null;
-
-            return {
-              id,
-              name: name.trim(),
-            } as DomainRow;
-          })
-          .filter((domain): domain is DomainRow => domain !== null);
-
-        const categoryRows = (response.domains ?? []).flatMap((domain, domainIndex) => {
-          const domainId =
-            domain.domainId ?? domain.id ?? domain._id ?? `domain-${domainIndex + 1}`;
-          if (!domainId) return [];
-
-          return (domain.categories ?? [])
-            .map((category, categoryIndex) => {
-              const id =
-                category.categoryId ??
-                category.id ??
-                category._id ??
-                `${domainId}-category-${categoryIndex + 1}`;
-              const name =
-                category.categoryType ??
-                category.categoryPageData?.categoryType ??
-                category.categoryName ??
-                category.name ??
-                "";
-              if (!id || !name.trim()) return null;
-
-              return {
-                id,
-                name: name.trim(),
-                domainId,
-              } as CategoryRow;
-            })
-            .filter((category): category is CategoryRow => category !== null);
-        });
+        const { domainRows, categoryRows } = mapGuidedTreeToRows(response);
 
         if (!isActive) return;
         setDomains(domainRows);
@@ -244,23 +255,53 @@ export default function AdminDashboard() {
     const name = domainForm.name.trim();
     if (!name) return;
 
-    if (editingDomainId) {
-      setDomains((prev) =>
-        prev.map((domain) => (domain.id === editingDomainId ? { ...domain, name } : domain)),
-      );
-      resetDomainForm();
-      return;
-    }
-
     const accessToken = tokens?.accessToken;
     if (!accessToken) {
-      setDomainCreateError("You must be logged in to create a domain.");
+      setDomainCreateError("You must be logged in to manage domains.");
       return;
     }
 
     const slug = toHyphenatedSlug(name);
     if (!slug) {
       setDomainCreateError("Please enter a valid domain name.");
+      return;
+    }
+
+    if (editingDomainId) {
+      const sortOrder = Math.max(
+        domains.findIndex((domain) => domain.id === editingDomainId),
+        0,
+      );
+
+      try {
+        setIsCreatingDomain(true);
+        const response = await updateGuidedDomain(
+          editingDomainId,
+          {
+            name,
+            slug,
+            sortOrder,
+          },
+          accessToken,
+        );
+
+        const updatedName = response.name?.trim() || name;
+        const refreshed = await fetchGuidedTree();
+        const { domainRows, categoryRows } = mapGuidedTreeToRows(refreshed);
+        setDomains(domainRows);
+        setCategories(categoryRows);
+        setDomainCreateSuccess(`Domain "${updatedName}" updated.`);
+        setDomainForm(initialDomainForm);
+        setEditingDomainId(null);
+      } catch (err) {
+        if (err instanceof ApiError) {
+          setDomainCreateError(err.message);
+        } else {
+          setDomainCreateError("Unable to update domain. Please try again.");
+        }
+      } finally {
+        setIsCreatingDomain(false);
+      }
       return;
     }
 
@@ -275,20 +316,12 @@ export default function AdminDashboard() {
         accessToken,
       );
 
-      const newDomain: DomainRow = {
-        id:
-          response.id ??
-          response.domainId ??
-          response._id ??
-          createNextId(
-            "D",
-            domains.map((domain) => domain.id),
-          ),
-        name: response.name ?? name,
-      };
-
-      setDomains((prev) => [newDomain, ...prev]);
-      setDomainCreateSuccess(`Domain "${newDomain.name}" created.`);
+      const createdName = response.name?.trim() || name;
+      const refreshed = await fetchGuidedTree();
+      const { domainRows, categoryRows } = mapGuidedTreeToRows(refreshed);
+      setDomains(domainRows);
+      setCategories(categoryRows);
+      setDomainCreateSuccess(`Domain "${createdName}" created.`);
       setDomainForm(initialDomainForm);
     } catch (err) {
       if (err instanceof ApiError) {
@@ -547,7 +580,9 @@ export default function AdminDashboard() {
               <div className="adminForm__actions">
                 <button type="submit" className="button" disabled={isCreatingDomain}>
                   {editingDomainId
-                    ? "Update Domain"
+                    ? isCreatingDomain
+                      ? "Updating Domain..."
+                      : "Update Domain"
                     : isCreatingDomain
                       ? "Adding Domain..."
                       : "Add Domain"}

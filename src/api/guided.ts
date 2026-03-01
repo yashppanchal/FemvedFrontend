@@ -51,6 +51,23 @@ export function createGuidedDomain(
   });
 }
 
+export function updateGuidedDomain(
+  domainId: string,
+  data: CreateGuidedDomainRequest,
+  accessToken: string,
+): Promise<CreateGuidedDomainResponse> {
+  return apiFetch<CreateGuidedDomainResponse>(
+    `/guided/domains/${encodeURIComponent(domainId)}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(data),
+    },
+  );
+}
+
 export function fetchGuidedTree(): Promise<GuidedTreeResponse> {
   return apiFetch<GuidedTreeResponse>("/guided/tree");
 }
