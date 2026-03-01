@@ -1,6 +1,10 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { ApiError } from "../api/client";
-import { createGuidedDomain, fetchGuidedTree, updateGuidedDomain } from "../api/guided";
+import {
+  createGuidedDomain,
+  fetchGuidedTree,
+  updateGuidedDomain,
+} from "../api/guided";
 import { useAuth } from "../auth/useAuth";
 import "./AdminDashboard.scss";
 
@@ -128,12 +132,15 @@ const toHyphenatedSlug = (name: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
-const mapGuidedTreeToRows = (response: Awaited<ReturnType<typeof fetchGuidedTree>>): GuidedHierarchyRows => {
+const mapGuidedTreeToRows = (
+  response: Awaited<ReturnType<typeof fetchGuidedTree>>,
+): GuidedHierarchyRows => {
   const domainRows = (response.domains ?? [])
     .map((domain, index) => {
       // Prefer backend domainId so edit/delete operations always use API identifiers.
-      const id = domain.domainId ?? domain.id ?? domain._id ?? `domain-${index + 1}`;
-      const name = domain.domainName ?? domain.name ?? "";
+      const id =
+        domain.domainId ?? domain.id ?? domain._id ?? `domain-${index + 1}`;
+      const name = domain.name ?? domain.domainName ?? "";
       if (!id || !name.trim()) return null;
 
       return {
@@ -143,33 +150,39 @@ const mapGuidedTreeToRows = (response: Awaited<ReturnType<typeof fetchGuidedTree
     })
     .filter((domain): domain is DomainRow => domain !== null);
 
-  const categoryRows = (response.domains ?? []).flatMap((domain, domainIndex) => {
-    const domainId = domain.domainId ?? domain.id ?? domain._id ?? `domain-${domainIndex + 1}`;
-    if (!domainId) return [];
+  const categoryRows = (response.domains ?? []).flatMap(
+    (domain, domainIndex) => {
+      const domainId =
+        domain.domainId ??
+        domain.id ??
+        domain._id ??
+        `domain-${domainIndex + 1}`;
+      if (!domainId) return [];
 
-    return (domain.categories ?? [])
-      .map((category, categoryIndex) => {
-        const id =
-          category.categoryId ??
-          category.id ??
-          category._id ??
-          `${domainId}-category-${categoryIndex + 1}`;
-        const name =
-          category.categoryType ??
-          category.categoryPageData?.categoryType ??
-          category.categoryName ??
-          category.name ??
-          "";
-        if (!id || !name.trim()) return null;
+      return (domain.categories ?? [])
+        .map((category, categoryIndex) => {
+          const id =
+            category.categoryId ??
+            category.id ??
+            category._id ??
+            `${domainId}-category-${categoryIndex + 1}`;
+          const name =
+            category.categoryType ??
+            category.categoryPageData?.categoryType ??
+            category.categoryName ??
+            category.name ??
+            "";
+          if (!id || !name.trim()) return null;
 
-        return {
-          id,
-          name: name.trim(),
-          domainId,
-        } as CategoryRow;
-      })
-      .filter((category): category is CategoryRow => category !== null);
-  });
+          return {
+            id,
+            name: name.trim(),
+            domainId,
+          } as CategoryRow;
+        })
+        .filter((category): category is CategoryRow => category !== null);
+    },
+  );
 
   return { domainRows, categoryRows };
 };
@@ -184,16 +197,24 @@ export default function AdminDashboard() {
 
   const [domainForm, setDomainForm] = useState<DomainForm>(initialDomainForm);
   const [editingDomainId, setEditingDomainId] = useState<string | null>(null);
-  const [domainCreateError, setDomainCreateError] = useState<string | null>(null);
-  const [domainCreateSuccess, setDomainCreateSuccess] = useState<string | null>(null);
+  const [domainCreateError, setDomainCreateError] = useState<string | null>(
+    null,
+  );
+  const [domainCreateSuccess, setDomainCreateSuccess] = useState<string | null>(
+    null,
+  );
   const [isCreatingDomain, setIsCreatingDomain] = useState(false);
   const [isDomainsLoading, setIsDomainsLoading] = useState(true);
   const [domainLoadError, setDomainLoadError] = useState<string | null>(null);
 
-  const [categoryForm, setCategoryForm] = useState<CategoryForm>(initialCategoryForm);
-  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
+  const [categoryForm, setCategoryForm] =
+    useState<CategoryForm>(initialCategoryForm);
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(
+    null,
+  );
 
-  const [programForm, setProgramForm] = useState<ProgramForm>(initialProgramForm);
+  const [programForm, setProgramForm] =
+    useState<ProgramForm>(initialProgramForm);
   const [editingProgramId, setEditingProgramId] = useState<string | null>(null);
 
   const categoriesForProgramDomain = categories.filter(
@@ -275,7 +296,7 @@ export default function AdminDashboard() {
 
       try {
         setIsCreatingDomain(true);
-        const response = await updateGuidedDomain(
+        await updateGuidedDomain(
           editingDomainId,
           {
             name,
@@ -285,11 +306,26 @@ export default function AdminDashboard() {
           accessToken,
         );
 
-        const updatedName = response.name?.trim() || name;
-        const refreshed = await fetchGuidedTree();
-        const { domainRows, categoryRows } = mapGuidedTreeToRows(refreshed);
-        setDomains(domainRows);
-        setCategories(categoryRows);
+        // Endpoint returns 204 No Content; treat successful status as update success.
+        const updatedName = name;
+        setDomains((prev) =>
+          prev.map((domain) =>
+            domain.id === editingDomainId
+              ? { ...domain, name: updatedName }
+              : domain,
+          ),
+        );
+
+        try {
+          const refreshed = await fetchGuidedTree();
+          console.log(refreshed);
+          const { domainRows, categoryRows } = mapGuidedTreeToRows(refreshed);
+          setDomains(domainRows);
+          setCategories(categoryRows);
+        } catch {
+          // Keep optimistic UI state when refresh fails; operation already succeeded.
+        }
+
         setDomainCreateSuccess(`Domain "${updatedName}" updated.`);
         setDomainForm(initialDomainForm);
         setEditingDomainId(null);
@@ -345,11 +381,14 @@ export default function AdminDashboard() {
       .map((category) => category.id);
 
     setDomains((prev) => prev.filter((domain) => domain.id !== domainId));
-    setCategories((prev) => prev.filter((category) => category.domainId !== domainId));
+    setCategories((prev) =>
+      prev.filter((category) => category.domainId !== domainId),
+    );
     setPrograms((prev) =>
       prev.filter(
         (program) =>
-          program.domainId !== domainId && !categoryIdsInDomain.includes(program.categoryId),
+          program.domainId !== domainId &&
+          !categoryIdsInDomain.includes(program.categoryId),
       ),
     );
 
@@ -414,8 +453,12 @@ export default function AdminDashboard() {
   };
 
   const handleCategoryDelete = (categoryId: string) => {
-    setCategories((prev) => prev.filter((category) => category.id !== categoryId));
-    setPrograms((prev) => prev.filter((program) => program.categoryId !== categoryId));
+    setCategories((prev) =>
+      prev.filter((category) => category.id !== categoryId),
+    );
+    setPrograms((prev) =>
+      prev.filter((program) => program.categoryId !== categoryId),
+    );
 
     if (editingCategoryId === categoryId) resetCategoryForm();
     if (programForm.categoryId === categoryId) {
@@ -481,11 +524,16 @@ export default function AdminDashboard() {
     <section className="page page--adminDashboard">
       <h1 className="page__title">Admin Dashboard</h1>
       <p className="page__lead">
-        Manage platform users, domains, categories, and programs from a single admin workspace.
+        Manage platform users, domains, categories, and programs from a single
+        admin workspace.
       </p>
 
       <div className="adminContent">
-        <div className="adminTabs" role="tablist" aria-label="Admin dashboard sections">
+        <div
+          className="adminTabs"
+          role="tablist"
+          aria-label="Admin dashboard sections"
+        >
           <button
             type="button"
             role="tab"
@@ -556,15 +604,29 @@ export default function AdminDashboard() {
           <section className="adminPanel" role="tabpanel" aria-label="Domains">
             <div className="adminPanel__header">
               <h2 className="adminPanel__title">Domains</h2>
-              <p className="adminPanel__hint">Create top-level program domains.</p>
+              <p className="adminPanel__hint">
+                Create top-level program domains.
+              </p>
             </div>
 
-            {isDomainsLoading && <p className="adminPanel__hint">Loading domains...</p>}
-            {domainLoadError && <p className="adminPanel__error">{domainLoadError}</p>}
-            {domainCreateSuccess && <p className="adminPanel__success">{domainCreateSuccess}</p>}
-            {domainCreateError && <p className="adminPanel__error">{domainCreateError}</p>}
+            {isDomainsLoading && (
+              <p className="adminPanel__hint">Loading domains...</p>
+            )}
+            {domainLoadError && (
+              <p className="adminPanel__error">{domainLoadError}</p>
+            )}
+            {domainCreateSuccess && (
+              <p className="adminPanel__success">{domainCreateSuccess}</p>
+            )}
+            {domainCreateError && (
+              <p className="adminPanel__error">{domainCreateError}</p>
+            )}
 
-            <form className="form adminForm" onSubmit={handleDomainSubmit} noValidate>
+            <form
+              className="form adminForm"
+              onSubmit={handleDomainSubmit}
+              noValidate
+            >
               <label className="field">
                 <span className="field__label">Domain name</span>
                 <input
@@ -578,7 +640,11 @@ export default function AdminDashboard() {
               </label>
 
               <div className="adminForm__actions">
-                <button type="submit" className="button" disabled={isCreatingDomain}>
+                <button
+                  type="submit"
+                  className="button"
+                  disabled={isCreatingDomain}
+                >
                   {editingDomainId
                     ? isCreatingDomain
                       ? "Updating Domain..."
@@ -588,7 +654,11 @@ export default function AdminDashboard() {
                       : "Add Domain"}
                 </button>
                 {editingDomainId && (
-                  <button type="button" className="adminActionButton" onClick={resetDomainForm}>
+                  <button
+                    type="button"
+                    className="adminActionButton"
+                    onClick={resetDomainForm}
+                  >
                     Cancel
                   </button>
                 )}
@@ -642,13 +712,23 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === "categories" && (
-          <section className="adminPanel" role="tabpanel" aria-label="Categories">
+          <section
+            className="adminPanel"
+            role="tabpanel"
+            aria-label="Categories"
+          >
             <div className="adminPanel__header">
               <h2 className="adminPanel__title">Categories</h2>
-              <p className="adminPanel__hint">Create categories under each domain.</p>
+              <p className="adminPanel__hint">
+                Create categories under each domain.
+              </p>
             </div>
 
-            <form className="form adminForm" onSubmit={handleCategorySubmit} noValidate>
+            <form
+              className="form adminForm"
+              onSubmit={handleCategorySubmit}
+              noValidate
+            >
               <div className="adminForm__row adminForm__row--two">
                 <label className="field">
                   <span className="field__label">Domain</span>
@@ -656,7 +736,10 @@ export default function AdminDashboard() {
                     className="field__input"
                     value={categoryForm.domainId}
                     onChange={(e) =>
-                      setCategoryForm((prev) => ({ ...prev, domainId: e.target.value }))
+                      setCategoryForm((prev) => ({
+                        ...prev,
+                        domainId: e.target.value,
+                      }))
                     }
                     required
                   >
@@ -676,7 +759,10 @@ export default function AdminDashboard() {
                     type="text"
                     value={categoryForm.name}
                     onChange={(e) =>
-                      setCategoryForm((prev) => ({ ...prev, name: e.target.value }))
+                      setCategoryForm((prev) => ({
+                        ...prev,
+                        name: e.target.value,
+                      }))
                     }
                     placeholder="Enter category name"
                     required
@@ -689,7 +775,11 @@ export default function AdminDashboard() {
                   {editingCategoryId ? "Update Category" : "Add Category"}
                 </button>
                 {editingCategoryId && (
-                  <button type="button" className="adminActionButton" onClick={resetCategoryForm}>
+                  <button
+                    type="button"
+                    className="adminActionButton"
+                    onClick={resetCategoryForm}
+                  >
                     Cancel
                   </button>
                 )}
@@ -710,7 +800,11 @@ export default function AdminDashboard() {
                     categories.map((category) => (
                       <tr key={category.id}>
                         <td>{category.name}</td>
-                        <td>{domains.find((domain) => domain.id === category.domainId)?.name ?? "-"}</td>
+                        <td>
+                          {domains.find(
+                            (domain) => domain.id === category.domainId,
+                          )?.name ?? "-"}
+                        </td>
                         <td>
                           <div className="adminActionGroup">
                             <button
@@ -753,7 +847,11 @@ export default function AdminDashboard() {
               </p>
             </div>
 
-            <form className="form adminForm" onSubmit={handleProgramSubmit} noValidate>
+            <form
+              className="form adminForm"
+              onSubmit={handleProgramSubmit}
+              noValidate
+            >
               <div className="adminForm__row">
                 <label className="field">
                   <span className="field__label">Program title</span>
@@ -761,7 +859,12 @@ export default function AdminDashboard() {
                     className="field__input"
                     type="text"
                     value={programForm.title}
-                    onChange={(e) => setProgramForm((prev) => ({ ...prev, title: e.target.value }))}
+                    onChange={(e) =>
+                      setProgramForm((prev) => ({
+                        ...prev,
+                        title: e.target.value,
+                      }))
+                    }
                     placeholder="Enter program title"
                     required
                   />
@@ -805,7 +908,9 @@ export default function AdminDashboard() {
                     disabled={!programForm.domainId}
                   >
                     <option value="">
-                      {programForm.domainId ? "Select category" : "Select domain first"}
+                      {programForm.domainId
+                        ? "Select category"
+                        : "Select domain first"}
                     </option>
                     {categoriesForProgramDomain.map((category) => (
                       <option key={category.id} value={category.id}>
@@ -838,7 +943,11 @@ export default function AdminDashboard() {
                   {editingProgramId ? "Update Program" : "Add Program"}
                 </button>
                 {editingProgramId && (
-                  <button type="button" className="adminActionButton" onClick={resetProgramForm}>
+                  <button
+                    type="button"
+                    className="adminActionButton"
+                    onClick={resetProgramForm}
+                  >
                     Cancel
                   </button>
                 )}
@@ -861,10 +970,15 @@ export default function AdminDashboard() {
                     programs.map((program) => (
                       <tr key={program.id}>
                         <td>{program.title}</td>
-                        <td>{domains.find((domain) => domain.id === program.domainId)?.name ?? "-"}</td>
                         <td>
-                          {categories.find((category) => category.id === program.categoryId)?.name ??
-                            "-"}
+                          {domains.find(
+                            (domain) => domain.id === program.domainId,
+                          )?.name ?? "-"}
+                        </td>
+                        <td>
+                          {categories.find(
+                            (category) => category.id === program.categoryId,
+                          )?.name ?? "-"}
                         </td>
                         <td>{program.status}</td>
                         <td>

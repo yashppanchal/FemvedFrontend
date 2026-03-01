@@ -55,8 +55,8 @@ export function updateGuidedDomain(
   domainId: string,
   data: CreateGuidedDomainRequest,
   accessToken: string,
-): Promise<CreateGuidedDomainResponse> {
-  return apiFetch<CreateGuidedDomainResponse>(
+): Promise<void> {
+  return apiFetch<void>(
     `/guided/domains/${encodeURIComponent(domainId)}`,
     {
       method: "PUT",
