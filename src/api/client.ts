@@ -3,6 +3,24 @@
 /* ------------------------------------------------------------------ */
 
 const BASE_URL = "https://api.femved.com/api/v1";
+const TOKENS_STORAGE_KEY = "femved_tokens";
+
+interface StoredTokens {
+  accessToken?: string;
+}
+
+function getStoredAccessToken(): string | null {
+  try {
+    const raw = localStorage.getItem(TOKENS_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as StoredTokens;
+    return typeof parsed.accessToken === "string" && parsed.accessToken
+      ? parsed.accessToken
+      : null;
+  } catch {
+    return null;
+  }
+}
 
 export class ApiError extends Error {
   status: number;
@@ -30,10 +48,16 @@ export async function apiFetch<T>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const headers: HeadersInit = {
-    "Content-Type": "application/json",
-    ...(options.headers as Record<string, string>),
-  };
+  const headers = new Headers(options.headers);
+  headers.set("Content-Type", "application/json");
+
+  // Auto-attach bearer token for protected endpoints when available.
+  if (!headers.has("Authorization")) {
+    const accessToken = getStoredAccessToken();
+    if (accessToken) {
+      headers.set("Authorization", `Bearer ${accessToken}`);
+    }
+  }
 
   const res = await fetch(`${BASE_URL}${path}`, {
     ...options,
