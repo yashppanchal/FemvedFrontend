@@ -1,6 +1,6 @@
 import "./ProgramDetailPage.scss";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   loadGuidedPrograms,
   normalizeSlug,
@@ -9,6 +9,7 @@ import {
 import { PrimaryOutlineButton } from "../components/PrimaryOutlineButton";
 
 export default function ProgramDetailPage() {
+  const navigate = useNavigate();
   const { programSlug, programId } = useParams<{
     programSlug: string;
     programId: string;
@@ -133,6 +134,13 @@ export default function ProgramDetailPage() {
         }
       >
         <div className="programDetailPage__heroInner container">
+          <button
+            type="button"
+            className="programDetailPage__backButton"
+            onClick={() => navigate(-1)}
+          >
+            Back
+          </button>
           <h1 className="programDetailPage__title">
             {selectedProgram.programName}
           </h1>
