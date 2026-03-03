@@ -13,12 +13,19 @@ export interface CreateGuidedDomainResponse {
   name?: string;
 }
 
+export interface DeleteGuidedDomainResponse {
+  id: string;
+  isDeleted: boolean;
+}
+
 export interface GuidedTreeDomain {
   domainId?: string;
   id?: string;
   _id?: string;
   domainName?: string;
   name?: string;
+  isActive?: boolean;
+  is_active?: boolean;
   categories?: GuidedTreeCategory[];
 }
 
@@ -29,6 +36,8 @@ export interface GuidedTreeCategory {
   categoryType?: string;
   categoryName?: string;
   name?: string;
+  isActive?: boolean;
+  is_active?: boolean;
   categoryPageData?: {
     categoryType?: string;
   };
@@ -64,6 +73,21 @@ export function updateGuidedDomain(
         Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify(data),
+    },
+  );
+}
+
+export function deleteGuidedDomain(
+  domainId: string,
+  accessToken: string,
+): Promise<DeleteGuidedDomainResponse> {
+  return apiFetch<DeleteGuidedDomainResponse>(
+    `/guided/domains/${encodeURIComponent(domainId)}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     },
   );
 }

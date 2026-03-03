@@ -2,7 +2,9 @@ import { type FormEvent, useEffect, useState } from "react";
 import { ApiError } from "../api/client";
 import {
   createGuidedDomain,
+  deleteGuidedDomain,
   fetchGuidedTree,
+  type GuidedTreeDomain,
   updateGuidedDomain,
 } from "../api/guided";
 import { useAuth } from "../auth/useAuth";
@@ -57,6 +59,8 @@ type GuidedHierarchyRows = {
   domainRows: DomainRow[];
   categoryRows: CategoryRow[];
 };
+
+const PENDING_DOMAINS_STORAGE_KEY = "femved_admin_pending_domains";
 
 const registeredUsersSeed: UserRow[] = [
   {
@@ -132,12 +136,18 @@ const toHyphenatedSlug = (name: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
-const mapGuidedTreeToRows = (
-  response: Awaited<ReturnType<typeof fetchGuidedTree>>,
-): GuidedHierarchyRows => {
-  const domainRows = (response.domains ?? [])
+const isEntityActive = (entity: {
+  isActive?: boolean;
+  is_active?: boolean;
+}): boolean => {
+  if (typeof entity.isActive === "boolean") return entity.isActive;
+  if (typeof entity.is_active === "boolean") return entity.is_active;
+  return true;
+};
+
+const mapGuidedDomainsToRows = (domains: GuidedTreeDomain[]): DomainRow[] =>
+  domains
     .map((domain, index) => {
-      // Prefer backend domainId so edit/delete operations always use API identifiers.
       const id =
         domain.domainId ?? domain.id ?? domain._id ?? `domain-${index + 1}`;
       const name = domain.name ?? domain.domainName ?? "";
@@ -150,6 +160,48 @@ const mapGuidedTreeToRows = (
     })
     .filter((domain): domain is DomainRow => domain !== null);
 
+const getPendingDomains = (): DomainRow[] => {
+  try {
+    const raw = localStorage.getItem(PENDING_DOMAINS_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as DomainRow[];
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (domain) =>
+        typeof domain?.id === "string" &&
+        Boolean(domain.id) &&
+        typeof domain?.name === "string" &&
+        Boolean(domain.name.trim()),
+    );
+  } catch {
+    return [];
+  }
+};
+
+const setPendingDomains = (domains: DomainRow[]) => {
+  try {
+    localStorage.setItem(PENDING_DOMAINS_STORAGE_KEY, JSON.stringify(domains));
+  } catch {
+    // Ignore storage failures; UI state still updates in memory.
+  }
+};
+
+const upsertPendingDomain = (domain: DomainRow) => {
+  const pending = getPendingDomains();
+  if (pending.some((row) => row.id === domain.id)) return;
+  setPendingDomains([...pending, domain]);
+};
+
+const removePendingDomain = (domainId: string) => {
+  const pending = getPendingDomains();
+  setPendingDomains(pending.filter((domain) => domain.id !== domainId));
+};
+
+const mapGuidedTreeToRows = (
+  response: Awaited<ReturnType<typeof fetchGuidedTree>>,
+): GuidedHierarchyRows => {
+  const domainRows = mapGuidedDomainsToRows(response.domains ?? []);
+
   const categoryRows = (response.domains ?? []).flatMap(
     (domain, domainIndex) => {
       const domainId =
@@ -161,6 +213,8 @@ const mapGuidedTreeToRows = (
 
       return (domain.categories ?? [])
         .map((category, categoryIndex) => {
+          if (!isEntityActive(category)) return null;
+
           const id =
             category.categoryId ??
             category.id ??
@@ -204,6 +258,7 @@ export default function AdminDashboard() {
     null,
   );
   const [isCreatingDomain, setIsCreatingDomain] = useState(false);
+  const [deletingDomainId, setDeletingDomainId] = useState<string | null>(null);
   const [isDomainsLoading, setIsDomainsLoading] = useState(true);
   const [domainLoadError, setDomainLoadError] = useState<string | null>(null);
 
@@ -231,9 +286,25 @@ export default function AdminDashboard() {
 
         const response = await fetchGuidedTree();
         const { domainRows, categoryRows } = mapGuidedTreeToRows(response);
+        const pendingDomains = getPendingDomains();
+        const mergedDomainRows = [...domainRows];
+
+        for (const pending of pendingDomains) {
+          if (!mergedDomainRows.some((domain) => domain.id === pending.id)) {
+            mergedDomainRows.push(pending);
+          }
+        }
+
+        // Drop pending rows once backend tree starts returning them.
+        setPendingDomains(
+          pendingDomains.filter(
+            (pending) =>
+              !domainRows.some((domain) => domain.id === pending.id),
+          ),
+        );
 
         if (!isActive) return;
-        setDomains(domainRows);
+        setDomains(mergedDomainRows);
         setCategories(categoryRows);
       } catch {
         if (!isActive) return;
@@ -316,16 +387,6 @@ export default function AdminDashboard() {
           ),
         );
 
-        try {
-          const refreshed = await fetchGuidedTree();
-          console.log(refreshed);
-          const { domainRows, categoryRows } = mapGuidedTreeToRows(refreshed);
-          setDomains(domainRows);
-          setCategories(categoryRows);
-        } catch {
-          // Keep optimistic UI state when refresh fails; operation already succeeded.
-        }
-
         setDomainCreateSuccess(`Domain "${updatedName}" updated.`);
         setDomainForm(initialDomainForm);
         setEditingDomainId(null);
@@ -353,10 +414,43 @@ export default function AdminDashboard() {
       );
 
       const createdName = response.name?.trim() || name;
-      const refreshed = await fetchGuidedTree();
-      const { domainRows, categoryRows } = mapGuidedTreeToRows(refreshed);
-      setDomains(domainRows);
-      setCategories(categoryRows);
+      const createdId =
+        response.domainId ??
+        response.id ??
+        response._id ??
+        `domain-${Date.now().toString(36)}`;
+
+      // Ensure newly created domains are visible immediately even if tree refresh
+      // is eventually consistent or does not include empty/unpublished entries.
+      setDomains((prev) => {
+        if (prev.some((domain) => domain.id === createdId)) return prev;
+        return [...prev, { id: createdId, name: createdName }];
+      });
+      upsertPendingDomain({ id: createdId, name: createdName });
+
+      try {
+        const refreshed = await fetchGuidedTree();
+        const { domainRows, categoryRows } = mapGuidedTreeToRows(refreshed);
+        setDomains((prev) => {
+          const merged = [...domainRows];
+          for (const domain of prev) {
+            if (!merged.some((row) => row.id === domain.id)) {
+              merged.push(domain);
+            }
+          }
+          return merged;
+        });
+        setCategories(categoryRows);
+        setPendingDomains(
+          getPendingDomains().filter(
+            (pending) =>
+              !domainRows.some((domain) => domain.id === pending.id),
+          ),
+        );
+      } catch {
+        // Keep optimistic fallback when tree refresh fails after successful create.
+      }
+
       setDomainCreateSuccess(`Domain "${createdName}" created.`);
       setDomainForm(initialDomainForm);
     } catch (err) {
@@ -375,26 +469,53 @@ export default function AdminDashboard() {
     setDomainForm({ name: domain.name });
   };
 
-  const handleDomainDelete = (domainId: string) => {
+  const handleDomainDelete = async (domainId: string) => {
+    setDomainCreateError(null);
+    setDomainCreateSuccess(null);
+
+    const accessToken = tokens?.accessToken;
+    if (!accessToken) {
+      setDomainCreateError("You must be logged in to manage domains.");
+      return;
+    }
+
     const categoryIdsInDomain = categories
       .filter((category) => category.domainId === domainId)
       .map((category) => category.id);
 
-    setDomains((prev) => prev.filter((domain) => domain.id !== domainId));
-    setCategories((prev) =>
-      prev.filter((category) => category.domainId !== domainId),
-    );
-    setPrograms((prev) =>
-      prev.filter(
-        (program) =>
-          program.domainId !== domainId &&
-          !categoryIdsInDomain.includes(program.categoryId),
-      ),
-    );
+    try {
+      setDeletingDomainId(domainId);
+      const response = await deleteGuidedDomain(domainId, accessToken);
+      if (!response.isDeleted) {
+        throw new Error("Delete operation did not complete.");
+      }
 
-    if (editingDomainId === domainId) resetDomainForm();
-    if (categoryForm.domainId === domainId) resetCategoryForm();
-    if (programForm.domainId === domainId) resetProgramForm();
+      setDomains((prev) => prev.filter((domain) => domain.id !== domainId));
+      setCategories((prev) =>
+        prev.filter((category) => category.domainId !== domainId),
+      );
+      setPrograms((prev) =>
+        prev.filter(
+          (program) =>
+            program.domainId !== domainId &&
+            !categoryIdsInDomain.includes(program.categoryId),
+        ),
+      );
+
+      if (editingDomainId === domainId) resetDomainForm();
+      if (categoryForm.domainId === domainId) resetCategoryForm();
+      if (programForm.domainId === domainId) resetProgramForm();
+      removePendingDomain(domainId);
+      setDomainCreateSuccess("Domain deleted.");
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setDomainCreateError(err.message);
+      } else {
+        setDomainCreateError("Unable to delete domain. Please try again.");
+      }
+    } finally {
+      setDeletingDomainId(null);
+    }
   };
 
   const handleCategorySubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -690,9 +811,12 @@ export default function AdminDashboard() {
                             <button
                               type="button"
                               className="adminActionButton adminActionButton--danger"
+                              disabled={deletingDomainId === domain.id}
                               onClick={() => handleDomainDelete(domain.id)}
                             >
-                              Delete
+                              {deletingDomainId === domain.id
+                                ? "Deleting..."
+                                : "Delete"}
                             </button>
                           </div>
                         </td>
