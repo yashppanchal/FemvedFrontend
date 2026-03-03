@@ -64,10 +64,19 @@ export async function apiFetch<T>(
     headers,
   });
 
-  // Try to parse body regardless of status so we can surface server errors
+  // Parse JSON when possible and gracefully fall back to plain text responses.
   let body: unknown;
   try {
-    body = await res.json();
+    const rawBody = await res.text();
+    if (!rawBody) {
+      body = null;
+    } else {
+      try {
+        body = JSON.parse(rawBody) as unknown;
+      } catch {
+        body = rawBody;
+      }
+    }
   } catch {
     body = null;
   }

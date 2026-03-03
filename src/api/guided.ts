@@ -18,6 +18,23 @@ export interface DeleteGuidedDomainResponse {
   isDeleted: boolean;
 }
 
+export interface CreateGuidedCategoryRequest {
+  domainId: string;
+  name: string;
+  slug: string;
+  categoryType: string;
+  heroTitle: string;
+  heroSubtext: string;
+  ctaLabel: string;
+  ctaLink: string;
+  pageHeader: string;
+  imageUrl: string;
+  sortOrder: number;
+  parentId?: string;
+  whatsIncluded: string[];
+  keyAreas: string[];
+}
+
 export interface GuidedTreeDomain {
   domainId?: string;
   id?: string;
@@ -90,6 +107,19 @@ export function deleteGuidedDomain(
       },
     },
   );
+}
+
+export function createGuidedCategory(
+  data: CreateGuidedCategoryRequest,
+  accessToken: string,
+): Promise<string> {
+  return apiFetch<string>("/guided/categories", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(data),
+  });
 }
 
 export function fetchGuidedTree(): Promise<GuidedTreeResponse> {

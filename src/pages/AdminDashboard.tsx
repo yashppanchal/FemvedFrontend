@@ -1,6 +1,7 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { ApiError } from "../api/client";
 import {
+  createGuidedCategory,
   createGuidedDomain,
   deleteGuidedDomain,
   fetchGuidedTree,
@@ -44,8 +45,20 @@ type DomainForm = {
 };
 
 type CategoryForm = {
-  name: string;
   domainId: string;
+  name: string;
+  slug: string;
+  categoryType: string;
+  heroTitle: string;
+  heroSubtext: string;
+  ctaLabel: string;
+  ctaLink: string;
+  pageHeader: string;
+  imageUrl: string;
+  sortOrder: string;
+  parentId: string;
+  whatsIncluded: string;
+  keyAreas: string;
 };
 
 type ProgramForm = {
@@ -108,8 +121,20 @@ const initialDomainForm: DomainForm = {
 };
 
 const initialCategoryForm: CategoryForm = {
-  name: "",
   domainId: "",
+  name: "",
+  slug: "",
+  categoryType: "",
+  heroTitle: "",
+  heroSubtext: "",
+  ctaLabel: "",
+  ctaLink: "",
+  pageHeader: "",
+  imageUrl: "",
+  sortOrder: "",
+  parentId: "",
+  whatsIncluded: "",
+  keyAreas: "",
 };
 
 const initialProgramForm: ProgramForm = {
@@ -135,6 +160,12 @@ const toHyphenatedSlug = (name: string) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+
+const parseTextareaItems = (value: string): string[] =>
+  value
+    .split(/\r?\n|,/)
+    .map((item) => item.trim())
+    .filter(Boolean);
 
 const isEntityActive = (entity: {
   isActive?: boolean;
@@ -267,6 +298,14 @@ export default function AdminDashboard() {
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(
     null,
   );
+  const [categoryCreateError, setCategoryCreateError] = useState<string | null>(
+    null,
+  );
+  const [categoryCreateSuccess, setCategoryCreateSuccess] = useState<
+    string | null
+  >(null);
+  const [isCreatingCategory, setIsCreatingCategory] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   const [programForm, setProgramForm] =
     useState<ProgramForm>(initialProgramForm);
@@ -274,6 +313,11 @@ export default function AdminDashboard() {
 
   const categoriesForProgramDomain = categories.filter(
     (category) => category.domainId === programForm.domainId,
+  );
+  const categoriesForSelectedCategoryDomain = categories.filter(
+    (category) =>
+      category.domainId === categoryForm.domainId &&
+      category.id !== editingCategoryId,
   );
 
   useEffect(() => {
@@ -332,6 +376,22 @@ export default function AdminDashboard() {
   const resetCategoryForm = () => {
     setCategoryForm(initialCategoryForm);
     setEditingCategoryId(null);
+    setCategoryCreateError(null);
+    setCategoryCreateSuccess(null);
+  };
+
+  const openAddCategoryModal = () => {
+    setEditingCategoryId(null);
+    setCategoryForm(initialCategoryForm);
+    setCategoryCreateError(null);
+    setCategoryCreateSuccess(null);
+    setIsCategoryModalOpen(true);
+  };
+
+  const closeCategoryModal = () => {
+    setCategoryForm(initialCategoryForm);
+    setEditingCategoryId(null);
+    setIsCategoryModalOpen(false);
   };
 
   const resetProgramForm = () => {
@@ -518,8 +578,10 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleCategorySubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleCategorySubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setCategoryCreateError(null);
+    setCategoryCreateSuccess(null);
 
     const name = categoryForm.name.trim();
     if (!name || !categoryForm.domainId) return;
@@ -548,29 +610,102 @@ export default function AdminDashboard() {
         }));
       }
 
-      resetCategoryForm();
+      setCategoryCreateSuccess(`Category "${name}" updated.`);
+      closeCategoryModal();
       return;
     }
 
-    const newCategory: CategoryRow = {
-      id: createNextId(
-        "C",
-        categories.map((category) => category.id),
-      ),
-      name,
-      domainId: categoryForm.domainId,
-    };
+    const accessToken = tokens?.accessToken;
+    if (!accessToken) {
+      setCategoryCreateError("You must be logged in to manage categories.");
+      return;
+    }
 
-    setCategories((prev) => [newCategory, ...prev]);
-    resetCategoryForm();
+    const slug = categoryForm.slug.trim() || toHyphenatedSlug(name);
+    if (!slug) {
+      setCategoryCreateError("Please enter a valid category name.");
+      return;
+    }
+
+    const parsedSortOrder = Number.parseInt(categoryForm.sortOrder, 10);
+    const sortOrder = Number.isFinite(parsedSortOrder)
+      ? parsedSortOrder
+      : categories.filter((category) => category.domainId === categoryForm.domainId)
+          .length;
+    const categoryType = categoryForm.categoryType.trim() || name;
+    const heroTitle = categoryForm.heroTitle.trim() || name;
+    const pageHeader = categoryForm.pageHeader.trim() || name;
+
+    try {
+      setIsCreatingCategory(true);
+      const response = await createGuidedCategory(
+        {
+          domainId: categoryForm.domainId,
+          name,
+          slug,
+          categoryType,
+          heroTitle,
+          heroSubtext: categoryForm.heroSubtext.trim(),
+          ctaLabel: categoryForm.ctaLabel.trim(),
+          ctaLink: categoryForm.ctaLink.trim(),
+          pageHeader,
+          imageUrl: categoryForm.imageUrl.trim(),
+          sortOrder,
+          parentId: categoryForm.parentId || undefined,
+          whatsIncluded: parseTextareaItems(categoryForm.whatsIncluded),
+          keyAreas: parseTextareaItems(categoryForm.keyAreas),
+        },
+        accessToken,
+      );
+
+      const createdId =
+        typeof response === "string" && response.trim()
+          ? response.trim()
+          : `category-${Date.now().toString(36)}`;
+      const newCategory: CategoryRow = {
+        id: createdId,
+        name,
+        domainId: categoryForm.domainId,
+      };
+
+      setCategories((prev) => {
+        if (prev.some((category) => category.id === createdId)) return prev;
+        return [newCategory, ...prev];
+      });
+      setCategoryCreateSuccess(`Category "${name}" created.`);
+      closeCategoryModal();
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setCategoryCreateError(err.message);
+      } else {
+        setCategoryCreateError("Unable to create category. Please try again.");
+      }
+    } finally {
+      setIsCreatingCategory(false);
+    }
   };
 
   const startCategoryEdit = (category: CategoryRow) => {
     setEditingCategoryId(category.id);
     setCategoryForm({
-      name: category.name,
       domainId: category.domainId,
+      name: category.name,
+      slug: toHyphenatedSlug(category.name),
+      categoryType: category.name,
+      heroTitle: category.name,
+      heroSubtext: "",
+      ctaLabel: "",
+      ctaLink: "",
+      pageHeader: category.name,
+      imageUrl: "",
+      sortOrder: "",
+      parentId: "",
+      whatsIncluded: "",
+      keyAreas: "",
     });
+    setCategoryCreateError(null);
+    setCategoryCreateSuccess(null);
+    setIsCategoryModalOpen(true);
   };
 
   const handleCategoryDelete = (categoryId: string) => {
@@ -581,7 +716,7 @@ export default function AdminDashboard() {
       prev.filter((program) => program.categoryId !== categoryId),
     );
 
-    if (editingCategoryId === categoryId) resetCategoryForm();
+    if (editingCategoryId === categoryId) closeCategoryModal();
     if (programForm.categoryId === categoryId) {
       setProgramForm((prev) => ({ ...prev, categoryId: "" }));
     }
@@ -846,69 +981,21 @@ export default function AdminDashboard() {
               <p className="adminPanel__hint">
                 Create categories under each domain.
               </p>
+              <button
+                type="button"
+                className="button"
+                onClick={openAddCategoryModal}
+              >
+                Add Category
+              </button>
             </div>
 
-            <form
-              className="form adminForm"
-              onSubmit={handleCategorySubmit}
-              noValidate
-            >
-              <div className="adminForm__row adminForm__row--two">
-                <label className="field">
-                  <span className="field__label">Domain</span>
-                  <select
-                    className="field__input"
-                    value={categoryForm.domainId}
-                    onChange={(e) =>
-                      setCategoryForm((prev) => ({
-                        ...prev,
-                        domainId: e.target.value,
-                      }))
-                    }
-                    required
-                  >
-                    <option value="">Select domain</option>
-                    {domains.map((domain) => (
-                      <option key={domain.id} value={domain.id}>
-                        {domain.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <label className="field">
-                  <span className="field__label">Category name</span>
-                  <input
-                    className="field__input"
-                    type="text"
-                    value={categoryForm.name}
-                    onChange={(e) =>
-                      setCategoryForm((prev) => ({
-                        ...prev,
-                        name: e.target.value,
-                      }))
-                    }
-                    placeholder="Enter category name"
-                    required
-                  />
-                </label>
-              </div>
-
-              <div className="adminForm__actions">
-                <button type="submit" className="button">
-                  {editingCategoryId ? "Update Category" : "Add Category"}
-                </button>
-                {editingCategoryId && (
-                  <button
-                    type="button"
-                    className="adminActionButton"
-                    onClick={resetCategoryForm}
-                  >
-                    Cancel
-                  </button>
-                )}
-              </div>
-            </form>
+            {categoryCreateSuccess && (
+              <p className="adminPanel__success">{categoryCreateSuccess}</p>
+            )}
+            {categoryCreateError && (
+              <p className="adminPanel__error">{categoryCreateError}</p>
+            )}
 
             <div className="adminTableWrap">
               <table className="adminTable">
@@ -959,6 +1046,324 @@ export default function AdminDashboard() {
                 </tbody>
               </table>
             </div>
+
+            {isCategoryModalOpen && (
+              <div className="adminModalBackdrop" role="presentation">
+                <section
+                  className="adminModal"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label={
+                    editingCategoryId ? "Edit category" : "Create category"
+                  }
+                >
+                  <div className="adminModal__header">
+                    <h3 className="adminModal__title">
+                      {editingCategoryId ? "Edit Category" : "Add Category"}
+                    </h3>
+                    <button
+                      type="button"
+                      className="adminActionButton"
+                      onClick={closeCategoryModal}
+                      disabled={isCreatingCategory}
+                    >
+                      Close
+                    </button>
+                  </div>
+
+                  <form
+                    className="form adminForm"
+                    onSubmit={handleCategorySubmit}
+                    noValidate
+                  >
+                    <div className="adminForm__row adminForm__row--two">
+                      <label className="field">
+                        <span className="field__label">Domain</span>
+                        <select
+                          className="field__input"
+                          value={categoryForm.domainId}
+                          onChange={(e) =>
+                            setCategoryForm((prev) => ({
+                              ...prev,
+                              domainId: e.target.value,
+                              parentId: "",
+                            }))
+                          }
+                          required
+                        >
+                          <option value="">Select domain</option>
+                          {domains.map((domain) => (
+                            <option key={domain.id} value={domain.id}>
+                              {domain.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+
+                      <label className="field">
+                        <span className="field__label">Name</span>
+                        <input
+                          className="field__input"
+                          type="text"
+                          value={categoryForm.name}
+                          onChange={(e) =>
+                            setCategoryForm((prev) => ({
+                              ...prev,
+                              name: e.target.value,
+                            }))
+                          }
+                          placeholder="Category name"
+                          required
+                        />
+                      </label>
+                    </div>
+
+                    <div className="adminForm__row adminForm__row--two">
+                      <label className="field">
+                        <span className="field__label">Slug</span>
+                        <input
+                          className="field__input"
+                          type="text"
+                          value={categoryForm.slug}
+                          onChange={(e) =>
+                            setCategoryForm((prev) => ({
+                              ...prev,
+                              slug: e.target.value,
+                            }))
+                          }
+                          placeholder="auto-generated if blank"
+                        />
+                      </label>
+
+                      <label className="field">
+                        <span className="field__label">Category Type</span>
+                        <input
+                          className="field__input"
+                          type="text"
+                          value={categoryForm.categoryType}
+                          onChange={(e) =>
+                            setCategoryForm((prev) => ({
+                              ...prev,
+                              categoryType: e.target.value,
+                            }))
+                          }
+                          placeholder="Defaults to name"
+                        />
+                      </label>
+                    </div>
+
+                    <div className="adminForm__row adminForm__row--two">
+                      <label className="field">
+                        <span className="field__label">Hero Title</span>
+                        <input
+                          className="field__input"
+                          type="text"
+                          value={categoryForm.heroTitle}
+                          onChange={(e) =>
+                            setCategoryForm((prev) => ({
+                              ...prev,
+                              heroTitle: e.target.value,
+                            }))
+                          }
+                          placeholder="Defaults to name"
+                        />
+                      </label>
+
+                      <label className="field">
+                        <span className="field__label">Hero Subtext</span>
+                        <input
+                          className="field__input"
+                          type="text"
+                          value={categoryForm.heroSubtext}
+                          onChange={(e) =>
+                            setCategoryForm((prev) => ({
+                              ...prev,
+                              heroSubtext: e.target.value,
+                            }))
+                          }
+                          placeholder="Optional hero description"
+                        />
+                      </label>
+                    </div>
+
+                    <div className="adminForm__row adminForm__row--two">
+                      <label className="field">
+                        <span className="field__label">CTA Label</span>
+                        <input
+                          className="field__input"
+                          type="text"
+                          value={categoryForm.ctaLabel}
+                          onChange={(e) =>
+                            setCategoryForm((prev) => ({
+                              ...prev,
+                              ctaLabel: e.target.value,
+                            }))
+                          }
+                          placeholder="Optional CTA label"
+                        />
+                      </label>
+
+                      <label className="field">
+                        <span className="field__label">CTA Link</span>
+                        <input
+                          className="field__input"
+                          type="url"
+                          value={categoryForm.ctaLink}
+                          onChange={(e) =>
+                            setCategoryForm((prev) => ({
+                              ...prev,
+                              ctaLink: e.target.value,
+                            }))
+                          }
+                          placeholder="https://example.com"
+                        />
+                      </label>
+                    </div>
+
+                    <div className="adminForm__row adminForm__row--two">
+                      <label className="field">
+                        <span className="field__label">Page Header</span>
+                        <input
+                          className="field__input"
+                          type="text"
+                          value={categoryForm.pageHeader}
+                          onChange={(e) =>
+                            setCategoryForm((prev) => ({
+                              ...prev,
+                              pageHeader: e.target.value,
+                            }))
+                          }
+                          placeholder="Defaults to name"
+                        />
+                      </label>
+
+                      <label className="field">
+                        <span className="field__label">Image URL</span>
+                        <input
+                          className="field__input"
+                          type="url"
+                          value={categoryForm.imageUrl}
+                          onChange={(e) =>
+                            setCategoryForm((prev) => ({
+                              ...prev,
+                              imageUrl: e.target.value,
+                            }))
+                          }
+                          placeholder="https://..."
+                        />
+                      </label>
+                    </div>
+
+                    <div className="adminForm__row adminForm__row--two">
+                      <label className="field">
+                        <span className="field__label">Sort Order</span>
+                        <input
+                          className="field__input"
+                          type="number"
+                          min={0}
+                          value={categoryForm.sortOrder}
+                          onChange={(e) =>
+                            setCategoryForm((prev) => ({
+                              ...prev,
+                              sortOrder: e.target.value,
+                            }))
+                          }
+                          placeholder="auto if blank"
+                        />
+                      </label>
+
+                      <label className="field">
+                        <span className="field__label">Parent Category</span>
+                        <select
+                          className="field__input"
+                          value={categoryForm.parentId}
+                          onChange={(e) =>
+                            setCategoryForm((prev) => ({
+                              ...prev,
+                              parentId: e.target.value,
+                            }))
+                          }
+                          disabled={!categoryForm.domainId}
+                        >
+                          <option value="">
+                            {categoryForm.domainId
+                              ? "No parent"
+                              : "Select domain first"}
+                          </option>
+                          {categoriesForSelectedCategoryDomain.map((category) => (
+                            <option key={category.id} value={category.id}>
+                              {category.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+
+                    <div className="adminForm__row adminForm__row--two">
+                      <label className="field">
+                        <span className="field__label">
+                          What's Included (one per line or comma-separated)
+                        </span>
+                        <textarea
+                          className="field__input"
+                          value={categoryForm.whatsIncluded}
+                          onChange={(e) =>
+                            setCategoryForm((prev) => ({
+                              ...prev,
+                              whatsIncluded: e.target.value,
+                            }))
+                          }
+                          rows={4}
+                          placeholder="Meal plans&#10;Expert consults"
+                        />
+                      </label>
+
+                      <label className="field">
+                        <span className="field__label">
+                          Key Areas (one per line or comma-separated)
+                        </span>
+                        <textarea
+                          className="field__input"
+                          value={categoryForm.keyAreas}
+                          onChange={(e) =>
+                            setCategoryForm((prev) => ({
+                              ...prev,
+                              keyAreas: e.target.value,
+                            }))
+                          }
+                          rows={4}
+                          placeholder="Nutrition&#10;Hormones"
+                        />
+                      </label>
+                    </div>
+
+                    <div className="adminForm__actions">
+                      <button
+                        type="submit"
+                        className="button"
+                        disabled={isCreatingCategory}
+                      >
+                        {editingCategoryId
+                          ? isCreatingCategory
+                            ? "Updating Category..."
+                            : "Update Category"
+                          : isCreatingCategory
+                            ? "Adding Category..."
+                            : "Add Category"}
+                      </button>
+                      <button
+                        type="button"
+                        className="adminActionButton"
+                        onClick={closeCategoryModal}
+                        disabled={isCreatingCategory}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </section>
+              </div>
+            )}
           </section>
         )}
 
