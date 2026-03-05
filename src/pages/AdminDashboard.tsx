@@ -134,6 +134,9 @@ const isEntityActive = (entity: {
   return true;
 };
 
+const isPendingDomainId = (domainId: string): boolean =>
+  domainId.trim().startsWith("domain-");
+
 const mapGuidedDomainsToRows = (domains: GuidedTreeDomain[]): DomainRow[] =>
   domains
     .map((domain, index) => {
@@ -149,6 +152,16 @@ const mapGuidedDomainsToRows = (domains: GuidedTreeDomain[]): DomainRow[] =>
     })
     .filter((domain): domain is DomainRow => domain !== null);
 
+const dedupeDomainRows = (rows: DomainRow[]): DomainRow[] => {
+  const byId = new Map<string, DomainRow>();
+  for (const row of rows) {
+    if (!byId.has(row.id)) {
+      byId.set(row.id, row);
+    }
+  }
+  return Array.from(byId.values());
+};
+
 const getPendingDomains = (): DomainRow[] => {
   try {
     const raw = localStorage.getItem(PENDING_DOMAINS_STORAGE_KEY);
@@ -159,6 +172,7 @@ const getPendingDomains = (): DomainRow[] => {
       (domain) =>
         typeof domain?.id === "string" &&
         Boolean(domain.id) &&
+        isPendingDomainId(domain.id) &&
         typeof domain?.name === "string" &&
         Boolean(domain.name.trim()),
     );
@@ -176,6 +190,7 @@ const setPendingDomains = (domains: DomainRow[]) => {
 };
 
 const upsertPendingDomain = (domain: DomainRow) => {
+  if (!isPendingDomainId(domain.id)) return;
   const pending = getPendingDomains();
   if (pending.some((row) => row.id === domain.id)) return;
   setPendingDomains([...pending, domain]);
@@ -286,31 +301,17 @@ export default function AdminDashboard() {
         setIsDomainsLoading(true);
         setDomainLoadError(null);
 
-        const response = await fetchGuidedTree();
-        const { domainRows, categoryRows } = mapGuidedTreeToRows(response);
-        const pendingDomains = getPendingDomains();
-        const mergedDomainRows = [...domainRows];
-
-        for (const pending of pendingDomains) {
-          if (!mergedDomainRows.some((domain) => domain.id === pending.id)) {
-            mergedDomainRows.push(pending);
-          }
-        }
-
-        // Drop pending rows once backend tree starts returning them.
-        setPendingDomains(
-          pendingDomains.filter(
-            (pending) =>
-              !domainRows.some((domain) => domain.id === pending.id),
-          ),
-        );
+        const treeResponse = await fetchGuidedTree();
+        const { domainRows, categoryRows } = mapGuidedTreeToRows(treeResponse);
+        // Refresh should reflect backend tree only; clear stale local placeholders.
+        setPendingDomains([]);
 
         if (!isActive) return;
-        setDomains(mergedDomainRows);
+        setDomains(dedupeDomainRows(domainRows));
         setCategories(categoryRows);
       } catch {
         if (!isActive) return;
-        setDomainLoadError("Unable to load domains from guided tree.");
+        setDomainLoadError("Unable to load domains.");
       } finally {
         if (!isActive) return;
         setIsDomainsLoading(false);
@@ -385,6 +386,11 @@ export default function AdminDashboard() {
 
       try {
         setIsCreatingDomain(true);
+        if (isPendingDomainId(editingDomainId)) {
+          throw new Error(
+            "This domain is pending sync. Refresh once it appears in the backend list.",
+          );
+        }
         await updateGuidedDomain(
           editingDomainId,
           {
@@ -431,12 +437,14 @@ export default function AdminDashboard() {
         accessToken,
       );
 
-      const createdName = response.name?.trim() || name;
+      const createdName = response.name?.trim() ?? name;
       const createdId =
         response.domainId ??
         response.id ??
-        response._id ??
-        `domain-${Date.now().toString(36)}`;
+        response._id;
+      if (!createdId) {
+        throw new Error("Domain created but no id was returned by backend.");
+      }
 
       // Ensure newly created domains are visible immediately even if tree refresh
       // is eventually consistent or does not include empty/unpublished entries.
@@ -447,27 +455,21 @@ export default function AdminDashboard() {
       upsertPendingDomain({ id: createdId, name: createdName });
 
       try {
-        const refreshed = await fetchGuidedTree();
-        const { domainRows, categoryRows } = mapGuidedTreeToRows(refreshed);
-        setDomains((prev) => {
-          const merged = [...domainRows];
-          for (const domain of prev) {
-            if (!merged.some((row) => row.id === domain.id)) {
-              merged.push(domain);
-            }
-          }
-          return merged;
-        });
+        const refreshedTree = await fetchGuidedTree();
+        const { domainRows, categoryRows } = mapGuidedTreeToRows(refreshedTree);
+        setDomains((prev) =>
+          dedupeDomainRows([
+            ...domainRows,
+            ...prev.filter((domain) => isPendingDomainId(domain.id)),
+          ]),
+        );
         setCategories(categoryRows);
         setPendingDomains(
           getPendingDomains().filter(
-            (pending) =>
-              !domainRows.some((domain) => domain.id === pending.id),
+            (pending) => !domainRows.some((domain) => domain.id === pending.id),
           ),
         );
-      } catch {
-        // Keep optimistic fallback when tree refresh fails after successful create.
-      }
+      } catch {}
 
       setDomainCreateSuccess(`Domain "${createdName}" created.`);
       setDomainForm(initialDomainForm);
@@ -503,6 +505,11 @@ export default function AdminDashboard() {
 
     try {
       setDeletingDomainId(domainId);
+      if (isPendingDomainId(domainId)) {
+        throw new Error(
+          "This domain is pending sync and does not have a backend id yet. Refresh and try again.",
+        );
+      }
       const response = await deleteGuidedDomain(domainId, accessToken);
       if (!response.isDeleted) {
         throw new Error("Delete operation did not complete.");
@@ -541,14 +548,24 @@ export default function AdminDashboard() {
     setCategoryCreateError(null);
     setCategoryCreateSuccess(null);
 
-    const name = categoryForm.name.trim();
-    if (!name || !categoryForm.domainId) return;
+    const rawName = categoryForm.name.trim();
+    if (!rawName || !categoryForm.domainId) return;
+
+    const categoryType = categoryForm.categoryType.trim();
+    if (!categoryType) {
+      setCategoryCreateError("Category type is required.");
+      return;
+    }
 
     if (editingCategoryId) {
       setCategories((prev) =>
         prev.map((category) =>
           category.id === editingCategoryId
-            ? { ...category, name, domainId: categoryForm.domainId }
+            ? {
+                ...category,
+                name: categoryType,
+                domainId: categoryForm.domainId,
+              }
             : category,
         ),
       );
@@ -568,7 +585,7 @@ export default function AdminDashboard() {
         }));
       }
 
-      setCategoryCreateSuccess(`Category "${name}" updated.`);
+      setCategoryCreateSuccess(`Category "${categoryType}" updated.`);
       closeCategoryModal();
       return;
     }
@@ -579,27 +596,35 @@ export default function AdminDashboard() {
       return;
     }
 
-    const slug = categoryForm.slug.trim() || toHyphenatedSlug(name);
+    const slug = categoryForm.slug.trim();
     if (!slug) {
-      setCategoryCreateError("Please enter a valid category name.");
+      setCategoryCreateError("Slug is required.");
       return;
     }
 
     const parsedSortOrder = Number.parseInt(categoryForm.sortOrder, 10);
-    const sortOrder = Number.isFinite(parsedSortOrder)
-      ? parsedSortOrder
-      : categories.filter((category) => category.domainId === categoryForm.domainId)
-          .length;
-    const categoryType = categoryForm.categoryType.trim() || name;
-    const heroTitle = categoryForm.heroTitle.trim() || name;
-    const pageHeader = categoryForm.pageHeader.trim() || name;
+    if (!Number.isFinite(parsedSortOrder)) {
+      setCategoryCreateError("Sort order is required.");
+      return;
+    }
+    const sortOrder = parsedSortOrder;
+    const heroTitle = categoryForm.heroTitle.trim();
+    if (!heroTitle) {
+      setCategoryCreateError("Hero title is required.");
+      return;
+    }
+    const pageHeader = categoryForm.pageHeader.trim();
+    if (!pageHeader) {
+      setCategoryCreateError("Page header is required.");
+      return;
+    }
 
     try {
       setIsCreatingCategory(true);
       const response = await createGuidedCategory(
         {
           domainId: categoryForm.domainId,
-          name,
+          name: rawName,
           slug,
           categoryType,
           heroTitle,
@@ -609,20 +634,20 @@ export default function AdminDashboard() {
           pageHeader,
           imageUrl: categoryForm.imageUrl.trim(),
           sortOrder,
-          parentId: categoryForm.parentId || undefined,
+          parentId: categoryForm.parentId.trim(),
           whatsIncluded: parseTextareaItems(categoryForm.whatsIncluded),
           keyAreas: parseTextareaItems(categoryForm.keyAreas),
         },
         accessToken,
       );
 
-      const createdId =
-        typeof response === "string" && response.trim()
-          ? response.trim()
-          : `category-${Date.now().toString(36)}`;
+      const createdId = typeof response === "string" ? response.trim() : "";
+      if (!createdId) {
+        throw new Error("Category created but no id was returned by backend.");
+      }
       const newCategory: CategoryRow = {
         id: createdId,
-        name,
+        name: categoryType,
         domainId: categoryForm.domainId,
       };
 
@@ -630,7 +655,7 @@ export default function AdminDashboard() {
         if (prev.some((category) => category.id === createdId)) return prev;
         return [newCategory, ...prev];
       });
-      setCategoryCreateSuccess(`Category "${name}" created.`);
+      setCategoryCreateSuccess(`Category "${categoryType}" created.`);
       closeCategoryModal();
     } catch (err) {
       if (err instanceof ApiError) {
