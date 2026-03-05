@@ -125,6 +125,72 @@ const parseTextareaItems = (value: string): string[] =>
     .map((item) => item.trim())
     .filter(Boolean);
 
+const getObjectValue = (value: unknown): Record<string, unknown> | null =>
+  typeof value === "object" && value !== null
+    ? (value as Record<string, unknown>)
+    : null;
+
+const getStringField = (obj: Record<string, unknown>, key: string): string | null => {
+  const value = obj[key];
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed ? trimmed : null;
+};
+
+const extractCreatedDomainId = (response: unknown): string | null => {
+  if (typeof response === "string") {
+    const trimmed = response.trim();
+    return trimmed || null;
+  }
+
+  const root = getObjectValue(response);
+  if (!root) return null;
+
+  const directKeys = ["domainId", "domain_id", "id", "_id"];
+  for (const key of directKeys) {
+    const value = getStringField(root, key);
+    if (value) return value;
+  }
+
+  const nestedContainers = ["data", "domain", "result"];
+  for (const containerKey of nestedContainers) {
+    const nested = getObjectValue(root[containerKey]);
+    if (!nested) continue;
+    for (const key of directKeys) {
+      const value = getStringField(nested, key);
+      if (value) return value;
+    }
+  }
+
+  return null;
+};
+
+const extractCreatedDomainName = (
+  response: unknown,
+  fallbackName: string,
+): string => {
+  const root = getObjectValue(response);
+  if (!root) return fallbackName;
+
+  const directKeys = ["name", "domainName", "domain_name"];
+  for (const key of directKeys) {
+    const value = getStringField(root, key);
+    if (value) return value;
+  }
+
+  const nestedContainers = ["data", "domain", "result"];
+  for (const containerKey of nestedContainers) {
+    const nested = getObjectValue(root[containerKey]);
+    if (!nested) continue;
+    for (const key of directKeys) {
+      const value = getStringField(nested, key);
+      if (value) return value;
+    }
+  }
+
+  return fallbackName;
+};
+
 const isEntityActive = (entity: {
   isActive?: boolean;
   is_active?: boolean;
@@ -437,11 +503,8 @@ export default function AdminDashboard() {
         accessToken,
       );
 
-      const createdName = response.name?.trim() ?? name;
-      const createdId =
-        response.domainId ??
-        response.id ??
-        response._id;
+      const createdName = extractCreatedDomainName(response, name);
+      const createdId = extractCreatedDomainId(response);
       if (!createdId) {
         throw new Error("Domain created but no id was returned by backend.");
       }
@@ -475,6 +538,8 @@ export default function AdminDashboard() {
       setDomainForm(initialDomainForm);
     } catch (err) {
       if (err instanceof ApiError) {
+        setDomainCreateError(err.message);
+      } else if (err instanceof Error) {
         setDomainCreateError(err.message);
       } else {
         setDomainCreateError("Unable to create domain. Please try again.");
