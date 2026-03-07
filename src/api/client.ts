@@ -38,6 +38,10 @@ export class ApiError extends Error {
   }
 }
 
+type ApiFetchOptions = RequestInit & {
+  skipAuth?: boolean;
+};
+
 /**
  * Thin wrapper around `fetch` that:
  * - Prepends the base URL
@@ -46,13 +50,14 @@ export class ApiError extends Error {
  */
 export async function apiFetch<T>(
   path: string,
-  options: RequestInit = {},
+  options: ApiFetchOptions = {},
 ): Promise<T> {
-  const headers = new Headers(options.headers);
+  const { skipAuth = false, ...requestOptions } = options;
+  const headers = new Headers(requestOptions.headers);
   headers.set("Content-Type", "application/json");
 
   // Auto-attach bearer token for protected endpoints when available.
-  if (!headers.has("Authorization")) {
+  if (!skipAuth && !headers.has("Authorization")) {
     const accessToken = getStoredAccessToken();
     if (accessToken) {
       headers.set("Authorization", `Bearer ${accessToken}`);
@@ -60,7 +65,7 @@ export async function apiFetch<T>(
   }
 
   const res = await fetch(`${BASE_URL}${path}`, {
-    ...options,
+    ...requestOptions,
     headers,
   });
 

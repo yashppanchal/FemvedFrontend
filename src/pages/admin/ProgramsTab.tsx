@@ -1,4 +1,4 @@
-import type { FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
 import type { CategoryRow, DomainRow, ProgramForm, ProgramRow } from "./types";
 
@@ -41,6 +41,23 @@ export function ProgramsTab({
   onDelete,
   deletingProgramId,
 }: ProgramsTabProps) {
+  const [domainFilter, setDomainFilter] = useState<string>("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+
+  const categoriesForFilter = useMemo(() => {
+    if (domainFilter === "all") return categories;
+    return categories.filter((category) => category.domainId === domainFilter);
+  }, [categories, domainFilter]);
+
+  const filteredPrograms = useMemo(() => {
+    return programs.filter((program) => {
+      const matchesDomain = domainFilter === "all" || program.domainId === domainFilter;
+      const matchesCategory =
+        categoryFilter === "all" || program.categoryId === categoryFilter;
+      return matchesDomain && matchesCategory;
+    });
+  }, [programs, domainFilter, categoryFilter]);
+
   const programModal = isProgramModalOpen ? (
     <div className="adminModalBackdrop" role="presentation">
       <section
@@ -476,6 +493,53 @@ export function ProgramsTab({
 
       {programCreateSuccess && <p className="adminPanel__success">{programCreateSuccess}</p>}
 
+      <div className="adminForm__row adminForm__row--two">
+        <label className="field">
+          <span className="field__label">Filter by Domain</span>
+          <select
+            className="field__input"
+            value={domainFilter}
+            onChange={(e) => {
+              const nextDomainFilter = e.target.value;
+              setDomainFilter(nextDomainFilter);
+              setCategoryFilter((prev) => {
+                if (prev === "all") return prev;
+                if (nextDomainFilter === "all") return prev;
+                return categories.some(
+                  (category) =>
+                    category.id === prev && category.domainId === nextDomainFilter,
+                )
+                  ? prev
+                  : "all";
+              });
+            }}
+          >
+            <option value="all">All domains</option>
+            {domains.map((domain) => (
+              <option key={domain.id} value={domain.id}>
+                {domain.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="field">
+          <span className="field__label">Filter by Category</span>
+          <select
+            className="field__input"
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+          >
+            <option value="all">All categories</option>
+            {categoriesForFilter.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
       <div className="adminTableWrap">
         <table className="adminTable">
           <thead>
@@ -487,8 +551,8 @@ export function ProgramsTab({
             </tr>
           </thead>
           <tbody>
-            {programs.length > 0 ? (
-              programs.map((program) => (
+            {filteredPrograms.length > 0 ? (
+              filteredPrograms.map((program) => (
                 <tr key={program.id}>
                   <td>{program.name}</td>
                   <td>
@@ -522,7 +586,7 @@ export function ProgramsTab({
             ) : (
               <tr>
                 <td colSpan={4} className="adminTable__empty">
-                  No programs yet. Add one to begin.
+                  No programs match the selected filters.
                 </td>
               </tr>
             )}

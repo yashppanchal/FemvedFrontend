@@ -37,6 +37,7 @@ type GuidedHierarchyRows = {
 };
 
 const PENDING_DOMAINS_STORAGE_KEY = "femved_admin_pending_domains";
+const ADMIN_ALERT_TIMEOUT_MS = 10_000;
 
 const registeredUsersSeed: UserRow[] = [
   {
@@ -240,7 +241,7 @@ const isEntityActive = (entity: {
   return true;
 };
 
-const isPendingDomainId = (domainId: string): boolean =>
+const isLocalPlaceholderDomainId = (domainId: string): boolean =>
   domainId.trim().startsWith("domain-");
 
 const mapGuidedDomainsToRows = (domains: GuidedTreeDomain[]): DomainRow[] =>
@@ -278,7 +279,6 @@ const getPendingDomains = (): DomainRow[] => {
       (domain) =>
         typeof domain?.id === "string" &&
         Boolean(domain.id) &&
-        isPendingDomainId(domain.id) &&
         typeof domain?.name === "string" &&
         Boolean(domain.name.trim()),
     );
@@ -296,7 +296,6 @@ const setPendingDomains = (domains: DomainRow[]) => {
 };
 
 const upsertPendingDomain = (domain: DomainRow) => {
-  if (!isPendingDomainId(domain.id)) return;
   const pending = getPendingDomains();
   if (pending.some((row) => row.id === domain.id)) return;
   setPendingDomains([...pending, domain]);
@@ -434,6 +433,64 @@ export default function AdminDashboard() {
   const [deletingProgramId, setDeletingProgramId] = useState<string | null>(null);
   const [isProgramModalOpen, setIsProgramModalOpen] = useState(false);
 
+  useEffect(() => {
+    const timers: Array<ReturnType<typeof setTimeout>> = [];
+
+    if (domainCreateError) {
+      timers.push(
+        setTimeout(() => {
+          setDomainCreateError(null);
+        }, ADMIN_ALERT_TIMEOUT_MS),
+      );
+    }
+    if (domainCreateSuccess) {
+      timers.push(
+        setTimeout(() => {
+          setDomainCreateSuccess(null);
+        }, ADMIN_ALERT_TIMEOUT_MS),
+      );
+    }
+    if (categoryCreateError) {
+      timers.push(
+        setTimeout(() => {
+          setCategoryCreateError(null);
+        }, ADMIN_ALERT_TIMEOUT_MS),
+      );
+    }
+    if (categoryCreateSuccess) {
+      timers.push(
+        setTimeout(() => {
+          setCategoryCreateSuccess(null);
+        }, ADMIN_ALERT_TIMEOUT_MS),
+      );
+    }
+    if (programCreateError) {
+      timers.push(
+        setTimeout(() => {
+          setProgramCreateError(null);
+        }, ADMIN_ALERT_TIMEOUT_MS),
+      );
+    }
+    if (programCreateSuccess) {
+      timers.push(
+        setTimeout(() => {
+          setProgramCreateSuccess(null);
+        }, ADMIN_ALERT_TIMEOUT_MS),
+      );
+    }
+
+    return () => {
+      timers.forEach((timer) => clearTimeout(timer));
+    };
+  }, [
+    domainCreateError,
+    domainCreateSuccess,
+    categoryCreateError,
+    categoryCreateSuccess,
+    programCreateError,
+    programCreateSuccess,
+  ]);
+
   const categoriesForProgramDomain = categories.filter(
     (category) => category.domainId === programForm.domainId,
   );
@@ -448,14 +505,17 @@ export default function AdminDashboard() {
         const treeResponse = await fetchGuidedTree();
         const { domainRows, categoryRows, programRows, categoryFormById } =
           mapGuidedTreeToRows(treeResponse);
-        // Refresh should reflect backend tree only; clear stale local placeholders.
-        setPendingDomains([]);
+        const pendingDomains = getPendingDomains();
+        const unresolvedPendingDomains = pendingDomains.filter(
+          (pending) => !domainRows.some((domain) => domain.id === pending.id),
+        );
 
         if (!isActive) return;
-        setDomains(dedupeDomainRows(domainRows));
+        setDomains(dedupeDomainRows([...domainRows, ...unresolvedPendingDomains]));
         setCategories(categoryRows);
         setPrograms(programRows);
         setCategoryFormById(categoryFormById);
+        setPendingDomains(unresolvedPendingDomains);
       } catch {
         if (!isActive) return;
         setDomainLoadError("Unable to load domains.");
@@ -549,7 +609,7 @@ export default function AdminDashboard() {
 
       try {
         setIsCreatingDomain(true);
-        if (isPendingDomainId(editingDomainId)) {
+        if (isLocalPlaceholderDomainId(editingDomainId)) {
           throw new Error(
             "This domain is pending sync. Refresh once it appears in the backend list.",
           );
@@ -602,35 +662,37 @@ export default function AdminDashboard() {
 
       const createdName = extractCreatedDomainName(response, name);
       const createdId = extractCreatedDomainId(response);
-      if (!createdId) {
-        throw new Error("Domain created but no id was returned by backend.");
-      }
+      const optimisticDomainId =
+        createdId && !domains.some((domain) => domain.id === createdId)
+          ? createdId
+          : `domain-${Date.now()}`;
+      const optimisticDomain: DomainRow = {
+        id: optimisticDomainId,
+        name: createdName,
+      };
 
       // Ensure newly created domains are visible immediately even if tree refresh
       // is eventually consistent or does not include empty/unpublished entries.
       setDomains((prev) => {
-        if (prev.some((domain) => domain.id === createdId)) return prev;
-        return [...prev, { id: createdId, name: createdName }];
+        if (prev.some((domain) => domain.id === optimisticDomain.id)) return prev;
+        return [...prev, optimisticDomain];
       });
-      upsertPendingDomain({ id: createdId, name: createdName });
+      upsertPendingDomain(optimisticDomain);
 
       try {
         const refreshedTree = await fetchGuidedTree();
         const { domainRows, categoryRows, programRows } =
           mapGuidedTreeToRows(refreshedTree);
+        const pendingDomains = getPendingDomains();
+        const unresolvedPendingDomains = pendingDomains.filter(
+          (pending) => !domainRows.some((domain) => domain.id === pending.id),
+        );
         setDomains((prev) =>
-          dedupeDomainRows([
-            ...domainRows,
-            ...prev.filter((domain) => isPendingDomainId(domain.id)),
-          ]),
+          dedupeDomainRows([...domainRows, ...prev, ...unresolvedPendingDomains]),
         );
         setCategories(categoryRows);
         setPrograms(programRows);
-        setPendingDomains(
-          getPendingDomains().filter(
-            (pending) => !domainRows.some((domain) => domain.id === pending.id),
-          ),
-        );
+        setPendingDomains(unresolvedPendingDomains);
       } catch {}
 
       setDomainCreateSuccess(`Domain "${createdName}" created.`);
@@ -669,7 +731,7 @@ export default function AdminDashboard() {
 
     try {
       setDeletingDomainId(domainId);
-      if (isPendingDomainId(domainId)) {
+      if (isLocalPlaceholderDomainId(domainId)) {
         throw new Error(
           "This domain is pending sync and does not have a backend id yet. Refresh and try again.",
         );

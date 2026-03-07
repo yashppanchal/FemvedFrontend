@@ -243,5 +243,8 @@ export function createGuidedProgram(
 }
 
 export function fetchGuidedTree(): Promise<GuidedTreeResponse> {
-  return apiFetch<GuidedTreeResponse>("/guided/tree");
+  return apiFetch<GuidedTreeResponse>("/guided/tree", {
+    cache: "no-store",
+    skipAuth: true,
+  });
 }
