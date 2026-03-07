@@ -17,7 +17,6 @@ type CategoriesTabProps = {
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   categoryForm: CategoryForm;
   onCategoryFormChange: (updater: (prev: CategoryForm) => CategoryForm) => void;
-  categoriesForSelectedCategoryDomain: CategoryRow[];
 };
 
 export function CategoriesTab({
@@ -35,7 +34,6 @@ export function CategoriesTab({
   onSubmit,
   categoryForm,
   onCategoryFormChange,
-  categoriesForSelectedCategoryDomain,
 }: CategoriesTabProps) {
   const categoryModal = isCategoryModalOpen ? (
     <div className="adminModalBackdrop" role="presentation">
@@ -70,7 +68,6 @@ export function CategoriesTab({
                   onCategoryFormChange((prev) => ({
                     ...prev,
                     domainId: e.target.value,
-                    parentId: "",
                   }))
                 }
                 required
@@ -85,9 +82,7 @@ export function CategoriesTab({
             </label>
 
             <label className="field">
-              <span className="field__label">
-                Name (hyphenated, e.g., pcos-support)
-              </span>
+              <span className="field__label">Name (e.g., PCOS Support)</span>
               <input
                 className="field__input"
                 type="text"
@@ -99,44 +94,6 @@ export function CategoriesTab({
                   }))
                 }
                 placeholder="Category name"
-                required
-              />
-            </label>
-          </div>
-
-          <div className="adminForm__row adminForm__row--two">
-            <label className="field">
-              <span className="field__label">Slug (e.g., pcos-support)</span>
-              <input
-                className="field__input"
-                type="text"
-                value={categoryForm.slug}
-                onChange={(e) =>
-                  onCategoryFormChange((prev) => ({
-                    ...prev,
-                    slug: e.target.value,
-                  }))
-                }
-                placeholder="Category slug"
-                required
-              />
-            </label>
-
-            <label className="field">
-              <span className="field__label">
-                Category Type (shown on UI, e.g., Women's Hormonal Health)
-              </span>
-              <input
-                className="field__input"
-                type="text"
-                value={categoryForm.categoryType}
-                onChange={(e) =>
-                  onCategoryFormChange((prev) => ({
-                    ...prev,
-                    categoryType: e.target.value,
-                  }))
-                }
-                placeholder="Category type"
                 required
               />
             </label>
@@ -253,52 +210,6 @@ export function CategoriesTab({
                 }
                 placeholder="https://..."
               />
-            </label>
-          </div>
-
-          <div className="adminForm__row adminForm__row--two">
-            <label className="field">
-              <span className="field__label">Sort Order (e.g., 1)</span>
-              <input
-                className="field__input"
-                type="number"
-                min={0}
-                value={categoryForm.sortOrder}
-                onChange={(e) =>
-                  onCategoryFormChange((prev) => ({
-                    ...prev,
-                    sortOrder: e.target.value,
-                  }))
-                }
-                placeholder="Sort order"
-                required
-              />
-            </label>
-
-            <label className="field">
-              <span className="field__label">
-                Parent Category (e.g., Hormonal Wellness)
-              </span>
-              <select
-                className="field__input"
-                value={categoryForm.parentId}
-                onChange={(e) =>
-                  onCategoryFormChange((prev) => ({
-                    ...prev,
-                    parentId: e.target.value,
-                  }))
-                }
-                disabled={!categoryForm.domainId}
-              >
-                <option value="">
-                  {categoryForm.domainId ? "No parent" : "Select domain first"}
-                </option>
-                {categoriesForSelectedCategoryDomain.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
             </label>
           </div>
 

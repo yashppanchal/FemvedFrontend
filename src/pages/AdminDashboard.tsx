@@ -81,16 +81,12 @@ const initialDomainForm: DomainForm = {
 const initialCategoryForm: CategoryForm = {
   domainId: "",
   name: "",
-  slug: "",
-  categoryType: "",
   heroTitle: "",
   heroSubtext: "",
   ctaLabel: "",
   ctaLink: "",
   pageHeader: "",
   imageUrl: "",
-  sortOrder: "",
-  parentId: "",
   whatsIncluded: "",
   keyAreas: "",
 };
@@ -130,7 +126,10 @@ const getObjectValue = (value: unknown): Record<string, unknown> | null =>
     ? (value as Record<string, unknown>)
     : null;
 
-const getStringField = (obj: Record<string, unknown>, key: string): string | null => {
+const getStringField = (
+  obj: Record<string, unknown>,
+  key: string,
+): string | null => {
   const value = obj[key];
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
@@ -353,12 +352,6 @@ export default function AdminDashboard() {
   const categoriesForProgramDomain = categories.filter(
     (category) => category.domainId === programForm.domainId,
   );
-  const categoriesForSelectedCategoryDomain = categories.filter(
-    (category) =>
-      category.domainId === categoryForm.domainId &&
-      category.id !== editingCategoryId,
-  );
-
   useEffect(() => {
     let isActive = true;
 
@@ -616,11 +609,7 @@ export default function AdminDashboard() {
     const rawName = categoryForm.name.trim();
     if (!rawName || !categoryForm.domainId) return;
 
-    const categoryType = categoryForm.categoryType.trim();
-    if (!categoryType) {
-      setCategoryCreateError("Category type is required.");
-      return;
-    }
+    const categoryType = rawName;
 
     if (editingCategoryId) {
       setCategories((prev) =>
@@ -628,7 +617,7 @@ export default function AdminDashboard() {
           category.id === editingCategoryId
             ? {
                 ...category,
-                name: categoryType,
+                name: rawName,
                 domainId: categoryForm.domainId,
               }
             : category,
@@ -661,18 +650,12 @@ export default function AdminDashboard() {
       return;
     }
 
-    const slug = categoryForm.slug.trim();
+    const slug = toHyphenatedSlug(rawName);
     if (!slug) {
-      setCategoryCreateError("Slug is required.");
+      setCategoryCreateError("Please enter a valid category name.");
       return;
     }
 
-    const parsedSortOrder = Number.parseInt(categoryForm.sortOrder, 10);
-    if (!Number.isFinite(parsedSortOrder)) {
-      setCategoryCreateError("Sort order is required.");
-      return;
-    }
-    const sortOrder = parsedSortOrder;
     const heroTitle = categoryForm.heroTitle.trim();
     if (!heroTitle) {
       setCategoryCreateError("Hero title is required.");
@@ -698,8 +681,8 @@ export default function AdminDashboard() {
           ctaLink: categoryForm.ctaLink.trim(),
           pageHeader,
           imageUrl: categoryForm.imageUrl.trim(),
-          sortOrder,
-          parentId: categoryForm.parentId.trim(),
+          sortOrder: 0,
+          parentId: null,
           whatsIncluded: parseTextareaItems(categoryForm.whatsIncluded),
           keyAreas: parseTextareaItems(categoryForm.keyAreas),
         },
@@ -712,7 +695,7 @@ export default function AdminDashboard() {
       }
       const newCategory: CategoryRow = {
         id: createdId,
-        name: categoryType,
+        name: rawName,
         domainId: categoryForm.domainId,
       };
 
@@ -738,16 +721,12 @@ export default function AdminDashboard() {
     setCategoryForm({
       domainId: category.domainId,
       name: category.name,
-      slug: toHyphenatedSlug(category.name),
-      categoryType: category.name,
       heroTitle: category.name,
       heroSubtext: "",
       ctaLabel: "",
       ctaLink: "",
       pageHeader: category.name,
       imageUrl: "",
-      sortOrder: "",
-      parentId: "",
       whatsIncluded: "",
       keyAreas: "",
     });
@@ -835,7 +814,9 @@ export default function AdminDashboard() {
       <div className="adminContent">
         <AdminTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-        {activeTab === "users" && <UsersTab registeredUsers={registeredUsers} />}
+        {activeTab === "users" && (
+          <UsersTab registeredUsers={registeredUsers} />
+        )}
 
         {activeTab === "domains" && (
           <DomainsTab
@@ -872,7 +853,6 @@ export default function AdminDashboard() {
             onSubmit={handleCategorySubmit}
             categoryForm={categoryForm}
             onCategoryFormChange={setCategoryForm}
-            categoriesForSelectedCategoryDomain={categoriesForSelectedCategoryDomain}
           />
         )}
 

@@ -30,7 +30,7 @@ export interface CreateGuidedCategoryRequest {
   pageHeader: string;
   imageUrl: string;
   sortOrder: number;
-  parentId?: string;
+  parentId?: string | null;
   whatsIncluded: string[];
   keyAreas: string[];
 }
@@ -82,16 +82,13 @@ export function updateGuidedDomain(
   data: CreateGuidedDomainRequest,
   accessToken: string,
 ): Promise<void> {
-  return apiFetch<void>(
-    `/guided/domains/${encodeURIComponent(domainId)}`,
-    {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify(data),
+  return apiFetch<void>(`/guided/domains/${encodeURIComponent(domainId)}`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
     },
-  );
+    body: JSON.stringify(data),
+  });
 }
 
 export function deleteGuidedDomain(

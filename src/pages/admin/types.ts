@@ -36,16 +36,12 @@ export type DomainForm = {
 export type CategoryForm = {
   domainId: string;
   name: string;
-  slug: string;
-  categoryType: string;
   heroTitle: string;
   heroSubtext: string;
   ctaLabel: string;
   ctaLink: string;
   pageHeader: string;
   imageUrl: string;
-  sortOrder: string;
-  parentId: string;
   whatsIncluded: string;
   keyAreas: string;
 };
