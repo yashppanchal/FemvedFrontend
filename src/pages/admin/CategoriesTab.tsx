@@ -59,6 +59,8 @@ export function CategoriesTab({
           </button>
         </div>
 
+        {categoryCreateError && <p className="adminPanel__error">{categoryCreateError}</p>}
+
         <form className="form adminForm" onSubmit={onSubmit} noValidate>
           <div className="adminForm__row adminForm__row--two">
             <label className="field">
@@ -290,7 +292,6 @@ export function CategoriesTab({
       {categoryCreateSuccess && (
         <p className="adminPanel__success">{categoryCreateSuccess}</p>
       )}
-      {categoryCreateError && <p className="adminPanel__error">{categoryCreateError}</p>}
 
       <div className="adminTableWrap">
         <table className="adminTable">

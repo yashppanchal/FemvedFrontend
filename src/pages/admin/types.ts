@@ -19,14 +19,11 @@ export type CategoryRow = {
   domainId: string;
 };
 
-export type ProgramStatus = "Draft" | "Published";
-
 export type ProgramRow = {
   id: string;
-  title: string;
+  name: string;
   domainId: string;
   categoryId: string;
-  status: ProgramStatus;
 };
 
 export type DomainForm = {
@@ -47,8 +44,24 @@ export type CategoryForm = {
 };
 
 export type ProgramForm = {
-  title: string;
+  name: string;
   domainId: string;
   categoryId: string;
-  status: ProgramStatus;
+  gridDescription: string;
+  gridImageUrl: string;
+  overview: string;
+  sortOrder: string;
+  durationLabel: string;
+  durationWeeks: string;
+  durationSortOrder: string;
+  locationCode: string;
+  amount: string;
+  currencyCode: string;
+  currencySymbol: string;
+  whatYouGet: string;
+  whoIsThisFor: string;
+  tags: string;
+  detailHeading: string;
+  detailDescription: string;
+  detailSortOrder: string;
 };

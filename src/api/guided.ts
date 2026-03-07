@@ -59,6 +59,41 @@ export interface UpdateGuidedCategoryResponse {
   isUpdated: boolean;
 }
 
+export interface CreateGuidedProgramPriceRequest {
+  locationCode: string;
+  amount: number;
+  currencyCode: string;
+  currencySymbol: string;
+}
+
+export interface CreateGuidedProgramDurationRequest {
+  label: string;
+  weeks: number;
+  sortOrder: number;
+  prices: CreateGuidedProgramPriceRequest[];
+}
+
+export interface CreateGuidedProgramDetailSectionRequest {
+  heading: string;
+  description: string;
+  sortOrder: number;
+}
+
+export interface CreateGuidedProgramRequest {
+  categoryId: string;
+  name: string;
+  slug: string;
+  gridDescription: string;
+  gridImageUrl: string;
+  overview: string;
+  sortOrder: number;
+  durations: CreateGuidedProgramDurationRequest[];
+  whatYouGet: string[];
+  whoIsThisFor: string[];
+  tags: string[];
+  detailSections: CreateGuidedProgramDetailSectionRequest[];
+}
+
 export interface GuidedTreeDomain {
   domainId?: string;
   id?: string;
@@ -90,6 +125,17 @@ export interface GuidedTreeCategory {
     whatsIncludedInCategory?: string[];
     categoryPageKeyAreas?: string[];
   };
+  programsInCategory?: GuidedTreeProgram[];
+}
+
+export interface GuidedTreeProgram {
+  programId?: string;
+  id?: string;
+  _id?: string;
+  programName?: string;
+  name?: string;
+  isActive?: boolean;
+  is_active?: boolean;
 }
 
 export interface GuidedTreeResponse {
@@ -181,6 +227,19 @@ export function deleteGuidedCategory(
       },
     },
   );
+}
+
+export function createGuidedProgram(
+  data: CreateGuidedProgramRequest,
+  accessToken: string,
+): Promise<unknown> {
+  return apiFetch<unknown>("/guided/programs", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(data),
+  });
 }
 
 export function fetchGuidedTree(): Promise<GuidedTreeResponse> {

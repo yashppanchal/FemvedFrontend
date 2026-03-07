@@ -1,6 +1,7 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { ApiError } from "../api/client";
 import {
+  createGuidedProgram,
   createGuidedCategory,
   createGuidedDomain,
   deleteGuidedCategory,
@@ -31,6 +32,7 @@ import "./AdminDashboard.scss";
 type GuidedHierarchyRows = {
   domainRows: DomainRow[];
   categoryRows: CategoryRow[];
+  programRows: ProgramRow[];
   categoryFormById: Record<string, CategoryForm>;
 };
 
@@ -60,23 +62,6 @@ const registeredUsersSeed: UserRow[] = [
   },
 ];
 
-const programsSeed: ProgramRow[] = [
-  {
-    id: "P001",
-    title: "PCOS Reset Journey",
-    domainId: "D001",
-    categoryId: "C001",
-    status: "Published",
-  },
-  {
-    id: "P002",
-    title: "Cycle Sync Basics",
-    domainId: "D001",
-    categoryId: "C002",
-    status: "Draft",
-  },
-];
-
 const initialDomainForm: DomainForm = {
   name: "",
 };
@@ -95,10 +80,26 @@ const initialCategoryForm: CategoryForm = {
 };
 
 const initialProgramForm: ProgramForm = {
-  title: "",
+  name: "",
   domainId: "",
   categoryId: "",
-  status: "Draft",
+  gridDescription: "",
+  gridImageUrl: "",
+  overview: "",
+  sortOrder: "0",
+  durationLabel: "",
+  durationWeeks: "0",
+  durationSortOrder: "0",
+  locationCode: "",
+  amount: "0",
+  currencyCode: "",
+  currencySymbol: "",
+  whatYouGet: "",
+  whoIsThisFor: "",
+  tags: "",
+  detailHeading: "",
+  detailDescription: "",
+  detailSortOrder: "0",
 };
 
 const createNextId = (prefix: string, existingIds: string[]) => {
@@ -126,6 +127,12 @@ const parseTextareaItems = (value: string): string[] =>
 
 const joinTextareaItems = (items: string[] | undefined): string =>
   (items ?? []).map((item) => item.trim()).filter(Boolean).join("\n");
+
+const parseNonNegativeNumber = (value: string): number => {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed < 0) return 0;
+  return parsed;
+};
 
 const getObjectValue = (value: unknown): Record<string, unknown> | null =>
   typeof value === "object" && value !== null
@@ -194,6 +201,34 @@ const extractCreatedDomainName = (
   }
 
   return fallbackName;
+};
+
+const extractCreatedProgramId = (response: unknown): string | null => {
+  if (typeof response === "string") {
+    const trimmed = response.trim();
+    return trimmed || null;
+  }
+
+  const root = getObjectValue(response);
+  if (!root) return null;
+
+  const directKeys = ["programId", "program_id", "id", "_id"];
+  for (const key of directKeys) {
+    const value = getStringField(root, key);
+    if (value) return value;
+  }
+
+  const nestedContainers = ["data", "program", "result"];
+  for (const containerKey of nestedContainers) {
+    const nested = getObjectValue(root[containerKey]);
+    if (!nested) continue;
+    for (const key of directKeys) {
+      const value = getStringField(nested, key);
+      if (value) return value;
+    }
+  }
+
+  return null;
 };
 
 const isEntityActive = (entity: {
@@ -277,6 +312,7 @@ const mapGuidedTreeToRows = (
 ): GuidedHierarchyRows => {
   const domainRows = mapGuidedDomainsToRows(response.domains ?? []);
   const categoryFormById: Record<string, CategoryForm> = {};
+  const programRows: ProgramRow[] = [];
 
   const categoryRows = (response.domains ?? []).flatMap(
     (domain, domainIndex) => {
@@ -318,6 +354,19 @@ const mapGuidedTreeToRows = (
             keyAreas: joinTextareaItems(pageData.categoryPageKeyAreas),
           };
 
+          for (const program of category.programsInCategory ?? []) {
+            if (!isEntityActive(program)) continue;
+            const programId = program.programId ?? program.id ?? program._id;
+            const programName = (program.programName ?? program.name ?? "").trim();
+            if (!programId || !programName) continue;
+            programRows.push({
+              id: programId,
+              name: programName,
+              domainId,
+              categoryId: id,
+            });
+          }
+
           return {
             id,
             name: name.trim(),
@@ -328,7 +377,7 @@ const mapGuidedTreeToRows = (
     },
   );
 
-  return { domainRows, categoryRows, categoryFormById };
+  return { domainRows, categoryRows, programRows, categoryFormById };
 };
 
 export default function AdminDashboard() {
@@ -337,7 +386,7 @@ export default function AdminDashboard() {
   const [registeredUsers] = useState<UserRow[]>(registeredUsersSeed);
   const [domains, setDomains] = useState<DomainRow[]>([]);
   const [categories, setCategories] = useState<CategoryRow[]>([]);
-  const [programs, setPrograms] = useState<ProgramRow[]>(programsSeed);
+  const [programs, setPrograms] = useState<ProgramRow[]>([]);
 
   const [domainForm, setDomainForm] = useState<DomainForm>(initialDomainForm);
   const [editingDomainId, setEditingDomainId] = useState<string | null>(null);
@@ -375,6 +424,15 @@ export default function AdminDashboard() {
   const [programForm, setProgramForm] =
     useState<ProgramForm>(initialProgramForm);
   const [editingProgramId, setEditingProgramId] = useState<string | null>(null);
+  const [programCreateError, setProgramCreateError] = useState<string | null>(
+    null,
+  );
+  const [programCreateSuccess, setProgramCreateSuccess] = useState<
+    string | null
+  >(null);
+  const [isCreatingProgram, setIsCreatingProgram] = useState(false);
+  const [deletingProgramId, setDeletingProgramId] = useState<string | null>(null);
+  const [isProgramModalOpen, setIsProgramModalOpen] = useState(false);
 
   const categoriesForProgramDomain = categories.filter(
     (category) => category.domainId === programForm.domainId,
@@ -388,7 +446,7 @@ export default function AdminDashboard() {
         setDomainLoadError(null);
 
         const treeResponse = await fetchGuidedTree();
-        const { domainRows, categoryRows, categoryFormById } =
+        const { domainRows, categoryRows, programRows, categoryFormById } =
           mapGuidedTreeToRows(treeResponse);
         // Refresh should reflect backend tree only; clear stale local placeholders.
         setPendingDomains([]);
@@ -396,6 +454,7 @@ export default function AdminDashboard() {
         if (!isActive) return;
         setDomains(dedupeDomainRows(domainRows));
         setCategories(categoryRows);
+        setPrograms(programRows);
         setCategoryFormById(categoryFormById);
       } catch {
         if (!isActive) return;
@@ -444,6 +503,22 @@ export default function AdminDashboard() {
   const resetProgramForm = () => {
     setProgramForm(initialProgramForm);
     setEditingProgramId(null);
+    setProgramCreateError(null);
+    setProgramCreateSuccess(null);
+  };
+
+  const openAddProgramModal = () => {
+    setEditingProgramId(null);
+    setProgramForm(initialProgramForm);
+    setProgramCreateError(null);
+    setProgramCreateSuccess(null);
+    setIsProgramModalOpen(true);
+  };
+
+  const closeProgramModal = () => {
+    setProgramForm(initialProgramForm);
+    setEditingProgramId(null);
+    setIsProgramModalOpen(false);
   };
 
   const handleDomainSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -541,7 +616,8 @@ export default function AdminDashboard() {
 
       try {
         const refreshedTree = await fetchGuidedTree();
-        const { domainRows, categoryRows } = mapGuidedTreeToRows(refreshedTree);
+        const { domainRows, categoryRows, programRows } =
+          mapGuidedTreeToRows(refreshedTree);
         setDomains((prev) =>
           dedupeDomainRows([
             ...domainRows,
@@ -549,6 +625,7 @@ export default function AdminDashboard() {
           ]),
         );
         setCategories(categoryRows);
+        setPrograms(programRows);
         setPendingDomains(
           getPendingDomains().filter(
             (pending) => !domainRows.some((domain) => domain.id === pending.id),
@@ -882,11 +959,68 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleProgramSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleProgramSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setProgramCreateError(null);
+    setProgramCreateSuccess(null);
 
-    const title = programForm.title.trim();
-    if (!title || !programForm.domainId || !programForm.categoryId) return;
+    const name = programForm.name.trim();
+    const slug = toHyphenatedSlug(name);
+    if (!name || !slug || !programForm.domainId || !programForm.categoryId) {
+      setProgramCreateError("Name, domain, and category are required.");
+      return;
+    }
+
+    const gridDescription = programForm.gridDescription.trim();
+    const gridImageUrl = programForm.gridImageUrl.trim();
+    const overview = programForm.overview.trim();
+    const durationLabel = programForm.durationLabel.trim();
+    const locationCode = programForm.locationCode.trim();
+    const currencyCode = programForm.currencyCode.trim();
+    const currencySymbol = programForm.currencySymbol.trim();
+
+    if (
+      !gridDescription ||
+      !gridImageUrl ||
+      !overview ||
+      !durationLabel ||
+      !locationCode ||
+      !currencyCode ||
+      !currencySymbol
+    ) {
+      setProgramCreateError(
+        "Grid fields, overview, duration label, and price details are required.",
+      );
+      return;
+    }
+
+    const accessToken = tokens?.accessToken;
+    if (!accessToken) {
+      setProgramCreateError("You must be logged in to manage programs.");
+      return;
+    }
+
+    const sortOrder = parseNonNegativeNumber(programForm.sortOrder);
+    const durationWeeks = parseNonNegativeNumber(programForm.durationWeeks);
+    const durationSortOrder = parseNonNegativeNumber(programForm.durationSortOrder);
+    const amount = parseNonNegativeNumber(programForm.amount);
+    const detailSortOrder = parseNonNegativeNumber(programForm.detailSortOrder);
+
+    const whatYouGet = parseTextareaItems(programForm.whatYouGet);
+    const whoIsThisFor = parseTextareaItems(programForm.whoIsThisFor);
+    const tags = parseTextareaItems(programForm.tags);
+    const detailHeading = programForm.detailHeading.trim();
+    const detailDescription = programForm.detailDescription.trim();
+    const detailSections =
+      detailHeading || detailDescription
+        ? [
+            {
+              heading: detailHeading,
+              description: detailDescription,
+              sortOrder: detailSortOrder,
+            },
+          ]
+        : [];
 
     if (editingProgramId) {
       setPrograms((prev) =>
@@ -894,46 +1028,119 @@ export default function AdminDashboard() {
           program.id === editingProgramId
             ? {
                 ...program,
-                title,
+                name,
                 domainId: programForm.domainId,
                 categoryId: programForm.categoryId,
-                status: programForm.status,
               }
             : program,
         ),
       );
-      resetProgramForm();
+      setProgramCreateSuccess(`Program "${name}" updated locally.`);
+      closeProgramModal();
       return;
     }
 
-    const newProgram: ProgramRow = {
-      id: createNextId(
-        "P",
-        programs.map((program) => program.id),
-      ),
-      title,
-      domainId: programForm.domainId,
-      categoryId: programForm.categoryId,
-      status: programForm.status,
-    };
+    try {
+      setIsCreatingProgram(true);
+      const response = await createGuidedProgram(
+        {
+          categoryId: programForm.categoryId,
+          name,
+          slug,
+          gridDescription,
+          gridImageUrl,
+          overview,
+          sortOrder,
+          durations: [
+            {
+              label: durationLabel,
+              weeks: durationWeeks,
+              sortOrder: durationSortOrder,
+              prices: [
+                {
+                  locationCode,
+                  amount,
+                  currencyCode,
+                  currencySymbol,
+                },
+              ],
+            },
+          ],
+          whatYouGet,
+          whoIsThisFor,
+          tags,
+          detailSections,
+        },
+        accessToken,
+      );
 
-    setPrograms((prev) => [newProgram, ...prev]);
-    resetProgramForm();
+      const createdId =
+        extractCreatedProgramId(response) ??
+        createNextId(
+          "P",
+          programs.map((program) => program.id),
+        );
+      const newProgram: ProgramRow = {
+        id: createdId,
+        name,
+        domainId: programForm.domainId,
+        categoryId: programForm.categoryId,
+      };
+
+      setPrograms((prev) => {
+        if (prev.some((program) => program.id === createdId)) return prev;
+        return [newProgram, ...prev];
+      });
+      setProgramCreateSuccess(`Program "${name}" created.`);
+      closeProgramModal();
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setProgramCreateError(err.message);
+      } else {
+        setProgramCreateError("Unable to create program. Please try again.");
+      }
+    } finally {
+      setIsCreatingProgram(false);
+    }
   };
 
   const startProgramEdit = (program: ProgramRow) => {
     setEditingProgramId(program.id);
     setProgramForm({
-      title: program.title,
+      name: program.name,
       domainId: program.domainId,
       categoryId: program.categoryId,
-      status: program.status,
+      gridDescription: "",
+      gridImageUrl: "",
+      overview: "",
+      sortOrder: "0",
+      durationLabel: "",
+      durationWeeks: "0",
+      durationSortOrder: "0",
+      locationCode: "",
+      amount: "0",
+      currencyCode: "",
+      currencySymbol: "",
+      whatYouGet: "",
+      whoIsThisFor: "",
+      tags: "",
+      detailHeading: "",
+      detailDescription: "",
+      detailSortOrder: "0",
     });
+    setProgramCreateError(null);
+    setProgramCreateSuccess(null);
+    setIsProgramModalOpen(true);
   };
 
   const handleProgramDelete = (programId: string) => {
+    setProgramCreateError(null);
+    setProgramCreateSuccess(null);
+    setDeletingProgramId(programId);
     setPrograms((prev) => prev.filter((program) => program.id !== programId));
-    if (editingProgramId === programId) resetProgramForm();
+    if (editingProgramId === programId) closeProgramModal();
+    setProgramCreateSuccess("Program deleted.");
+    setDeletingProgramId(null);
   };
 
   return (
@@ -992,17 +1199,23 @@ export default function AdminDashboard() {
 
         {activeTab === "programs" && (
           <ProgramsTab
+            programCreateSuccess={programCreateSuccess}
+            programCreateError={programCreateError}
+            onOpenAddModal={openAddProgramModal}
             onSubmit={handleProgramSubmit}
             programForm={programForm}
             onProgramFormChange={setProgramForm}
             domains={domains}
             categoriesForProgramDomain={categoriesForProgramDomain}
+            isProgramModalOpen={isProgramModalOpen}
+            onCloseModal={closeProgramModal}
+            isCreatingProgram={isCreatingProgram}
             editingProgramId={editingProgramId}
-            onCancelEdit={resetProgramForm}
             programs={programs}
             categories={categories}
             onStartEdit={startProgramEdit}
             onDelete={handleProgramDelete}
+            deletingProgramId={deletingProgramId}
           />
         )}
       </div>
