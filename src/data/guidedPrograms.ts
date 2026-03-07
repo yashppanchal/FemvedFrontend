@@ -2,6 +2,7 @@ import type { CountryCode } from "../country/useCountry";
 
 export type GuidedProgramCard = {
   programDurations?: Array<{
+    durationId: string;
     durationLabel: string;
     durationPrice: string;
   }>;
@@ -54,6 +55,7 @@ type GuidedTreeResponse = {
       };
       programsInCategory?: Array<{
         programDurations?: Array<{
+          durationId?: string;
           durationLabel?: string;
           durationPrice?: string;
         }>;
@@ -120,6 +122,7 @@ function mapApiCategoryToProgram(
 
       return {
         programDurations: (program.programDurations ?? []).map((duration) => ({
+          durationId: duration.durationId ?? "",
           durationLabel: duration.durationLabel ?? "",
           durationPrice: duration.durationPrice ?? "",
         })),

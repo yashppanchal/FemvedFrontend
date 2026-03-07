@@ -18,6 +18,7 @@ import FoundersStory from "../pages/FoundersStory";
 import KnowYourExperts from "../pages/KnowYourExperts";
 import NotFound from "../pages/NotFound";
 import OrderHistory from "../pages/OrderHistory";
+import PaymentProcessing from "../pages/PaymentProcessing";
 import PaymentSuccess from "../pages/PaymentSuccess";
 import Placeholder from "../pages/Placeholder";
 import Podcast from "../pages/Podcast";
@@ -58,6 +59,7 @@ export const router = createBrowserRouter([
       },
       { path: "/orders", element: <OrderHistory /> },
       { path: "/payment/success", element: <PaymentSuccess /> },
+      { path: "/payment/processing", element: <PaymentProcessing /> },
       { path: "/learn/founders-story", element: <FoundersStory /> },
       { path: "/learn/know-your-experts", element: <KnowYourExperts /> },
       { path: "/learn/podcast", element: <Podcast /> },

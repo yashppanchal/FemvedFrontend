@@ -3,6 +3,29 @@
   background: transparent;
 }
 
+.programDetailPage__enrollButton {
+  width: 100%;
+  margin-top: 16px;
+  justify-content: center;
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.programDetailPage__checkoutError {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(200, 30, 30, 0.08);
+  color: #a01a1a;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 .programDetailPage__hero {
   width: 100vw;
   margin-left: calc(50% - 50vw);
@@ -296,3 +319,4 @@
     grid-template-columns: 1fr;
   }
 }
+

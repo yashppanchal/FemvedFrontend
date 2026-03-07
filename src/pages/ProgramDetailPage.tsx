@@ -2,15 +2,19 @@ import "./ProgramDetailPage.scss";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useCountry } from "../country/useCountry";
+import { useAuth } from "../auth/useAuth";
 import {
   loadGuidedPrograms,
   normalizeSlug,
   type GuidedProgramInfo,
 } from "../data/guidedPrograms";
+import { initiateOrder } from "../api/orders";
+import { hasValidAccessToken } from "../auth/useAuth";
 import { PrimaryOutlineButton } from "../components/PrimaryOutlineButton";
 
 export default function ProgramDetailPage() {
   const { country } = useCountry();
+  const { user, tokens } = useAuth();
   const navigate = useNavigate();
   const { programSlug, programId } = useParams<{
     programSlug: string;
@@ -20,6 +24,8 @@ export default function ProgramDetailPage() {
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [selectedDurationLabel, setSelectedDurationLabel] = useState("");
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   useEffect(() => {
     let isActive = true;
@@ -92,6 +98,77 @@ export default function ProgramDetailPage() {
       ? " programDetailPage__priceOptions--single"
       : ""
   }`;
+
+  async function handleEnroll() {
+    if (!selectedDuration) return;
+
+    // Fix 3: check token validity, not just presence of user object
+    if (!user || !hasValidAccessToken(tokens)) {
+      navigate("/login");
+      return;
+    }
+
+    if (!selectedDuration.durationId) {
+      setCheckoutError("This program duration is not available for purchase yet.");
+      return;
+    }
+
+    if (country !== "IN") {
+      setCheckoutError(
+        "Online payment is currently available for India only. Please contact us to enrol.",
+      );
+      return;
+    }
+
+    setCheckoutLoading(true);
+    setCheckoutError(null);
+
+    try {
+      const order = await initiateOrder({
+        durationId: selectedDuration.durationId,
+        countryCode: country,
+        gateway: "CashFree",
+        idempotencyKey: crypto.randomUUID(),
+      });
+
+      // Fix 2: explicit else so an unexpected gateway value surfaces an error
+      if (order.gateway === "CASHFREE") {
+        const { load } = await import("@cashfreepayments/cashfree-js");
+        const mode =
+          (import.meta.env.VITE_CASHFREE_MODE ?? "sandbox") as
+          | "sandbox"
+          | "production";
+        const cashfree = await load({ mode });
+
+        // Fix 1: inspect checkout() result — don't navigate if user cancelled
+        const result = await cashfree.checkout({
+          paymentSessionId: order.paymentSessionId,
+          redirectTarget: "_modal",
+        });
+
+        if (result?.error) {
+          setCheckoutError(
+            result.error.message ?? "Payment was not completed. Please try again.",
+          );
+          return;
+        }
+
+        // Fix 4: pass returnTo so the processing page can navigate back reliably
+        const returnTo = encodeURIComponent(window.location.pathname);
+        navigate(
+          `/payment/processing?orderId=${encodeURIComponent(order.orderId)}&returnTo=${returnTo}`,
+        );
+      } else {
+        setCheckoutError("Unexpected payment gateway. Please try again or contact support.");
+      }
+    } catch (err) {
+      setCheckoutError(
+        err instanceof Error ? err.message : "Failed to initiate payment. Please try again.",
+      );
+    } finally {
+      setCheckoutLoading(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -199,6 +276,17 @@ export default function ProgramDetailPage() {
             <li>Complete privacy</li>
             <li>Client-Expert confidentiality</li>
           </ul>
+          {checkoutError && (
+            <p className="programDetailPage__checkoutError">{checkoutError}</p>
+          )}
+          <button
+            type="button"
+            className="button programDetailPage__enrollButton"
+            onClick={handleEnroll}
+            disabled={checkoutLoading || !selectedDuration}
+          >
+            {checkoutLoading ? "Processing…" : "Enroll Now"}
+          </button>
         </aside>
       </div>
 
