@@ -7,6 +7,7 @@ import { MoreSection } from "../components/guided-care-components/MoreSection";
 import { ChooseSection } from "../components/guided-care-components/ChooseSection";
 import { CtaBanner } from "../components/guided-care-components/CtaBanner";
 import { ZigzagSection } from "../components/guided-care-components/ZigzagSection";
+import { useCountry } from "../country/useCountry";
 import {
   loadGuidedPrograms,
   normalizeSlug,
@@ -14,6 +15,7 @@ import {
 } from "../data/guidedPrograms";
 
 export default function GuidedProgramDetail() {
+  const { country } = useCountry();
   const { programSlug, programId } = useParams<{
     programSlug: string;
     programId?: string;
@@ -30,7 +32,7 @@ export default function GuidedProgramDetail() {
       setHasError(false);
 
       try {
-        const mappedPrograms = await loadGuidedPrograms();
+        const mappedPrograms = await loadGuidedPrograms(country);
 
         if (isActive) {
           setPrograms(mappedPrograms);
@@ -51,7 +53,7 @@ export default function GuidedProgramDetail() {
     return () => {
       isActive = false;
     };
-  }, []);
+  }, [country]);
 
   const program = useMemo(() => {
     if (!programSlug) return null;

@@ -1,6 +1,7 @@
 import "./ProgramDetailPage.scss";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useCountry } from "../country/useCountry";
 import {
   loadGuidedPrograms,
   normalizeSlug,
@@ -9,6 +10,7 @@ import {
 import { PrimaryOutlineButton } from "../components/PrimaryOutlineButton";
 
 export default function ProgramDetailPage() {
+  const { country } = useCountry();
   const navigate = useNavigate();
   const { programSlug, programId } = useParams<{
     programSlug: string;
@@ -27,7 +29,7 @@ export default function ProgramDetailPage() {
       setHasError(false);
 
       try {
-        const payload = await loadGuidedPrograms();
+        const payload = await loadGuidedPrograms(country);
         if (isActive) {
           setCategories(payload);
         }
@@ -47,7 +49,7 @@ export default function ProgramDetailPage() {
     return () => {
       isActive = false;
     };
-  }, []);
+  }, [country]);
 
   const selectedProgram = useMemo(() => {
     if (!programId) return null;

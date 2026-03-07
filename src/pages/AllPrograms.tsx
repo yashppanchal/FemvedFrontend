@@ -1,6 +1,7 @@
 import "./AllPrograms.scss";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { useCountry } from "../country/useCountry";
 import { loadGuidedPrograms, normalizeSlug } from "../data/guidedPrograms";
 
 type ParsedPrice = {
@@ -41,6 +42,7 @@ function normalizeText(value: string) {
 }
 
 export default function AllPrograms() {
+  const { country } = useCountry();
   const filterPanelId = "all-programs-filters";
   const [programs, setPrograms] = useState<FlattenedProgram[]>([]);
   const [loading, setLoading] = useState(true);
@@ -79,7 +81,7 @@ export default function AllPrograms() {
       setHasError(false);
 
       try {
-        const categories = await loadGuidedPrograms();
+        const categories = await loadGuidedPrograms(country);
         const flattened: FlattenedProgram[] = [];
 
         for (const category of categories) {
@@ -127,7 +129,7 @@ export default function AllPrograms() {
     return () => {
       isActive = false;
     };
-  }, []);
+  }, [country]);
 
   const categoryTypes = useMemo(
     () => Array.from(new Set(programs.map((program) => program.categoryType))).sort(),

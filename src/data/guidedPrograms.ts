@@ -1,3 +1,5 @@
+import type { CountryCode } from "../country/useCountry";
+
 export type GuidedProgramCard = {
   programDurations?: Array<{
     durationLabel: string;
@@ -81,8 +83,8 @@ type GuidedTreeResponse = {
   }>;
 };
 
-let guidedProgramsCache: GuidedProgramInfo[] | null = null;
-let guidedProgramsRequest: Promise<GuidedProgramInfo[]> | null = null;
+const guidedProgramsCache = new Map<CountryCode, GuidedProgramInfo[]>();
+const guidedProgramsRequests = new Map<CountryCode, Promise<GuidedProgramInfo[]>>();
 
 export function normalizeSlug(value: string | undefined) {
   return (value ?? "")
@@ -145,17 +147,24 @@ function mapApiCategoryToProgram(
   };
 }
 
-export async function loadGuidedPrograms(): Promise<GuidedProgramInfo[]> {
-  if (guidedProgramsCache) {
-    return guidedProgramsCache;
+export async function loadGuidedPrograms(
+  countryCode: CountryCode = "IN",
+): Promise<GuidedProgramInfo[]> {
+  const cachedPrograms = guidedProgramsCache.get(countryCode);
+  if (cachedPrograms) {
+    return cachedPrograms;
   }
 
-  if (guidedProgramsRequest) {
-    return guidedProgramsRequest;
+  const activeRequest = guidedProgramsRequests.get(countryCode);
+  if (activeRequest) {
+    return activeRequest;
   }
 
-  guidedProgramsRequest = (async () => {
-    const response = await fetch("https://api.femved.com/api/v1/guided/tree");
+  const request = (async () => {
+    const query = new URLSearchParams({ countryCode });
+    const response = await fetch(
+      `https://api.femved.com/api/v1/guided/tree?${query.toString()}`,
+    );
     if (!response.ok) {
       throw new Error(`Failed guided tree request: ${response.status}`);
     }
@@ -166,13 +175,14 @@ export async function loadGuidedPrograms(): Promise<GuidedProgramInfo[]> {
       null;
     const mappedPrograms = (guidedDomain?.categories ?? []).map(mapApiCategoryToProgram);
 
-    guidedProgramsCache = mappedPrograms;
+    guidedProgramsCache.set(countryCode, mappedPrograms);
     return mappedPrograms;
   })();
+  guidedProgramsRequests.set(countryCode, request);
 
   try {
-    return await guidedProgramsRequest;
+    return await request;
   } finally {
-    guidedProgramsRequest = null;
+    guidedProgramsRequests.delete(countryCode);
   }
 }
