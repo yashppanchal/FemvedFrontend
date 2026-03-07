@@ -25,6 +25,17 @@
   color: var(--black);
 }
 
+.expertSection__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.expertSection__header .expertSection__title {
+  margin-bottom: 0;
+}
+
 .expertSection__success {
   margin: 0 0 14px;
   padding: 10px 14px;
@@ -37,6 +48,18 @@
 .expertForm {
   display: grid;
   gap: 14px;
+}
+
+.expertForm__actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.expertForm .button--secondary {
+  background: transparent;
+  color: var(--black);
+  border: 1px solid var(--border);
 }
 
 .expertForm__row {
@@ -52,6 +75,38 @@
 
 .expertForm__submit {
   justify-content: center;
+}
+
+.expertProfileDetails {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(15, 15, 16, 0.02);
+}
+
+.expertProfileDetails__row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.expertProfileDetails__row:last-child {
+  border-bottom: none;
+}
+
+.expertProfileDetails__label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.expertProfileDetails__value {
+  font-size: 14px;
+  color: var(--black);
+  word-break: break-word;
 }
 
 .expertTableWrap {
@@ -112,6 +167,10 @@
   }
 
   .expertForm__row {
+    grid-template-columns: 1fr;
+  }
+
+  .expertProfileDetails__row {
     grid-template-columns: 1fr;
   }
 }

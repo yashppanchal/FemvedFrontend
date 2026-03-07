@@ -15,6 +15,9 @@ export function NavBar() {
   const [openSectionId, setOpenSectionId] = useState<string | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAccessTokenValid, setIsAccessTokenValid] = useState(() =>
+    hasValidAccessToken(tokens),
+  );
   const [openMobileSections, setOpenMobileSections] = useState<Set<string>>(
     new Set(),
   );
@@ -53,6 +56,30 @@ export function NavBar() {
     };
   }, [mobileMenuOpen]);
 
+  useEffect(() => {
+    const validNow = hasValidAccessToken(tokens);
+    setIsAccessTokenValid(validNow);
+
+    if (!validNow || !tokens?.accessTokenExpiresAt) return;
+
+    const expiryTime = Date.parse(tokens.accessTokenExpiresAt);
+    if (Number.isNaN(expiryTime)) return;
+
+    const msUntilExpiry = Math.max(expiryTime - Date.now(), 0);
+    const timer = window.setTimeout(() => {
+      setIsAccessTokenValid(hasValidAccessToken(tokens));
+    }, msUntilExpiry + 50);
+
+    return () => window.clearTimeout(timer);
+  }, [tokens]);
+
+  useEffect(() => {
+    if (!isAccessTokenValid) {
+      setUserMenuOpen(false);
+    }
+  }, [isAccessTokenValid]);
+
+  const isAuthenticated = Boolean(user) && isAccessTokenValid;
   const isAdmin = user?.role.id === ROLE_ADMIN.id;
   const canViewExpertDashboard =
     user?.role.id === ROLE_EXPERT.id && hasValidAccessToken(tokens);
@@ -162,7 +189,7 @@ export function NavBar() {
       </div>
 
       <div className="navAuth">
-        {user ? (
+        {isAuthenticated ? (
           <div className={`userMenu ${userMenuOpen ? "userMenu--open" : ""}`}>
             <button
               type="button"
@@ -329,7 +356,7 @@ export function NavBar() {
 
               <div className="mobileDrawer__divider" />
 
-              {user ? (
+              {isAuthenticated ? (
                 <div className="mobileDrawer__section">
                   <p className="mobileDrawer__sectionLabel">Account</p>
                   {isAdmin ? (
