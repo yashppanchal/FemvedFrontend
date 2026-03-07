@@ -35,6 +35,25 @@ export interface CreateGuidedCategoryRequest {
   keyAreas: string[];
 }
 
+export interface UpdateGuidedCategoryRequest {
+  name: string;
+  categoryType: string;
+  heroTitle: string;
+  heroSubtext: string;
+  ctaLabel: string;
+  ctaLink: string;
+  pageHeader: string;
+  imageUrl: string;
+  sortOrder: number;
+  whatsIncluded: string[];
+  keyAreas: string[];
+}
+
+export interface UpdateGuidedCategoryResponse {
+  id: string;
+  isUpdated: boolean;
+}
+
 export interface GuidedTreeDomain {
   domainId?: string;
   id?: string;
@@ -56,7 +75,15 @@ export interface GuidedTreeCategory {
   isActive?: boolean;
   is_active?: boolean;
   categoryPageData?: {
+    categoryPageDataImage?: string;
     categoryType?: string;
+    categoryHeroTitle?: string;
+    categoryHeroSubtext?: string;
+    categoryCtaLabel?: string;
+    categoryCtaTo?: string;
+    categoryPageHeader?: string;
+    whatsIncludedInCategory?: string[];
+    categoryPageKeyAreas?: string[];
   };
 }
 
@@ -117,6 +144,23 @@ export function createGuidedCategory(
     },
     body: JSON.stringify(data),
   });
+}
+
+export function updateGuidedCategory(
+  categoryId: string,
+  data: UpdateGuidedCategoryRequest,
+  accessToken: string,
+): Promise<UpdateGuidedCategoryResponse> {
+  return apiFetch<UpdateGuidedCategoryResponse>(
+    `/guided/categories/${encodeURIComponent(categoryId)}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(data),
+    },
+  );
 }
 
 export function fetchGuidedTree(): Promise<GuidedTreeResponse> {

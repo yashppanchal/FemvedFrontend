@@ -6,6 +6,7 @@ import {
   deleteGuidedDomain,
   fetchGuidedTree,
   type GuidedTreeDomain,
+  updateGuidedCategory,
   updateGuidedDomain,
 } from "../api/guided";
 import { useAuth } from "../auth/useAuth";
@@ -29,6 +30,7 @@ import "./AdminDashboard.scss";
 type GuidedHierarchyRows = {
   domainRows: DomainRow[];
   categoryRows: CategoryRow[];
+  categoryFormById: Record<string, CategoryForm>;
 };
 
 const PENDING_DOMAINS_STORAGE_KEY = "femved_admin_pending_domains";
@@ -120,6 +122,9 @@ const parseTextareaItems = (value: string): string[] =>
     .split(/\r?\n|,/)
     .map((item) => item.trim())
     .filter(Boolean);
+
+const joinTextareaItems = (items: string[] | undefined): string =>
+  (items ?? []).map((item) => item.trim()).filter(Boolean).join("\n");
 
 const getObjectValue = (value: unknown): Record<string, unknown> | null =>
   typeof value === "object" && value !== null
@@ -270,6 +275,7 @@ const mapGuidedTreeToRows = (
   response: Awaited<ReturnType<typeof fetchGuidedTree>>,
 ): GuidedHierarchyRows => {
   const domainRows = mapGuidedDomainsToRows(response.domains ?? []);
+  const categoryFormById: Record<string, CategoryForm> = {};
 
   const categoryRows = (response.domains ?? []).flatMap(
     (domain, domainIndex) => {
@@ -297,6 +303,20 @@ const mapGuidedTreeToRows = (
             "";
           if (!id || !name.trim()) return null;
 
+          const pageData = category.categoryPageData ?? {};
+          categoryFormById[id] = {
+            domainId,
+            name: name.trim(),
+            heroTitle: pageData.categoryHeroTitle?.trim() ?? "",
+            heroSubtext: pageData.categoryHeroSubtext?.trim() ?? "",
+            ctaLabel: pageData.categoryCtaLabel?.trim() ?? "",
+            ctaLink: pageData.categoryCtaTo?.trim() ?? "",
+            pageHeader: pageData.categoryPageHeader?.trim() ?? "",
+            imageUrl: pageData.categoryPageDataImage?.trim() ?? "",
+            whatsIncluded: joinTextareaItems(pageData.whatsIncludedInCategory),
+            keyAreas: joinTextareaItems(pageData.categoryPageKeyAreas),
+          };
+
           return {
             id,
             name: name.trim(),
@@ -307,7 +327,7 @@ const mapGuidedTreeToRows = (
     },
   );
 
-  return { domainRows, categoryRows };
+  return { domainRows, categoryRows, categoryFormById };
 };
 
 export default function AdminDashboard() {
@@ -344,6 +364,9 @@ export default function AdminDashboard() {
   >(null);
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [categoryFormById, setCategoryFormById] = useState<
+    Record<string, CategoryForm>
+  >({});
 
   const [programForm, setProgramForm] =
     useState<ProgramForm>(initialProgramForm);
@@ -361,13 +384,15 @@ export default function AdminDashboard() {
         setDomainLoadError(null);
 
         const treeResponse = await fetchGuidedTree();
-        const { domainRows, categoryRows } = mapGuidedTreeToRows(treeResponse);
+        const { domainRows, categoryRows, categoryFormById } =
+          mapGuidedTreeToRows(treeResponse);
         // Refresh should reflect backend tree only; clear stale local placeholders.
         setPendingDomains([]);
 
         if (!isActive) return;
         setDomains(dedupeDomainRows(domainRows));
         setCategories(categoryRows);
+        setCategoryFormById(categoryFormById);
       } catch {
         if (!isActive) return;
         setDomainLoadError("Unable to load domains.");
@@ -610,37 +635,14 @@ export default function AdminDashboard() {
     if (!rawName || !categoryForm.domainId) return;
 
     const categoryType = rawName;
-
-    if (editingCategoryId) {
-      setCategories((prev) =>
-        prev.map((category) =>
-          category.id === editingCategoryId
-            ? {
-                ...category,
-                name: rawName,
-                domainId: categoryForm.domainId,
-              }
-            : category,
-        ),
-      );
-
-      setPrograms((prev) =>
-        prev.map((program) =>
-          program.categoryId === editingCategoryId
-            ? { ...program, domainId: categoryForm.domainId }
-            : program,
-        ),
-      );
-
-      if (programForm.categoryId === editingCategoryId) {
-        setProgramForm((prev) => ({
-          ...prev,
-          domainId: categoryForm.domainId,
-        }));
-      }
-
-      setCategoryCreateSuccess(`Category "${categoryType}" updated.`);
-      closeCategoryModal();
+    const heroTitle = categoryForm.heroTitle.trim();
+    if (!heroTitle) {
+      setCategoryCreateError("Hero title is required.");
+      return;
+    }
+    const pageHeader = categoryForm.pageHeader.trim();
+    if (!pageHeader) {
+      setCategoryCreateError("Page header is required.");
       return;
     }
 
@@ -650,20 +652,97 @@ export default function AdminDashboard() {
       return;
     }
 
-    const slug = toHyphenatedSlug(rawName);
-    if (!slug) {
-      setCategoryCreateError("Please enter a valid category name.");
+    if (editingCategoryId) {
+      const sortOrder = Math.max(
+        categories.findIndex((category) => category.id === editingCategoryId),
+        0,
+      );
+
+      try {
+        setIsCreatingCategory(true);
+        const response = await updateGuidedCategory(
+          editingCategoryId,
+          {
+            name: rawName,
+            categoryType,
+            heroTitle,
+            heroSubtext: categoryForm.heroSubtext.trim(),
+            ctaLabel: categoryForm.ctaLabel.trim(),
+            ctaLink: categoryForm.ctaLink.trim(),
+            pageHeader,
+            imageUrl: categoryForm.imageUrl.trim(),
+            sortOrder,
+            whatsIncluded: parseTextareaItems(categoryForm.whatsIncluded),
+            keyAreas: parseTextareaItems(categoryForm.keyAreas),
+          },
+          accessToken,
+        );
+
+        if (!response.isUpdated) {
+          throw new Error("Update operation did not complete.");
+        }
+
+        setCategories((prev) =>
+          prev.map((category) =>
+            category.id === editingCategoryId
+              ? {
+                  ...category,
+                  name: rawName,
+                  domainId: categoryForm.domainId,
+                }
+              : category,
+          ),
+        );
+        setCategoryFormById((prev) => ({
+          ...prev,
+          [editingCategoryId]: {
+            domainId: categoryForm.domainId,
+            name: rawName,
+            heroTitle,
+            heroSubtext: categoryForm.heroSubtext.trim(),
+            ctaLabel: categoryForm.ctaLabel.trim(),
+            ctaLink: categoryForm.ctaLink.trim(),
+            pageHeader,
+            imageUrl: categoryForm.imageUrl.trim(),
+            whatsIncluded: joinTextareaItems(
+              parseTextareaItems(categoryForm.whatsIncluded),
+            ),
+            keyAreas: joinTextareaItems(parseTextareaItems(categoryForm.keyAreas)),
+          },
+        }));
+
+        setPrograms((prev) =>
+          prev.map((program) =>
+            program.categoryId === editingCategoryId
+              ? { ...program, domainId: categoryForm.domainId }
+              : program,
+          ),
+        );
+
+        if (programForm.categoryId === editingCategoryId) {
+          setProgramForm((prev) => ({
+            ...prev,
+            domainId: categoryForm.domainId,
+          }));
+        }
+
+        setCategoryCreateSuccess(`Category "${categoryType}" updated.`);
+        closeCategoryModal();
+      } catch (err) {
+        if (err instanceof ApiError) {
+          setCategoryCreateError(err.message);
+        } else {
+          setCategoryCreateError("Unable to update category. Please try again.");
+        }
+      } finally {
+        setIsCreatingCategory(false);
+      }
       return;
     }
 
-    const heroTitle = categoryForm.heroTitle.trim();
-    if (!heroTitle) {
-      setCategoryCreateError("Hero title is required.");
-      return;
-    }
-    const pageHeader = categoryForm.pageHeader.trim();
-    if (!pageHeader) {
-      setCategoryCreateError("Page header is required.");
+    const slug = toHyphenatedSlug(rawName);
+    if (!slug) {
+      setCategoryCreateError("Please enter a valid category name.");
       return;
     }
 
@@ -703,6 +782,23 @@ export default function AdminDashboard() {
         if (prev.some((category) => category.id === createdId)) return prev;
         return [newCategory, ...prev];
       });
+      setCategoryFormById((prev) => ({
+        ...prev,
+        [createdId]: {
+          domainId: categoryForm.domainId,
+          name: rawName,
+          heroTitle,
+          heroSubtext: categoryForm.heroSubtext.trim(),
+          ctaLabel: categoryForm.ctaLabel.trim(),
+          ctaLink: categoryForm.ctaLink.trim(),
+          pageHeader,
+          imageUrl: categoryForm.imageUrl.trim(),
+          whatsIncluded: joinTextareaItems(
+            parseTextareaItems(categoryForm.whatsIncluded),
+          ),
+          keyAreas: joinTextareaItems(parseTextareaItems(categoryForm.keyAreas)),
+        },
+      }));
       setCategoryCreateSuccess(`Category "${categoryType}" created.`);
       closeCategoryModal();
     } catch (err) {
@@ -717,18 +813,19 @@ export default function AdminDashboard() {
   };
 
   const startCategoryEdit = (category: CategoryRow) => {
+    const prefilled = categoryFormById[category.id];
     setEditingCategoryId(category.id);
     setCategoryForm({
-      domainId: category.domainId,
-      name: category.name,
-      heroTitle: category.name,
-      heroSubtext: "",
-      ctaLabel: "",
-      ctaLink: "",
-      pageHeader: category.name,
-      imageUrl: "",
-      whatsIncluded: "",
-      keyAreas: "",
+      domainId: prefilled?.domainId ?? category.domainId,
+      name: prefilled?.name ?? category.name,
+      heroTitle: prefilled?.heroTitle ?? category.name,
+      heroSubtext: prefilled?.heroSubtext ?? "",
+      ctaLabel: prefilled?.ctaLabel ?? "",
+      ctaLink: prefilled?.ctaLink ?? "",
+      pageHeader: prefilled?.pageHeader ?? category.name,
+      imageUrl: prefilled?.imageUrl ?? "",
+      whatsIncluded: prefilled?.whatsIncluded ?? "",
+      keyAreas: prefilled?.keyAreas ?? "",
     });
     setCategoryCreateError(null);
     setCategoryCreateSuccess(null);
@@ -742,6 +839,12 @@ export default function AdminDashboard() {
     setPrograms((prev) =>
       prev.filter((program) => program.categoryId !== categoryId),
     );
+    setCategoryFormById((prev) => {
+      if (!prev[categoryId]) return prev;
+      const next = { ...prev };
+      delete next[categoryId];
+      return next;
+    });
 
     if (editingCategoryId === categoryId) closeCategoryModal();
     if (programForm.categoryId === categoryId) {
