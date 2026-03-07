@@ -18,6 +18,11 @@ export interface DeleteGuidedDomainResponse {
   isDeleted: boolean;
 }
 
+export interface DeleteGuidedCategoryResponse {
+  id: string;
+  isDeleted: boolean;
+}
+
 export interface CreateGuidedCategoryRequest {
   domainId: string;
   name: string;
@@ -159,6 +164,21 @@ export function updateGuidedCategory(
         Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify(data),
+    },
+  );
+}
+
+export function deleteGuidedCategory(
+  categoryId: string,
+  accessToken: string,
+): Promise<DeleteGuidedCategoryResponse> {
+  return apiFetch<DeleteGuidedCategoryResponse>(
+    `/guided/categories/${encodeURIComponent(categoryId)}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     },
   );
 }

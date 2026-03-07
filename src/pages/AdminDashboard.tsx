@@ -3,6 +3,7 @@ import { ApiError } from "../api/client";
 import {
   createGuidedCategory,
   createGuidedDomain,
+  deleteGuidedCategory,
   deleteGuidedDomain,
   fetchGuidedTree,
   type GuidedTreeDomain,
@@ -363,6 +364,9 @@ export default function AdminDashboard() {
     string | null
   >(null);
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
+  const [deletingCategoryId, setDeletingCategoryId] = useState<string | null>(
+    null,
+  );
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [categoryFormById, setCategoryFormById] = useState<
     Record<string, CategoryForm>
@@ -832,23 +836,49 @@ export default function AdminDashboard() {
     setIsCategoryModalOpen(true);
   };
 
-  const handleCategoryDelete = (categoryId: string) => {
-    setCategories((prev) =>
-      prev.filter((category) => category.id !== categoryId),
-    );
-    setPrograms((prev) =>
-      prev.filter((program) => program.categoryId !== categoryId),
-    );
-    setCategoryFormById((prev) => {
-      if (!prev[categoryId]) return prev;
-      const next = { ...prev };
-      delete next[categoryId];
-      return next;
-    });
+  const handleCategoryDelete = async (categoryId: string) => {
+    setCategoryCreateError(null);
+    setCategoryCreateSuccess(null);
 
-    if (editingCategoryId === categoryId) closeCategoryModal();
-    if (programForm.categoryId === categoryId) {
-      setProgramForm((prev) => ({ ...prev, categoryId: "" }));
+    const accessToken = tokens?.accessToken;
+    if (!accessToken) {
+      setCategoryCreateError("You must be logged in to manage categories.");
+      return;
+    }
+
+    try {
+      setDeletingCategoryId(categoryId);
+      const response = await deleteGuidedCategory(categoryId, accessToken);
+      if (!response.isDeleted) {
+        throw new Error("Delete operation did not complete.");
+      }
+
+      setCategories((prev) =>
+        prev.filter((category) => category.id !== categoryId),
+      );
+      setPrograms((prev) =>
+        prev.filter((program) => program.categoryId !== categoryId),
+      );
+      setCategoryFormById((prev) => {
+        if (!prev[categoryId]) return prev;
+        const next = { ...prev };
+        delete next[categoryId];
+        return next;
+      });
+
+      if (editingCategoryId === categoryId) closeCategoryModal();
+      if (programForm.categoryId === categoryId) {
+        setProgramForm((prev) => ({ ...prev, categoryId: "" }));
+      }
+      setCategoryCreateSuccess("Category deleted.");
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setCategoryCreateError(err.message);
+      } else {
+        setCategoryCreateError("Unable to delete category. Please try again.");
+      }
+    } finally {
+      setDeletingCategoryId(null);
     }
   };
 
@@ -949,6 +979,7 @@ export default function AdminDashboard() {
             onOpenAddModal={openAddCategoryModal}
             onStartEdit={startCategoryEdit}
             onDelete={handleCategoryDelete}
+            deletingCategoryId={deletingCategoryId}
             isCategoryModalOpen={isCategoryModalOpen}
             editingCategoryId={editingCategoryId}
             onCloseModal={closeCategoryModal}

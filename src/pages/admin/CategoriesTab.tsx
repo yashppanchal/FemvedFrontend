@@ -10,6 +10,7 @@ type CategoriesTabProps = {
   onOpenAddModal: () => void;
   onStartEdit: (category: CategoryRow) => void;
   onDelete: (categoryId: string) => void;
+  deletingCategoryId: string | null;
   isCategoryModalOpen: boolean;
   editingCategoryId: string | null;
   onCloseModal: () => void;
@@ -27,6 +28,7 @@ export function CategoriesTab({
   onOpenAddModal,
   onStartEdit,
   onDelete,
+  deletingCategoryId,
   isCategoryModalOpen,
   editingCategoryId,
   onCloseModal,
@@ -318,8 +320,9 @@ export function CategoriesTab({
                         type="button"
                         className="adminActionButton adminActionButton--danger"
                         onClick={() => onDelete(category.id)}
+                        disabled={deletingCategoryId === category.id}
                       >
-                        Delete
+                        {deletingCategoryId === category.id ? "Deleting..." : "Delete"}
                       </button>
                     </div>
                   </td>
