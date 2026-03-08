@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import "./Podcast.scss";
+import RevealOnScroll from "../components/RevealOnScroll";
 
 export default function Podcast() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -26,13 +27,13 @@ export default function Podcast() {
   return (
     <section className="page podcast">
       {/* ── Hero ── */}
-      <div className="podcast__hero">
+      <RevealOnScroll className="podcast__hero">
         <p className="podcast__heroLabel">Tune In</p>
         <h1 className="podcast__heroTitle">Her Daily Rhythm Podcast</h1>
-      </div>
+      </RevealOnScroll>
 
       {/* ── Feature card ── */}
-      <div className="podcast__card">
+      <RevealOnScroll className="podcast__card">
         <div className="podcast__cardMedia">
           <video
             ref={videoRef}
@@ -62,7 +63,7 @@ export default function Podcast() {
             Subscribe on YouTube
           </a>
         </div>
-      </div>
+      </RevealOnScroll>
     </section>
   );
 }

@@ -1,18 +1,19 @@
 import "./About.scss";
+import RevealOnScroll from "../components/RevealOnScroll";
 
 export default function About() {
   return (
     <section className="page about">
       {/* ── Hero ── */}
-      <div className="about__hero">
+      <RevealOnScroll className="about__hero">
         <p className="about__heroLabel">About Femved</p>
         <h1 className="about__heroTitle">
           Own your wellness — your well-being matters.
         </h1>
-      </div>
+      </RevealOnScroll>
 
       {/* ── Lost & searching ── */}
-      <div className="about__section about__section--searching">
+      <RevealOnScroll className="about__section about__section--searching">
         <div className="about__prose">
           <p>
             Are you finding yourself more tuned into your health but feeling
@@ -27,17 +28,17 @@ export default function About() {
             approach?
           </p>
         </div>
-      </div>
+      </RevealOnScroll>
 
       {/* ── The space ── */}
-      <div className="about__banner">
+      <RevealOnScroll className="about__banner">
         <p className="about__bannerText">
           Femved is the space just for you.
         </p>
-      </div>
+      </RevealOnScroll>
 
       {/* ── Conversation ── */}
-      <div className="about__section about__section--conversation">
+      <RevealOnScroll className="about__section about__section--conversation">
         <div className="about__prose">
           <p>
             Femved is the space just for you—where you can talk directly to
@@ -50,10 +51,10 @@ export default function About() {
             life and your world.
           </p>
         </div>
-      </div>
+      </RevealOnScroll>
 
       {/* ── Real healing ── */}
-      <div className="about__section about__section--healing">
+      <RevealOnScroll className="about__section about__section--healing">
         <div className="about__prose">
           <p>
             It's not just about{" "}
@@ -65,15 +66,15 @@ export default function About() {
             <strong className="about__emphasis">real change.</strong>
           </p>
         </div>
-      </div>
+      </RevealOnScroll>
 
       {/* ── Closing ── */}
-      <div className="about__closing">
+      <RevealOnScroll className="about__closing">
         <p className="about__closingText">
           If this hits home, we're here to make sure you're seen, heard, and
           supported on this journey.
         </p>
-      </div>
+      </RevealOnScroll>
     </section>
   );
 }

@@ -1,18 +1,21 @@
 import "./FoundersStory.scss";
+import RevealOnScroll from "../components/RevealOnScroll";
 
 export default function FoundersStory() {
   return (
     <section className="page foundersStory">
       {/* ── Hero ── */}
-      <div className="foundersStory__hero">
+      <RevealOnScroll className="foundersStory__hero">
         <p className="foundersStory__heroLabel">Our Founders' Story</p>
         <h1 className="foundersStory__heroTitle">
           We understand, and we're here to help.
         </h1>
-      </div>
+      </RevealOnScroll>
 
       {/* ── Opening ── */}
-      <div className="foundersStory__section foundersStory__section--opening">
+      <RevealOnScroll
+        className="foundersStory__section foundersStory__section--opening"
+      >
         <div className="foundersStory__prose">
           <p>
             We, the founders, our friends, and every woman we've connected with
@@ -30,10 +33,12 @@ export default function FoundersStory() {
             </em>
           </p>
         </div>
-      </div>
+      </RevealOnScroll>
 
       {/* ── Awakening ── */}
-      <div className="foundersStory__section foundersStory__section--awakening">
+      <RevealOnScroll
+        className="foundersStory__section foundersStory__section--awakening"
+      >
         <div className="foundersStory__prose">
           <p>
             As we all dig deeper into women's health, we're uncovering some
@@ -46,18 +51,20 @@ export default function FoundersStory() {
             We KNOW now—it's not hysteria.
           </p>
         </div>
-      </div>
+      </RevealOnScroll>
 
       {/* ── Change banner ── */}
-      <div className="foundersStory__banner">
+      <RevealOnScroll className="foundersStory__banner">
         <p className="foundersStory__bannerText">
           Change is happening all around the globe, and FemVed is honoured to
           be part of this. So, what's our role?
         </p>
-      </div>
+      </RevealOnScroll>
 
       {/* ── Listening ── */}
-      <div className="foundersStory__section foundersStory__section--listening">
+      <RevealOnScroll
+        className="foundersStory__section foundersStory__section--listening"
+      >
         <div className="foundersStory__prose">
           <p>
             When we started FemVed, we understood our responsibility. We knew
@@ -79,17 +86,19 @@ export default function FoundersStory() {
             connected, understood, and truly supported.
           </p>
         </div>
-      </div>
+      </RevealOnScroll>
 
       {/* ── Revolution ── */}
-      <div className="foundersStory__revolution">
+      <RevealOnScroll className="foundersStory__revolution">
         <h2 className="foundersStory__revolutionTitle">
           The wellness revolution starts here.
         </h2>
-      </div>
+      </RevealOnScroll>
 
       {/* ── Philosophy ── */}
-      <div className="foundersStory__section foundersStory__section--philosophy">
+      <RevealOnScroll
+        className="foundersStory__section foundersStory__section--philosophy"
+      >
         <div className="foundersStory__prose">
           <p>
             Yes, FemVed is all about holistic wellness—drawing from ancient
@@ -101,10 +110,12 @@ export default function FoundersStory() {
             True wellness is about understanding all the layers of this wisdom.
           </p>
         </div>
-      </div>
+      </RevealOnScroll>
 
       {/* ── Prakriti ── */}
-      <div className="foundersStory__section foundersStory__section--prakriti">
+      <RevealOnScroll
+        className="foundersStory__section foundersStory__section--prakriti"
+      >
         <div className="foundersStory__prose">
           <p className="foundersStory__prakritiIntro">
             One of the very important aspects of this wisdom is:
@@ -115,16 +126,16 @@ export default function FoundersStory() {
             finding a solution; it's a responsibility.
           </blockquote>
         </div>
-      </div>
+      </RevealOnScroll>
 
       {/* ── Closing ── */}
-      <div className="foundersStory__closing">
+      <RevealOnScroll className="foundersStory__closing">
         <p className="foundersStory__closingText">
           Holistic wellness means self-care, but it's not self-centred. We
           need to heal in a way that impacts everyone around us—and even
           future generations.
         </p>
-      </div>
+      </RevealOnScroll>
     </section>
   );
 }

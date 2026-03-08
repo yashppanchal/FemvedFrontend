@@ -135,6 +135,14 @@
   line-height: 1.6;
 }
 
+.programDetailPage__content .programDetailPage__listReveal {
+  margin: 0;
+  max-width: 52ch;
+  font-size: clamp(15px, 1.4vw, 18px);
+  color: rgba(26, 26, 26, 0.72);
+  line-height: 1.6;
+}
+
 .programDetailPage__stickyCard {
   position: sticky;
   top: 110px;

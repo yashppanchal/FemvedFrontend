@@ -10,6 +10,7 @@ import GuidedProgramDetail from "../pages/GuidedProgramDetail";
 import ProgramDetailPage from "../pages/ProgramDetailPage";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
+import MeetTheTeam from "../pages/MeetTheTeam";
 import Register from "../pages/Register";
 import Dashboard from "../pages/Dashboard";
 import ExpertClients from "../pages/ExpertClients";
@@ -40,6 +41,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: "/about", element: <About /> },
+      { path: "/meet-the-team", element: <MeetTheTeam /> },
       { path: "/contact", element: <Contact /> },
       { path: "/all-guided-programs", element: <AllPrograms /> },
       { path: "/faqs", element: placeholderForRouteTitle("FAQs") },
@@ -80,6 +82,7 @@ export const router = createBrowserRouter([
         (r) =>
           !r.path.startsWith("/guided/") &&
           r.path !== "/about" &&
+          r.path !== "/meet-the-team" &&
           r.path !== "/learn/founders-story" &&
           r.path !== "/learn/know-your-experts" &&
           r.path !== "/learn/podcast",

@@ -1,3 +1,5 @@
+import RevealOnScroll from "../RevealOnScroll";
+
 type MoreSectionProps = {
   whatsIncluded: string[];
 };
@@ -22,9 +24,13 @@ export function MoreSection({ whatsIncluded }: MoreSectionProps) {
         <h3 className="guidedProgramDetail__includedTitle">What's included:</h3>
 
         {whatsIncluded.length ? (
-          <ul className="guidedProgramDetail__includedList">
+          <RevealOnScroll className="guidedProgramDetail__includedList">
             {whatsIncluded.map((item, idx) => (
-              <li className="guidedProgramDetail__includedItem" key={idx}>
+              <li
+                className="guidedProgramDetail__includedItem"
+                key={idx}
+                style={{ transitionDelay: `${idx * 180}ms` }}
+              >
                 <span
                   className="guidedProgramDetail__includedCheck"
                   aria-hidden="true"
@@ -36,7 +42,7 @@ export function MoreSection({ whatsIncluded }: MoreSectionProps) {
                 </span>
               </li>
             ))}
-          </ul>
+          </RevealOnScroll>
         ) : (
           <p className="guidedProgramDetail__includedEmpty">
             What's included details will be shared soon.

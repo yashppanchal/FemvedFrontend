@@ -3,11 +3,13 @@ import { AuthProvider } from "./auth/useAuth";
 import { CountryProvider } from "./country/useCountry";
 import { Footer } from "./components/Footer";
 import { NavBar } from "./components/NavBar";
+import { PrimaryButton } from "./components/PrimaryButton";
+import RevealOnScroll from "./components/RevealOnScroll";
 import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
-const PAGE_TRANSITION_MS = 180;
+const PAGE_TRANSITION_MS = 320;
 
 function PageTransition({ children }: { children: ReactNode }) {
   const [phase, setPhase] = useState<"enter" | "exit">("exit");
@@ -37,6 +39,8 @@ export default function App() {
   const location = useLocation();
   const [isAtTop, setIsAtTop] = useState(true);
   const isHome = location.pathname === "/";
+  const isLearnPage =
+    location.pathname.startsWith("/learn/") || location.pathname === "/about";
 
   useEffect(() => {
     let raf = 0;
@@ -59,6 +63,26 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!location.hash) return;
+
+    const targetId = location.hash.slice(1);
+    const scrollToHashTarget = () => {
+      const target = document.getElementById(targetId);
+      if (!target) return false;
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      return true;
+    };
+
+    const raf = window.requestAnimationFrame(() => {
+      if (!scrollToHashTarget()) {
+        window.setTimeout(scrollToHashTarget, 150);
+      }
+    });
+
+    return () => window.cancelAnimationFrame(raf);
+  }, [location.hash, location.pathname]);
+
   return (
     <CountryProvider>
     <AuthProvider>
@@ -73,14 +97,37 @@ export default function App() {
 
       <main className={`layout__main ${isHome ? "layout__main--home" : ""}`}>
         {isHome ? (
-          <PageTransition key={location.key}>
-            <Outlet />
-          </PageTransition>
-        ) : (
-          <div className="container">
+          <RevealOnScroll className="layout__pageReveal">
             <PageTransition key={location.key}>
               <Outlet />
             </PageTransition>
+          </RevealOnScroll>
+        ) : (
+          <div className="container">
+            <RevealOnScroll className="layout__pageReveal">
+              <PageTransition key={location.key}>
+                <Outlet />
+              </PageTransition>
+            </RevealOnScroll>
+            {isLearnPage ? (
+              <section className="learnCta" aria-label="Learn page call to action">
+                <h2 className="learnCta__title">Choose where to start</h2>
+                <div className="learnCta__buttons">
+                  <PrimaryButton
+                    label="Support your hormones, your way"
+                    to="/guided/hormonal-health-support"
+                  />
+                  <PrimaryButton
+                    label="Begin where you are"
+                    to="/all-guided-programs"
+                  />
+                  <PrimaryButton
+                    label="Why join us"
+                    to="/#benefits-bento-grid"
+                  />
+                </div>
+              </section>
+            ) : null}
           </div>
         )}
       </main>

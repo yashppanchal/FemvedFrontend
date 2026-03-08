@@ -42,19 +42,49 @@
   background: var(--white);
 }
 
+.learnCta {
+  margin-top: 28px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--white);
+}
+
+.learnCta__title {
+  margin: 0 0 16px;
+  font-family: var(--fontTitle);
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 400;
+  color: var(--black);
+}
+
+.learnCta__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 .pageTransition {
-  will-change: opacity, transform;
+  will-change: opacity;
   transition:
-    opacity var(--pageTransitionMs, 180ms) ease,
-    transform var(--pageTransitionMs, 180ms) ease;
+    opacity var(--pageTransitionMs, 320ms) cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .pageTransition--enter {
   opacity: 1;
-  transform: translateY(0);
 }
 
 .pageTransition--exit {
-  opacity: 0;
-  transform: translateY(4px);
+  opacity: 0.01;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pageTransition {
+    transition: none;
+  }
+
+  .pageTransition--enter,
+  .pageTransition--exit {
+    opacity: 1;
+  }
 }

@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
+import RevealOnScroll from "../RevealOnScroll";
 import {
   buildCloudinarySrcSet,
   optimizeCloudinaryImageUrl,
@@ -12,6 +13,8 @@ export type ProgramCard = {
   body: string;
   imageUrl?: string;
 };
+
+export const CHOOSE_SECTION_ID = "guided-program-choose-section";
 
 type ChooseSectionProps = {
   keyAreas: string[];
@@ -27,21 +30,27 @@ export function ChooseSection({
   const carouselRef = useRef<HTMLDivElement | null>(null);
 
   return (
-    <div className="guidedProgramDetail__choose">
+    <div className="guidedProgramDetail__choose" id={CHOOSE_SECTION_ID}>
       <div className="guidedProgramDetail__chooseLeft">
-        <h2 className="guidedProgramDetail__chooseTitle">
-          Choose and book the guided journey that best fits your needs, goals,
-          and life right now.
-        </h2>
+        <RevealOnScroll className="guidedProgramDetail__chooseTitleReveal">
+          <h2 className="guidedProgramDetail__chooseTitle">
+            Choose and book the guided journey that best fits your needs, goals,
+            and life right now.
+          </h2>
+        </RevealOnScroll>
 
         <h3 className="guidedProgramDetail__chooseListTitle">
           Key Areas where you can receive personalised support:
         </h3>
 
         {keyAreas.length ? (
-          <ul className="guidedProgramDetail__keyAreas">
+          <RevealOnScroll className="guidedProgramDetail__keyAreas">
             {keyAreas.map((area, idx) => (
-              <li className="guidedProgramDetail__keyArea" key={idx}>
+              <li
+                className="guidedProgramDetail__keyArea"
+                key={idx}
+                style={{ transitionDelay: `${idx * 180}ms` }}
+              >
                 <span
                   className="guidedProgramDetail__keyAreaCheck"
                   aria-hidden="true"
@@ -53,7 +62,7 @@ export function ChooseSection({
                 </span>
               </li>
             ))}
-          </ul>
+          </RevealOnScroll>
         ) : (
           <p className="guidedProgramDetail__keyAreasEmpty">
             Key areas will be shared soon.

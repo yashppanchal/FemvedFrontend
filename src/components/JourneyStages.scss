@@ -50,6 +50,19 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  /* Stagger card reveals for a one-by-one entrance. */
+  > .stageCard:nth-child(1) {
+    transition-delay: 0ms;
+  }
+
+  > .stageCard:nth-child(2) {
+    transition-delay: 260ms;
+  }
+
+  > .stageCard:nth-child(3) {
+    transition-delay: 520ms;
+  }
 }
 
 /* ─── Individual stage card ─── */
@@ -60,15 +73,6 @@
   border-radius: 16px;
   overflow: hidden;
   height: clamp(130px, 14vw, 170px);
-  text-decoration: none;
-  color: var(--white);
-  cursor: pointer;
-  transition: transform 260ms ease, box-shadow 260ms ease;
-}
-
-.stageCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(15, 15, 16, 0.16);
   color: var(--white);
 }
 

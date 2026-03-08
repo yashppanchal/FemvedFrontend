@@ -1,9 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { FaPause, FaPlay } from "react-icons/fa";
 import { PrimaryButton } from "./PrimaryButton";
+import RevealOnScroll from "./RevealOnScroll";
+import {
+  buildCloudinarySrcSet,
+  optimizeCloudinaryImageUrl,
+} from "../cloudinary/image";
 import "./HeroCarousel.scss";
-import firstscroll from "../assets/homepage/firstscroll.jpg";
-import secondscroll from "../assets/homepage/secondscroll.jpg";
+// import firstscroll from "../assets/homepage/firstscroll.jpg";
+// import secondscroll from "../assets/homepage/secondscroll.jpg";
 
 type Slide = {
   type: "split" | "image" | "healthcare";
@@ -14,6 +19,11 @@ type Slide = {
   ctaLabel?: string;
   ctaTo?: string;
 };
+
+const firstscroll =
+  "https://res.cloudinary.com/dh8aj0hzw/image/upload/v1772965681/firstscroll_ewcqc3.jpg";
+const secondscroll =
+  "https://res.cloudinary.com/dh8aj0hzw/image/upload/v1772965682/secondscroll_sqzgwe.jpg";
 
 const AUTOPLAY_MS = 5000;
 
@@ -28,7 +38,7 @@ export function HeroCarousel() {
           "Your health doesn\u2019t need another influencer. You deserve the right guidance.",
         body: "Create your own wellness plan with globally accredited women practitioners, because wellness isn’t a trend or a hack, it’s personal. Stop borrowing wellness from someone’s reel.",
         ctaLabel: "Support your hormones, your way",
-        ctaTo: "/about",
+        ctaTo: "/guided/hormonal-health-support",
       },
       {
         type: "healthcare",
@@ -41,6 +51,13 @@ export function HeroCarousel() {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+
+  const handleWhyJoinUsClick = () => {
+    const benefitsSection = document.getElementById("benefits-bento-grid");
+    if (benefitsSection) {
+      benefitsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   useEffect(() => {
     if (isPaused) return;
@@ -65,18 +82,25 @@ export function HeroCarousel() {
                   className="heroCarousel__slide heroCarousel__slide--split"
                   aria-hidden={activeIndex !== idx}
                 >
-                  <div className="heroCarousel__content">
+                  <RevealOnScroll className="heroCarousel__content">
                     <h2 className="heroCarousel__title">{s.title}</h2>
                     <p className="heroCarousel__body">{s.body}</p>
                     {s.ctaTo && s.ctaLabel ? (
                       <PrimaryButton label={s.ctaLabel} to={s.ctaTo} />
                     ) : null}
-                  </div>
+                  </RevealOnScroll>
 
                   <div className="heroCarousel__media" aria-hidden="true">
                     <img
                       className="heroCarousel__image"
-                      src={s.imageUrl}
+                      src={optimizeCloudinaryImageUrl(s.imageUrl, {
+                        width: 1200,
+                      })}
+                      srcSet={buildCloudinarySrcSet(
+                        s.imageUrl,
+                        [640, 960, 1200, 1600],
+                      )}
+                      sizes="(max-width: 980px) 100vw, 50vw"
                       alt={s.imageAlt}
                       loading="eager"
                       decoding="async"
@@ -93,7 +117,7 @@ export function HeroCarousel() {
                   className="heroCarousel__slide heroCarousel__slide--healthcare"
                   aria-hidden={activeIndex !== idx}
                 >
-                  <div className="hc__left">
+                  <RevealOnScroll className="hc__left">
                     <h2 className="hc__headline">
                       Here,
                       <br />
@@ -108,18 +132,28 @@ export function HeroCarousel() {
                     <p className="hc__subtitle">Choose where to start</p>
 
                     <div className="hc__buttons">
-                      <PrimaryButton label="Why join us" to="/test" />
+                      <PrimaryButton
+                        label="Why join us"
+                        onClick={handleWhyJoinUsClick}
+                      />
                       <PrimaryButton
                         label="Begin where you are"
-                        to="/experts"
+                        to="/all-guided-programs"
                       />
                     </div>
-                  </div>
+                  </RevealOnScroll>
 
                   <div className="hc__right" aria-hidden="true">
                     <img
                       className="hc__illustration"
-                      src={s.imageUrl}
+                      src={optimizeCloudinaryImageUrl(s.imageUrl, {
+                        width: 900,
+                      })}
+                      srcSet={buildCloudinarySrcSet(
+                        s.imageUrl,
+                        [480, 720, 900, 1200],
+                      )}
+                      sizes="(max-width: 980px) 100vw, 50vw"
                       alt={s.imageAlt}
                       loading="lazy"
                       decoding="async"
@@ -137,7 +171,14 @@ export function HeroCarousel() {
               >
                 <img
                   className="heroCarousel__image heroCarousel__image--cover"
-                  src={s.imageUrl}
+                  src={optimizeCloudinaryImageUrl(s.imageUrl, {
+                    width: 1400,
+                  })}
+                  srcSet={buildCloudinarySrcSet(
+                    s.imageUrl,
+                    [640, 960, 1280, 1600],
+                  )}
+                  sizes="100vw"
                   alt={s.imageAlt}
                   loading="lazy"
                   decoding="async"

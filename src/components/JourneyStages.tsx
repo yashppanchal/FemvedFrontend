@@ -1,13 +1,25 @@
 import "./JourneyStages.scss";
-import healthConcernsImg from "../assets/homepage/health-concerns.jpg";
-import lifestageImg from "../assets/homepage/lifestage.jpg";
-import lifestyle2Img from "../assets/homepage/lifestyle2.jpg";
+import {
+  buildCloudinarySrcSet,
+  optimizeCloudinaryImageUrl,
+} from "../cloudinary/image";
+import RevealOnScroll from "./RevealOnScroll";
+// import healthConcernsImg from "../assets/homepage/health-concerns.jpg";
+// import lifestageImg from "../assets/homepage/lifestage.jpg";
+// import lifestyle2Img from "../assets/homepage/lifestyle2.jpg";
 
 type StageCard = {
   title: string;
   description: string;
   imageUrl: string;
 };
+
+const healthConcernsImg =
+  "https://res.cloudinary.com/dh8aj0hzw/image/upload/v1772965682/health-concerns_z6hqtw.jpg";
+const lifestageImg =
+  "https://res.cloudinary.com/dh8aj0hzw/image/upload/v1772965682/lifestage_igxpit.jpg";
+const lifestyle2Img =
+  "https://res.cloudinary.com/dh8aj0hzw/image/upload/v1772965681/lifestyle2_wpyggx.jpg";
 
 const stages: StageCard[] = [
   {
@@ -47,18 +59,19 @@ export function JourneyStages() {
         </div>
 
         {/* Right — cards */}
-        <div className="journeyStages__cards">
+        <RevealOnScroll className="journeyStages__cards">
           {stages.map((stage) => (
-            <a
-              key={stage.title}
-              className="stageCard"
-              href="#"
-              role="button"
-              aria-label={stage.title}
-            >
+            <div key={stage.title} className="stageCard">
               <img
                 className="stageCard__bg"
-                src={stage.imageUrl}
+                src={optimizeCloudinaryImageUrl(stage.imageUrl, {
+                  width: 720,
+                })}
+                srcSet={buildCloudinarySrcSet(
+                  stage.imageUrl,
+                  [320, 480, 640, 800],
+                )}
+                sizes="(max-width: 820px) 100vw, 45vw"
                 alt=""
                 loading="lazy"
                 decoding="async"
@@ -69,9 +82,9 @@ export function JourneyStages() {
                 <h3 className="stageCard__title">{stage.title}</h3>
                 <p className="stageCard__desc">{stage.description}</p>
               </div>
-            </a>
+            </div>
           ))}
-        </div>
+        </RevealOnScroll>
       </div>
     </section>
   );
