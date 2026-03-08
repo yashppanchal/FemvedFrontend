@@ -68,6 +68,10 @@ type GuidedTreeResponse = {
         programName?: string;
         programGridDescription?: string;
         programGridImage?: string;
+        gridImageUrl?: string;
+        grid_image_url?: string;
+        imageUrl?: string;
+        image_url?: string;
         expertId?: string;
         expertName?: string;
         expertTitle?: string;
@@ -132,6 +136,13 @@ function mapApiCategoryToProgram(
     keyAreas: page.categoryPageKeyAreas ?? [],
     programsInCategory: (category.programsInCategory ?? []).map((program) => {
       const expertDetails = program.expertDetails ?? {};
+      const programGridImage =
+        program.programGridImage ??
+        program.gridImageUrl ??
+        program.grid_image_url ??
+        program.imageUrl ??
+        program.image_url ??
+        "";
 
       return {
         programDurations: (program.programDurations ?? []).map((duration) => ({
@@ -157,7 +168,7 @@ function mapApiCategoryToProgram(
           expertDetails.expertImage ??
           "",
         body: program.programGridDescription ?? "",
-        imageUrl: program.programGridImage ?? "",
+        imageUrl: programGridImage,
         programPageDisplayDetails: {
           overview: program.programPageDisplayDetails?.overview ?? "",
           whatYouGet: program.programPageDisplayDetails?.whatYouGet ?? [],
