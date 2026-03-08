@@ -48,6 +48,8 @@ type GuidedTreeResponse = {
       categoryName?: string;
       categoryPageData?: {
         categoryPageDataImage?: string;
+        imageUrl?: string;
+        image_url?: string;
         categoryType?: string;
         categoryHeroTitle?: string;
         categoryHeroSubtext?: string;
@@ -113,6 +115,8 @@ function mapApiCategoryToProgram(
   >,
 ): GuidedProgramInfo {
   const page = category.categoryPageData ?? {};
+  const categoryImage =
+    page.categoryPageDataImage ?? page.imageUrl ?? page.image_url ?? "";
   const categoryName = category.categoryName ?? "";
 
   return {
@@ -123,7 +127,7 @@ function mapApiCategoryToProgram(
     heroSubtext: page.categoryHeroSubtext ?? "",
     ctaLabel: page.categoryCtaLabel ?? "",
     ctaTo: page.categoryCtaTo ?? "",
-    imageSlug: page.categoryPageDataImage ?? "",
+    imageSlug: categoryImage,
     whatsIncluded: page.whatsIncludedInCategory ?? [],
     keyAreas: page.categoryPageKeyAreas ?? [],
     programsInCategory: (category.programsInCategory ?? []).map((program) => {

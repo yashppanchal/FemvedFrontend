@@ -34,6 +34,8 @@ export interface CreateGuidedCategoryRequest {
   ctaLink: string;
   pageHeader: string;
   imageUrl: string;
+  image_url?: string;
+  categoryPageDataImage?: string;
   sortOrder: number;
   parentId?: string | null;
   whatsIncluded: string[];
@@ -49,6 +51,8 @@ export interface UpdateGuidedCategoryRequest {
   ctaLink: string;
   pageHeader: string;
   imageUrl: string;
+  image_url?: string;
+  categoryPageDataImage?: string;
   sortOrder: number;
   whatsIncluded: string[];
   keyAreas: string[];
@@ -116,6 +120,8 @@ export interface GuidedTreeCategory {
   is_active?: boolean;
   categoryPageData?: {
     categoryPageDataImage?: string;
+    imageUrl?: string;
+    image_url?: string;
     categoryType?: string;
     categoryHeroTitle?: string;
     categoryHeroSubtext?: string;
@@ -188,12 +194,18 @@ export function createGuidedCategory(
   data: CreateGuidedCategoryRequest,
   accessToken: string,
 ): Promise<string> {
+  const normalizedImage = data.imageUrl.trim();
   return apiFetch<string>("/guided/categories", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify({
+      ...data,
+      imageUrl: normalizedImage,
+      image_url: normalizedImage,
+      categoryPageDataImage: normalizedImage,
+    }),
   });
 }
 
@@ -202,6 +214,7 @@ export function updateGuidedCategory(
   data: UpdateGuidedCategoryRequest,
   accessToken: string,
 ): Promise<UpdateGuidedCategoryResponse> {
+  const normalizedImage = data.imageUrl.trim();
   return apiFetch<UpdateGuidedCategoryResponse>(
     `/guided/categories/${encodeURIComponent(categoryId)}`,
     {
@@ -209,7 +222,12 @@ export function updateGuidedCategory(
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        ...data,
+        imageUrl: normalizedImage,
+        image_url: normalizedImage,
+        categoryPageDataImage: normalizedImage,
+      }),
     },
   );
 }

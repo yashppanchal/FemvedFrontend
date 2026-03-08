@@ -27,16 +27,18 @@ export function HeroSection({
   ctaLabel,
   ctaTo,
 }: HeroSectionProps) {
+  const normalizedImage = imageSlug?.trim() ?? "";
+  const resolvedHeroImage =
+    (normalizedImage && GUIDED_CARE_HERO_IMAGES[normalizedImage]) ||
+    normalizedImage ||
+    heroImage;
+
   return (
     <div className="guidedProgramDetail__hero">
       <div className="guidedProgramDetail__heroMedia">
         <img
           className="guidedProgramDetail__heroImage"
-          src={
-            imageSlug && GUIDED_CARE_HERO_IMAGES[imageSlug]
-              ? GUIDED_CARE_HERO_IMAGES[imageSlug]
-              : heroImage
-          }
+          src={resolvedHeroImage}
           alt={heroTitle}
         />
       </div>
