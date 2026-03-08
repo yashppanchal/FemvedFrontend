@@ -11,6 +11,8 @@ export type GuidedProgramCard = {
   expertName: string;
   expertTitle?: string;
   expertDescription?: string;
+  expertDetailedDescription?: string;
+  expertGridImageUrl?: string;
   expertImageUrl?: string;
   body: string;
   imageUrl?: string;
@@ -18,6 +20,10 @@ export type GuidedProgramCard = {
     overview?: string;
     whatYouGet?: string[];
     whoIsThisFor?: string[];
+    detailSections?: Array<{
+      heading?: string;
+      description?: string;
+    }>;
   };
 };
 
@@ -44,6 +50,8 @@ type GuidedTreeResponse = {
       categoryName?: string;
       categoryPageData?: {
         categoryPageDataImage?: string;
+        imageUrl?: string;
+        image_url?: string;
         categoryType?: string;
         categoryHeroTitle?: string;
         categoryHeroSubtext?: string;
@@ -63,22 +71,36 @@ type GuidedTreeResponse = {
         programName?: string;
         programGridDescription?: string;
         programGridImage?: string;
+        gridImageUrl?: string;
+        grid_image_url?: string;
+        imageUrl?: string;
+        image_url?: string;
         expertId?: string;
         expertName?: string;
         expertTitle?: string;
         expertDescription?: string;
+        expertGridImageUrl?: string;
+        expert_grid_image_url?: string;
         expertImage?: string;
         expertImageUrl?: string;
         expertDetails?: {
           expertTitle?: string;
           expertDescription?: string;
+          expertDetailedDescription?: string;
+          expertGridImageUrl?: string;
+          expert_grid_image_url?: string;
           expertImage?: string;
           expertImageUrl?: string;
         };
+        expertDetailedDescription?: string;
         programPageDisplayDetails?: {
           overview?: string;
           whatYouGet?: string[];
           whoIsThisFor?: string[];
+          detailSections?: Array<{
+            heading?: string;
+            description?: string;
+          }>;
         };
       }>;
     }>;
@@ -104,6 +126,8 @@ function mapApiCategoryToProgram(
   >,
 ): GuidedProgramInfo {
   const page = category.categoryPageData ?? {};
+  const categoryImage =
+    page.categoryPageDataImage ?? page.imageUrl ?? page.image_url ?? "";
   const categoryName = category.categoryName ?? "";
 
   return {
@@ -114,11 +138,18 @@ function mapApiCategoryToProgram(
     heroSubtext: page.categoryHeroSubtext ?? "",
     ctaLabel: page.categoryCtaLabel ?? "",
     ctaTo: page.categoryCtaTo ?? "",
-    imageSlug: page.categoryPageDataImage ?? "",
+    imageSlug: categoryImage,
     whatsIncluded: page.whatsIncludedInCategory ?? [],
     keyAreas: page.categoryPageKeyAreas ?? [],
     programsInCategory: (category.programsInCategory ?? []).map((program) => {
       const expertDetails = program.expertDetails ?? {};
+      const programGridImage =
+        program.programGridImage ??
+        program.gridImageUrl ??
+        program.grid_image_url ??
+        program.imageUrl ??
+        program.image_url ??
+        "";
 
       return {
         programDurations: (program.programDurations ?? []).map((duration) => ({
@@ -132,6 +163,22 @@ function mapApiCategoryToProgram(
         expertTitle: program.expertTitle ?? expertDetails.expertTitle ?? "",
         expertDescription:
           program.expertDescription ?? expertDetails.expertDescription ?? "",
+        expertDetailedDescription:
+          program.expertDetailedDescription ??
+          expertDetails.expertDetailedDescription ??
+          program.expertDescription ??
+          expertDetails.expertDescription ??
+          "",
+        expertGridImageUrl:
+          program.expertGridImageUrl ??
+          program.expert_grid_image_url ??
+          expertDetails.expertGridImageUrl ??
+          expertDetails.expert_grid_image_url ??
+          program.expertImageUrl ??
+          program.expertImage ??
+          expertDetails.expertImageUrl ??
+          expertDetails.expertImage ??
+          "",
         expertImageUrl:
           program.expertImageUrl ??
           program.expertImage ??
@@ -139,11 +186,16 @@ function mapApiCategoryToProgram(
           expertDetails.expertImage ??
           "",
         body: program.programGridDescription ?? "",
-        imageUrl: program.programGridImage ?? "",
+        imageUrl: programGridImage,
         programPageDisplayDetails: {
           overview: program.programPageDisplayDetails?.overview ?? "",
           whatYouGet: program.programPageDisplayDetails?.whatYouGet ?? [],
           whoIsThisFor: program.programPageDisplayDetails?.whoIsThisFor ?? [],
+          detailSections:
+            program.programPageDisplayDetails?.detailSections?.map((section) => ({
+              heading: section.heading ?? "",
+              description: section.description ?? "",
+            })) ?? [],
         },
       };
     }),

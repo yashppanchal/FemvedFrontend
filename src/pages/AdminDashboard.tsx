@@ -340,6 +340,11 @@ const mapGuidedTreeToRows = (
           if (!id || !name.trim()) return null;
 
           const pageData = category.categoryPageData ?? {};
+          const categoryImage =
+            pageData.categoryPageDataImage ??
+            pageData.imageUrl ??
+            pageData.image_url ??
+            "";
           categoryFormById[id] = {
             domainId,
             name: name.trim(),
@@ -348,7 +353,7 @@ const mapGuidedTreeToRows = (
             ctaLabel: pageData.categoryCtaLabel?.trim() ?? "",
             ctaLink: pageData.categoryCtaTo?.trim() ?? "",
             pageHeader: pageData.categoryPageHeader?.trim() ?? "",
-            imageUrl: pageData.categoryPageDataImage?.trim() ?? "",
+            imageUrl: categoryImage.trim(),
             whatsIncluded: joinTextareaItems(pageData.whatsIncludedInCategory),
             keyAreas: joinTextareaItems(pageData.categoryPageKeyAreas),
           };
