@@ -86,3 +86,10 @@ src/
 - Platform: **Netlify**
 - Redirects: `public/_redirects` (SPA fallback)
 - Netlify config: `netlify.toml` — functions directory is `src/netlify/functions`
+
+## Backend API
+- Full API reference: see `API_REFERENCE.md` in repo root
+- Base URL (prod): https://api.femved.com/api/v1
+- Base URL (dev): https://api.femved.com/api/v1
+- Auth: JWT Bearer tokens (access + refresh rotation)
+- Swagger UI: https://api.femved.com/

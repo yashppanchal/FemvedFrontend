@@ -28,6 +28,12 @@ export const ROLE_ADMIN: UserRole = { id: 1, name: "admin" };
 export const ROLE_EXPERT: UserRole = { id: 2, name: "expert" };
 export const ROLE_USER: UserRole = { id: 3, name: "user" };
 
+export function getDashboardPath(role: UserRole): string {
+  if (role.id === ROLE_ADMIN.id) return "/admin-dashboard";
+  if (role.id === ROLE_EXPERT.id) return "/expert-dashboard";
+  return "/";
+}
+
 export interface User {
   userId: string;
   email: string;
@@ -43,12 +49,18 @@ export interface UpdateProfileData {
   phone: string;
 }
 
+export interface LoginResult {
+  error: string | null;
+  redirectTo: string;
+}
+
 interface AuthContextValue {
   user: User | null;
   tokens: AuthTokens | null;
-  login: (email: string, password: string) => Promise<string | null>;
+  login: (email: string, password: string) => Promise<LoginResult>;
   register: (data: RegisterData) => Promise<string | null>;
   updateUser: (data: UpdateProfileData) => string | null;
+  updateAuthUser: (update: { firstName?: string; lastName?: string }) => void;
   logout: () => void;
 }
 
@@ -236,15 +248,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     saveUserWithToken(user, tokens);
   }, [user, tokens]);
 
-  /** Returns an error message string, or null on success. */
+  /** Returns LoginResult with error (null on success) and redirectTo path. */
   const login = useCallback(
-    async (email: string, password: string): Promise<string | null> => {
+    async (email: string, password: string): Promise<LoginResult> => {
       try {
         const res = await loginUser({ email, password });
         const accessToken = res.accessToken ?? res.token ?? "";
         const accessTokenExpiresAt = res.accessTokenExpiresAt ?? res.expiresAt ?? "";
         if (!accessToken || !accessTokenExpiresAt) {
-          return "Login response is missing token information.";
+          return { error: "Login response is missing token information.", redirectTo: "/" };
         }
         const jwtPayload = decodeJwtPayload(accessToken);
         const resolvedRole = resolveRole([
@@ -275,12 +287,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         setUser(newUser);
         setTokens(newTokens);
-        return null;
+        return { error: null, redirectTo: getDashboardPath(resolvedRole) };
       } catch (err) {
         if (err instanceof ApiError) {
-          return err.message;
+          return { error: err.message, redirectTo: "/" };
         }
-        return "Something went wrong. Please try again.";
+        return { error: "Something went wrong. Please try again.", redirectTo: "/" };
       }
     },
     [],
@@ -352,14 +364,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [user],
   );
 
+  /** Sync-update display name in React state + localStorage after a real API PUT /users/me. */
+  const updateAuthUser = useCallback(
+    (update: { firstName?: string; lastName?: string }) => {
+      setUser((prev) => (prev ? { ...prev, ...update } : prev));
+    },
+    [],
+  );
+
   const logout = useCallback(() => {
     setUser(null);
     setTokens(null);
   }, []);
 
   const value = useMemo(
-    () => ({ user, tokens, login, register, updateUser, logout }),
-    [user, tokens, login, register, updateUser, logout],
+    () => ({ user, tokens, login, register, updateUser, updateAuthUser, logout }),
+    [user, tokens, login, register, updateUser, updateAuthUser, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,58 +1,68 @@
 import "./ExpertDashboard.scss";
-
-const MOCK_CLIENTS = [
-  { id: "U-101", name: "Ananya Rao", email: "ananya@example.com", status: "Active" },
-  { id: "U-102", name: "Maya Sharma", email: "maya@example.com", status: "Pending" },
-  { id: "U-103", name: "Sana Ali", email: "sana@example.com", status: "Active" },
-];
-
-const MOCK_PROGRAMS = [
-  "Hormonal Health Support",
-  "Mental and Spiritual Wellbeing",
-  "Longevity and Healthy Ageing Guidance",
-];
+import { useEffect, useState } from "react";
+import { getExpertEnrollments, type ExpertEnrollment } from "../api/experts";
+import { ApiError } from "../api/client";
 
 export default function ExpertClients() {
+  const [enrollments, setEnrollments] = useState<ExpertEnrollment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    getExpertEnrollments()
+      .then(setEnrollments)
+      .catch((err) => {
+        setError(err instanceof ApiError ? err.message : "Failed to load clients.");
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <section className="page page--expertDashboard">
-      <h1 className="page__title">Clients</h1>
-      <p className="page__lead">View and manage your clients and programs.</p>
+      <h1 className="page__title">My Clients</h1>
+      <p className="page__lead">Users currently enrolled in your programs.</p>
 
       <div className="expertContent">
         <section className="expertSection">
-          <h2 className="expertSection__title">Client List</h2>
+          {loading && <p className="expertSection__loading">Loading clients…</p>}
+          {error && <p className="form__error">{error}</p>}
 
-          <div className="expertTableWrap">
-            <table className="expertTable">
-              <thead>
-                <tr>
-                  <th>Client ID</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {MOCK_CLIENTS.map((client) => (
-                  <tr key={client.id}>
-                    <td>{client.id}</td>
-                    <td>{client.name}</td>
-                    <td>{client.email}</td>
-                    <td>{client.status}</td>
+          {!loading && !error && enrollments.length === 0 && (
+            <p className="expertSection__empty">No enrolled clients yet.</p>
+          )}
+
+          {!loading && !error && enrollments.length > 0 && (
+            <div className="expertTableWrap">
+              <table className="expertTable">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Program</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                    <th>Enrolled</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <section className="expertSection">
-          <h2 className="expertSection__title">Programs You Teach</h2>
-          <ul className="expertPrograms__list">
-            {MOCK_PROGRAMS.map((program) => (
-              <li key={program}>{program}</li>
-            ))}
-          </ul>
+                </thead>
+                <tbody>
+                  {enrollments.map((e) => (
+                    <tr key={e.accessId}>
+                      <td>{e.userFirstName} {e.userLastName}</td>
+                      <td>{e.userEmail}</td>
+                      <td>{e.programName}</td>
+                      <td>{e.durationLabel}</td>
+                      <td>
+                        <span className={`statusBadge statusBadge--${(e.accessStatus || "").toLowerCase()}`}>
+                          {e.accessStatus}
+                        </span>
+                      </td>
+                      <td>{new Date(e.enrolledAt).toLocaleDateString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
       </div>
     </section>

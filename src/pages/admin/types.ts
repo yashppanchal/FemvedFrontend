@@ -1,4 +1,17 @@
-export type AdminTab = "users" | "domains" | "categories" | "programs";
+export type AdminTab =
+  | "summary"
+  | "users"
+  | "experts"
+  | "domains"
+  | "categories"
+  | "programs"
+  | "coupons"
+  | "orders"
+  | "enrollments"
+  | "analytics"
+  | "gdpr"
+  | "auditlog"
+  | "payouts";
 
 export type UserRow = {
   id: string;
@@ -6,6 +19,8 @@ export type UserRow = {
   email: string;
   phone: string;
   role: string;
+  isActive: boolean;
+  createdAt: string;
 };
 
 export type DomainRow = {

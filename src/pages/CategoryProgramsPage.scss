@@ -1,0 +1,277 @@
+.categoryProgramsPage {
+  padding-top: 20px;
+  padding-bottom: 64px;
+}
+
+// ── Breadcrumb ─────────────────────────────────────────────────────────────
+
+.categoryProgramsPage__breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 28px;
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+
+.categoryProgramsPage__breadcrumbLink {
+  color: rgba(15, 15, 16, 0.55);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.categoryProgramsPage__breadcrumbLink:hover {
+  color: var(--primary);
+}
+
+.categoryProgramsPage__breadcrumbSep {
+  color: rgba(15, 15, 16, 0.35);
+  font-size: 15px;
+}
+
+.categoryProgramsPage__breadcrumbCurrent {
+  color: rgba(15, 15, 16, 0.75);
+  font-weight: 500;
+}
+
+// ── Header ─────────────────────────────────────────────────────────────────
+
+.categoryProgramsPage__header {
+  margin-bottom: 32px;
+}
+
+.categoryProgramsPage__eyebrow {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.categoryProgramsPage__title {
+  margin: 0 0 12px;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  font-size: clamp(28px, 5vw, 42px);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--black);
+}
+
+.categoryProgramsPage__subtext {
+  margin: 0 0 16px;
+  max-width: 640px;
+  color: rgba(15, 15, 16, 0.7);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.categoryProgramsPage__count {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(15, 15, 16, 0.55);
+}
+
+// ── Grid ───────────────────────────────────────────────────────────────────
+
+.categoryProgramsPage__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin-bottom: 48px;
+}
+
+// ── Card ───────────────────────────────────────────────────────────────────
+
+.categoryProgramsPage__card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(15, 15, 16, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--white);
+  box-shadow: 0 12px 28px rgba(15, 15, 16, 0.05);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.categoryProgramsPage__card:hover {
+  box-shadow: 0 20px 48px rgba(15, 15, 16, 0.1);
+  transform: translateY(-2px);
+}
+
+// ── Card media ─────────────────────────────────────────────────────────────
+
+.categoryProgramsPage__media {
+  height: 220px;
+  flex-shrink: 0;
+  background:
+    radial-gradient(
+      circle at 30% 25%,
+      rgba(227, 200, 174, 0.75) 0%,
+      rgba(227, 200, 174, 0) 56%
+    ),
+    linear-gradient(135deg, rgba(243, 230, 231, 0.88), rgba(255, 255, 255, 1));
+}
+
+.categoryProgramsPage__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.categoryProgramsPage__fallback {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  font-family: var(--fontTitle);
+  font-size: 56px;
+  color: rgba(86, 19, 27, 0.4);
+}
+
+// ── Card body ──────────────────────────────────────────────────────────────
+
+.categoryProgramsPage__body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1 1 auto;
+}
+
+.categoryProgramsPage__programName {
+  margin: 0;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--black);
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.categoryProgramsPage__expert {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(15, 15, 16, 0.7);
+  line-height: 1.45;
+}
+
+.categoryProgramsPage__expertTitle {
+  color: rgba(15, 15, 16, 0.5);
+}
+
+.categoryProgramsPage__description {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(15, 15, 16, 0.68);
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// ── Duration chips ─────────────────────────────────────────────────────────
+
+.categoryProgramsPage__durations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.categoryProgramsPage__durationChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 15, 16, 0.14);
+  background: rgba(255, 255, 255, 0.85);
+  color: rgba(15, 15, 16, 0.75);
+  font-size: 12px;
+  padding: 4px 10px;
+  line-height: 1.3;
+}
+
+.categoryProgramsPage__price {
+  color: var(--primary);
+}
+
+// ── View Details link ──────────────────────────────────────────────────────
+
+.categoryProgramsPage__detailsLink {
+  margin-top: auto;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.categoryProgramsPage__detailsLink:hover {
+  color: var(--primaryHover);
+}
+
+// ── Footer links ───────────────────────────────────────────────────────────
+
+.categoryProgramsPage__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.categoryProgramsPage__backLink,
+.categoryProgramsPage__allLink {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(15, 15, 16, 0.65);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.categoryProgramsPage__backLink:hover,
+.categoryProgramsPage__allLink:hover {
+  color: var(--primary);
+}
+
+.categoryProgramsPage__loading {
+  margin: 0;
+  color: rgba(15, 15, 16, 0.6);
+}
+
+.categoryProgramsPage__empty {
+  margin-top: 8px;
+}
+
+// ── Responsive ─────────────────────────────────────────────────────────────
+
+@media (max-width: 1024px) {
+  .categoryProgramsPage__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .categoryProgramsPage__grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .categoryProgramsPage__media {
+    height: 200px;
+  }
+
+  .categoryProgramsPage__footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

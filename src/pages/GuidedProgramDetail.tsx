@@ -148,7 +148,7 @@ export default function GuidedProgramDetail() {
         heroSubtext={program.heroSubtext}
         imageSlug={program.imageSlug}
         ctaLabel={program.ctaLabel}
-        ctaTo={program.ctaTo}
+        ctaTo={`/guided/${programSlug}/programs`}
       />
       <MoreSection whatsIncluded={whatsIncluded} />
 

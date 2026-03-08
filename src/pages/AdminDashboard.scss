@@ -266,3 +266,325 @@
     justify-content: center;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/*  New tab utilities                                                  */
+/* ------------------------------------------------------------------ */
+
+/* ---- Toolbar ---- */
+
+.adminPanel__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.adminPanel__search {
+  width: 280px;
+  max-width: 100%;
+}
+
+.adminPanel__count {
+  font-size: 13px;
+  color: var(--muted);
+  margin-left: auto;
+}
+
+.adminPanel__pagination {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.adminPanel__segmented {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  background: rgba(15, 15, 16, 0.04);
+  border-radius: 8px;
+}
+
+.adminPanel__segBtn {
+  height: 30px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease;
+}
+
+.adminPanel__segBtn--active {
+  background: var(--white);
+  color: var(--black);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(15, 15, 16, 0.1);
+}
+
+/* ---- Loading / empty / info ---- */
+
+.adminPanel__loading,
+.adminPanel__empty,
+.adminPanel__info {
+  padding: 16px 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.adminPanel__error {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(200, 30, 30, 0.08);
+  color: #a01a1a;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+/* ---- Table extras ---- */
+
+.adminTable__sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.adminTable__details {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.adminTable__empty {
+  text-align: center;
+  padding: 20px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.adminTable__actions {
+  display: flex;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+/* ---- Danger action button variant ---- */
+
+.adminActionButton--danger {
+  color: #a01a1a;
+  border-color: rgba(200, 30, 30, 0.2);
+}
+
+.adminActionButton--danger:hover {
+  background: rgba(200, 30, 30, 0.06);
+  border-color: rgba(200, 30, 30, 0.35);
+  color: #a01a1a;
+}
+
+/* ---- Summary grid ---- */
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.summaryCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--white);
+  text-align: center;
+  gap: 6px;
+}
+
+.summaryCard__value {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.summaryCard__label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+/* ---- Status badge (shared) ---- */
+
+.statusBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+  background: rgba(15, 15, 16, 0.06);
+  color: var(--muted);
+}
+
+.statusBadge--active {
+  background: rgba(22, 135, 50, 0.1);
+  color: #157a2e;
+}
+
+.statusBadge--completed,
+.statusBadge--paid {
+  background: rgba(22, 100, 200, 0.1);
+  color: #1558a0;
+}
+
+.statusBadge--paused,
+.statusBadge--pending {
+  background: rgba(180, 120, 0, 0.1);
+  color: #9a6800;
+}
+
+.statusBadge--ended,
+.statusBadge--inactive,
+.statusBadge--cancelled,
+.statusBadge--refunded {
+  background: rgba(200, 30, 30, 0.08);
+  color: #a01a1a;
+}
+
+.statusBadge--resolved {
+  background: rgba(22, 135, 50, 0.1);
+  color: #157a2e;
+}
+
+/* ---- Modal (new pattern for self-contained tabs) ---- */
+
+.adminModal__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 15, 16, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.adminModal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.adminModal__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.adminModal__close {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 140ms ease;
+}
+
+.adminModal__close:hover {
+  background: rgba(15, 15, 16, 0.06);
+}
+
+.adminModal__body {
+  padding: 16px 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.adminModal__compose {
+  padding: 12px 20px 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.adminModal__textarea {
+  flex: 1;
+  min-height: 56px;
+}
+
+/* ---- Comments list ---- */
+
+.adminComments {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.adminComments__item {
+  padding: 10px 12px;
+  background: rgba(15, 15, 16, 0.03);
+  border-radius: 8px;
+}
+
+.adminComments__author {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.adminComments__role {
+  margin-left: 6px;
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: capitalize;
+}
+
+.adminComments__text {
+  margin: 4px 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.adminComments__date {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* ---- Inline form (for CouponsTab) ---- */
+
+.adminForm__row--3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+@media (max-width: 720px) {
+  .adminForm__row--3 {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
