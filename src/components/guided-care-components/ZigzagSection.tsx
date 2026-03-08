@@ -1,7 +1,21 @@
-import easyConnect from "../../assets/benefits-guided-care/easyconnect.jpg";
-import comprehensivePersonal from "../../assets/benefits-guided-care/comprehensive.jpg";
-import freedomToCoCreate from "../../assets/benefits-guided-care/cocreate.jpg";
-import completePrivacy from "../../assets/benefits-guided-care/privacy.jpg";
+import {
+  buildCloudinarySrcSet,
+  optimizeCloudinaryImageUrl,
+} from "../../cloudinary/image";
+
+// import easyConnect from "../../assets/benefits-guided-care/easyconnect.jpg";
+// import comprehensivePersonal from "../../assets/benefits-guided-care/comprehensive.jpg";
+// import freedomToCoCreate from "../../assets/benefits-guided-care/cocreate.jpg";
+// import completePrivacy from "../../assets/benefits-guided-care/privacy.jpg";
+
+const easyConnect =
+  "https://res.cloudinary.com/dh8aj0hzw/image/upload/v1772965678/easyconnect_jobypt.jpg";
+const comprehensivePersonal =
+  "https://res.cloudinary.com/dh8aj0hzw/image/upload/v1772965677/comprehensive_mdfokt.jpg";
+const freedomToCoCreate =
+  "https://res.cloudinary.com/dh8aj0hzw/image/upload/v1772965678/cocreate_bvlczm.jpg";
+const completePrivacy =
+  "https://res.cloudinary.com/dh8aj0hzw/image/upload/v1772965676/privacy_d9qkoo.jpg";
 
 const ZIGZAG_ITEMS = [
   {
@@ -47,8 +61,8 @@ export function ZigzagSection() {
           We offer 1-1 guidance by globally accredited experts and coaches to
           support your health with diet, lifestyle, and nutrition plans fully
           tailored to your lifestyle and medical history. But it is more than a
-          personalised program. Here is what you can expect from our platform and
-          our experts.
+          personalised program. Here is what you can expect from our platform
+          and our experts.
         </p>
       </div>
 
@@ -63,9 +77,14 @@ export function ZigzagSection() {
             <div className="guidedProgramDetail__zigzagMedia">
               <img
                 className="guidedProgramDetail__zigzagImage"
-                src={item.imageSrc}
+                src={optimizeCloudinaryImageUrl(item.imageSrc, {
+                  width: 920,
+                })}
+                srcSet={buildCloudinarySrcSet(item.imageSrc, [480, 720, 920, 1200])}
+                sizes="(max-width: 980px) 100vw, 50vw"
                 alt={item.imageAlt}
                 loading="lazy"
+                decoding="async"
               />
             </div>
             <div className="guidedProgramDetail__zigzagContent">

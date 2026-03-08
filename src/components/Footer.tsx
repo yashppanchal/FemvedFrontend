@@ -6,12 +6,19 @@ import {
   COUNTRY_LIST,
   type CountryCode,
 } from "../country/useCountry";
+import { optimizeCloudinaryImageUrl } from "../cloudinary/image";
 import logo from "../assets/logo.png";
-import footerImage from "../assets/footerimage.jpg";
+// import footerImage from "../assets/footerimage.jpg";
+
+const footerImage =
+  "https://res.cloudinary.com/dh8aj0hzw/image/upload/v1772965677/footerimage_i0skwe.jpg";
 
 export function Footer() {
   const countrySelectId = useId();
   const { country, setCountry } = useCountry();
+  const optimizedFooterImage = optimizeCloudinaryImageUrl(footerImage, {
+    width: 1000,
+  });
 
   return (
     <div className="footer">
@@ -100,7 +107,7 @@ export function Footer() {
         <aside
           className="footer__promo"
           aria-label="Newsletter signup"
-          style={{ backgroundImage: `url(${footerImage})` }}
+          style={{ backgroundImage: `url(${optimizedFooterImage})` }}
         >
           <div className="footer__promoOverlay" aria-hidden="true" />
           <div className="footer__promoContent">

@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { FaPause, FaPlay } from "react-icons/fa";
 import { PrimaryButton } from "./PrimaryButton";
+import {
+  buildCloudinarySrcSet,
+  optimizeCloudinaryImageUrl,
+} from "../cloudinary/image";
 import "./HeroCarousel.scss";
 // import firstscroll from "../assets/homepage/firstscroll.jpg";
 // import secondscroll from "../assets/homepage/secondscroll.jpg";
@@ -81,7 +85,14 @@ export function HeroCarousel() {
                   <div className="heroCarousel__media" aria-hidden="true">
                     <img
                       className="heroCarousel__image"
-                      src={s.imageUrl}
+                      src={optimizeCloudinaryImageUrl(s.imageUrl, {
+                        width: 1200,
+                      })}
+                      srcSet={buildCloudinarySrcSet(
+                        s.imageUrl,
+                        [640, 960, 1200, 1600],
+                      )}
+                      sizes="(max-width: 980px) 100vw, 50vw"
                       alt={s.imageAlt}
                       loading="eager"
                       decoding="async"
@@ -124,7 +135,14 @@ export function HeroCarousel() {
                   <div className="hc__right" aria-hidden="true">
                     <img
                       className="hc__illustration"
-                      src={s.imageUrl}
+                      src={optimizeCloudinaryImageUrl(s.imageUrl, {
+                        width: 900,
+                      })}
+                      srcSet={buildCloudinarySrcSet(
+                        s.imageUrl,
+                        [480, 720, 900, 1200],
+                      )}
+                      sizes="(max-width: 980px) 100vw, 50vw"
                       alt={s.imageAlt}
                       loading="lazy"
                       decoding="async"
@@ -142,7 +160,14 @@ export function HeroCarousel() {
               >
                 <img
                   className="heroCarousel__image heroCarousel__image--cover"
-                  src={s.imageUrl}
+                  src={optimizeCloudinaryImageUrl(s.imageUrl, {
+                    width: 1400,
+                  })}
+                  srcSet={buildCloudinarySrcSet(
+                    s.imageUrl,
+                    [640, 960, 1280, 1600],
+                  )}
+                  sizes="100vw"
                   alt={s.imageAlt}
                   loading="lazy"
                   decoding="async"
