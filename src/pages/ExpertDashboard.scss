@@ -267,6 +267,89 @@
 
 /* ---- Form extras ---- */
 
+.expertForm__section {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(15, 15, 16, 0.015);
+}
+
+.expertForm__sectionTitle {
+  margin: 0 0 2px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.expertForm__sectionHint {
+  margin: -8px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.expertSection__lead {
+  margin: 4px 0 18px;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+  max-width: 640px;
+}
+
+.field__hint {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 5px;
+}
+
+.field__hint--standalone {
+  display: block;
+  font-size: 13px;
+  color: var(--black);
+  line-height: 1.5;
+  margin-bottom: 2px;
+}
+
+.field__hintSub {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.field__required {
+  color: var(--primary);
+  margin-left: 2px;
+}
+
+.field__optional {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+  margin-left: 4px;
+}
+
+.field__currency {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-left: 4px;
+}
+
+.field__techTerm {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+  margin-left: 4px;
+  font-style: italic;
+}
+
 .expertForm__textarea--sm {
   min-height: 64px;
 }

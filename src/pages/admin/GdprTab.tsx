@@ -2,27 +2,35 @@ import { useEffect, useState } from "react";
 import { getGdprRequests, processGdprRequest, type GdprRequest } from "../../api/admin";
 import { ApiError } from "../../api/client";
 
+type StatusFilter = "Pending" | "Approved" | "all";
+
 export default function GdprTab() {
   const [requests, setRequests] = useState<GdprRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("Pending");
+  const [actionError, setActionError] = useState<string | null>(null);
 
   useEffect(() => {
-    getGdprRequests()
+    setLoading(true);
+    setError(null);
+    const status = statusFilter === "all" ? undefined : statusFilter;
+    getGdprRequests(status)
       .then(setRequests)
       .catch((err) => {
         setError(err instanceof ApiError ? err.message : "Failed to load GDPR requests.");
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [statusFilter]);
 
   const handleResolve = async (requestId: string) => {
     if (!confirm("Mark this GDPR request as resolved?")) return;
+    setActionError(null);
     try {
       const updated = await processGdprRequest(requestId, "Approved", null);
       setRequests((prev) => prev.map((r) => (r.requestId === requestId ? updated : r)));
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Failed to resolve request.");
+      setActionError(err instanceof ApiError ? err.message : "Failed to resolve request.");
     }
   };
 
@@ -32,8 +40,22 @@ export default function GdprTab() {
   return (
     <>
       <div className="adminPanel__toolbar">
+        <div className="adminPanel__segmented">
+          {(["Pending", "Approved", "all"] as StatusFilter[]).map((s) => (
+            <button
+              key={s}
+              type="button"
+              className={`adminPanel__segBtn${statusFilter === s ? " adminPanel__segBtn--active" : ""}`}
+              onClick={() => setStatusFilter(s)}
+            >
+              {s === "all" ? "All" : s}
+            </button>
+          ))}
+        </div>
         <span className="adminPanel__count">{requests.length} requests</span>
       </div>
+
+      {actionError && <p className="adminPanel__error">{actionError}</p>}
 
       <div className="adminTableWrap">
         <table className="adminTable">
@@ -66,9 +88,9 @@ export default function GdprTab() {
                     </span>
                   </td>
                   <td>{new Date(r.createdAt).toLocaleDateString()}</td>
-                  <td>{r.resolvedAt ? new Date(r.resolvedAt).toLocaleDateString() : "Pending"}</td>
+                  <td>{r.resolvedAt ? new Date(r.resolvedAt).toLocaleDateString() : "—"}</td>
                   <td className="adminTable__actions">
-                    {r.status !== "Resolved" && (
+                    {r.status !== "Approved" && (
                       <button
                         type="button"
                         className="adminActionButton"

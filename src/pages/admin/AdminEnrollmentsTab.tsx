@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import {
   getAdminEnrollments,
   adminStartEnrollment,
+  adminPauseEnrollment,
+  adminResumeEnrollment,
   adminEndEnrollment,
   getAdminEnrollmentComments,
   postAdminEnrollmentComment,
@@ -15,6 +17,7 @@ export default function AdminEnrollmentsTab() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const [commentsId, setCommentsId] = useState<string | null>(null);
   const [comments, setComments] = useState<AdminEnrollmentComment[]>([]);
@@ -35,11 +38,12 @@ export default function AdminEnrollmentsTab() {
     setEnrollments((prev) => prev.map((e) => (e.accessId === id ? { ...e, accessStatus } : e)));
 
   const runAction = async (id: string, fn: () => Promise<void>, newStatus: string) => {
+    setActionError(null);
     try {
       await fn();
       updateStatus(id, newStatus);
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Action failed.");
+      setActionError(err instanceof ApiError ? err.message : "Action failed.");
     }
   };
 
@@ -66,7 +70,7 @@ export default function AdminEnrollmentsTab() {
       setComments(updated);
       setCommentText("");
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Failed to post comment.");
+      setActionError(err instanceof ApiError ? err.message : "Failed to post comment.");
     } finally {
       setPosting(false);
     }
@@ -93,6 +97,8 @@ export default function AdminEnrollmentsTab() {
         />
         <span className="adminPanel__count">{filtered.length} enrollments</span>
       </div>
+
+      {actionError && <p className="adminPanel__error">{actionError}</p>}
 
       <div className="adminTableWrap">
         <table className="adminTable">
@@ -134,6 +140,24 @@ export default function AdminEnrollmentsTab() {
                         onClick={() => runAction(e.accessId, () => adminStartEnrollment(e.accessId), "Active")}
                       >
                         Start
+                      </button>
+                    )}
+                    {e.accessStatus === "Active" && (
+                      <button
+                        type="button"
+                        className="adminActionButton"
+                        onClick={() => runAction(e.accessId, () => adminPauseEnrollment(e.accessId), "Paused")}
+                      >
+                        Pause
+                      </button>
+                    )}
+                    {e.accessStatus === "Paused" && (
+                      <button
+                        type="button"
+                        className="adminActionButton"
+                        onClick={() => runAction(e.accessId, () => adminResumeEnrollment(e.accessId), "Active")}
+                      >
+                        Resume
                       </button>
                     )}
                     {(e.accessStatus === "Active" || e.accessStatus === "Paused") && (

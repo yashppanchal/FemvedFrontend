@@ -64,6 +64,7 @@ export default function CouponsTab() {
     e.preventDefault();
     setFormError(null);
     if (!form.code.trim()) { setFormError("Coupon code is required."); return; }
+    if (!form.discountValue || form.discountValue <= 0) { setFormError("Discount value must be greater than 0."); return; }
 
     setSubmitting(true);
     try {

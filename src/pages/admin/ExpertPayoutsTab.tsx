@@ -67,15 +67,13 @@ export default function ExpertPayoutsTab() {
         notes: form.notes || undefined,
       });
       setShowForm(false);
-      // Reload balances to reflect the new payment
-      setLoading(true);
+      // Reload balances silently — do not set global loading to avoid hiding errors
       const updated = await getExpertPayoutAnalytics();
       setBalances(updated);
     } catch (err) {
       setFormError(err instanceof ApiError ? err.message : "Failed to record payout.");
     } finally {
       setSubmitting(false);
-      setLoading(false);
     }
   };
 

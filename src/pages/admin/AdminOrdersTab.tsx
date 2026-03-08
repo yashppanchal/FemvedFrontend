@@ -23,7 +23,7 @@ export default function AdminOrdersTab() {
 
   const handleRefund = async (orderId: string, amount: number) => {
     const reason = prompt("Refund reason:");
-    if (reason === null) return;
+    if (reason === null || !reason.trim()) return;
     try {
       await refundOrder(orderId, amount, reason);
       setOrders((prev) =>

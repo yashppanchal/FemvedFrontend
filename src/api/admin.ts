@@ -288,8 +288,9 @@ export function adminEndEnrollment(accessId: string): Promise<void> {
   return apiFetch<void>("/admin/enrollments/" + accessId + "/end", { method: "POST" });
 }
 
-export function getGdprRequests(): Promise<GdprRequest[]> {
-  return apiFetch<GdprRequest[]>("/admin/gdpr-requests?status=Pending");
+export function getGdprRequests(status?: string): Promise<GdprRequest[]> {
+  const q = status ? `?status=${encodeURIComponent(status)}` : "";
+  return apiFetch<GdprRequest[]>("/admin/gdpr-requests" + q);
 }
 
 export function processGdprRequest(
@@ -303,8 +304,8 @@ export function processGdprRequest(
   });
 }
 
-export function getAuditLog(limit = 50): Promise<AuditLogEntry[]> {
-  return apiFetch<AuditLogEntry[]>("/admin/audit-log?limit=" + limit);
+export function getAuditLog(limit = 50, offset = 0): Promise<AuditLogEntry[]> {
+  return apiFetch<AuditLogEntry[]>(`/admin/audit-log?limit=${limit}&offset=${offset}`);
 }
 
 export function getAnalytics(period: string = "month"): Promise<AnalyticsSummary[]> {

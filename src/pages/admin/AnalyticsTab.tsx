@@ -66,10 +66,10 @@ export default function AnalyticsTab() {
               {data.map((row) => (
                 <tr key={row.period}>
                   <td>{row.period}</td>
-                  <td>{row.newUsers}</td>
-                  <td>{row.newOrders}</td>
+                  <td>{row.newUsers.toLocaleString()}</td>
+                  <td>{row.newOrders.toLocaleString()}</td>
                   <td>{formatCurrency(row.revenue)}</td>
-                  <td>{row.activeEnrollments}</td>
+                  <td>{row.activeEnrollments.toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>

@@ -42,7 +42,8 @@ export default function ExpertEnrollmentsTab() {
     setActionError(null);
     try {
       await action();
-      updateStatus(enrollmentId, newStatus);
+      updateStatus(accessId, newStatus);
+      getExpertEnrollments().then(setEnrollments).catch(() => {});
     } catch (err) {
       setActionError(err instanceof ApiError ? err.message : "Action failed.");
     }
@@ -66,8 +67,9 @@ export default function ExpertEnrollmentsTab() {
     if (!commentsEnrollmentId || !commentText.trim()) return;
     setPostingComment(true);
     try {
-      const c = await postEnrollmentComment(commentsEnrollmentId, commentText.trim());
-      setComments((prev) => [...prev, c]);
+      await postEnrollmentComment(commentsEnrollmentId, commentText.trim());
+      const updated = await getEnrollmentComments(commentsEnrollmentId);
+      setComments(updated);
       setCommentText("");
     } catch (err) {
       setActionError(err instanceof ApiError ? err.message : "Failed to post comment.");
@@ -188,9 +190,7 @@ export default function ExpertEnrollmentsTab() {
               <ul className="expertComments">
                 {comments.map((c) => (
                   <li key={c.commentId} className="expertComments__item">
-                    <span className="expertComments__author">{c.authorName}</span>
-                    <span className="expertComments__role">{c.authorRole}</span>
-                    <p className="expertComments__text">{c.content}</p>
+                    <p className="expertComments__text">{c.updateNote}</p>
                     <span className="expertComments__date">
                       {new Date(c.createdAt).toLocaleString()}
                     </span>

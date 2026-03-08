@@ -24,6 +24,7 @@ export default function MyProgramsTab() {
       setPrograms((prev) =>
         prev.map((p) => p.accessId === accessId ? { ...p, accessStatus: "Paused" } : p)
       );
+      getMyProgramAccess().then(setPrograms).catch(() => {});
     } catch (err) {
       setActionError(err instanceof ApiError ? err.message : "Action failed.");
     }
@@ -37,6 +38,7 @@ export default function MyProgramsTab() {
       setPrograms((prev) =>
         prev.map((p) => p.accessId === accessId ? { ...p, accessStatus: "Ended" } : p)
       );
+      getMyProgramAccess().then(setPrograms).catch(() => {});
     } catch (err) {
       setActionError(err instanceof ApiError ? err.message : "Action failed.");
     }

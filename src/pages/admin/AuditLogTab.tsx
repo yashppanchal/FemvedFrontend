@@ -12,7 +12,7 @@ export default function AuditLogTab() {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    getAuditLog(PAGE_SIZE)
+    getAuditLog(PAGE_SIZE, (page - 1) * PAGE_SIZE)
       .then(setEntries)
       .catch((err) => {
         setError(err instanceof ApiError ? err.message : "Failed to load audit log.");

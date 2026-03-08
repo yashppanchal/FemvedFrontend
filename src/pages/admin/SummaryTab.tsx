@@ -35,12 +35,14 @@ export default function SummaryTab() {
     maximumFractionDigits: 0,
   }).format(summary.totalRevenue);
 
+  const fmt = (n: number) => new Intl.NumberFormat().format(n);
+
   return (
     <div className="summaryGrid">
-      <StatCard label="Total users" value={summary.totalUsers} />
-      <StatCard label="Total experts" value={summary.totalExperts} />
-      <StatCard label="Total programs" value={summary.totalPrograms} />
-      <StatCard label="Total orders" value={summary.totalOrders} />
+      <StatCard label="Total users" value={fmt(summary.totalUsers)} />
+      <StatCard label="Total experts" value={fmt(summary.totalExperts)} />
+      <StatCard label="Total programs" value={fmt(summary.totalPrograms)} />
+      <StatCard label="Total orders" value={fmt(summary.totalOrders)} />
       <StatCard label="Total revenue" value={revenue} />
     </div>
   );
