@@ -10,7 +10,6 @@ import {
 } from "../data/guidedPrograms";
 import { initiateOrder } from "../api/orders";
 import { hasValidAccessToken } from "../auth/useAuth";
-import { PrimaryOutlineButton } from "../components/PrimaryOutlineButton";
 
 export default function ProgramDetailPage() {
   const { country } = useCountry();
@@ -271,15 +270,21 @@ export default function ProgramDetailPage() {
           <div className={priceOptionsClassName}>
             {programDurations.map((duration) => {
               const isActive = duration.durationLabel === selectedDurationLabel;
+              const durationButtonClassName = `programDetailPage__priceBtn${
+                isActive ? " programDetailPage__priceBtn--active" : ""
+              }`;
               return (
-                <PrimaryOutlineButton
+                <button
                   key={duration.durationLabel}
-                  label={duration.durationLabel}
+                  type="button"
+                  className={durationButtonClassName}
                   onClick={() =>
                     setSelectedDurationLabel(duration.durationLabel)
                   }
                   aria-pressed={isActive}
-                />
+                >
+                  {duration.durationLabel}
+                </button>
               );
             })}
           </div>
