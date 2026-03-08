@@ -1,16 +1,12 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { hasValidAccessToken, ROLE_ADMIN, useAuth } from "../auth/useAuth";
+import { hasValidAccessToken, useAuth } from "../auth/useAuth";
 
-export default function AdminRoute() {
+export default function AuthenticatedRoute() {
   const { user, tokens } = useAuth();
   const location = useLocation();
 
   if (!user || !hasValidAccessToken(tokens)) {
     return <Navigate to="/login" replace state={{ from: location }} />;
-  }
-
-  if (user.role.id !== ROLE_ADMIN.id) {
-    return <Navigate to="/dashboard" replace />;
   }
 
   return <Outlet />;

@@ -1,5 +1,9 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
+import {
+  buildCloudinarySrcSet,
+  optimizeCloudinaryImageUrl,
+} from "../../cloudinary/image";
 
 export type ProgramCard = {
   programId?: string;
@@ -100,9 +104,17 @@ export function ChooseSection({
                   {c.imageUrl ? (
                     <img
                       className="guidedProgramDetail__productMediaImage"
-                      src={c.imageUrl}
+                      src={optimizeCloudinaryImageUrl(c.imageUrl, {
+                        width: 640,
+                        crop: "fill",
+                      })}
+                      srcSet={buildCloudinarySrcSet(c.imageUrl, [320, 480, 640, 800], {
+                        crop: "fill",
+                      })}
+                      sizes="(max-width: 768px) 82vw, 360px"
                       alt={c.programName}
                       loading="lazy"
+                      decoding="async"
                     />
                   ) : null}
                 </div>

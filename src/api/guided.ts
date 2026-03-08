@@ -1,4 +1,21 @@
 import { apiFetch } from "./client";
+const GUIDED_PROGRAMS_VERSION_STORAGE_KEY = "femved.guidedPrograms.version";
+
+function bumpGuidedProgramsCacheVersion(): void {
+  if (typeof window === "undefined") return;
+
+  try {
+    const raw = window.localStorage.getItem(GUIDED_PROGRAMS_VERSION_STORAGE_KEY);
+    const parsed = Number(raw);
+    const nextVersion = Number.isFinite(parsed) ? parsed + 1 : 1;
+    window.localStorage.setItem(
+      GUIDED_PROGRAMS_VERSION_STORAGE_KEY,
+      String(nextVersion),
+    );
+  } catch {
+    // Cache invalidation is best-effort and should not block admin actions.
+  }
+}
 
 export interface CreateGuidedDomainRequest {
   name: string;
@@ -158,6 +175,9 @@ export function createGuidedDomain(
       Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify(data),
+  }).then((response) => {
+    bumpGuidedProgramsCacheVersion();
+    return response;
   });
 }
 
@@ -172,6 +192,9 @@ export function updateGuidedDomain(
       Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify(data),
+  }).then((response) => {
+    bumpGuidedProgramsCacheVersion();
+    return response;
   });
 }
 
@@ -187,7 +210,10 @@ export function deleteGuidedDomain(
         Authorization: `Bearer ${accessToken}`,
       },
     },
-  );
+  ).then((response) => {
+    bumpGuidedProgramsCacheVersion();
+    return response;
+  });
 }
 
 export function createGuidedCategory(
@@ -206,6 +232,9 @@ export function createGuidedCategory(
       image_url: normalizedImage,
       categoryPageDataImage: normalizedImage,
     }),
+  }).then((response) => {
+    bumpGuidedProgramsCacheVersion();
+    return response;
   });
 }
 
@@ -229,7 +258,10 @@ export function updateGuidedCategory(
         categoryPageDataImage: normalizedImage,
       }),
     },
-  );
+  ).then((response) => {
+    bumpGuidedProgramsCacheVersion();
+    return response;
+  });
 }
 
 export function deleteGuidedCategory(
@@ -244,7 +276,10 @@ export function deleteGuidedCategory(
         Authorization: `Bearer ${accessToken}`,
       },
     },
-  );
+  ).then((response) => {
+    bumpGuidedProgramsCacheVersion();
+    return response;
+  });
 }
 
 export function createGuidedProgram(
@@ -257,6 +292,9 @@ export function createGuidedProgram(
       Authorization: `Bearer ${accessToken}`,
     },
     body: JSON.stringify(data),
+  }).then((response) => {
+    bumpGuidedProgramsCacheVersion();
+    return response;
   });
 }
 

@@ -1,0 +1,95 @@
+.page--paymentProcessing {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.processingCard {
+  width: min(100%, 480px);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--white);
+  box-shadow: 0 14px 42px rgba(15, 15, 16, 0.08);
+  padding: 48px 24px 40px;
+  text-align: center;
+
+  .page__title {
+    margin-bottom: 8px;
+  }
+
+  .page__lead {
+    margin-bottom: 0;
+  }
+}
+
+/* Spinner */
+.processingCard__spinner {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 24px;
+  border: 4px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: processingSpinnerSpin 0.75s linear infinite;
+}
+
+@keyframes processingSpinnerSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Status icons */
+.processingCard__icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 24px;
+  border-radius: 50%;
+  position: relative;
+}
+
+.processingCard__icon--success {
+  background: linear-gradient(180deg, #4ebf84 0%, #2ea366 100%);
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 16px;
+    left: 20px;
+    width: 14px;
+    height: 8px;
+    border-left: 3px solid var(--white);
+    border-bottom: 3px solid var(--white);
+    transform: rotate(-45deg);
+  }
+}
+
+.processingCard__icon--failed {
+  background: linear-gradient(180deg, #e05252 0%, #b83232 100%);
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 22px;
+    height: 3px;
+    background: var(--white);
+    border-radius: 2px;
+  }
+
+  &::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  &::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+}
+
+.processingCard__retryButton {
+  margin-top: 20px;
+  padding: 0 28px;
+}

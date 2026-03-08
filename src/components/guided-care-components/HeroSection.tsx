@@ -4,6 +4,10 @@ import hormonal from "../../assets/guided-care-hero/hormonal.jpg";
 import longevity from "../../assets/guided-care-hero/longevity.jpg";
 import fitness from "../../assets/guided-care-hero/fitness.jpg";
 import mind from "../../assets/guided-care-hero/mind.jpg";
+import {
+  buildCloudinarySrcSet,
+  optimizeCloudinaryImageUrl,
+} from "../../cloudinary/image";
 
 const GUIDED_CARE_HERO_IMAGES: Record<string, string> = {
   hormonal,
@@ -32,14 +36,29 @@ export function HeroSection({
     (normalizedImage && GUIDED_CARE_HERO_IMAGES[normalizedImage]) ||
     normalizedImage ||
     heroImage;
+  const optimizedHeroImage = optimizeCloudinaryImageUrl(resolvedHeroImage, {
+    width: 1200,
+    quality: "auto:eco",
+    crop: "fill",
+  });
+  const heroSrcSet = buildCloudinarySrcSet(
+    resolvedHeroImage,
+    [480, 720, 960, 1200],
+    { quality: "auto:eco", crop: "fill" },
+  );
 
   return (
     <div className="guidedProgramDetail__hero">
       <div className="guidedProgramDetail__heroMedia">
         <img
           className="guidedProgramDetail__heroImage"
-          src={resolvedHeroImage}
+          src={optimizedHeroImage}
+          srcSet={heroSrcSet}
+          sizes="(max-width: 860px) 100vw, 48vw"
           alt={heroTitle}
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
         />
       </div>
 

@@ -18,11 +18,14 @@ import FoundersStory from "../pages/FoundersStory";
 import KnowYourExperts from "../pages/KnowYourExperts";
 import NotFound from "../pages/NotFound";
 import OrderHistory from "../pages/OrderHistory";
+import PaymentCancel from "../pages/PaymentCancel";
+import PaymentProcessing from "../pages/PaymentProcessing";
 import PaymentSuccess from "../pages/PaymentSuccess";
 import Placeholder from "../pages/Placeholder";
 import Podcast from "../pages/Podcast";
 import Terms from "../pages/Terms";
 import AdminRoute from "./AdminRoute";
+import AuthenticatedRoute from "./AuthenticatedRoute";
 import ExpertRoute from "./ExpertRoute";
 
 function placeholderForRouteTitle(title: string): ReactNode {
@@ -42,7 +45,13 @@ export const router = createBrowserRouter([
       { path: "/terms", element: <Terms /> },
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
-      { path: "/dashboard", element: <Dashboard /> },
+      {
+        element: <AuthenticatedRoute />,
+        children: [
+          { path: "/dashboard", element: <Dashboard /> },
+          { path: "/orders", element: <OrderHistory /> },
+        ],
+      },
       {
         element: <AdminRoute />,
         children: [
@@ -56,8 +65,10 @@ export const router = createBrowserRouter([
           { path: "/expert-dashboard/clients", element: <ExpertClients /> },
         ],
       },
-      { path: "/orders", element: <OrderHistory /> },
+      { path: "/payment/cancel", element: <PaymentCancel /> },
+      { path: "/payment-cancel", element: <PaymentCancel /> },
       { path: "/payment/success", element: <PaymentSuccess /> },
+      { path: "/payment/processing", element: <PaymentProcessing /> },
       { path: "/learn/founders-story", element: <FoundersStory /> },
       { path: "/learn/know-your-experts", element: <KnowYourExperts /> },
       { path: "/learn/podcast", element: <Podcast /> },

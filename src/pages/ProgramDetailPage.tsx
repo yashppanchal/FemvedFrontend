@@ -1,16 +1,24 @@
 import "./ProgramDetailPage.scss";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useCountry } from "../country/useCountry";
+import { useAuth } from "../auth/useAuth";
 import {
   loadGuidedPrograms,
   normalizeSlug,
   type GuidedProgramInfo,
 } from "../data/guidedPrograms";
-import { PrimaryOutlineButton } from "../components/PrimaryOutlineButton";
+import { initiateOrder } from "../api/orders";
+import { hasValidAccessToken } from "../auth/useAuth";
+import {
+  buildCloudinarySrcSet,
+  optimizeCloudinaryImageUrl,
+} from "../cloudinary/image";
 
 export default function ProgramDetailPage() {
-  const { country } = useCountry();
+  const { country: selectedCountryCode, isCountryReady } = useCountry();
+  const { user, tokens } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
   const { programSlug, programId } = useParams<{
     programSlug: string;
@@ -20,8 +28,12 @@ export default function ProgramDetailPage() {
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [selectedDurationLabel, setSelectedDurationLabel] = useState("");
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!isCountryReady) return;
+
     let isActive = true;
 
     async function loadData() {
@@ -29,7 +41,7 @@ export default function ProgramDetailPage() {
       setHasError(false);
 
       try {
-        const payload = await loadGuidedPrograms(country);
+        const payload = await loadGuidedPrograms(selectedCountryCode);
         if (isActive) {
           setCategories(payload);
         }
@@ -49,7 +61,7 @@ export default function ProgramDetailPage() {
     return () => {
       isActive = false;
     };
-  }, [country]);
+  }, [isCountryReady, selectedCountryCode]);
 
   const selectedProgram = useMemo(() => {
     if (!programId) return null;
@@ -92,6 +104,89 @@ export default function ProgramDetailPage() {
       ? " programDetailPage__priceOptions--single"
       : ""
   }`;
+  const optimizedProgramHeroImage = optimizeCloudinaryImageUrl(
+    selectedProgram?.imageUrl,
+    { width: 1600, crop: "fill" },
+  );
+  const optimizedExpertImage = optimizeCloudinaryImageUrl(
+    selectedProgram?.expertGridImageUrl,
+    { width: 720, crop: "fill" },
+  );
+  const expertImageSrcSet = buildCloudinarySrcSet(
+    selectedProgram?.expertGridImageUrl,
+    [320, 480, 640, 720, 960],
+    { crop: "fill" },
+  );
+
+  async function handleEnroll() {
+    if (!selectedDuration) return;
+
+    // Fix 3: check token validity, not just presence of user object
+    if (!user || !hasValidAccessToken(tokens)) {
+      navigate("/login", { state: { from: location } });
+      return;
+    }
+
+    if (!selectedDuration.durationId) {
+      setCheckoutError("This program duration is not available for purchase yet.");
+      return;
+    }
+
+    setCheckoutLoading(true);
+    setCheckoutError(null);
+
+    try {
+      const gateway = selectedCountryCode === "IN" ? "CashFree" : "PayPal";
+      const order = await initiateOrder({
+        durationId: selectedDuration.durationId,
+        countryCode: selectedCountryCode,
+        gateway,
+        idempotencyKey: crypto.randomUUID(),
+      });
+
+      if (order.gateway === "CASHFREE") {
+        const { load } = await import("@cashfreepayments/cashfree-js");
+        const mode =
+          (import.meta.env.VITE_CASHFREE_MODE ?? "sandbox") as
+          | "sandbox"
+          | "production";
+        const cashfree = await load({ mode });
+
+        // Fix 1: inspect checkout() result — don't navigate if user cancelled
+        const result = await cashfree.checkout({
+          paymentSessionId: order.paymentSessionId,
+          redirectTarget: "_modal",
+        });
+
+        if (result?.error) {
+          setCheckoutError(
+            result.error.message ?? "Payment was not completed. Please try again.",
+          );
+          return;
+        }
+
+        // Fix 4: pass returnTo so the processing page can navigate back reliably
+        const returnTo = encodeURIComponent(window.location.pathname);
+        navigate(
+          `/payment/processing?orderId=${encodeURIComponent(order.orderId)}&returnTo=${returnTo}`,
+        );
+      } else if (order.gateway === "PAYPAL") {
+        if (!order.approvalUrl) {
+          setCheckoutError("PayPal checkout link is missing. Please try again.");
+          return;
+        }
+        window.location.assign(order.approvalUrl);
+      } else {
+        setCheckoutError("Unexpected payment gateway. Please try again or contact support.");
+      }
+    } catch (err) {
+      setCheckoutError(
+        err instanceof Error ? err.message : "Failed to initiate payment. Please try again.",
+      );
+    } finally {
+      setCheckoutLoading(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -130,7 +225,7 @@ export default function ProgramDetailPage() {
         style={
           selectedProgram.imageUrl
             ? {
-                backgroundImage: `linear-gradient(rgba(15, 15, 16, 0.35), rgba(15, 15, 16, 0.45)), url("${selectedProgram.imageUrl}")`,
+                backgroundImage: `linear-gradient(rgba(15, 15, 16, 0.35), rgba(15, 15, 16, 0.45)), url("${optimizedProgramHeroImage}")`,
               }
             : undefined
         }
@@ -194,15 +289,21 @@ export default function ProgramDetailPage() {
           <div className={priceOptionsClassName}>
             {programDurations.map((duration) => {
               const isActive = duration.durationLabel === selectedDurationLabel;
+              const durationButtonClassName = `programDetailPage__priceBtn${
+                isActive ? " programDetailPage__priceBtn--active" : ""
+              }`;
               return (
-                <PrimaryOutlineButton
+                <button
                   key={duration.durationLabel}
-                  label={duration.durationLabel}
+                  type="button"
+                  className={durationButtonClassName}
                   onClick={() =>
                     setSelectedDurationLabel(duration.durationLabel)
                   }
                   aria-pressed={isActive}
-                />
+                >
+                  {duration.durationLabel}
+                </button>
               );
             })}
           </div>
@@ -211,6 +312,17 @@ export default function ProgramDetailPage() {
             <li>Complete privacy</li>
             <li>Client-Expert confidentiality</li>
           </ul>
+          {checkoutError && (
+            <p className="programDetailPage__checkoutError">{checkoutError}</p>
+          )}
+          <button
+            type="button"
+            className="button programDetailPage__enrollButton"
+            onClick={handleEnroll}
+            disabled={checkoutLoading || !selectedDuration}
+          >
+            {checkoutLoading ? "Processing…" : "Enroll Now"}
+          </button>
         </aside>
       </div>
 
@@ -219,9 +331,13 @@ export default function ProgramDetailPage() {
           <div className="programDetailPage__expertLeft">
             {selectedProgram.expertGridImageUrl ? (
               <img
-                src={selectedProgram.expertGridImageUrl}
+                src={optimizedExpertImage}
+                srcSet={expertImageSrcSet}
+                sizes="(max-width: 768px) 92vw, 420px"
                 alt={selectedProgram.expertName}
                 className="programDetailPage__expertPhoto"
+                loading="lazy"
+                decoding="async"
               />
             ) : (
               <div

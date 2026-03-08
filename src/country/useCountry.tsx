@@ -60,16 +60,16 @@ function isCountryCode(value: string): value is CountryCode {
 }
 
 function normalizeCountryCode(rawCode: string | null | undefined): CountryCode {
-  if (!rawCode) return "IN";
+  if (!rawCode) return "US";
 
   const upperCode = rawCode.trim().toUpperCase();
   if (upperCode === "GB") return "UK";
   if (isCountryCode(upperCode)) return upperCode;
-  return "IN";
+  return "US";
 }
 
 function getStoredCountry(): CountryCode {
-  if (typeof window === "undefined") return "IN";
+  if (typeof window === "undefined") return "US";
   const stored = window.localStorage.getItem(COUNTRY_STORAGE_KEY);
   return normalizeCountryCode(stored);
 }
@@ -124,32 +124,41 @@ export function validatePhone(
 interface CountryContextValue {
   country: CountryCode;
   countryInfo: CountryInfo;
+  isCountryReady: boolean;
   setCountry: (code: CountryCode) => void;
 }
 
 const CountryContext = createContext<CountryContextValue | null>(null);
 
 export function CountryProvider({ children }: { children: ReactNode }) {
-  const [country, setCountryRaw] = useState<CountryCode>(() => getStoredCountry());
-
-  const setCountry = useCallback(
-    (code: CountryCode) => {
-      const normalized = normalizeCountryCode(code);
-      setCountryRaw(normalized);
-      persistCountry(normalized);
-    },
-    [],
+  const hasStoredCountry = (() => {
+    if (typeof window === "undefined") return false;
+    return Boolean(window.localStorage.getItem(COUNTRY_STORAGE_KEY));
+  })();
+  const [country, setCountryRaw] = useState<CountryCode>(() =>
+    getStoredCountry(),
   );
+  const [isCountryReady, setIsCountryReady] = useState<boolean>(hasStoredCountry);
+
+  const setCountry = useCallback((code: CountryCode) => {
+    const normalized = normalizeCountryCode(code);
+    setCountryRaw(normalized);
+    persistCountry(normalized);
+    setIsCountryReady(true);
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     const stored = window.localStorage.getItem(COUNTRY_STORAGE_KEY);
-    if (stored) return;
+    if (stored) {
+      setIsCountryReady(true);
+      return;
+    }
 
     let isActive = true;
 
     if (!countryBootstrapPromise) {
-      countryBootstrapPromise = fetchDetectedCountry().catch(() => "IN");
+      countryBootstrapPromise = fetchDetectedCountry().catch(() => "US");
     }
 
     countryBootstrapPromise
@@ -157,9 +166,12 @@ export function CountryProvider({ children }: { children: ReactNode }) {
         if (!isActive) return;
         setCountryRaw(resolvedCountry);
         persistCountry(resolvedCountry);
+        setIsCountryReady(true);
       })
       .catch(() => {
-        // no-op: keep default "IN" value if geolocation lookup fails
+        // no-op: keep default "US" value if geolocation lookup fails
+        if (!isActive) return;
+        setIsCountryReady(true);
       });
 
     return () => {
@@ -168,8 +180,8 @@ export function CountryProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<CountryContextValue>(
-    () => ({ country, countryInfo: COUNTRIES[country], setCountry }),
-    [country, setCountry],
+    () => ({ country, countryInfo: COUNTRIES[country], isCountryReady, setCountry }),
+    [country, isCountryReady, setCountry],
   );
 
   return (
