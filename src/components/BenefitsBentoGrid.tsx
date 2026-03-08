@@ -56,7 +56,7 @@ const cards: BentoCard[] = [
 
 export function BenefitsBentoGrid() {
   return (
-    <section className="benefitsBentoGrid">
+    <section id="benefits-bento-grid" className="benefitsBentoGrid">
       <h2 className="benefitsBentoGrid__heading">
         Women's wellness cannot be reduced to trending protocols
       </h2>

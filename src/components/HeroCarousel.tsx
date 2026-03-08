@@ -37,7 +37,7 @@ export function HeroCarousel() {
           "Your health doesn\u2019t need another influencer. You deserve the right guidance.",
         body: "Create your own wellness plan with globally accredited women practitioners, because wellness isn’t a trend or a hack, it’s personal. Stop borrowing wellness from someone’s reel.",
         ctaLabel: "Support your hormones, your way",
-        ctaTo: "/about",
+        ctaTo: "/guided/hormonal-health-support",
       },
       {
         type: "healthcare",
@@ -50,6 +50,13 @@ export function HeroCarousel() {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+
+  const handleWhyJoinUsClick = () => {
+    const benefitsSection = document.getElementById("benefits-bento-grid");
+    if (benefitsSection) {
+      benefitsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   useEffect(() => {
     if (isPaused) return;
@@ -124,10 +131,13 @@ export function HeroCarousel() {
                     <p className="hc__subtitle">Choose where to start</p>
 
                     <div className="hc__buttons">
-                      <PrimaryButton label="Why join us" to="/test" />
+                      <PrimaryButton
+                        label="Why join us"
+                        onClick={handleWhyJoinUsClick}
+                      />
                       <PrimaryButton
                         label="Begin where you are"
-                        to="/experts"
+                        to="/all-guided-programs"
                       />
                     </div>
                   </div>
