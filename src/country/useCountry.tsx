@@ -124,26 +124,36 @@ export function validatePhone(
 interface CountryContextValue {
   country: CountryCode;
   countryInfo: CountryInfo;
+  isCountryReady: boolean;
   setCountry: (code: CountryCode) => void;
 }
 
 const CountryContext = createContext<CountryContextValue | null>(null);
 
 export function CountryProvider({ children }: { children: ReactNode }) {
+  const hasStoredCountry = (() => {
+    if (typeof window === "undefined") return false;
+    return Boolean(window.localStorage.getItem(COUNTRY_STORAGE_KEY));
+  })();
   const [country, setCountryRaw] = useState<CountryCode>(() =>
     getStoredCountry(),
   );
+  const [isCountryReady, setIsCountryReady] = useState<boolean>(hasStoredCountry);
 
   const setCountry = useCallback((code: CountryCode) => {
     const normalized = normalizeCountryCode(code);
     setCountryRaw(normalized);
     persistCountry(normalized);
+    setIsCountryReady(true);
   }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     const stored = window.localStorage.getItem(COUNTRY_STORAGE_KEY);
-    if (stored) return;
+    if (stored) {
+      setIsCountryReady(true);
+      return;
+    }
 
     let isActive = true;
 
@@ -156,9 +166,12 @@ export function CountryProvider({ children }: { children: ReactNode }) {
         if (!isActive) return;
         setCountryRaw(resolvedCountry);
         persistCountry(resolvedCountry);
+        setIsCountryReady(true);
       })
       .catch(() => {
         // no-op: keep default "US" value if geolocation lookup fails
+        if (!isActive) return;
+        setIsCountryReady(true);
       });
 
     return () => {
@@ -167,8 +180,8 @@ export function CountryProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<CountryContextValue>(
-    () => ({ country, countryInfo: COUNTRIES[country], setCountry }),
-    [country, setCountry],
+    () => ({ country, countryInfo: COUNTRIES[country], isCountryReady, setCountry }),
+    [country, isCountryReady, setCountry],
   );
 
   return (

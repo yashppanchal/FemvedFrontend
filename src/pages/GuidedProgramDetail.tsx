@@ -15,7 +15,7 @@ import {
 } from "../data/guidedPrograms";
 
 export default function GuidedProgramDetail() {
-  const { country } = useCountry();
+  const { country, isCountryReady } = useCountry();
   const { programSlug, programId } = useParams<{
     programSlug: string;
     programId?: string;
@@ -25,6 +25,8 @@ export default function GuidedProgramDetail() {
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
+    if (!isCountryReady) return;
+
     let isActive = true;
 
     async function loadGuidedTree() {
@@ -53,7 +55,7 @@ export default function GuidedProgramDetail() {
     return () => {
       isActive = false;
     };
-  }, [country]);
+  }, [country, isCountryReady]);
 
   const program = useMemo(() => {
     if (!programSlug) return null;

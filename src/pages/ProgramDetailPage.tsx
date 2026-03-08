@@ -10,9 +10,13 @@ import {
 } from "../data/guidedPrograms";
 import { initiateOrder } from "../api/orders";
 import { hasValidAccessToken } from "../auth/useAuth";
+import {
+  buildCloudinarySrcSet,
+  optimizeCloudinaryImageUrl,
+} from "../cloudinary/image";
 
 export default function ProgramDetailPage() {
-  const { country: selectedCountryCode } = useCountry();
+  const { country: selectedCountryCode, isCountryReady } = useCountry();
   const { user, tokens } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -28,6 +32,8 @@ export default function ProgramDetailPage() {
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!isCountryReady) return;
+
     let isActive = true;
 
     async function loadData() {
@@ -55,7 +61,7 @@ export default function ProgramDetailPage() {
     return () => {
       isActive = false;
     };
-  }, [selectedCountryCode]);
+  }, [isCountryReady, selectedCountryCode]);
 
   const selectedProgram = useMemo(() => {
     if (!programId) return null;
@@ -98,6 +104,19 @@ export default function ProgramDetailPage() {
       ? " programDetailPage__priceOptions--single"
       : ""
   }`;
+  const optimizedProgramHeroImage = optimizeCloudinaryImageUrl(
+    selectedProgram?.imageUrl,
+    { width: 1600, crop: "fill" },
+  );
+  const optimizedExpertImage = optimizeCloudinaryImageUrl(
+    selectedProgram?.expertGridImageUrl,
+    { width: 720, crop: "fill" },
+  );
+  const expertImageSrcSet = buildCloudinarySrcSet(
+    selectedProgram?.expertGridImageUrl,
+    [320, 480, 640, 720, 960],
+    { crop: "fill" },
+  );
 
   async function handleEnroll() {
     if (!selectedDuration) return;
@@ -206,7 +225,7 @@ export default function ProgramDetailPage() {
         style={
           selectedProgram.imageUrl
             ? {
-                backgroundImage: `linear-gradient(rgba(15, 15, 16, 0.35), rgba(15, 15, 16, 0.45)), url("${selectedProgram.imageUrl}")`,
+                backgroundImage: `linear-gradient(rgba(15, 15, 16, 0.35), rgba(15, 15, 16, 0.45)), url("${optimizedProgramHeroImage}")`,
               }
             : undefined
         }
@@ -312,9 +331,13 @@ export default function ProgramDetailPage() {
           <div className="programDetailPage__expertLeft">
             {selectedProgram.expertGridImageUrl ? (
               <img
-                src={selectedProgram.expertGridImageUrl}
+                src={optimizedExpertImage}
+                srcSet={expertImageSrcSet}
+                sizes="(max-width: 768px) 92vw, 420px"
                 alt={selectedProgram.expertName}
                 className="programDetailPage__expertPhoto"
+                loading="lazy"
+                decoding="async"
               />
             ) : (
               <div

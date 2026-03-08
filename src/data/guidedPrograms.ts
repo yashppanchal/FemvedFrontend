@@ -107,8 +107,23 @@ type GuidedTreeResponse = {
   }>;
 };
 
-const guidedProgramsCache = new Map<CountryCode, GuidedProgramInfo[]>();
+type GuidedProgramsCacheEntry = {
+  timestamp: number;
+  version: number;
+  data: GuidedProgramInfo[];
+};
+
+const guidedProgramsCache = new Map<CountryCode, GuidedProgramsCacheEntry>();
 const guidedProgramsRequests = new Map<CountryCode, Promise<GuidedProgramInfo[]>>();
+const GUIDED_PROGRAMS_STORAGE_PREFIX = "femved.guidedPrograms.";
+const GUIDED_PROGRAMS_VERSION_STORAGE_KEY = "femved.guidedPrograms.version";
+const GUIDED_PROGRAMS_CACHE_TTL_MS = 5 * 60 * 1000;
+
+type PersistedGuidedPrograms = {
+  timestamp: number;
+  version: number;
+  data: GuidedProgramInfo[];
+};
 
 export function normalizeSlug(value: string | undefined) {
   return (value ?? "")
@@ -202,12 +217,96 @@ function mapApiCategoryToProgram(
   };
 }
 
+function getGuidedProgramsStorageKey(countryCode: CountryCode): string {
+  return `${GUIDED_PROGRAMS_STORAGE_PREFIX}${countryCode}`;
+}
+
+function getGuidedProgramsVersion(): number {
+  if (typeof window === "undefined") return 0;
+
+  const raw = window.localStorage.getItem(GUIDED_PROGRAMS_VERSION_STORAGE_KEY);
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function readPersistedGuidedPrograms(
+  countryCode: CountryCode,
+  version: number,
+): GuidedProgramInfo[] | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const raw = window.localStorage.getItem(getGuidedProgramsStorageKey(countryCode));
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw) as PersistedGuidedPrograms;
+    if (
+      !parsed ||
+      typeof parsed !== "object" ||
+      typeof parsed.timestamp !== "number" ||
+      typeof parsed.version !== "number" ||
+      !Array.isArray(parsed.data)
+    ) {
+      return null;
+    }
+
+    if (parsed.version !== version) {
+      return null;
+    }
+
+    if (Date.now() - parsed.timestamp > GUIDED_PROGRAMS_CACHE_TTL_MS) {
+      return null;
+    }
+
+    return parsed.data;
+  } catch {
+    return null;
+  }
+}
+
+function persistGuidedPrograms(
+  countryCode: CountryCode,
+  version: number,
+  data: GuidedProgramInfo[],
+): void {
+  if (typeof window === "undefined") return;
+
+  try {
+    const payload: PersistedGuidedPrograms = {
+      timestamp: Date.now(),
+      version,
+      data,
+    };
+    window.localStorage.setItem(
+      getGuidedProgramsStorageKey(countryCode),
+      JSON.stringify(payload),
+    );
+  } catch {
+    // localStorage write failure should not block rendering
+  }
+}
+
 export async function loadGuidedPrograms(
   countryCode: CountryCode = "US",
 ): Promise<GuidedProgramInfo[]> {
-  const cachedPrograms = guidedProgramsCache.get(countryCode);
-  if (cachedPrograms) {
-    return cachedPrograms;
+  const currentVersion = getGuidedProgramsVersion();
+  const cachedEntry = guidedProgramsCache.get(countryCode);
+  if (
+    cachedEntry &&
+    cachedEntry.version === currentVersion &&
+    Date.now() - cachedEntry.timestamp <= GUIDED_PROGRAMS_CACHE_TTL_MS
+  ) {
+    return cachedEntry.data;
+  }
+
+  const persistedPrograms = readPersistedGuidedPrograms(countryCode, currentVersion);
+  if (persistedPrograms) {
+    guidedProgramsCache.set(countryCode, {
+      timestamp: Date.now(),
+      version: currentVersion,
+      data: persistedPrograms,
+    });
+    return persistedPrograms;
   }
 
   const activeRequest = guidedProgramsRequests.get(countryCode);
@@ -230,7 +329,12 @@ export async function loadGuidedPrograms(
       null;
     const mappedPrograms = (guidedDomain?.categories ?? []).map(mapApiCategoryToProgram);
 
-    guidedProgramsCache.set(countryCode, mappedPrograms);
+    guidedProgramsCache.set(countryCode, {
+      timestamp: Date.now(),
+      version: currentVersion,
+      data: mappedPrograms,
+    });
+    persistGuidedPrograms(countryCode, currentVersion, mappedPrograms);
     return mappedPrograms;
   })();
   guidedProgramsRequests.set(countryCode, request);
