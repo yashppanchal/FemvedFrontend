@@ -1,6 +1,6 @@
 import "./ProgramDetailPage.scss";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useCountry } from "../country/useCountry";
 import { useAuth } from "../auth/useAuth";
 import {
@@ -14,6 +14,7 @@ import { hasValidAccessToken } from "../auth/useAuth";
 export default function ProgramDetailPage() {
   const { country: selectedCountryCode } = useCountry();
   const { user, tokens } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
   const { programSlug, programId } = useParams<{
     programSlug: string;
@@ -103,7 +104,7 @@ export default function ProgramDetailPage() {
 
     // Fix 3: check token validity, not just presence of user object
     if (!user || !hasValidAccessToken(tokens)) {
-      navigate("/login");
+      navigate("/login", { state: { from: location } });
       return;
     }
 

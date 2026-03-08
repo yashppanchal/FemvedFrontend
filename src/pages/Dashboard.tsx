@@ -26,8 +26,6 @@ export default function Dashboard() {
   const [success, setSuccess] = useState<string | null>(null);
   const [phoneError, setPhoneError] = useState<string | null>(null);
 
-  // TEMP: auth redirect disabled while designing dashboard UI.
-
   // Sync form state when user changes or edit mode is entered
   useEffect(() => {
     if (user) {

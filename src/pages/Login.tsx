@@ -1,10 +1,19 @@
 import { type FormEvent, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 import "./Login.scss";
 
+interface LoginRedirectState {
+  from?: {
+    pathname?: string;
+    search?: string;
+    hash?: string;
+  };
+}
+
 export default function Login() {
   const { login } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -28,7 +37,16 @@ export default function Login() {
         setError(err);
         return;
       }
-      navigate("/");
+      const redirectState = location.state as LoginRedirectState | null;
+      const fromPathname = redirectState?.from?.pathname;
+      const fromSearch = redirectState?.from?.search ?? "";
+      const fromHash = redirectState?.from?.hash ?? "";
+      const redirectTo =
+        fromPathname && fromPathname.startsWith("/")
+          ? `${fromPathname}${fromSearch}${fromHash}`
+          : "/";
+
+      navigate(redirectTo, { replace: true });
     } finally {
       setLoading(false);
     }

@@ -25,6 +25,7 @@ import Placeholder from "../pages/Placeholder";
 import Podcast from "../pages/Podcast";
 import Terms from "../pages/Terms";
 import AdminRoute from "./AdminRoute";
+import AuthenticatedRoute from "./AuthenticatedRoute";
 import ExpertRoute from "./ExpertRoute";
 
 function placeholderForRouteTitle(title: string): ReactNode {
@@ -44,7 +45,13 @@ export const router = createBrowserRouter([
       { path: "/terms", element: <Terms /> },
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
-      { path: "/dashboard", element: <Dashboard /> },
+      {
+        element: <AuthenticatedRoute />,
+        children: [
+          { path: "/dashboard", element: <Dashboard /> },
+          { path: "/orders", element: <OrderHistory /> },
+        ],
+      },
       {
         element: <AdminRoute />,
         children: [
@@ -58,7 +65,6 @@ export const router = createBrowserRouter([
           { path: "/expert-dashboard/clients", element: <ExpertClients /> },
         ],
       },
-      { path: "/orders", element: <OrderHistory /> },
       { path: "/payment/cancel", element: <PaymentCancel /> },
       { path: "/payment-cancel", element: <PaymentCancel /> },
       { path: "/payment/success", element: <PaymentSuccess /> },
