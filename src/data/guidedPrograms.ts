@@ -11,6 +11,7 @@ export type GuidedProgramCard = {
   expertTitle?: string;
   expertDescription?: string;
   expertDetailedDescription?: string;
+  expertGridImageUrl?: string;
   expertImageUrl?: string;
   body: string;
   imageUrl?: string;
@@ -76,12 +77,16 @@ type GuidedTreeResponse = {
         expertName?: string;
         expertTitle?: string;
         expertDescription?: string;
+        expertGridImageUrl?: string;
+        expert_grid_image_url?: string;
         expertImage?: string;
         expertImageUrl?: string;
         expertDetails?: {
           expertTitle?: string;
           expertDescription?: string;
           expertDetailedDescription?: string;
+          expertGridImageUrl?: string;
+          expert_grid_image_url?: string;
           expertImage?: string;
           expertImageUrl?: string;
         };
@@ -160,6 +165,16 @@ function mapApiCategoryToProgram(
           expertDetails.expertDetailedDescription ??
           program.expertDescription ??
           expertDetails.expertDescription ??
+          "",
+        expertGridImageUrl:
+          program.expertGridImageUrl ??
+          program.expert_grid_image_url ??
+          expertDetails.expertGridImageUrl ??
+          expertDetails.expert_grid_image_url ??
+          program.expertImageUrl ??
+          program.expertImage ??
+          expertDetails.expertImageUrl ??
+          expertDetails.expertImage ??
           "",
         expertImageUrl:
           program.expertImageUrl ??

@@ -217,9 +217,9 @@ export default function ProgramDetailPage() {
       <section className="programDetailPage__expertSection">
         <div className="programDetailPage__expertInner container">
           <div className="programDetailPage__expertLeft">
-            {selectedProgram.expertImageUrl ? (
+            {selectedProgram.expertGridImageUrl ? (
               <img
-                src={selectedProgram.expertImageUrl}
+                src={selectedProgram.expertGridImageUrl}
                 alt={selectedProgram.expertName}
                 className="programDetailPage__expertPhoto"
               />
@@ -231,12 +231,14 @@ export default function ProgramDetailPage() {
                 {selectedProgram.expertName.charAt(0)}
               </div>
             )}
-            <h3 className="programDetailPage__expertName">
-              {selectedProgram.expertName}
-            </h3>
-            <p className="programDetailPage__expertTitle">
-              {selectedProgram.expertTitle}
-            </p>
+            <div className="programDetailPage__expertOverlay">
+              <h3 className="programDetailPage__expertName">
+                {selectedProgram.expertName}
+              </h3>
+              <p className="programDetailPage__expertTitle">
+                {selectedProgram.expertTitle}
+              </p>
+            </div>
           </div>
           <div className="programDetailPage__expertRight">
             <p>{selectedProgram.expertDetailedDescription}</p>
