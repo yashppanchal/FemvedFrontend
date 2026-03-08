@@ -112,25 +112,19 @@ export default function ProgramDetailPage() {
       return;
     }
 
-    if (country !== "IN") {
-      setCheckoutError(
-        "Online payment is currently available for India only. Please contact us to enrol.",
-      );
-      return;
-    }
-
     setCheckoutLoading(true);
     setCheckoutError(null);
 
     try {
+      const gateway = country === "IN" ? "CashFree" : "PayPal";
+      const apiCountryCode = country === "UK" ? "GB" : country;
       const order = await initiateOrder({
         durationId: selectedDuration.durationId,
-        countryCode: country,
-        gateway: "CashFree",
+        countryCode: apiCountryCode,
+        gateway,
         idempotencyKey: crypto.randomUUID(),
       });
 
-      // Fix 2: explicit else so an unexpected gateway value surfaces an error
       if (order.gateway === "CASHFREE") {
         const { load } = await import("@cashfreepayments/cashfree-js");
         const mode =
@@ -157,6 +151,12 @@ export default function ProgramDetailPage() {
         navigate(
           `/payment/processing?orderId=${encodeURIComponent(order.orderId)}&returnTo=${returnTo}`,
         );
+      } else if (order.gateway === "PAYPAL") {
+        if (!order.approvalUrl) {
+          setCheckoutError("PayPal checkout link is missing. Please try again.");
+          return;
+        }
+        window.location.assign(order.approvalUrl);
       } else {
         setCheckoutError("Unexpected payment gateway. Please try again or contact support.");
       }

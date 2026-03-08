@@ -1,0 +1,60 @@
+.page--paymentCancel {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.paymentCancelCard {
+  width: min(100%, 560px);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--white);
+  box-shadow: 0 14px 42px rgba(15, 15, 16, 0.08);
+  padding: 30px 24px;
+  text-align: center;
+}
+
+.paymentCancelCard__icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 14px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #e59f54 0%, #d37a2c 100%);
+  position: relative;
+}
+
+.paymentCancelCard__icon::before,
+.paymentCancelCard__icon::after {
+  content: "";
+  position: absolute;
+  top: 27px;
+  left: 16px;
+  width: 24px;
+  border-top: 3px solid var(--white);
+}
+
+.paymentCancelCard__icon::before {
+  transform: rotate(45deg);
+}
+
+.paymentCancelCard__icon::after {
+  transform: rotate(-45deg);
+}
+
+.paymentCancelCard__actions {
+  margin-top: 20px;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+.paymentCancelCard__button {
+  width: 100%;
+  max-width: 280px;
+  justify-content: center;
+}
+
+.paymentCancelCard__link {
+  font-size: 14px;
+}
