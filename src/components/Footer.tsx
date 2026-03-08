@@ -1,7 +1,11 @@
 import "./Footer.scss";
 import { Link } from "react-router-dom";
 import { useId } from "react";
-import { useCountry, COUNTRY_LIST, type CountryCode } from "../country/useCountry";
+import {
+  useCountry,
+  COUNTRY_LIST,
+  type CountryCode,
+} from "../country/useCountry";
 import logo from "../assets/logo.png";
 import footerImage from "../assets/footerimage.jpg";
 
@@ -93,11 +97,18 @@ export function Footer() {
           </div>
         </div>
 
-        <aside className="footer__promo" aria-label="Newsletter signup" style={{ backgroundImage: `url(${footerImage})` }}>
+        <aside
+          className="footer__promo"
+          aria-label="Newsletter signup"
+          style={{ backgroundImage: `url(${footerImage})` }}
+        >
           <div className="footer__promoOverlay" aria-hidden="true" />
           <div className="footer__promoContent">
-            <div className="footer__promoTitle">Sign up to our newsletter</div>
-            <form
+            <div className="footer__promoTitle">
+              Newsletter sign-ups are launching soon. <br />
+              Stay tuned!
+            </div>
+            {/* <form
               className="footer__promoForm"
               onSubmit={(e) => e.preventDefault()}
             >
@@ -118,7 +129,7 @@ export function Footer() {
                   <span aria-hidden="true">→</span>
                 </button>
               </div>
-            </form>
+            </form> */}
           </div>
         </aside>
       </div>
