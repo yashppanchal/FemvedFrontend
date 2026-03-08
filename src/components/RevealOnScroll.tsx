@@ -5,11 +5,13 @@ import "./RevealOnScroll.scss";
 type RevealOnScrollProps = {
   children: ReactNode;
   className: string;
+  triggerBottomPercent?: number;
 };
 
 export default function RevealOnScroll({
   children,
   className,
+  triggerBottomPercent = 35,
 }: RevealOnScrollProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -29,6 +31,7 @@ export default function RevealOnScroll({
 
     const node = containerRef.current;
     if (!node) return;
+    const clampedTriggerPercent = Math.max(0, Math.min(95, triggerBottomPercent));
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -40,14 +43,14 @@ export default function RevealOnScroll({
       },
       {
         threshold: 0.01,
-        rootMargin: "0px 0px -35% 0px",
+        rootMargin: `0px 0px -${clampedTriggerPercent}% 0px`,
       },
     );
 
     observer.observe(node);
 
     return () => observer.disconnect();
-  }, [isVisible]);
+  }, [isVisible, triggerBottomPercent]);
 
   return (
     <div

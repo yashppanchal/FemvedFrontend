@@ -14,6 +14,7 @@ import {
   buildCloudinarySrcSet,
   optimizeCloudinaryImageUrl,
 } from "../cloudinary/image";
+import RevealOnScroll from "../components/RevealOnScroll";
 
 export default function ProgramDetailPage() {
   const { country: selectedCountryCode, isCountryReady } = useCountry();
@@ -128,7 +129,9 @@ export default function ProgramDetailPage() {
     }
 
     if (!selectedDuration.durationId) {
-      setCheckoutError("This program duration is not available for purchase yet.");
+      setCheckoutError(
+        "This program duration is not available for purchase yet.",
+      );
       return;
     }
 
@@ -146,8 +149,7 @@ export default function ProgramDetailPage() {
 
       if (order.gateway === "CASHFREE") {
         const { load } = await import("@cashfreepayments/cashfree-js");
-        const mode =
-          (import.meta.env.VITE_CASHFREE_MODE ?? "sandbox") as
+        const mode = (import.meta.env.VITE_CASHFREE_MODE ?? "sandbox") as
           | "sandbox"
           | "production";
         const cashfree = await load({ mode });
@@ -160,7 +162,8 @@ export default function ProgramDetailPage() {
 
         if (result?.error) {
           setCheckoutError(
-            result.error.message ?? "Payment was not completed. Please try again.",
+            result.error.message ??
+              "Payment was not completed. Please try again.",
           );
           return;
         }
@@ -172,16 +175,22 @@ export default function ProgramDetailPage() {
         );
       } else if (order.gateway === "PAYPAL") {
         if (!order.approvalUrl) {
-          setCheckoutError("PayPal checkout link is missing. Please try again.");
+          setCheckoutError(
+            "PayPal checkout link is missing. Please try again.",
+          );
           return;
         }
         window.location.assign(order.approvalUrl);
       } else {
-        setCheckoutError("Unexpected payment gateway. Please try again or contact support.");
+        setCheckoutError(
+          "Unexpected payment gateway. Please try again or contact support.",
+        );
       }
     } catch (err) {
       setCheckoutError(
-        err instanceof Error ? err.message : "Failed to initiate payment. Please try again.",
+        err instanceof Error
+          ? err.message
+          : "Failed to initiate payment. Please try again.",
       );
     } finally {
       setCheckoutLoading(false);
@@ -263,21 +272,25 @@ export default function ProgramDetailPage() {
             }
           </p>
           <h2>What you'll receive in this program:</h2>
-          <ul>
+          <RevealOnScroll className="programDetailPage__listReveal">
             {selectedProgram.programPageDisplayDetails?.whatYouGet?.map(
-              (item) => (
-                <li key={item}>{item}</li>
+              (item, idx) => (
+                <li key={item} style={{ transitionDelay: `${idx * 180}ms` }}>
+                  {item}
+                </li>
               ),
             )}
-          </ul>
+          </RevealOnScroll>
           <h2>Who should join this program:</h2>
-          <ul>
+          <RevealOnScroll className="programDetailPage__listReveal">
             {selectedProgram.programPageDisplayDetails?.whoIsThisFor?.map(
-              (item) => (
-                <li key={item}>{item}</li>
+              (item, idx) => (
+                <li key={item} style={{ transitionDelay: `${idx * 180}ms` }}>
+                  {item}
+                </li>
               ),
             )}
-          </ul>
+          </RevealOnScroll>
         </article>
 
         <aside className="programDetailPage__stickyCard">
@@ -347,18 +360,21 @@ export default function ProgramDetailPage() {
                 {selectedProgram.expertName.charAt(0)}
               </div>
             )}
-            <div className="programDetailPage__expertOverlay">
+            <RevealOnScroll
+              className="programDetailPage__expertOverlay"
+              triggerBottomPercent={10}
+            >
               <h3 className="programDetailPage__expertName">
                 {selectedProgram.expertName}
               </h3>
               <p className="programDetailPage__expertTitle">
                 {selectedProgram.expertTitle}
               </p>
-            </div>
+            </RevealOnScroll>
           </div>
-          <div className="programDetailPage__expertRight">
+          <RevealOnScroll className="programDetailPage__expertRight">
             <p>{selectedProgram.expertDetailedDescription}</p>
-          </div>
+          </RevealOnScroll>
         </div>
       </section>
     </section>
