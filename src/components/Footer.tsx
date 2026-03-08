@@ -39,7 +39,7 @@ export function Footer() {
                   </Link>
                 </li>
                 <li className="footer__item">
-                  <Link className="footer__link" to="/learn/know-your-experts">
+                  <Link className="footer__link" to="/meet-the-team">
                     Meet the team
                   </Link>
                 </li>
