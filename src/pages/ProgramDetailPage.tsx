@@ -155,6 +155,18 @@ export default function ProgramDetailPage() {
       <div className="programDetailPage__contentWrap container">
         <article className="programDetailPage__content">
           <p>{selectedProgram.programPageDisplayDetails?.overview}</p>
+          <h3>
+            {
+              selectedProgram.programPageDisplayDetails?.detailSections?.[0]
+                ?.heading
+            }
+          </h3>
+          <p>
+            {
+              selectedProgram.programPageDisplayDetails?.detailSections?.[0]
+                ?.description
+            }
+          </p>
           <h2>What you'll receive in this program:</h2>
           <ul>
             {selectedProgram.programPageDisplayDetails?.whatYouGet?.map(
@@ -227,21 +239,7 @@ export default function ProgramDetailPage() {
             </p>
           </div>
           <div className="programDetailPage__expertRight">
-            <p>{selectedProgram.expertDescription}</p>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut a
-              fringilla sem. Etiam pretium condimentum nulla, porttitor euismod
-              urna dapibus ac. Nullam malesuada nunc metus, non sodales sapien
-              pulvinar at. Ut id magna sed tortor dignissim pulvinar. Nunc
-              blandit consectetur risus, malesuada eleifend ligula feugiat at.
-              Phasellus eu rhoncus justo. Donec ipsum enim, bibendum ut mauris
-              et, pulvinar pharetra elit. Duis iaculis felis ipsum, in volutpat
-              metus imperdiet sed. Fusce sed risus quis nisi posuere mattis.
-              Aliquam erat volutpat. Suspendisse potenti. Sed felis purus,
-              vulputate at ultrices dignissim, dapibus vel orci. Quisque semper
-              nunc euismod est ornare viverra. Donec laoreet libero in nulla
-              laoreet pulvinar.
-            </p>
+            <p>{selectedProgram.expertDetailedDescription}</p>
           </div>
         </div>
       </section>

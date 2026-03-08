@@ -10,6 +10,7 @@ export type GuidedProgramCard = {
   expertName: string;
   expertTitle?: string;
   expertDescription?: string;
+  expertDetailedDescription?: string;
   expertImageUrl?: string;
   body: string;
   imageUrl?: string;
@@ -17,6 +18,10 @@ export type GuidedProgramCard = {
     overview?: string;
     whatYouGet?: string[];
     whoIsThisFor?: string[];
+    detailSections?: Array<{
+      heading?: string;
+      description?: string;
+    }>;
   };
 };
 
@@ -70,13 +75,19 @@ type GuidedTreeResponse = {
         expertDetails?: {
           expertTitle?: string;
           expertDescription?: string;
+          expertDetailedDescription?: string;
           expertImage?: string;
           expertImageUrl?: string;
         };
+        expertDetailedDescription?: string;
         programPageDisplayDetails?: {
           overview?: string;
           whatYouGet?: string[];
           whoIsThisFor?: string[];
+          detailSections?: Array<{
+            heading?: string;
+            description?: string;
+          }>;
         };
       }>;
     }>;
@@ -129,6 +140,12 @@ function mapApiCategoryToProgram(
         expertTitle: program.expertTitle ?? expertDetails.expertTitle ?? "",
         expertDescription:
           program.expertDescription ?? expertDetails.expertDescription ?? "",
+        expertDetailedDescription:
+          program.expertDetailedDescription ??
+          expertDetails.expertDetailedDescription ??
+          program.expertDescription ??
+          expertDetails.expertDescription ??
+          "",
         expertImageUrl:
           program.expertImageUrl ??
           program.expertImage ??
@@ -141,6 +158,11 @@ function mapApiCategoryToProgram(
           overview: program.programPageDisplayDetails?.overview ?? "",
           whatYouGet: program.programPageDisplayDetails?.whatYouGet ?? [],
           whoIsThisFor: program.programPageDisplayDetails?.whoIsThisFor ?? [],
+          detailSections:
+            program.programPageDisplayDetails?.detailSections?.map((section) => ({
+              heading: section.heading ?? "",
+              description: section.description ?? "",
+            })) ?? [],
         },
       };
     }),

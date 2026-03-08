@@ -152,6 +152,11 @@
   margin-bottom: 16px;
 }
 
+.programDetailPage__priceOptions .primaryOutlineButton {
+  width: 100%;
+  min-width: 0;
+}
+
 .programDetailPage__priceOptions--single {
   max-width: 220px;
   margin-left: auto;
