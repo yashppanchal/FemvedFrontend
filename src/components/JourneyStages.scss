@@ -60,15 +60,6 @@
   border-radius: 16px;
   overflow: hidden;
   height: clamp(130px, 14vw, 170px);
-  text-decoration: none;
-  color: var(--white);
-  cursor: pointer;
-  transition: transform 260ms ease, box-shadow 260ms ease;
-}
-
-.stageCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(15, 15, 16, 0.16);
   color: var(--white);
 }
 

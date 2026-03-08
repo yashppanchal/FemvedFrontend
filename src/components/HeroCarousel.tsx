@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { FaPause, FaPlay } from "react-icons/fa";
 import { PrimaryButton } from "./PrimaryButton";
 import "./HeroCarousel.scss";
-import firstscroll from "../assets/homepage/firstscroll.jpg";
-import secondscroll from "../assets/homepage/secondscroll.jpg";
+// import firstscroll from "../assets/homepage/firstscroll.jpg";
+// import secondscroll from "../assets/homepage/secondscroll.jpg";
 
 type Slide = {
   type: "split" | "image" | "healthcare";
@@ -14,6 +14,11 @@ type Slide = {
   ctaLabel?: string;
   ctaTo?: string;
 };
+
+const firstscroll =
+  "https://res.cloudinary.com/dh8aj0hzw/image/upload/v1772965681/firstscroll_ewcqc3.jpg";
+const secondscroll =
+  "https://res.cloudinary.com/dh8aj0hzw/image/upload/v1772965682/secondscroll_sqzgwe.jpg";
 
 const AUTOPLAY_MS = 5000;
 

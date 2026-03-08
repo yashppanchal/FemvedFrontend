@@ -49,13 +49,7 @@ export function JourneyStages() {
         {/* Right — cards */}
         <div className="journeyStages__cards">
           {stages.map((stage) => (
-            <a
-              key={stage.title}
-              className="stageCard"
-              href="#"
-              role="button"
-              aria-label={stage.title}
-            >
+            <div key={stage.title} className="stageCard">
               <img
                 className="stageCard__bg"
                 src={stage.imageUrl}
@@ -69,7 +63,7 @@ export function JourneyStages() {
                 <h3 className="stageCard__title">{stage.title}</h3>
                 <p className="stageCard__desc">{stage.description}</p>
               </div>
-            </a>
+            </div>
           ))}
         </div>
       </div>
