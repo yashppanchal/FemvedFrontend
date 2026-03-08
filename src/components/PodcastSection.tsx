@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FaPlay } from "react-icons/fa";
 import "./PodcastSection.scss";
+import RevealOnScroll from "./RevealOnScroll";
 
 type PodcastEpisode = {
   id: string;
@@ -67,7 +68,7 @@ export function PodcastSection() {
     <section className="podcastSection">
       <div className="podcastSection__inner">
         {/* ─── Left: Featured episode ─── */}
-        <div className="podcastSection__featured">
+        <RevealOnScroll className="podcastSection__featured">
           <div className="podcastSection__player" ref={playerRef}>
             {isVisible && (
               <iframe
@@ -87,10 +88,10 @@ export function PodcastSection() {
             talk from women's health experts who've been in your shoes, sharing
             their wisdom to help you feel more in tune with yourself.
           </p>
-        </div>
+        </RevealOnScroll>
 
         {/* ─── Right: Episode list ─── */}
-        <div className="podcastSection__list">
+        <RevealOnScroll className="podcastSection__list">
           <h2 className="podcastSection__heading">
             Best of <span className="podcastSection__headingSep">|</span> Her
             Daily Rhythm Podcast
@@ -128,7 +129,7 @@ export function PodcastSection() {
               </div>
             ))}
           </div>
-        </div>
+        </RevealOnScroll>
       </div>
     </section>
   );

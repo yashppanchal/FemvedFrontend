@@ -4,6 +4,7 @@ import {
   buildCloudinarySrcSet,
   optimizeCloudinaryImageUrl,
 } from "../cloudinary/image";
+import RevealOnScroll from "./RevealOnScroll";
 // import community1 from "../assets/homepage/community/1.png";
 // import community2 from "../assets/homepage/community/2.png";
 // import community3 from "../assets/homepage/community/3.png";
@@ -40,7 +41,7 @@ export function CommunitySection() {
   return (
     <section className="communitySection">
       <div className="communitySection__inner">
-        <div className="communitySection__header">
+        <RevealOnScroll className="communitySection__header">
           <h2 className="communitySection__title">
             Healing was never meant to be quiet or alone.
           </h2>
@@ -49,7 +50,7 @@ export function CommunitySection() {
             stories, strength, and guidance from experts who truly understand a
             woman’s rhythm.
           </p>
-        </div>
+        </RevealOnScroll>
 
         <div className="communitySection__collage">
           {collageImages.map((img) => (

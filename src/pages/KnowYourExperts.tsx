@@ -1,5 +1,6 @@
 // import { FaLinkedinIn } from "react-icons/fa";
 import { PrimaryButton } from "../components/PrimaryButton";
+import RevealOnScroll from "../components/RevealOnScroll";
 import "./KnowYourExperts.scss";
 
 type Expert = {
@@ -126,17 +127,17 @@ export default function KnowYourExperts() {
   return (
     <section className="page experts">
       {/* ── Hero ── */}
-      <div className="experts__hero">
+      <RevealOnScroll className="experts__hero">
         <h1 className="page__title experts__title">Know Your Experts</h1>
         <p className="page__lead experts__lead">
           Every expert at FemVed is a trusted woman practitioner—carefully
           selected for her deep knowledge, empathy, and commitment to holistic
           women's health. Get to know the people guiding your wellness journey.
         </p>
-      </div>
+      </RevealOnScroll>
 
       {/* ── Expert grid ── */}
-      <div className="experts__grid">
+      <RevealOnScroll className="experts__grid">
         {EXPERTS.map((expert) => (
           <article key={expert.name} className="expertCard">
             <div className="expertCard__imageWrap">
@@ -174,10 +175,10 @@ export default function KnowYourExperts() {
             </div>
           </article>
         ))}
-      </div>
+      </RevealOnScroll>
 
       {/* ── CTA ── */}
-      <div className="experts__cta">
+      <RevealOnScroll className="experts__cta">
         <h2 className="experts__ctaTitle">
           Ready to begin your wellness journey?
         </h2>
@@ -189,7 +190,7 @@ export default function KnowYourExperts() {
           label="Explore Guided Programs"
           to="/guided/hormonal-health-support"
         />
-      </div>
+      </RevealOnScroll>
     </section>
   );
 }

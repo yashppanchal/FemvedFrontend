@@ -3,6 +3,7 @@ import {
   buildCloudinarySrcSet,
   optimizeCloudinaryImageUrl,
 } from "../cloudinary/image";
+import RevealOnScroll from "./RevealOnScroll";
 // import benefits1 from "../assets/homepage/benefits1.png";
 // import benefits2 from "../assets/homepage/benefits2.png";
 // import benefits3 from "../assets/homepage/benefits3.png";
@@ -63,7 +64,7 @@ export function BenefitsBentoGrid() {
 
       <div className="benefitsBentoGrid__inner">
         {/* Top row — 3 cards */}
-        <div className="benefitsBentoGrid__row benefitsBentoGrid__row--top">
+        <RevealOnScroll className="benefitsBentoGrid__row benefitsBentoGrid__row--top">
           {cards.slice(0, 3).map((card) => (
             <div
               key={card.id}
@@ -82,10 +83,10 @@ export function BenefitsBentoGrid() {
               />
             </div>
           ))}
-        </div>
+        </RevealOnScroll>
 
         {/* Bottom row — 2 cards */}
-        <div className="benefitsBentoGrid__row benefitsBentoGrid__row--bottom">
+        <RevealOnScroll className="benefitsBentoGrid__row benefitsBentoGrid__row--bottom">
           {cards.slice(3).map((card) => (
             <div
               key={card.id}
@@ -104,7 +105,7 @@ export function BenefitsBentoGrid() {
               />
             </div>
           ))}
-        </div>
+        </RevealOnScroll>
       </div>
     </section>
   );

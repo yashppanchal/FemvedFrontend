@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { FaPause, FaPlay } from "react-icons/fa";
 import { PrimaryButton } from "./PrimaryButton";
+import RevealOnScroll from "./RevealOnScroll";
 import {
   buildCloudinarySrcSet,
   optimizeCloudinaryImageUrl,
@@ -81,13 +82,13 @@ export function HeroCarousel() {
                   className="heroCarousel__slide heroCarousel__slide--split"
                   aria-hidden={activeIndex !== idx}
                 >
-                  <div className="heroCarousel__content">
+                  <RevealOnScroll className="heroCarousel__content">
                     <h2 className="heroCarousel__title">{s.title}</h2>
                     <p className="heroCarousel__body">{s.body}</p>
                     {s.ctaTo && s.ctaLabel ? (
                       <PrimaryButton label={s.ctaLabel} to={s.ctaTo} />
                     ) : null}
-                  </div>
+                  </RevealOnScroll>
 
                   <div className="heroCarousel__media" aria-hidden="true">
                     <img
@@ -116,7 +117,7 @@ export function HeroCarousel() {
                   className="heroCarousel__slide heroCarousel__slide--healthcare"
                   aria-hidden={activeIndex !== idx}
                 >
-                  <div className="hc__left">
+                  <RevealOnScroll className="hc__left">
                     <h2 className="hc__headline">
                       Here,
                       <br />
@@ -140,7 +141,7 @@ export function HeroCarousel() {
                         to="/all-guided-programs"
                       />
                     </div>
-                  </div>
+                  </RevealOnScroll>
 
                   <div className="hc__right" aria-hidden="true">
                     <img

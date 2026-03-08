@@ -3,6 +3,7 @@ import {
   buildCloudinarySrcSet,
   optimizeCloudinaryImageUrl,
 } from "../cloudinary/image";
+import RevealOnScroll from "./RevealOnScroll";
 // import healthConcernsImg from "../assets/homepage/health-concerns.jpg";
 // import lifestageImg from "../assets/homepage/lifestage.jpg";
 // import lifestyle2Img from "../assets/homepage/lifestyle2.jpg";
@@ -58,7 +59,7 @@ export function JourneyStages() {
         </div>
 
         {/* Right — cards */}
-        <div className="journeyStages__cards">
+        <RevealOnScroll className="journeyStages__cards">
           {stages.map((stage) => (
             <div key={stage.title} className="stageCard">
               <img
@@ -66,7 +67,10 @@ export function JourneyStages() {
                 src={optimizeCloudinaryImageUrl(stage.imageUrl, {
                   width: 720,
                 })}
-                srcSet={buildCloudinarySrcSet(stage.imageUrl, [320, 480, 640, 800])}
+                srcSet={buildCloudinarySrcSet(
+                  stage.imageUrl,
+                  [320, 480, 640, 800],
+                )}
                 sizes="(max-width: 820px) 100vw, 45vw"
                 alt=""
                 loading="lazy"
@@ -80,7 +84,7 @@ export function JourneyStages() {
               </div>
             </div>
           ))}
-        </div>
+        </RevealOnScroll>
       </div>
     </section>
   );
