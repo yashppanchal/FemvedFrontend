@@ -12,7 +12,7 @@ import { initiateOrder } from "../api/orders";
 import { hasValidAccessToken } from "../auth/useAuth";
 
 export default function ProgramDetailPage() {
-  const { country } = useCountry();
+  const { country: selectedCountryCode } = useCountry();
   const { user, tokens } = useAuth();
   const navigate = useNavigate();
   const { programSlug, programId } = useParams<{
@@ -34,7 +34,7 @@ export default function ProgramDetailPage() {
       setHasError(false);
 
       try {
-        const payload = await loadGuidedPrograms(country);
+        const payload = await loadGuidedPrograms(selectedCountryCode);
         if (isActive) {
           setCategories(payload);
         }
@@ -54,7 +54,7 @@ export default function ProgramDetailPage() {
     return () => {
       isActive = false;
     };
-  }, [country]);
+  }, [selectedCountryCode]);
 
   const selectedProgram = useMemo(() => {
     if (!programId) return null;
@@ -116,11 +116,10 @@ export default function ProgramDetailPage() {
     setCheckoutError(null);
 
     try {
-      const gateway = country === "IN" ? "CashFree" : "PayPal";
-      const apiCountryCode = country === "UK" ? "GB" : country;
+      const gateway = selectedCountryCode === "IN" ? "CashFree" : "PayPal";
       const order = await initiateOrder({
         durationId: selectedDuration.durationId,
-        countryCode: apiCountryCode,
+        countryCode: selectedCountryCode,
         gateway,
         idempotencyKey: crypto.randomUUID(),
       });

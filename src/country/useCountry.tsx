@@ -158,7 +158,7 @@ export function CountryProvider({ children }: { children: ReactNode }) {
         persistCountry(resolvedCountry);
       })
       .catch(() => {
-        // no-op: keep default "IN" value if geolocation lookup fails
+        // no-op: keep default "US" value if geolocation lookup fails
       });
 
     return () => {

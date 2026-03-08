@@ -203,7 +203,7 @@ function mapApiCategoryToProgram(
 }
 
 export async function loadGuidedPrograms(
-  countryCode: CountryCode = "IN",
+  countryCode: CountryCode = "US",
 ): Promise<GuidedProgramInfo[]> {
   const cachedPrograms = guidedProgramsCache.get(countryCode);
   if (cachedPrograms) {
