@@ -13,6 +13,8 @@ export type ProgramCard = {
   imageUrl?: string;
 };
 
+export const CHOOSE_SECTION_ID = "guided-program-choose-section";
+
 type ChooseSectionProps = {
   keyAreas: string[];
   programs: ProgramCard[];
@@ -27,7 +29,7 @@ export function ChooseSection({
   const carouselRef = useRef<HTMLDivElement | null>(null);
 
   return (
-    <div className="guidedProgramDetail__choose">
+    <div className="guidedProgramDetail__choose" id={CHOOSE_SECTION_ID}>
       <div className="guidedProgramDetail__chooseLeft">
         <h2 className="guidedProgramDetail__chooseTitle">
           Choose and book the guided journey that best fits your needs, goals,

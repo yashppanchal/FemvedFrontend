@@ -49,7 +49,7 @@ export default function AllPrograms() {
   const [hasError, setHasError] = useState(false);
 
   const [selectedCategoryType, setSelectedCategoryType] = useState("all");
-  const [selectedCurrency, setSelectedCurrency] = useState("all");
+  const [selectedExpert, setSelectedExpert] = useState("all");
   const [selectedDuration, setSelectedDuration] = useState("all");
   const [minPriceInput, setMinPriceInput] = useState("");
   const [maxPriceInput, setMaxPriceInput] = useState("");
@@ -136,15 +136,8 @@ export default function AllPrograms() {
     [programs],
   );
 
-  const currencies = useMemo(
-    () =>
-      Array.from(
-        new Set(
-          programs.flatMap((program) =>
-            program.durations.map((duration) => duration.parsed.currency),
-          ),
-        ),
-      ).sort(),
+  const expertOptions = useMemo(
+    () => Array.from(new Set(programs.map((program) => program.expertName))).sort(),
     [programs],
   );
 
@@ -166,9 +159,7 @@ export default function AllPrograms() {
       const categoryMatch =
         selectedCategoryType === "all" || program.categoryType === selectedCategoryType;
 
-      const currencyMatch =
-        selectedCurrency === "all" ||
-        program.durations.some((duration) => duration.parsed.currency === selectedCurrency);
+      const expertMatch = selectedExpert === "all" || program.expertName === selectedExpert;
 
       const durationMatch =
         selectedDuration === "all" ||
@@ -183,20 +174,20 @@ export default function AllPrograms() {
       });
 
       const hasPriceFilter = minPrice !== null || maxPrice !== null;
-      return categoryMatch && currencyMatch && durationMatch && (hasPriceFilter ? priceMatch : true);
+      return categoryMatch && expertMatch && durationMatch && (hasPriceFilter ? priceMatch : true);
     });
   }, [
     maxPriceInput,
     minPriceInput,
     programs,
     selectedCategoryType,
-    selectedCurrency,
+    selectedExpert,
     selectedDuration,
   ]);
 
   const hasAnyFilter =
     selectedCategoryType !== "all" ||
-    selectedCurrency !== "all" ||
+    selectedExpert !== "all" ||
     selectedDuration !== "all" ||
     minPriceInput.trim() !== "" ||
     maxPriceInput.trim() !== "";
@@ -264,19 +255,19 @@ export default function AllPrograms() {
             </div>
 
             <div className="field">
-              <label className="field__label" htmlFor="currency">
-                Currency
+              <label className="field__label" htmlFor="expert">
+                Expert
               </label>
               <select
-                id="currency"
+                id="expert"
                 className="field__input allProgramsPage__select"
-                value={selectedCurrency}
-                onChange={(event) => setSelectedCurrency(event.target.value)}
+                value={selectedExpert}
+                onChange={(event) => setSelectedExpert(event.target.value)}
               >
-                <option value="all">All currencies</option>
-                {currencies.map((currency) => (
-                  <option key={currency} value={currency}>
-                    {currency}
+                <option value="all">All experts</option>
+                {expertOptions.map((expert) => (
+                  <option key={expert} value={expert}>
+                    {expert}
                   </option>
                 ))}
               </select>
@@ -339,7 +330,7 @@ export default function AllPrograms() {
                 className="button allProgramsPage__clearBtn"
                 onClick={() => {
                   setSelectedCategoryType("all");
-                  setSelectedCurrency("all");
+                  setSelectedExpert("all");
                   setSelectedDuration("all");
                   setMinPriceInput("");
                   setMaxPriceInput("");

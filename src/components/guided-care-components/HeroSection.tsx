@@ -8,6 +8,7 @@ import {
   buildCloudinarySrcSet,
   optimizeCloudinaryImageUrl,
 } from "../../cloudinary/image";
+import { CHOOSE_SECTION_ID } from "./ChooseSection";
 
 const GUIDED_CARE_HERO_IMAGES: Record<string, string> = {
   hormonal,
@@ -21,7 +22,6 @@ type HeroSectionProps = {
   heroSubtext: string;
   imageSlug?: string;
   ctaLabel?: string;
-  ctaTo?: string;
 };
 
 export function HeroSection({
@@ -29,8 +29,22 @@ export function HeroSection({
   heroSubtext,
   imageSlug,
   ctaLabel,
-  ctaTo,
 }: HeroSectionProps) {
+  const handleCtaClick = () => {
+    const chooseSection = document.getElementById(CHOOSE_SECTION_ID);
+    if (!chooseSection) return;
+
+    const header = document.querySelector(".layout__header");
+    const headerHeight = header?.getBoundingClientRect().height ?? 0;
+    const targetTop =
+      chooseSection.getBoundingClientRect().top + window.scrollY - headerHeight;
+
+    window.scrollTo({
+      top: Math.max(0, targetTop),
+      behavior: "smooth",
+    });
+  };
+
   const normalizedImage = imageSlug?.trim() ?? "";
   const resolvedHeroImage =
     (normalizedImage && GUIDED_CARE_HERO_IMAGES[normalizedImage]) ||
@@ -66,9 +80,9 @@ export function HeroSection({
         <h1 className="page__title guidedProgramDetail__title">{heroTitle}</h1>
         <p className="page__lead guidedProgramDetail__subtext">{heroSubtext}</p>
 
-        {ctaLabel && ctaTo ? (
+        {ctaLabel ? (
           <div className="guidedProgramDetail__ctaRow">
-            <PrimaryButton label={ctaLabel} to={ctaTo} />
+            <PrimaryButton label={ctaLabel} onClick={handleCtaClick} />
           </div>
         ) : null}
       </div>
