@@ -2,6 +2,7 @@ import {
   buildCloudinarySrcSet,
   optimizeCloudinaryImageUrl,
 } from "../../cloudinary/image";
+import RevealOnScroll from "../RevealOnScroll";
 
 // import easyConnect from "../../assets/benefits-guided-care/easyconnect.jpg";
 // import comprehensivePersonal from "../../assets/benefits-guided-care/comprehensive.jpg";
@@ -50,7 +51,7 @@ export function ZigzagSection() {
       className="guidedProgramDetail__zigzag"
       aria-labelledby="guidedProgramDetail-zigzag-title"
     >
-      <div className="guidedProgramDetail__zigzagIntro">
+      <RevealOnScroll className="guidedProgramDetail__zigzagIntro">
         <h2
           id="guidedProgramDetail-zigzag-title"
           className="guidedProgramDetail__zigzagTitle"
@@ -64,11 +65,11 @@ export function ZigzagSection() {
           personalised program. Here is what you can expect from our platform
           and our experts.
         </p>
-      </div>
+      </RevealOnScroll>
 
       <div className="guidedProgramDetail__zigzagRows">
         {ZIGZAG_ITEMS.map((item, idx) => (
-          <article
+          <RevealOnScroll
             key={`${item.title}-${idx}`}
             className={`guidedProgramDetail__zigzagRow${
               idx % 2 ? " guidedProgramDetail__zigzagRow--reverse" : ""
@@ -93,7 +94,7 @@ export function ZigzagSection() {
               </h3>
               <p className="guidedProgramDetail__zigzagItemBody">{item.body}</p>
             </div>
-          </article>
+          </RevealOnScroll>
         ))}
       </div>
     </section>

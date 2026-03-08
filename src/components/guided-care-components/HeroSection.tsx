@@ -1,4 +1,5 @@
 import { PrimaryButton } from "../PrimaryButton";
+import RevealOnScroll from "../RevealOnScroll";
 import heroImage from "../../assets/hero-slide-2.svg";
 import hormonal from "../../assets/guided-care-hero/hormonal.jpg";
 import longevity from "../../assets/guided-care-hero/longevity.jpg";
@@ -76,7 +77,7 @@ export function HeroSection({
         />
       </div>
 
-      <div className="guidedProgramDetail__heroContent">
+      <RevealOnScroll className="guidedProgramDetail__heroContent">
         <h1 className="page__title guidedProgramDetail__title">{heroTitle}</h1>
         <p className="page__lead guidedProgramDetail__subtext">{heroSubtext}</p>
 
@@ -85,7 +86,7 @@ export function HeroSection({
             <PrimaryButton label={ctaLabel} onClick={handleCtaClick} />
           </div>
         ) : null}
-      </div>
+      </RevealOnScroll>
     </div>
   );
 }
