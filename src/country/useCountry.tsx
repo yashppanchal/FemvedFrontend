@@ -80,7 +80,13 @@ function persistCountry(code: CountryCode): void {
 }
 
 async function fetchDetectedCountry(): Promise<CountryCode> {
-  const response = await fetch("/.netlify/functions/country");
+  const response = await fetch("/.netlify/functions/country", {
+    cache: "no-store",
+    headers: {
+      "Cache-Control": "no-cache",
+      Pragma: "no-cache",
+    },
+  });
   if (!response.ok) {
     throw new Error(`Country lookup failed with status ${response.status}`);
   }

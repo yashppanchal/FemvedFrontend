@@ -37,18 +37,57 @@ function readGeoCountryFromHeader(headers) {
   return undefined;
 }
 
-export const handler = async (event) => {
+function readGeoCountryFromContext(context) {
+  return context?.geo?.country?.code;
+}
+
+function detectRawCountry(event, context) {
   const headers = event?.headers ?? {};
-  const rawCountryCode =
-    getHeader(headers, "x-nf-geo-country-code") ??
-    readGeoCountryFromHeader(headers) ??
-    getHeader(headers, "x-country") ??
-    getHeader(headers, "cf-ipcountry");
+
+  const fromContext = readGeoCountryFromContext(context);
+  if (fromContext) return { rawCountryCode: fromContext, source: "context.geo.country.code" };
+
+  const fromGeoHeaderCode = getHeader(headers, "x-nf-geo-country-code");
+  if (fromGeoHeaderCode) {
+    return { rawCountryCode: fromGeoHeaderCode, source: "x-nf-geo-country-code" };
+  }
+
+  const fromGeoHeader = readGeoCountryFromHeader(headers);
+  if (fromGeoHeader) return { rawCountryCode: fromGeoHeader, source: "x-nf-geo" };
+
+  const fromXCountry = getHeader(headers, "x-country");
+  if (fromXCountry) return { rawCountryCode: fromXCountry, source: "x-country" };
+
+  const fromCfCountry = getHeader(headers, "cf-ipcountry");
+  if (fromCfCountry) return { rawCountryCode: fromCfCountry, source: "cf-ipcountry" };
+
+  return { rawCountryCode: undefined, source: "fallback-default" };
+}
+
+export const handler = async (event, context) => {
+  const { rawCountryCode, source } = detectRawCountry(event, context);
+  const debugMode = event?.queryStringParameters?.debug === "1";
 
   const countryCode = normalizeCountryCode(rawCountryCode);
+  const responseBody = debugMode
+    ? {
+        countryCode,
+        debug: {
+          source,
+          rawCountryCode: rawCountryCode ?? null,
+          contextGeoCountryCode: context?.geo?.country?.code ?? null,
+        },
+      }
+    : { countryCode };
 
   return {
     statusCode: 200,
-    body: JSON.stringify({ countryCode }),
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store, no-cache, must-revalidate",
+      Pragma: "no-cache",
+      Expires: "0",
+    },
+    body: JSON.stringify(responseBody),
   };
 };
