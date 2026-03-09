@@ -289,7 +289,9 @@ async function doFetch(countryCode: CountryCode, version: number): Promise<Guide
   if (active) return active;
 
   const request = (async () => {
-    const query = new URLSearchParams({ countryCode });
+    // Backend uses ISO 3166-1 alpha-2 ("GB") while the frontend uses "UK" internally
+    const apiCountryCode = countryCode === "UK" ? "GB" : countryCode;
+    const query = new URLSearchParams({ countryCode: apiCountryCode });
     const response = await fetch(
       `https://api.femved.com/api/v1/guided/tree?${query.toString()}`,
     );
