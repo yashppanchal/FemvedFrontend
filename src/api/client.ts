@@ -27,9 +27,14 @@ export class ApiError extends Error {
   body: unknown;
 
   constructor(status: number, body: unknown) {
+    // Try backend ProblemDetails "detail" field first, then "message", then generic
     const msg =
-      typeof body === "object" && body !== null && "message" in body
-        ? String((body as Record<string, unknown>).message)
+      typeof body === "object" && body !== null
+        ? (body as Record<string, unknown>).detail
+          ? String((body as Record<string, unknown>).detail)
+          : (body as Record<string, unknown>).message
+            ? String((body as Record<string, unknown>).message)
+            : `Request failed with status ${status}`
         : `Request failed with status ${status}`;
     super(msg);
     this.status = status;

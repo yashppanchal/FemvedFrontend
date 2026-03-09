@@ -82,7 +82,7 @@ export default function ExpertCreateProgramTab() {
 
     const prices = [];
     if (form.priceIN) prices.push({ locationCode: "IN", amount: Number(form.priceIN), currencyCode: "INR", currencySymbol: "₹" });
-    if (form.priceUK) prices.push({ locationCode: "UK", amount: Number(form.priceUK), currencyCode: "GBP", currencySymbol: "£" });
+    if (form.priceUK) prices.push({ locationCode: "GB", amount: Number(form.priceUK), currencyCode: "GBP", currencySymbol: "£" });
     if (form.priceUS) prices.push({ locationCode: "US", amount: Number(form.priceUS), currencyCode: "USD", currencySymbol: "$" });
 
     if (prices.length === 0) {
