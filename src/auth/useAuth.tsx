@@ -58,7 +58,7 @@ interface AuthContextValue {
   user: User | null;
   tokens: AuthTokens | null;
   login: (email: string, password: string) => Promise<LoginResult>;
-  register: (data: RegisterData) => Promise<string | null>;
+  register: (data: RegisterData) => Promise<LoginResult>;
   updateUser: (data: UpdateProfileData) => string | null;
   updateAuthUser: (update: { firstName?: string; lastName?: string }) => void;
   logout: () => void;
@@ -298,10 +298,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [],
   );
 
-  /** Returns an error message string, or null on success. */
-  const register = useCallback(async (data: RegisterData): Promise<string | null> => {
-    if (data.password !== data.confirmPassword) return "Passwords do not match.";
-    if (data.password.length < 6) return "Password must be at least 6 characters.";
+  /** Returns LoginResult — same shape as login() — so callers can redirect appropriately. */
+  const register = useCallback(async (data: RegisterData): Promise<LoginResult> => {
+    if (data.password !== data.confirmPassword) return { error: "Passwords do not match.", redirectTo: "/" };
+    if (data.password.length < 6) return { error: "Password must be at least 6 characters.", redirectTo: "/" };
 
     try {
       const payload: RegisterRequest = {
@@ -334,12 +334,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
 
       setUser(newUser);
-      return null;
+      return { error: null, redirectTo: getDashboardPath(newUser.role) };
     } catch (err) {
       if (err instanceof ApiError) {
-        return err.message;
+        return { error: err.message, redirectTo: "/" };
       }
-      return "Something went wrong. Please try again.";
+      return { error: "Something went wrong. Please try again.", redirectTo: "/" };
     }
   }, []);
 

@@ -1,5 +1,5 @@
 import { type FormEvent, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth, type RegisterData } from "../auth/useAuth";
 import { useCountry, validatePhone, COUNTRY_LIST, type CountryCode } from "../country/useCountry";
 import "./Register.scss";
@@ -7,6 +7,7 @@ import "./Register.scss";
 export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { country, countryInfo } = useCountry();
   const [selectedCountry, setSelectedCountry] = useState<CountryCode>(country);
   const selectedCountryInfo = COUNTRY_LIST.find((c) => c.code === selectedCountry) ?? countryInfo;
@@ -63,7 +64,7 @@ export default function Register() {
 
     setLoading(true);
 
-    const err = await register({
+    const result = await register({
       email: email.trim(),
       password,
       confirmPassword,
@@ -75,12 +76,23 @@ export default function Register() {
 
     setLoading(false);
 
-    if (err) {
-      setError(err);
+    if (result.error) {
+      setError(result.error);
       return;
     }
 
-    navigate("/");
+    if (result.redirectTo !== "/") {
+      // Admin or Expert — go to their dedicated dashboard
+      navigate(result.redirectTo, { replace: true });
+    } else {
+      // Regular user — go back to the page they came from, or home
+      const state = location.state as { from?: { pathname?: string; search?: string; hash?: string } } | null;
+      const from = state?.from;
+      const destination = from?.pathname && from.pathname.startsWith("/")
+        ? `${from.pathname}${from.search ?? ""}${from.hash ?? ""}`
+        : "/";
+      navigate(destination, { replace: true });
+    }
   };
 
   return (
