@@ -149,11 +149,6 @@ export function CountryProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const stored = window.localStorage.getItem(COUNTRY_STORAGE_KEY);
-    if (stored) {
-      setIsCountryReady(true);
-      return;
-    }
 
     let isActive = true;
 
