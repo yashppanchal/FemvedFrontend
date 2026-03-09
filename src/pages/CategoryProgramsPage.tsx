@@ -53,6 +53,8 @@ export default function CategoryProgramsPage() {
   }, [categorySlug, allCategories]);
 
   const programs: GuidedProgramCard[] = category?.programsInCategory ?? [];
+  const whatsIncluded: string[] = category?.whatsIncluded ?? [];
+  const keyAreas: string[] = category?.keyAreas ?? [];
 
   if (loading) {
     return (
@@ -86,6 +88,7 @@ export default function CategoryProgramsPage() {
 
   return (
     <section className="page categoryProgramsPage">
+      {/* Breadcrumb */}
       <nav className="categoryProgramsPage__breadcrumb" aria-label="Breadcrumb">
         <Link className="categoryProgramsPage__breadcrumbLink" to="/">Home</Link>
         <span className="categoryProgramsPage__breadcrumbSep" aria-hidden="true">›</span>
@@ -99,16 +102,57 @@ export default function CategoryProgramsPage() {
         <span className="categoryProgramsPage__breadcrumbCurrent">Programs</span>
       </nav>
 
-      <header className="categoryProgramsPage__header">
-        <p className="categoryProgramsPage__eyebrow">Guided 1:1 Care</p>
-        <h1 className="categoryProgramsPage__title">{category.programType}</h1>
-        {category.heroSubtext && (
-          <p className="categoryProgramsPage__subtext">{category.heroSubtext}</p>
+      {/* ── Section 1: Category overview ─────────────────────────────────── */}
+      <div className="categoryProgramsPage__intro">
+        <div className="categoryProgramsPage__introText">
+          <p className="categoryProgramsPage__eyebrow">Guided 1:1 Care</p>
+          <h1 className="categoryProgramsPage__title">{category.programType}</h1>
+          {category.heroSubtext && (
+            <p className="categoryProgramsPage__subtext">{category.heroSubtext}</p>
+          )}
+        </div>
+
+        {whatsIncluded.length > 0 && (
+          <div className="categoryProgramsPage__included">
+            <h2 className="categoryProgramsPage__sectionHeading">What's included in every program</h2>
+            <ul className="categoryProgramsPage__includedList">
+              {whatsIncluded.map((item, i) => (
+                <li key={i} className="categoryProgramsPage__includedItem">
+                  <span className="categoryProgramsPage__includedCheck" aria-hidden="true">✓</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
+      </div>
+
+      {/* ── Section 2: Key areas ─────────────────────────────────────────── */}
+      {keyAreas.length > 0 && (
+        <div className="categoryProgramsPage__keyAreas">
+          <h2 className="categoryProgramsPage__sectionHeading">
+            Key areas where you can receive personalised support
+          </h2>
+          <ul className="categoryProgramsPage__keyAreasList">
+            {keyAreas.map((area, i) => (
+              <li key={i} className="categoryProgramsPage__keyAreaItem">
+                <span className="categoryProgramsPage__keyAreaCheck" aria-hidden="true">✓</span>
+                <span>{area.trim()}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* ── Programs grid ────────────────────────────────────────────────── */}
+      <div className="categoryProgramsPage__programsHeader">
+        <h2 className="categoryProgramsPage__programsTitle">
+          Choose the program that's right for you
+        </h2>
         <p className="categoryProgramsPage__count">
           {programs.length} {programs.length === 1 ? "program" : "programs"} available
         </p>
-      </header>
+      </div>
 
       {programs.length === 0 ? (
         <div className="card categoryProgramsPage__empty">
@@ -141,7 +185,7 @@ export default function CategoryProgramsPage() {
               </div>
 
               <div className="categoryProgramsPage__body">
-                <h2 className="categoryProgramsPage__programName">{program.programName}</h2>
+                <h3 className="categoryProgramsPage__programName">{program.programName}</h3>
                 <p className="categoryProgramsPage__expert">
                   By <strong>{program.expertName}</strong>
                   {program.expertTitle && (

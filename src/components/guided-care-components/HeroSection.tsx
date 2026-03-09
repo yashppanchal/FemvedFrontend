@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { PrimaryButton } from "../PrimaryButton";
 import RevealOnScroll from "../RevealOnScroll";
 import heroImage from "../../assets/hero-slide-2.svg";
@@ -9,7 +10,6 @@ import {
   buildCloudinarySrcSet,
   optimizeCloudinaryImageUrl,
 } from "../../cloudinary/image";
-import { CHOOSE_SECTION_ID } from "./ChooseSection";
 
 const GUIDED_CARE_HERO_IMAGES: Record<string, string> = {
   hormonal,
@@ -23,6 +23,8 @@ type HeroSectionProps = {
   heroSubtext: string;
   imageSlug?: string;
   ctaLabel?: string;
+  /** If provided, the CTA button navigates to this route instead of smooth-scrolling. */
+  ctaTo?: string;
 };
 
 export function HeroSection({
@@ -30,20 +32,22 @@ export function HeroSection({
   heroSubtext,
   imageSlug,
   ctaLabel,
+  ctaTo,
 }: HeroSectionProps) {
-  const handleCtaClick = () => {
-    const chooseSection = document.getElementById(CHOOSE_SECTION_ID);
-    if (!chooseSection) return;
+  const navigate = useNavigate();
 
+  const handleCtaClick = () => {
+    if (ctaTo) {
+      navigate(ctaTo);
+      return;
+    }
+    // Fallback: smooth-scroll to programs section on same page
+    const target = document.querySelector<HTMLElement>("[data-programs-section]");
+    if (!target) return;
     const header = document.querySelector(".layout__header");
     const headerHeight = header?.getBoundingClientRect().height ?? 0;
-    const targetTop =
-      chooseSection.getBoundingClientRect().top + window.scrollY - headerHeight;
-
-    window.scrollTo({
-      top: Math.max(0, targetTop),
-      behavior: "smooth",
-    });
+    const targetTop = target.getBoundingClientRect().top + window.scrollY - headerHeight;
+    window.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
   };
 
   const normalizedImage = imageSlug?.trim() ?? "";
