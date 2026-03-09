@@ -75,19 +75,16 @@ const initialProgramForm: ProgramForm = {
   gridImageUrl: "",
   overview: "",
   sortOrder: "0",
-  durationLabel: "",
-  durationWeeks: "0",
-  durationSortOrder: "0",
-  locationCode: "",
-  amount: "0",
-  currencyCode: "",
-  currencySymbol: "",
+  durationLabel: "4 weeks",
+  durationWeeks: "4",
+  priceIN: "",
+  priceUK: "",
+  priceUS: "",
   whatYouGet: "",
   whoIsThisFor: "",
   tags: "",
   detailHeading: "",
   detailDescription: "",
-  detailSortOrder: "0",
 };
 
 const createNextId = (prefix: string, existingIds: string[]) => {
@@ -1028,22 +1025,19 @@ export default function AdminDashboard() {
     const gridImageUrl = programForm.gridImageUrl.trim();
     const overview = programForm.overview.trim();
     const durationLabel = programForm.durationLabel.trim();
-    const locationCode = programForm.locationCode.trim();
-    const currencyCode = programForm.currencyCode.trim();
-    const currencySymbol = programForm.currencySymbol.trim();
 
-    if (
-      !gridDescription ||
-      !gridImageUrl ||
-      !overview ||
-      !durationLabel ||
-      !locationCode ||
-      !currencyCode ||
-      !currencySymbol
-    ) {
-      setProgramCreateError(
-        "Grid fields, overview, duration label, and price details are required.",
-      );
+    if (!overview || !durationLabel) {
+      setProgramCreateError("Overview and duration label are required.");
+      return;
+    }
+
+    const prices: { locationCode: string; amount: number; currencyCode: string; currencySymbol: string }[] = [];
+    if (programForm.priceIN) prices.push({ locationCode: "IN", amount: Number(programForm.priceIN), currencyCode: "INR", currencySymbol: "₹" });
+    if (programForm.priceUK) prices.push({ locationCode: "GB", amount: Number(programForm.priceUK), currencyCode: "GBP", currencySymbol: "£" });
+    if (programForm.priceUS) prices.push({ locationCode: "US", amount: Number(programForm.priceUS), currencyCode: "USD", currencySymbol: "$" });
+
+    if (prices.length === 0) {
+      setProgramCreateError("Please set a price for at least one region (India, UK, or US).");
       return;
     }
 
@@ -1055,9 +1049,6 @@ export default function AdminDashboard() {
 
     const sortOrder = parseNonNegativeNumber(programForm.sortOrder);
     const durationWeeks = parseNonNegativeNumber(programForm.durationWeeks);
-    const durationSortOrder = parseNonNegativeNumber(programForm.durationSortOrder);
-    const amount = parseNonNegativeNumber(programForm.amount);
-    const detailSortOrder = parseNonNegativeNumber(programForm.detailSortOrder);
 
     const whatYouGet = parseTextareaItems(programForm.whatYouGet);
     const whoIsThisFor = parseTextareaItems(programForm.whoIsThisFor);
@@ -1066,13 +1057,7 @@ export default function AdminDashboard() {
     const detailDescription = programForm.detailDescription.trim();
     const detailSections =
       detailHeading || detailDescription
-        ? [
-            {
-              heading: detailHeading,
-              description: detailDescription,
-              sortOrder: detailSortOrder,
-            },
-          ]
+        ? [{ heading: detailHeading, description: detailDescription, sortOrder: 0 }]
         : [];
 
     if (editingProgramId) {
@@ -1131,15 +1116,8 @@ export default function AdminDashboard() {
             {
               label: durationLabel,
               weeks: durationWeeks,
-              sortOrder: durationSortOrder,
-              prices: [
-                {
-                  locationCode,
-                  amount,
-                  currencyCode,
-                  currencySymbol,
-                },
-              ],
+              sortOrder: 0,
+              prices,
             },
           ],
           whatYouGet,
@@ -1190,19 +1168,16 @@ export default function AdminDashboard() {
       gridImageUrl: "",
       overview: "",
       sortOrder: "0",
-      durationLabel: "",
-      durationWeeks: "0",
-      durationSortOrder: "0",
-      locationCode: "",
-      amount: "0",
-      currencyCode: "",
-      currencySymbol: "",
+      durationLabel: "4 weeks",
+      durationWeeks: "4",
+      priceIN: "",
+      priceUK: "",
+      priceUS: "",
       whatYouGet: "",
       whoIsThisFor: "",
       tags: "",
       detailHeading: "",
       detailDescription: "",
-      detailSortOrder: "0",
     });
     setProgramCreateError(null);
     setProgramCreateSuccess(null);

@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { getAdminOrders, refundOrder, type AdminOrder } from "../../api/admin";
 import { ApiError } from "../../api/client";
 
-function formatCurrency(amount: number, currency: string | null | undefined) {
+function formatCurrency(amount: number | null | undefined, currency: string | null | undefined) {
+  if (amount == null) return "—";
   if (!currency) return amount.toFixed(2);
   return new Intl.NumberFormat(undefined, { style: "currency", currency }).format(amount);
 }
@@ -66,6 +67,7 @@ export default function AdminOrdersTab() {
               <th>Program</th>
               <th>Duration</th>
               <th>Amount</th>
+              <th>Gateway</th>
               <th>Coupon</th>
               <th>Status</th>
               <th>Date</th>
@@ -75,7 +77,7 @@ export default function AdminOrdersTab() {
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={8} className="adminTable__empty">No orders found.</td>
+                <td colSpan={9} className="adminTable__empty">No orders found.</td>
               </tr>
             ) : (
               filtered.map((o) => (
@@ -87,6 +89,11 @@ export default function AdminOrdersTab() {
                   <td>{o.programName}</td>
                   <td>{o.durationLabel}</td>
                   <td>{formatCurrency(o.amount, o.currency)}</td>
+                  <td>
+                    <span className={`statusBadge statusBadge--${(o.gateway ?? "").toLowerCase()}`}>
+                      {o.gateway ?? "—"}
+                    </span>
+                  </td>
                   <td>{o.couponCode ?? "—"}</td>
                   <td>
                     <span className={`statusBadge statusBadge--${(o.status ?? "").toLowerCase()}`}>

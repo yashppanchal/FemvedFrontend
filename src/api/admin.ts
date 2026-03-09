@@ -25,7 +25,7 @@ export interface AdminExpert {
   userId: string;
   displayName: string;
   title: string;
-  email: string;
+  userEmail: string;
   isActive: boolean;
   locationCountry: string;
   createdAt: string;
@@ -68,6 +68,7 @@ export interface AdminOrder {
   couponCode: string | null;
   discountAmount: number;
   status: string;
+  gateway: string;
   createdAt: string;
 }
 

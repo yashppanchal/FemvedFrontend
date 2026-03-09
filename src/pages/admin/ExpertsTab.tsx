@@ -162,7 +162,7 @@ export default function ExpertsTab() {
   const filtered = experts.filter(
     (e) =>
       (e.displayName ?? "").toLowerCase().includes(search.toLowerCase()) ||
-      (e.email ?? "").toLowerCase().includes(search.toLowerCase()),
+      (e.userEmail ?? "").toLowerCase().includes(search.toLowerCase()),
   );
 
   if (loading) return <p className="adminPanel__loading">Loading experts…</p>;
@@ -278,7 +278,7 @@ export default function ExpertsTab() {
               filtered.map((e) => (
                 <tr key={e.expertId} className={editingExpert?.expertId === e.expertId ? "adminTable__row--highlighted" : ""}>
                   <td>{e.displayName || "—"}</td>
-                  <td>{e.email}</td>
+                  <td>{e.userEmail}</td>
                   <td>{e.title || "—"}</td>
                   <td>{e.locationCountry || "—"}</td>
                   <td>

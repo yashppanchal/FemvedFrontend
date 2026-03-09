@@ -44,6 +44,16 @@ export function ProgramsTab({
   const [domainFilter, setDomainFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
+  const set = (key: keyof ProgramForm) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
+      onProgramFormChange((prev) => ({ ...prev, [key]: e.target.value }));
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const name = e.target.value;
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    onProgramFormChange((prev) => ({ ...prev, name, slug: slug as never }));
+  };
+
   const categoriesForFilter = useMemo(() => {
     if (domainFilter === "all") return categories;
     return categories.filter((category) => category.domainId === domainFilter);
@@ -52,8 +62,7 @@ export function ProgramsTab({
   const filteredPrograms = useMemo(() => {
     return programs.filter((program) => {
       const matchesDomain = domainFilter === "all" || program.domainId === domainFilter;
-      const matchesCategory =
-        categoryFilter === "all" || program.categoryId === categoryFilter;
+      const matchesCategory = categoryFilter === "all" || program.categoryId === categoryFilter;
       return matchesDomain && matchesCategory;
     });
   }, [programs, domainFilter, categoryFilter]);
@@ -61,14 +70,14 @@ export function ProgramsTab({
   const programModal = isProgramModalOpen ? (
     <div className="adminModalBackdrop" role="presentation">
       <section
-        className="adminModal"
+        className="adminModal adminModal--wide"
         role="dialog"
         aria-modal="true"
         aria-label={editingProgramId ? "Edit program" : "Create program"}
       >
         <div className="adminModal__header">
           <h3 className="adminModal__title">
-            {editingProgramId ? "Edit Program" : "Add Program"}
+            {editingProgramId ? "Edit Program" : "Add New Program"}
           </h3>
           <button
             type="button"
@@ -83,398 +92,288 @@ export function ProgramsTab({
         {programCreateError && <p className="adminPanel__error">{programCreateError}</p>}
 
         <form className="form adminForm" onSubmit={onSubmit} noValidate>
-          <div className="adminForm__row adminForm__row--two">
-            <label className="field">
-              <span className="field__label">Domain</span>
-              <select
-                className="field__input"
-                value={programForm.domainId}
-                onChange={(e) =>
-                  onProgramFormChange((prev) => ({
-                    ...prev,
-                    domainId: e.target.value,
-                    categoryId: "",
-                  }))
-                }
-                required
-              >
-                <option value="">Select domain</option>
-                {domains.map((domain) => (
-                  <option key={domain.id} value={domain.id}>
-                    {domain.name}
-                  </option>
-                ))}
-              </select>
-            </label>
 
-            <label className="field">
-              <span className="field__label">Category</span>
-              <select
-                className="field__input"
-                value={programForm.categoryId}
-                onChange={(e) =>
-                  onProgramFormChange((prev) => ({
-                    ...prev,
-                    categoryId: e.target.value,
-                  }))
-                }
-                required
-                disabled={!programForm.domainId}
-              >
-                <option value="">
-                  {programForm.domainId ? "Select category" : "Select domain first"}
-                </option>
-                {categoriesForProgramDomain.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </label>
+          {/* ── Section 1: Placement ──────────────────────────────── */}
+          <div className="expertForm__section">
+            <h4 className="expertForm__sectionTitle">Where does this program live?</h4>
+
+            <div className="adminForm__row adminForm__row--two">
+              <label className="field">
+                <span className="field__label">Domain <span className="field__required">*</span></span>
+                <span className="field__hint">The top-level health domain, e.g. "Guided 1:1 Care".</span>
+                <select
+                  className="field__input"
+                  value={programForm.domainId}
+                  onChange={(e) =>
+                    onProgramFormChange((prev) => ({ ...prev, domainId: e.target.value, categoryId: "" }))
+                  }
+                  required
+                >
+                  <option value="">— Select domain —</option>
+                  {domains.map((domain) => (
+                    <option key={domain.id} value={domain.id}>{domain.name}</option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="field">
+                <span className="field__label">Health Category <span className="field__required">*</span></span>
+                <span className="field__hint">The specific area this program belongs to, e.g. Hormonal Health.</span>
+                <select
+                  className="field__input"
+                  value={programForm.categoryId}
+                  onChange={(e) => onProgramFormChange((prev) => ({ ...prev, categoryId: e.target.value }))}
+                  required
+                  disabled={!programForm.domainId}
+                >
+                  <option value="">{programForm.domainId ? "— Select category —" : "Select domain first"}</option>
+                  {categoriesForProgramDomain.map((category) => (
+                    <option key={category.id} value={category.id}>{category.name}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
           </div>
 
-          <div className="adminForm__row">
+          {/* ── Section 2: Basic Info ─────────────────────────────── */}
+          <div className="expertForm__section">
+            <h4 className="expertForm__sectionTitle">Basic Information</h4>
+
             <label className="field">
-              <span className="field__label">Program Name</span>
+              <span className="field__label">Program Title <span className="field__required">*</span></span>
+              <span className="field__hint">The full name as clients will see it, e.g. "Break the Stress–Hormone Triangle".</span>
               <input
                 className="field__input"
                 type="text"
                 value={programForm.name}
-                onChange={(e) =>
-                  onProgramFormChange((prev) => ({
-                    ...prev,
-                    name: e.target.value,
-                  }))
-                }
-                placeholder="Program name"
+                onChange={handleNameChange}
+                placeholder="e.g. Hormonal Balance Reset"
                 required
+                disabled={isCreatingProgram}
               />
             </label>
+
+            <div className="adminForm__row adminForm__row--two">
+              <label className="field">
+                <span className="field__label">Program Card Image URL <span className="field__optional">optional</span></span>
+                <span className="field__hint">Shown on browse cards. Leave blank for a placeholder.</span>
+                <input
+                  className="field__input"
+                  type="url"
+                  value={programForm.gridImageUrl}
+                  onChange={set("gridImageUrl")}
+                  placeholder="https://res.cloudinary.com/..."
+                  disabled={isCreatingProgram}
+                />
+              </label>
+
+              <label className="field">
+                <span className="field__label">Display Order <span className="field__techTerm">(sort order)</span> <span className="field__optional">optional</span></span>
+                <span className="field__hint">Lower numbers appear first. 0 = default.</span>
+                <input
+                  className="field__input"
+                  type="number"
+                  min={0}
+                  value={programForm.sortOrder}
+                  onChange={set("sortOrder")}
+                  disabled={isCreatingProgram}
+                />
+              </label>
+            </div>
           </div>
 
-          <div className="adminForm__row adminForm__row--two">
-            <label className="field">
-              <span className="field__label">Grid Description</span>
-              <input
-                className="field__input"
-                type="text"
-                value={programForm.gridDescription}
-                onChange={(e) =>
-                  onProgramFormChange((prev) => ({
-                    ...prev,
-                    gridDescription: e.target.value,
-                  }))
-                }
-                placeholder="Shown on listing cards"
-                required
-              />
-            </label>
-            <label className="field">
-              <span className="field__label">Grid Image URL</span>
-              <input
-                className="field__input"
-                type="url"
-                value={programForm.gridImageUrl}
-                onChange={(e) =>
-                  onProgramFormChange((prev) => ({
-                    ...prev,
-                    gridImageUrl: e.target.value,
-                  }))
-                }
-                placeholder="https://..."
-                required
-              />
-            </label>
-          </div>
+          {/* ── Section 3: Descriptions ───────────────────────────── */}
+          <div className="expertForm__section">
+            <h4 className="expertForm__sectionTitle">Program Description</h4>
 
-          <div className="adminForm__row adminForm__row--two">
             <label className="field">
-              <span className="field__label">Overview</span>
+              <span className="field__label">Full Program Description <span className="field__techTerm">(overview)</span></span>
+              <span className="field__hint">Appears on the program's dedicated page. Explain the approach and what clients can expect.</span>
               <textarea
-                className="field__input"
+                className="field__input expertForm__textarea"
                 value={programForm.overview}
-                onChange={(e) =>
-                  onProgramFormChange((prev) => ({
-                    ...prev,
-                    overview: e.target.value,
-                  }))
-                }
+                onChange={set("overview")}
                 rows={4}
-                placeholder="Program overview"
-                required
+                placeholder="e.g. This 6-week guided program is designed for women experiencing hormonal imbalances..."
+                disabled={isCreatingProgram}
               />
             </label>
 
             <label className="field">
-              <span className="field__label">Sort Order</span>
-              <input
-                className="field__input"
-                type="number"
-                min={0}
-                step={1}
-                value={programForm.sortOrder}
-                onChange={(e) =>
-                  onProgramFormChange((prev) => ({
-                    ...prev,
-                    sortOrder: e.target.value,
-                  }))
-                }
-              />
-            </label>
-          </div>
-
-          <div className="adminForm__row adminForm__row--two">
-            <label className="field">
-              <span className="field__label">Duration Label</span>
-              <input
-                className="field__input"
-                type="text"
-                value={programForm.durationLabel}
-                onChange={(e) =>
-                  onProgramFormChange((prev) => ({
-                    ...prev,
-                    durationLabel: e.target.value,
-                  }))
-                }
-                placeholder="e.g., 12 Weeks"
-                required
-              />
-            </label>
-            <label className="field">
-              <span className="field__label">Duration Weeks</span>
-              <input
-                className="field__input"
-                type="number"
-                min={0}
-                step={1}
-                value={programForm.durationWeeks}
-                onChange={(e) =>
-                  onProgramFormChange((prev) => ({
-                    ...prev,
-                    durationWeeks: e.target.value,
-                  }))
-                }
-                required
-              />
-            </label>
-          </div>
-
-          <div className="adminForm__row adminForm__row--two">
-            <label className="field">
-              <span className="field__label">Duration Sort Order</span>
-              <input
-                className="field__input"
-                type="number"
-                min={0}
-                step={1}
-                value={programForm.durationSortOrder}
-                onChange={(e) =>
-                  onProgramFormChange((prev) => ({
-                    ...prev,
-                    durationSortOrder: e.target.value,
-                  }))
-                }
-              />
-            </label>
-            <label className="field">
-              <span className="field__label">Location Code</span>
-              <input
-                className="field__input"
-                type="text"
-                value={programForm.locationCode}
-                onChange={(e) =>
-                  onProgramFormChange((prev) => ({
-                    ...prev,
-                    locationCode: e.target.value,
-                  }))
-                }
-                placeholder="IN"
-                required
-              />
-            </label>
-          </div>
-
-          <div className="adminForm__row adminForm__row--two">
-            <label className="field">
-              <span className="field__label">Amount</span>
-              <input
-                className="field__input"
-                type="number"
-                min={0}
-                step={0.01}
-                value={programForm.amount}
-                onChange={(e) =>
-                  onProgramFormChange((prev) => ({
-                    ...prev,
-                    amount: e.target.value,
-                  }))
-                }
-                required
-              />
-            </label>
-            <label className="field">
-              <span className="field__label">Currency Code</span>
-              <input
-                className="field__input"
-                type="text"
-                value={programForm.currencyCode}
-                onChange={(e) =>
-                  onProgramFormChange((prev) => ({
-                    ...prev,
-                    currencyCode: e.target.value,
-                  }))
-                }
-                placeholder="INR"
-                required
-              />
-            </label>
-          </div>
-
-          <div className="adminForm__row adminForm__row--two">
-            <label className="field">
-              <span className="field__label">Currency Symbol</span>
-              <input
-                className="field__input"
-                type="text"
-                value={programForm.currencySymbol}
-                onChange={(e) =>
-                  onProgramFormChange((prev) => ({
-                    ...prev,
-                    currencySymbol: e.target.value,
-                  }))
-                }
-                placeholder="Rs"
-                required
-              />
-            </label>
-          </div>
-
-          <div className="adminForm__row adminForm__row--two">
-            <label className="field">
-              <span className="field__label">
-                What You Get (one per line or comma-separated)
-              </span>
+              <span className="field__label">Short Summary <span className="field__techTerm">(grid description)</span> <span className="field__optional">optional</span></span>
+              <span className="field__hint">1–2 sentence teaser shown on browse cards. Defaults to overview if blank.</span>
               <textarea
-                className="field__input"
-                value={programForm.whatYouGet}
-                onChange={(e) =>
-                  onProgramFormChange((prev) => ({
-                    ...prev,
-                    whatYouGet: e.target.value,
-                  }))
-                }
-                rows={4}
-                placeholder={"Meal plan\nDedicated coach"}
+                className="field__input expertForm__textarea expertForm__textarea--sm"
+                value={programForm.gridDescription}
+                onChange={set("gridDescription")}
+                rows={2}
+                placeholder="e.g. A personalised 6-week plan to rebalance hormones naturally."
+                disabled={isCreatingProgram}
               />
             </label>
-            <label className="field">
-              <span className="field__label">
-                Who Is This For (one per line or comma-separated)
-              </span>
-              <textarea
-                className="field__input"
-                value={programForm.whoIsThisFor}
-                onChange={(e) =>
-                  onProgramFormChange((prev) => ({
-                    ...prev,
-                    whoIsThisFor: e.target.value,
-                  }))
-                }
-                rows={4}
-                placeholder={"PCOS\nIrregular cycles"}
-              />
-            </label>
-          </div>
 
-          <div className="adminForm__row adminForm__row--two">
             <label className="field">
-              <span className="field__label">
-                Tags (one per line or comma-separated)
-              </span>
-              <textarea
+              <span className="field__label">Search Tags <span className="field__optional">optional</span></span>
+              <span className="field__hint">Comma-separated keywords. e.g. hormones, PCOS, stress, gut-health</span>
+              <input
                 className="field__input"
+                type="text"
                 value={programForm.tags}
-                onChange={(e) =>
-                  onProgramFormChange((prev) => ({
-                    ...prev,
-                    tags: e.target.value,
-                  }))
-                }
-                rows={3}
-                placeholder={"pcos\nhormones"}
+                onChange={set("tags")}
+                placeholder="hormones, stress, PCOS, gut-health"
+                disabled={isCreatingProgram}
               />
             </label>
           </div>
 
-          <div className="adminForm__row adminForm__row--two">
+          {/* ── Section 4: Details ────────────────────────────────── */}
+          <div className="expertForm__section">
+            <h4 className="expertForm__sectionTitle">Program Details</h4>
+
             <label className="field">
-              <span className="field__label">Detail Section Heading</span>
+              <span className="field__label">What's Included <span className="field__techTerm">(what you get)</span></span>
+              <span className="field__hint">One bullet point per line. Shown on the program page.</span>
+              <textarea
+                className="field__input expertForm__textarea"
+                value={programForm.whatYouGet}
+                onChange={set("whatYouGet")}
+                rows={4}
+                placeholder={"Weekly 1:1 video consultation (60 min)\nPersonalised nutrition plan\nWhatsApp support between sessions"}
+                disabled={isCreatingProgram}
+              />
+            </label>
+
+            <label className="field">
+              <span className="field__label">Who Is This For? <span className="field__techTerm">(who is this for)</span></span>
+              <span className="field__hint">One description per line. Helps clients self-identify.</span>
+              <textarea
+                className="field__input expertForm__textarea expertForm__textarea--sm"
+                value={programForm.whoIsThisFor}
+                onChange={set("whoIsThisFor")}
+                rows={3}
+                placeholder={"Women experiencing irregular or painful periods\nThose struggling with fatigue or mood swings"}
+                disabled={isCreatingProgram}
+              />
+            </label>
+          </div>
+
+          {/* ── Section 5: Duration ───────────────────────────────── */}
+          <div className="expertForm__section">
+            <h4 className="expertForm__sectionTitle">Duration</h4>
+
+            <div className="adminForm__row adminForm__row--two">
+              <label className="field">
+                <span className="field__label">Duration Label <span className="field__required">*</span></span>
+                <span className="field__hint">How the length is shown to clients, e.g. "6 weeks".</span>
+                <input
+                  className="field__input"
+                  type="text"
+                  value={programForm.durationLabel}
+                  onChange={set("durationLabel")}
+                  placeholder="e.g. 4 weeks, 3 months"
+                  required
+                  disabled={isCreatingProgram}
+                />
+              </label>
+
+              <label className="field">
+                <span className="field__label">Total Weeks</span>
+                <span className="field__hint">Used internally for scheduling.</span>
+                <input
+                  className="field__input"
+                  type="number"
+                  min={1}
+                  value={programForm.durationWeeks}
+                  onChange={set("durationWeeks")}
+                  disabled={isCreatingProgram}
+                />
+              </label>
+            </div>
+          </div>
+
+          {/* ── Section 6: Pricing ────────────────────────────────── */}
+          <div className="expertForm__section">
+            <h4 className="expertForm__sectionTitle">Pricing by Region</h4>
+            <p className="expertForm__sectionHint">Set the price for each region. Leave blank to hide from clients in that country. At least one price is required.</p>
+
+            <div className="expertForm__row expertForm__row--3">
+              <label className="field">
+                <span className="field__label">India <span className="field__currency">₹ INR</span></span>
+                <input
+                  className="field__input"
+                  type="number"
+                  min="0"
+                  value={programForm.priceIN}
+                  onChange={set("priceIN")}
+                  placeholder="e.g. 33000"
+                  disabled={isCreatingProgram}
+                />
+              </label>
+              <label className="field">
+                <span className="field__label">United Kingdom <span className="field__currency">£ GBP</span></span>
+                <input
+                  className="field__input"
+                  type="number"
+                  min="0"
+                  value={programForm.priceUK}
+                  onChange={set("priceUK")}
+                  placeholder="e.g. 320"
+                  disabled={isCreatingProgram}
+                />
+              </label>
+              <label className="field">
+                <span className="field__label">United States <span className="field__currency">$ USD</span></span>
+                <input
+                  className="field__input"
+                  type="number"
+                  min="0"
+                  value={programForm.priceUS}
+                  onChange={set("priceUS")}
+                  placeholder="e.g. 400"
+                  disabled={isCreatingProgram}
+                />
+              </label>
+            </div>
+          </div>
+
+          {/* ── Section 7: Detail Section ─────────────────────────── */}
+          <div className="expertForm__section">
+            <h4 className="expertForm__sectionTitle">Detail Page Section <span className="field__optional">optional</span></h4>
+            <p className="expertForm__sectionHint">A heading + description block shown on the program detail page, e.g. "Why This Works". You can add more after creation.</p>
+
+            <label className="field">
+              <span className="field__label">Section Heading</span>
               <input
                 className="field__input"
                 type="text"
                 value={programForm.detailHeading}
-                onChange={(e) =>
-                  onProgramFormChange((prev) => ({
-                    ...prev,
-                    detailHeading: e.target.value,
-                  }))
-                }
-                placeholder="Why this works"
+                onChange={set("detailHeading")}
+                placeholder="e.g. Why This Works"
+                disabled={isCreatingProgram}
               />
             </label>
-            <label className="field">
-              <span className="field__label">Detail Section Sort Order</span>
-              <input
-                className="field__input"
-                type="number"
-                min={0}
-                step={1}
-                value={programForm.detailSortOrder}
-                onChange={(e) =>
-                  onProgramFormChange((prev) => ({
-                    ...prev,
-                    detailSortOrder: e.target.value,
-                  }))
-                }
-              />
-            </label>
-          </div>
 
-          <div className="adminForm__row">
             <label className="field">
-              <span className="field__label">Detail Section Description</span>
+              <span className="field__label">Section Description</span>
               <textarea
-                className="field__input"
+                className="field__input expertForm__textarea expertForm__textarea--sm"
                 value={programForm.detailDescription}
-                onChange={(e) =>
-                  onProgramFormChange((prev) => ({
-                    ...prev,
-                    detailDescription: e.target.value,
-                  }))
-                }
-                rows={4}
-                placeholder="Explain this section"
+                onChange={set("detailDescription")}
+                rows={3}
+                placeholder="Explain this section in detail..."
+                disabled={isCreatingProgram}
               />
             </label>
           </div>
 
           <div className="adminForm__actions">
+            <button type="button" className="adminActionButton" onClick={onCloseModal} disabled={isCreatingProgram}>
+              Cancel
+            </button>
             <button type="submit" className="button" disabled={isCreatingProgram}>
               {editingProgramId
-                ? isCreatingProgram
-                  ? "Updating Program..."
-                  : "Update Program"
-                : isCreatingProgram
-                  ? "Adding Program..."
-                  : "Add Program"}
-            </button>
-            <button
-              type="button"
-              className="adminActionButton"
-              onClick={onCloseModal}
-              disabled={isCreatingProgram}
-            >
-              Cancel
+                ? isCreatingProgram ? "Updating…" : "Update Program"
+                : isCreatingProgram ? "Creating…" : "Create Program"}
             </button>
           </div>
         </form>
@@ -506,8 +405,7 @@ export function ProgramsTab({
                 if (prev === "all") return prev;
                 if (nextDomainFilter === "all") return prev;
                 return categories.some(
-                  (category) =>
-                    category.id === prev && category.domainId === nextDomainFilter,
+                  (category) => category.id === prev && category.domainId === nextDomainFilter,
                 )
                   ? prev
                   : "all";
@@ -516,9 +414,7 @@ export function ProgramsTab({
           >
             <option value="all">All domains</option>
             {domains.map((domain) => (
-              <option key={domain.id} value={domain.id}>
-                {domain.name}
-              </option>
+              <option key={domain.id} value={domain.id}>{domain.name}</option>
             ))}
           </select>
         </label>
@@ -532,9 +428,7 @@ export function ProgramsTab({
           >
             <option value="all">All categories</option>
             {categoriesForFilter.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
+              <option key={category.id} value={category.id}>{category.name}</option>
             ))}
           </select>
         </label>
@@ -555,13 +449,8 @@ export function ProgramsTab({
               filteredPrograms.map((program) => (
                 <tr key={program.id}>
                   <td>{program.name}</td>
-                  <td>
-                    {domains.find((domain) => domain.id === program.domainId)?.name ?? "-"}
-                  </td>
-                  <td>
-                    {categories.find((category) => category.id === program.categoryId)
-                      ?.name ?? "-"}
-                  </td>
+                  <td>{domains.find((domain) => domain.id === program.domainId)?.name ?? "—"}</td>
+                  <td>{categories.find((category) => category.id === program.categoryId)?.name ?? "—"}</td>
                   <td>
                     <div className="adminActionGroup">
                       <button
@@ -577,7 +466,7 @@ export function ProgramsTab({
                         onClick={() => onDelete(program.id)}
                         disabled={deletingProgramId === program.id}
                       >
-                        {deletingProgramId === program.id ? "Deleting..." : "Delete"}
+                        {deletingProgramId === program.id ? "Deleting…" : "Delete"}
                       </button>
                     </div>
                   </td>
@@ -585,9 +474,7 @@ export function ProgramsTab({
               ))
             ) : (
               <tr>
-                <td colSpan={4} className="adminTable__empty">
-                  No programs match the selected filters.
-                </td>
+                <td colSpan={4} className="adminTable__empty">No programs match the selected filters.</td>
               </tr>
             )}
           </tbody>
