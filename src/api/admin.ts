@@ -201,6 +201,30 @@ export function deleteAdminUser(userId: string): Promise<void> {
   return apiFetch<void>("/admin/users/" + userId, { method: "DELETE" });
 }
 
+export interface AdminCreateExpertProfileRequest {
+  displayName?: string;
+  title?: string;
+  bio?: string;
+  gridDescription?: string;
+  detailedDescription?: string;
+  profileImageUrl?: string;
+  gridImageUrl?: string;
+  specialisations?: string[];
+  yearsExperience?: number;
+  credentials?: string[];
+  locationCountry?: string;
+}
+
+export function adminCreateExpertProfile(
+  userId: string,
+  data: AdminCreateExpertProfileRequest,
+): Promise<void> {
+  return apiFetch<void>("/admin/users/" + userId + "/expert-profile", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
 export function getAdminExperts(): Promise<AdminExpert[]> {
   return apiFetch<AdminExpert[]>("/admin/experts");
 }
