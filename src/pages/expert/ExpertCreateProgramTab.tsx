@@ -2,7 +2,6 @@ import { type FormEvent, useEffect, useState } from "react";
 import {
   createGuidedProgram,
   fetchGuidedTree,
-  type GuidedTreeCategory,
 } from "../../api/guided";
 import { ApiError } from "../../api/client";
 import { useAuth } from "../../auth/useAuth";

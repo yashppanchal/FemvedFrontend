@@ -186,7 +186,7 @@ export default function ExpertsTab() {
         <form className="adminForm adminForm--expertPromotion" onSubmit={handleEditSubmit} noValidate>
           <div className="adminForm__promotionHeader">
             <div>
-              <h3 className="adminForm__title">Edit profile — {editingExpert.displayName || editingExpert.email}</h3>
+              <h3 className="adminForm__title">Edit profile — {editingExpert.displayName || editingExpert.userEmail}</h3>
               <p className="adminForm__subtitle">Only filled fields will be updated. Leave blank to keep existing values.</p>
             </div>
             <button type="button" className="adminModal__close" onClick={closeEdit} disabled={saving}>✕</button>
