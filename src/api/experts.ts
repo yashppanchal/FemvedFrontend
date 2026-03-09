@@ -10,12 +10,12 @@ export interface UpdateExpertProfileRequest {
   bio: string;
   gridDescription: string;
   detailedDescription: string;
-  profileImageUrl: string;
-  gridImageUrl: string;
+  profileImageUrl: string | null;
+  gridImageUrl: string | null;
   specialisations: string[];
-  yearsExperience: number;
+  yearsExperience: number | null;
   credentials: string[];
-  locationCountry: string;
+  locationCountry: string | null;
   isActive: boolean;
 }
 
@@ -25,14 +25,14 @@ export interface ExpertProfileResponse {
   displayName: string;
   title: string;
   bio: string;
-  gridDescription: string;
-  detailedDescription: string;
-  profileImageUrl: string;
-  gridImageUrl: string;
-  specialisations: string[];
-  yearsExperience: number;
-  credentials: string[];
-  locationCountry: string;
+  gridDescription: string | null;
+  detailedDescription: string | null;
+  profileImageUrl: string | null;
+  gridImageUrl: string | null;
+  specialisations: string[] | null;
+  yearsExperience: number | null;
+  credentials: string[] | null;
+  locationCountry: string | null;
   isActive: boolean;
   createdAt: string;
 }
