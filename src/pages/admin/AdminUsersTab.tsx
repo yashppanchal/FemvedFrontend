@@ -147,8 +147,8 @@ export default function AdminUsersTab() {
 
   const filtered = users.filter(
     (u) =>
-      u.email.toLowerCase().includes(search.toLowerCase()) ||
-      `${u.firstName} ${u.lastName}`.toLowerCase().includes(search.toLowerCase()),
+      (u.email ?? "").toLowerCase().includes(search.toLowerCase()) ||
+      `${u.firstName ?? ""} ${u.lastName ?? ""}`.toLowerCase().includes(search.toLowerCase()),
   );
 
   const roleIdOf = (role: string) =>

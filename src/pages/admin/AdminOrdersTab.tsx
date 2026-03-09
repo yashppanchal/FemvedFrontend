@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { getAdminOrders, refundOrder, type AdminOrder } from "../../api/admin";
 import { ApiError } from "../../api/client";
 
-function formatCurrency(amount: number, currency: string) {
+function formatCurrency(amount: number, currency: string | null | undefined) {
+  if (!currency) return amount.toFixed(2);
   return new Intl.NumberFormat(undefined, { style: "currency", currency }).format(amount);
 }
 
@@ -88,7 +89,7 @@ export default function AdminOrdersTab() {
                   <td>{formatCurrency(o.amount, o.currency)}</td>
                   <td>{o.couponCode ?? "—"}</td>
                   <td>
-                    <span className={`statusBadge statusBadge--${o.status.toLowerCase()}`}>
+                    <span className={`statusBadge statusBadge--${(o.status ?? "").toLowerCase()}`}>
                       {o.status}
                     </span>
                   </td>
