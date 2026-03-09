@@ -2,7 +2,7 @@ import "./AllPrograms.scss";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCountry } from "../country/useCountry";
-import { loadGuidedPrograms, normalizeSlug } from "../data/guidedPrograms";
+import { getGuidedProgramsSnapshot, loadGuidedPrograms, normalizeSlug, type GuidedProgramInfo } from "../data/guidedPrograms";
 
 type ParsedPrice = {
   currency: string;
@@ -41,11 +41,43 @@ function normalizeText(value: string) {
   return value.trim() || "Unknown";
 }
 
+function flattenCategories(categories: GuidedProgramInfo[]): FlattenedProgram[] {
+  const flattened: FlattenedProgram[] = [];
+  for (const category of categories) {
+    const categoryName = normalizeText(category.slug ?? category.programType);
+    const categorySlug = normalizeSlug(category.slug);
+    const categoryType = normalizeText(category.programType);
+    for (const program of category.programsInCategory ?? []) {
+      const durationRows = (program.programDurations ?? []).map((d) => ({
+        label: normalizeText(d.durationLabel),
+        price: normalizeText(d.durationPrice),
+        parsed: parseDurationPrice(d.durationPrice),
+      }));
+      flattened.push({
+        id: program.programId || `${categorySlug}-${normalizeSlug(program.programName)}`,
+        name: normalizeText(program.programName),
+        expertName: normalizeText(program.expertName),
+        body: program.body.trim(),
+        imageUrl: program.imageUrl?.trim() ?? "",
+        categoryName,
+        categorySlug,
+        categoryType,
+        durations: durationRows,
+      });
+    }
+  }
+  return flattened;
+}
+
 export default function AllPrograms() {
   const { country } = useCountry();
   const filterPanelId = "all-programs-filters";
-  const [programs, setPrograms] = useState<FlattenedProgram[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Initialise from snapshot synchronously — no spinner flash on return visits
+  const [programs, setPrograms] = useState<FlattenedProgram[]>(() => {
+    const snapshot = getGuidedProgramsSnapshot(country);
+    return snapshot ? flattenCategories(snapshot) : [];
+  });
+  const [loading, setLoading] = useState(() => getGuidedProgramsSnapshot(country) === null);
   const [hasError, setHasError] = useState(false);
 
   const [selectedCategoryType, setSelectedCategoryType] = useState("all");
@@ -75,56 +107,32 @@ export default function AllPrograms() {
 
   useEffect(() => {
     let isActive = true;
+    setHasError(false);
 
-    async function loadAllGuidedPrograms() {
+    // Show any cached data for this country immediately (stale is fine to start)
+    const snapshot = getGuidedProgramsSnapshot(country);
+    if (snapshot) {
+      setPrograms(flattenCategories(snapshot));
+      setLoading(false);
+    } else {
+      setPrograms([]);
       setLoading(true);
-      setHasError(false);
-
-      try {
-        const categories = await loadGuidedPrograms(country);
-        const flattened: FlattenedProgram[] = [];
-
-        for (const category of categories) {
-          const categoryName = normalizeText(category.slug ?? category.programType);
-          const categorySlug = normalizeSlug(category.slug);
-          const categoryType = normalizeText(category.programType);
-
-          for (const program of category.programsInCategory ?? []) {
-            const durationRows = (program.programDurations ?? []).map((duration) => ({
-              label: normalizeText(duration.durationLabel),
-              price: normalizeText(duration.durationPrice),
-              parsed: parseDurationPrice(duration.durationPrice),
-            }));
-
-            flattened.push({
-              id: program.programId || `${categorySlug}-${normalizeSlug(program.programName)}`,
-              name: normalizeText(program.programName),
-              expertName: normalizeText(program.expertName),
-              body: program.body.trim(),
-              imageUrl: program.imageUrl?.trim() ?? "",
-              categoryName,
-              categorySlug,
-              categoryType,
-              durations: durationRows,
-            });
-          }
-        }
-
-        if (isActive) {
-          setPrograms(flattened);
-        }
-      } catch {
-        if (isActive) {
-          setHasError(true);
-        }
-      } finally {
-        if (isActive) {
-          setLoading(false);
-        }
-      }
     }
 
-    loadAllGuidedPrograms();
+    // Load fresh/background-refreshed data (returns fast from cache, or fetches)
+    loadGuidedPrograms(country)
+      .then((categories) => {
+        if (isActive) {
+          setPrograms(flattenCategories(categories));
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        if (isActive) {
+          if (!snapshot) setHasError(true);
+          setLoading(false);
+        }
+      });
 
     return () => {
       isActive = false;

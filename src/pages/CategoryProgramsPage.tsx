@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useCountry } from "../country/useCountry";
 import {
+  getGuidedProgramsSnapshot,
   loadGuidedPrograms,
   normalizeSlug,
   type GuidedProgramCard,
@@ -15,32 +16,45 @@ import {
 
 export default function CategoryProgramsPage() {
   const { categorySlug } = useParams<{ categorySlug: string }>();
-  const { country, isCountryReady } = useCountry();
-  const [allCategories, setAllCategories] = useState<GuidedProgramInfo[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { country } = useCountry();
+  // Initialise from snapshot synchronously — no spinner flash on return visits
+  const [allCategories, setAllCategories] = useState<GuidedProgramInfo[]>(
+    () => getGuidedProgramsSnapshot(country) ?? [],
+  );
+  const [loading, setLoading] = useState(() => getGuidedProgramsSnapshot(country) === null);
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    if (!isCountryReady) return;
-
     let isActive = true;
+    setHasError(false);
 
-    async function load() {
+    // Show any cached data for this country immediately
+    const snapshot = getGuidedProgramsSnapshot(country);
+    if (snapshot) {
+      setAllCategories(snapshot);
+      setLoading(false);
+    } else {
+      setAllCategories([]);
       setLoading(true);
-      setHasError(false);
-      try {
-        const data = await loadGuidedPrograms(country);
-        if (isActive) setAllCategories(data);
-      } catch {
-        if (isActive) setHasError(true);
-      } finally {
-        if (isActive) setLoading(false);
-      }
     }
 
-    load();
+    // Load fresh/background-refreshed data
+    loadGuidedPrograms(country)
+      .then((data) => {
+        if (isActive) {
+          setAllCategories(data);
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        if (isActive) {
+          if (!snapshot) setHasError(true);
+          setLoading(false);
+        }
+      });
+
     return () => { isActive = false; };
-  }, [country, isCountryReady]);
+  }, [country]);
 
   const category = useMemo(() => {
     if (!categorySlug) return null;
