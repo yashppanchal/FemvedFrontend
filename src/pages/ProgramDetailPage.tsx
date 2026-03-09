@@ -2,13 +2,14 @@ import "./ProgramDetailPage.scss";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useCountry } from "../country/useCountry";
-import { useAuth } from "../auth/useAuth";
+import { useAuth, ROLE_ADMIN, ROLE_EXPERT } from "../auth/useAuth";
 import {
   loadGuidedPrograms,
   normalizeSlug,
   type GuidedProgramInfo,
 } from "../data/guidedPrograms";
 import { initiateOrder } from "../api/orders";
+import { ApiError } from "../api/client";
 import { hasValidAccessToken } from "../auth/useAuth";
 import {
   buildCloudinarySrcSet,
@@ -187,11 +188,28 @@ export default function ProgramDetailPage() {
         );
       }
     } catch (err) {
-      setCheckoutError(
-        err instanceof Error
-          ? err.message
-          : "Failed to initiate payment. Please try again.",
-      );
+      if (err instanceof ApiError && err.status === 403) {
+        const roleId = user?.role?.id;
+        if (roleId === ROLE_ADMIN.id) {
+          setCheckoutError(
+            "Admin accounts cannot enrol in programs. Use a regular user account to purchase.",
+          );
+        } else if (roleId === ROLE_EXPERT.id) {
+          setCheckoutError(
+            "Expert accounts cannot enrol in programs as a client. If you need access, please contact an administrator.",
+          );
+        } else {
+          setCheckoutError(
+            "You do not have permission to enrol in this program. Please contact support if you think this is a mistake.",
+          );
+        }
+      } else {
+        setCheckoutError(
+          err instanceof Error
+            ? err.message
+            : "Failed to initiate payment. Please try again.",
+        );
+      }
     } finally {
       setCheckoutLoading(false);
     }
