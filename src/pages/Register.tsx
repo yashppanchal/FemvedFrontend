@@ -1,13 +1,15 @@
 import { type FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth, type RegisterData } from "../auth/useAuth";
-import { useCountry, validatePhone } from "../country/useCountry";
+import { useCountry, validatePhone, COUNTRY_LIST, type CountryCode } from "../country/useCountry";
 import "./Register.scss";
 
 export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
   const { country, countryInfo } = useCountry();
+  const [selectedCountry, setSelectedCountry] = useState<CountryCode>(country);
+  const selectedCountryInfo = COUNTRY_LIST.find((c) => c.code === selectedCountry) ?? countryInfo;
 
   const [form, setForm] = useState<
     Omit<RegisterData, "countryCode" | "mobileNumber"> & { phone: string }
@@ -50,7 +52,7 @@ export default function Register() {
     }
 
     // Validate phone number for the selected country
-    const phoneErr = validatePhone(form.phone, country);
+    const phoneErr = validatePhone(form.phone, selectedCountry);
     if (phoneErr) {
       setPhoneError(phoneErr);
       return;
@@ -67,7 +69,7 @@ export default function Register() {
       confirmPassword,
       firstName: firstName.trim(),
       lastName: lastName.trim(),
-      countryCode: countryInfo.dialCode,
+      countryCode: selectedCountryInfo.dialCode,
       mobileNumber,
     });
 
@@ -137,14 +139,26 @@ export default function Register() {
           <div className="field">
             <span className="field__label">Phone number</span>
             <div className="phoneField">
-              <span className="phoneField__prefix">{countryInfo.dialCode}</span>
+              <select
+                className="phoneField__countrySelect"
+                value={selectedCountry}
+                onChange={(e) => setSelectedCountry(e.target.value as CountryCode)}
+                disabled={loading}
+                aria-label="Country dial code"
+              >
+                {COUNTRY_LIST.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.dialCode} {c.name}
+                  </option>
+                ))}
+              </select>
               <input
                 className="field__input phoneField__input"
                 type="tel"
                 inputMode="numeric"
                 value={form.phone}
                 onChange={handlePhoneChange}
-                placeholder={countryInfo.placeholder}
+                placeholder={selectedCountryInfo.placeholder}
                 autoComplete="tel-national"
                 disabled={loading}
               />

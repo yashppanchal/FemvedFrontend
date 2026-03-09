@@ -43,6 +43,27 @@
   user-select: none;
 }
 
+.phoneField__countrySelect {
+  height: 40px;
+  padding: 0 10px;
+  background: rgba(15, 15, 16, 0.04);
+  color: var(--fg, #0f0f10);
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-right: 1px solid var(--border);
+  border-radius: 0;
+  outline: none;
+  cursor: pointer;
+  white-space: nowrap;
+  appearance: auto;
+}
+
+.phoneField__countrySelect:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .phoneField__input {
   border: none !important;
   border-radius: 0 !important;
