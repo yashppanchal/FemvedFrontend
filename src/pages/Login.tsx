@@ -3,14 +3,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 import "./Login.scss";
 
-interface LoginRedirectState {
-  from?: {
-    pathname?: string;
-    search?: string;
-    hash?: string;
-  };
-}
-
 export default function Login() {
   const { login } = useAuth();
   const location = useLocation();
@@ -32,21 +24,24 @@ export default function Login() {
 
     setLoading(true);
     try {
-      const err = await login(email.trim(), password);
-      if (err) {
-        setError(err);
+      const result = await login(email.trim(), password);
+      if (result.error) {
+        setError(result.error);
         return;
       }
-      const redirectState = location.state as LoginRedirectState | null;
-      const fromPathname = redirectState?.from?.pathname;
-      const fromSearch = redirectState?.from?.search ?? "";
-      const fromHash = redirectState?.from?.hash ?? "";
-      const redirectTo =
-        fromPathname && fromPathname.startsWith("/")
-          ? `${fromPathname}${fromSearch}${fromHash}`
-          : "/";
 
-      navigate(redirectTo, { replace: true });
+      if (result.redirectTo !== "/") {
+        // Admin / Expert — go to their dedicated dashboard
+        navigate(result.redirectTo, { replace: true });
+      } else {
+        // Regular user — go back to the page they came from (preserving search + hash), or home
+        const state = location.state as { from?: { pathname?: string; search?: string; hash?: string } } | null;
+        const from = state?.from;
+        const destination = from?.pathname && from.pathname.startsWith("/")
+          ? `${from.pathname}${from.search ?? ""}${from.hash ?? ""}`
+          : "/";
+        navigate(destination, { replace: true });
+      }
     } finally {
       setLoading(false);
     }

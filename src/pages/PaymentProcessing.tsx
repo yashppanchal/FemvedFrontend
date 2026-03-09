@@ -105,6 +105,11 @@ export default function PaymentProcessing() {
             Your payment is taking longer than expected. Please check your{" "}
             <Link to="/orders">orders page</Link> in a few minutes.
           </p>
+          {orderId && (
+            <p className="page__lead" style={{ fontSize: "12px", color: "rgba(15,15,16,0.45)", marginTop: "8px" }}>
+              Order reference: {orderId}
+            </p>
+          )}
         </div>
       </section>
     );

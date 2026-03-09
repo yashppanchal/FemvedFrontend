@@ -298,6 +298,62 @@ export function createGuidedProgram(
   });
 }
 
+export interface UpdateGuidedProgramRequest {
+  name?: string;
+  gridDescription?: string;
+  gridImageUrl?: string;
+  overview?: string;
+  sortOrder?: number;
+  whatYouGet?: string[];
+  whoIsThisFor?: string[];
+  tags?: string[];
+  detailSections?: CreateGuidedProgramDetailSectionRequest[];
+}
+
+export interface UpdateGuidedProgramResponse {
+  id: string;
+  isUpdated: boolean;
+}
+
+export interface DeleteGuidedProgramResponse {
+  id: string;
+  isDeleted: boolean;
+}
+
+export function updateGuidedProgram(
+  programId: string,
+  data: UpdateGuidedProgramRequest,
+  accessToken: string,
+): Promise<UpdateGuidedProgramResponse> {
+  return apiFetch<UpdateGuidedProgramResponse>(
+    `/guided/programs/${encodeURIComponent(programId)}`,
+    {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${accessToken}` },
+      body: JSON.stringify(data),
+    },
+  ).then((response) => {
+    bumpGuidedProgramsCacheVersion();
+    return response;
+  });
+}
+
+export function deleteGuidedProgram(
+  programId: string,
+  accessToken: string,
+): Promise<DeleteGuidedProgramResponse> {
+  return apiFetch<DeleteGuidedProgramResponse>(
+    `/guided/programs/${encodeURIComponent(programId)}`,
+    {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${accessToken}` },
+    },
+  ).then((response) => {
+    bumpGuidedProgramsCacheVersion();
+    return response;
+  });
+}
+
 export function fetchGuidedTree(): Promise<GuidedTreeResponse> {
   return apiFetch<GuidedTreeResponse>("/guided/tree", {
     cache: "no-store",

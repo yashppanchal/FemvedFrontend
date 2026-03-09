@@ -6,10 +6,12 @@ import {
   createGuidedDomain,
   deleteGuidedCategory,
   deleteGuidedDomain,
+  deleteGuidedProgram,
   fetchGuidedTree,
   type GuidedTreeDomain,
   updateGuidedCategory,
   updateGuidedDomain,
+  updateGuidedProgram,
 } from "../api/guided";
 import { useAuth } from "../auth/useAuth";
 import { AdminTabs } from "./admin/AdminTabs";
@@ -24,9 +26,17 @@ import {
   type DomainRow,
   type ProgramForm,
   type ProgramRow,
-  type UserRow,
 } from "./admin/types";
-import { UsersTab } from "./admin/UsersTab";
+import SummaryTab from "./admin/SummaryTab";
+import AdminUsersTab from "./admin/AdminUsersTab";
+import ExpertsTab from "./admin/ExpertsTab";
+import CouponsTab from "./admin/CouponsTab";
+import AdminOrdersTab from "./admin/AdminOrdersTab";
+import AdminEnrollmentsTab from "./admin/AdminEnrollmentsTab";
+import AnalyticsTab from "./admin/AnalyticsTab";
+import GdprTab from "./admin/GdprTab";
+import AuditLogTab from "./admin/AuditLogTab";
+import ExpertPayoutsTab from "./admin/ExpertPayoutsTab";
 import "./AdminDashboard.scss";
 
 type GuidedHierarchyRows = {
@@ -39,29 +49,6 @@ type GuidedHierarchyRows = {
 const PENDING_DOMAINS_STORAGE_KEY = "femved_admin_pending_domains";
 const ADMIN_ALERT_TIMEOUT_MS = 10_000;
 
-const registeredUsersSeed: UserRow[] = [
-  {
-    id: "U001",
-    name: "Bhargavi Padhya",
-    email: "bhargavi@example.com",
-    phone: "+91 98765 43210",
-    role: "Admin",
-  },
-  {
-    id: "U002",
-    name: "Nitya Sharma",
-    email: "nitya@example.com",
-    phone: "+91 98111 22334",
-    role: "User",
-  },
-  {
-    id: "U003",
-    name: "Sakshi Menon",
-    email: "sakshi@example.com",
-    phone: "+91 99220 11223",
-    role: "Expert",
-  },
-];
 
 const initialDomainForm: DomainForm = {
   name: "",
@@ -88,19 +75,16 @@ const initialProgramForm: ProgramForm = {
   gridImageUrl: "",
   overview: "",
   sortOrder: "0",
-  durationLabel: "",
-  durationWeeks: "0",
-  durationSortOrder: "0",
-  locationCode: "",
-  amount: "0",
-  currencyCode: "",
-  currencySymbol: "",
+  durationLabel: "4 weeks",
+  durationWeeks: "4",
+  priceIN: "",
+  priceUK: "",
+  priceUS: "",
   whatYouGet: "",
   whoIsThisFor: "",
   tags: "",
   detailHeading: "",
   detailDescription: "",
-  detailSortOrder: "0",
 };
 
 const createNextId = (prefix: string, existingIds: string[]) => {
@@ -386,8 +370,7 @@ const mapGuidedTreeToRows = (
 
 export default function AdminDashboard() {
   const { tokens } = useAuth();
-  const [activeTab, setActiveTab] = useState<AdminTab>("users");
-  const [registeredUsers] = useState<UserRow[]>(registeredUsersSeed);
+  const [activeTab, setActiveTab] = useState<AdminTab>("summary");
   const [domains, setDomains] = useState<DomainRow[]>([]);
   const [categories, setCategories] = useState<CategoryRow[]>([]);
   const [programs, setPrograms] = useState<ProgramRow[]>([]);
@@ -1042,22 +1025,19 @@ export default function AdminDashboard() {
     const gridImageUrl = programForm.gridImageUrl.trim();
     const overview = programForm.overview.trim();
     const durationLabel = programForm.durationLabel.trim();
-    const locationCode = programForm.locationCode.trim();
-    const currencyCode = programForm.currencyCode.trim();
-    const currencySymbol = programForm.currencySymbol.trim();
 
-    if (
-      !gridDescription ||
-      !gridImageUrl ||
-      !overview ||
-      !durationLabel ||
-      !locationCode ||
-      !currencyCode ||
-      !currencySymbol
-    ) {
-      setProgramCreateError(
-        "Grid fields, overview, duration label, and price details are required.",
-      );
+    if (!overview || !durationLabel) {
+      setProgramCreateError("Overview and duration label are required.");
+      return;
+    }
+
+    const prices: { locationCode: string; amount: number; currencyCode: string; currencySymbol: string }[] = [];
+    if (programForm.priceIN) prices.push({ locationCode: "IN", amount: Number(programForm.priceIN), currencyCode: "INR", currencySymbol: "₹" });
+    if (programForm.priceUK) prices.push({ locationCode: "GB", amount: Number(programForm.priceUK), currencyCode: "GBP", currencySymbol: "£" });
+    if (programForm.priceUS) prices.push({ locationCode: "US", amount: Number(programForm.priceUS), currencyCode: "USD", currencySymbol: "$" });
+
+    if (prices.length === 0) {
+      setProgramCreateError("Please set a price for at least one region (India, UK, or US).");
       return;
     }
 
@@ -1069,9 +1049,6 @@ export default function AdminDashboard() {
 
     const sortOrder = parseNonNegativeNumber(programForm.sortOrder);
     const durationWeeks = parseNonNegativeNumber(programForm.durationWeeks);
-    const durationSortOrder = parseNonNegativeNumber(programForm.durationSortOrder);
-    const amount = parseNonNegativeNumber(programForm.amount);
-    const detailSortOrder = parseNonNegativeNumber(programForm.detailSortOrder);
 
     const whatYouGet = parseTextareaItems(programForm.whatYouGet);
     const whoIsThisFor = parseTextareaItems(programForm.whoIsThisFor);
@@ -1080,30 +1057,47 @@ export default function AdminDashboard() {
     const detailDescription = programForm.detailDescription.trim();
     const detailSections =
       detailHeading || detailDescription
-        ? [
-            {
-              heading: detailHeading,
-              description: detailDescription,
-              sortOrder: detailSortOrder,
-            },
-          ]
+        ? [{ heading: detailHeading, description: detailDescription, sortOrder: 0 }]
         : [];
 
     if (editingProgramId) {
-      setPrograms((prev) =>
-        prev.map((program) =>
-          program.id === editingProgramId
-            ? {
-                ...program,
-                name,
-                domainId: programForm.domainId,
-                categoryId: programForm.categoryId,
-              }
-            : program,
-        ),
-      );
-      setProgramCreateSuccess(`Program "${name}" updated locally.`);
-      closeProgramModal();
+      try {
+        setIsCreatingProgram(true);
+        const res = await updateGuidedProgram(
+          editingProgramId,
+          {
+            name,
+            gridDescription,
+            gridImageUrl,
+            overview,
+            sortOrder,
+            whatYouGet,
+            whoIsThisFor,
+            tags,
+            detailSections,
+          },
+          accessToken,
+        );
+        if (!res.isUpdated) throw new Error("Update did not complete.");
+
+        setPrograms((prev) =>
+          prev.map((program) =>
+            program.id === editingProgramId
+              ? { ...program, name, domainId: programForm.domainId, categoryId: programForm.categoryId }
+              : program,
+          ),
+        );
+        setProgramCreateSuccess(`Program "${name}" updated.`);
+        closeProgramModal();
+      } catch (err) {
+        if (err instanceof ApiError) {
+          setProgramCreateError(err.message);
+        } else {
+          setProgramCreateError("Unable to update program. Please try again.");
+        }
+      } finally {
+        setIsCreatingProgram(false);
+      }
       return;
     }
 
@@ -1122,15 +1116,8 @@ export default function AdminDashboard() {
             {
               label: durationLabel,
               weeks: durationWeeks,
-              sortOrder: durationSortOrder,
-              prices: [
-                {
-                  locationCode,
-                  amount,
-                  currencyCode,
-                  currencySymbol,
-                },
-              ],
+              sortOrder: 0,
+              prices,
             },
           ],
           whatYouGet,
@@ -1181,33 +1168,51 @@ export default function AdminDashboard() {
       gridImageUrl: "",
       overview: "",
       sortOrder: "0",
-      durationLabel: "",
-      durationWeeks: "0",
-      durationSortOrder: "0",
-      locationCode: "",
-      amount: "0",
-      currencyCode: "",
-      currencySymbol: "",
+      durationLabel: "4 weeks",
+      durationWeeks: "4",
+      priceIN: "",
+      priceUK: "",
+      priceUS: "",
       whatYouGet: "",
       whoIsThisFor: "",
       tags: "",
       detailHeading: "",
       detailDescription: "",
-      detailSortOrder: "0",
     });
     setProgramCreateError(null);
     setProgramCreateSuccess(null);
     setIsProgramModalOpen(true);
   };
 
-  const handleProgramDelete = (programId: string) => {
+  const handleProgramDelete = async (programId: string) => {
     setProgramCreateError(null);
     setProgramCreateSuccess(null);
-    setDeletingProgramId(programId);
-    setPrograms((prev) => prev.filter((program) => program.id !== programId));
-    if (editingProgramId === programId) closeProgramModal();
-    setProgramCreateSuccess("Program deleted.");
-    setDeletingProgramId(null);
+
+    if (!confirm("Delete this program? This cannot be undone.")) return;
+
+    const accessToken = tokens?.accessToken;
+    if (!accessToken) {
+      setProgramCreateError("You must be logged in to manage programs.");
+      return;
+    }
+
+    try {
+      setDeletingProgramId(programId);
+      const response = await deleteGuidedProgram(programId, accessToken);
+      if (!response.isDeleted) throw new Error("Delete did not complete.");
+
+      setPrograms((prev) => prev.filter((program) => program.id !== programId));
+      if (editingProgramId === programId) closeProgramModal();
+      setProgramCreateSuccess("Program deleted.");
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setProgramCreateError(err.message);
+      } else {
+        setProgramCreateError("Unable to delete program. Please try again.");
+      }
+    } finally {
+      setDeletingProgramId(null);
+    }
   };
 
   return (
@@ -1221,9 +1226,25 @@ export default function AdminDashboard() {
       <div className="adminContent">
         <AdminTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-        {activeTab === "users" && (
-          <UsersTab registeredUsers={registeredUsers} />
-        )}
+        {activeTab === "summary" && <SummaryTab />}
+
+        {activeTab === "users" && <AdminUsersTab />}
+
+        {activeTab === "experts" && <ExpertsTab />}
+
+        {activeTab === "coupons" && <CouponsTab />}
+
+        {activeTab === "orders" && <AdminOrdersTab />}
+
+        {activeTab === "enrollments" && <AdminEnrollmentsTab />}
+
+        {activeTab === "analytics" && <AnalyticsTab />}
+
+        {activeTab === "gdpr" && <GdprTab />}
+
+        {activeTab === "auditlog" && <AuditLogTab />}
+
+        {activeTab === "payouts" && <ExpertPayoutsTab />}
 
         {activeTab === "domains" && (
           <DomainsTab

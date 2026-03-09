@@ -1,0 +1,331 @@
+import { type FormEvent, useEffect, useState } from "react";
+import {
+  getAdminUsers,
+  activateAdminUser,
+  deactivateAdminUser,
+  changeUserRole,
+  deleteAdminUser,
+  adminCreateExpertProfile,
+  type AdminUser,
+  type AdminCreateExpertProfileRequest,
+} from "../../api/admin";
+import { ApiError } from "../../api/client";
+
+// ── Expert profile form shape (all optional) ─────────────────────────────────
+
+const emptyExpertForm = {
+  displayName: "",
+  title: "",
+  bio: "",
+  gridDescription: "",
+  detailedDescription: "",
+  specialisations: "",
+  credentials: "",
+  yearsExperience: "",
+  locationCountry: "",
+  profileImageUrl: "",
+  gridImageUrl: "",
+};
+
+type ExpertForm = typeof emptyExpertForm;
+
+function expertFormToRequest(f: ExpertForm): AdminCreateExpertProfileRequest {
+  const req: AdminCreateExpertProfileRequest = {};
+  if (f.displayName.trim()) req.displayName = f.displayName.trim();
+  if (f.title.trim()) req.title = f.title.trim();
+  if (f.bio.trim()) req.bio = f.bio.trim();
+  if (f.gridDescription.trim()) req.gridDescription = f.gridDescription.trim();
+  if (f.detailedDescription.trim()) req.detailedDescription = f.detailedDescription.trim();
+  if (f.profileImageUrl.trim()) req.profileImageUrl = f.profileImageUrl.trim();
+  if (f.gridImageUrl.trim()) req.gridImageUrl = f.gridImageUrl.trim();
+  if (f.locationCountry.trim()) req.locationCountry = f.locationCountry.trim();
+  if (f.yearsExperience.trim()) req.yearsExperience = parseInt(f.yearsExperience, 10) || 0;
+  const specs = f.specialisations.split(",").map((s) => s.trim()).filter(Boolean);
+  if (specs.length) req.specialisations = specs;
+  const creds = f.credentials.split(",").map((s) => s.trim()).filter(Boolean);
+  if (creds.length) req.credentials = creds;
+  return req;
+}
+
+function isExpertFormEmpty(f: ExpertForm): boolean {
+  return Object.values(f).every((v) => !v.trim());
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
+
+export default function AdminUsersTab() {
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+
+  // Expert promotion panel state
+  const [promotingUser, setPromotingUser] = useState<AdminUser | null>(null);
+  const [expertForm, setExpertForm] = useState<ExpertForm>(emptyExpertForm);
+  const [promoting, setPromoting] = useState(false);
+  const [promoteError, setPromoteError] = useState<string | null>(null);
+
+  useEffect(() => {
+    getAdminUsers()
+      .then(setUsers)
+      .catch((err) => {
+        setError(err instanceof ApiError ? err.message : "Failed to load users.");
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleToggleActive = async (user: AdminUser) => {
+    setActionError(null);
+    try {
+      const updated = user.isActive
+        ? await deactivateAdminUser(user.userId)
+        : await activateAdminUser(user.userId);
+      setUsers((prev) => prev.map((u) => (u.userId === user.userId ? updated : u)));
+    } catch (err) {
+      setActionError(err instanceof ApiError ? err.message : "Failed to update user.");
+    }
+  };
+
+  const handleRoleSelectChange = (user: AdminUser, roleId: number) => {
+    setActionError(null);
+    if (roleId === 2) {
+      // Promoting to Expert — open the profile panel
+      setPromotingUser(user);
+      setExpertForm({ ...emptyExpertForm, displayName: `${user.firstName} ${user.lastName}`.trim() });
+      setPromoteError(null);
+    } else {
+      // User or Admin — change directly
+      changeUserRole(user.userId, roleId)
+        .then((updated) => setUsers((prev) => prev.map((u) => (u.userId === user.userId ? updated : u))))
+        .catch((err) => setActionError(err instanceof ApiError ? err.message : "Failed to change role."));
+    }
+  };
+
+  const handlePromoteConfirm = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!promotingUser) return;
+    setPromoteError(null);
+    setPromoting(true);
+    try {
+      // Step 1: change role to Expert
+      const updated = await changeUserRole(promotingUser.userId, 2);
+      setUsers((prev) => prev.map((u) => (u.userId === promotingUser.userId ? updated : u)));
+
+      // Step 2: if any profile fields filled, create expert profile
+      if (!isExpertFormEmpty(expertForm)) {
+        const profileData = expertFormToRequest(expertForm);
+        await adminCreateExpertProfile(promotingUser.userId, profileData);
+      }
+
+      setPromotingUser(null);
+    } catch (err) {
+      setPromoteError(err instanceof ApiError ? err.message : "Failed to promote user.");
+    } finally {
+      setPromoting(false);
+    }
+  };
+
+  const handlePromoteCancel = () => {
+    setPromotingUser(null);
+    setPromoteError(null);
+  };
+
+  const handleDelete = async (userId: string, email: string) => {
+    setActionError(null);
+    if (!confirm(`Delete user ${email}? This cannot be undone.`)) return;
+    try {
+      await deleteAdminUser(userId);
+      setUsers((prev) => prev.filter((u) => u.userId !== userId));
+    } catch (err) {
+      setActionError(err instanceof ApiError ? err.message : "Failed to delete user.");
+    }
+  };
+
+  const setF = (key: keyof ExpertForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setExpertForm((prev) => ({ ...prev, [key]: e.target.value }));
+
+  const filtered = users.filter(
+    (u) =>
+      (u.email ?? "").toLowerCase().includes(search.toLowerCase()) ||
+      `${u.firstName ?? ""} ${u.lastName ?? ""}`.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  const roleIdOf = (role: string) =>
+    (role ?? "").toLowerCase().includes("admin") ? 1
+    : (role ?? "").toLowerCase().includes("expert") ? 2
+    : 3;
+
+  if (loading) return <p className="adminPanel__loading">Loading users…</p>;
+  if (error) return <p className="adminPanel__error">{error}</p>;
+
+  return (
+    <>
+      <div className="adminPanel__toolbar">
+        <input
+          className="field__input adminPanel__search"
+          type="search"
+          placeholder="Search by name or email…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <span className="adminPanel__count">{filtered.length} users</span>
+      </div>
+
+      {actionError && <p className="adminPanel__error">{actionError}</p>}
+
+      {/* ── Expert promotion panel ──────────────────────────────────────── */}
+      {promotingUser && (
+        <form className="adminForm adminForm--expertPromotion" onSubmit={handlePromoteConfirm} noValidate>
+          <div className="adminForm__promotionHeader">
+            <div>
+              <h3 className="adminForm__title">
+                Promote {promotingUser.firstName} {promotingUser.lastName} to Expert
+              </h3>
+              <p className="adminForm__subtitle">
+                All fields below are optional. The expert can complete their profile later from their dashboard.
+              </p>
+            </div>
+            <button type="button" className="adminModal__close" onClick={handlePromoteCancel} disabled={promoting}>
+              ✕
+            </button>
+          </div>
+
+          {promoteError && <p className="adminPanel__error">{promoteError}</p>}
+
+          <div className="adminForm__row adminForm__row--two">
+            <label className="field">
+              <span className="field__label">Display name</span>
+              <input className="field__input" type="text" value={expertForm.displayName} onChange={setF("displayName")} disabled={promoting} placeholder="e.g. Dr. Priya Sharma" />
+            </label>
+            <label className="field">
+              <span className="field__label">Title / Specialty</span>
+              <input className="field__input" type="text" value={expertForm.title} onChange={setF("title")} disabled={promoting} placeholder="e.g. Ayurvedic Practitioner" />
+            </label>
+          </div>
+
+          <div className="adminForm__row adminForm__row--two">
+            <label className="field">
+              <span className="field__label">Location (country)</span>
+              <input className="field__input" type="text" value={expertForm.locationCountry} onChange={setF("locationCountry")} disabled={promoting} placeholder="e.g. India" />
+            </label>
+            <label className="field">
+              <span className="field__label">Years of experience</span>
+              <input className="field__input" type="number" min="0" value={expertForm.yearsExperience} onChange={setF("yearsExperience")} disabled={promoting} placeholder="e.g. 8" />
+            </label>
+          </div>
+
+          <div className="adminForm__row adminForm__row--two">
+            <label className="field">
+              <span className="field__label">Specialisations (comma-separated)</span>
+              <input className="field__input" type="text" value={expertForm.specialisations} onChange={setF("specialisations")} disabled={promoting} placeholder="e.g. PCOS, Hormonal Health, Fertility" />
+            </label>
+            <label className="field">
+              <span className="field__label">Credentials (comma-separated)</span>
+              <input className="field__input" type="text" value={expertForm.credentials} onChange={setF("credentials")} disabled={promoting} placeholder="e.g. BAMS, MD Ayurveda" />
+            </label>
+          </div>
+
+          <label className="field">
+            <span className="field__label">Bio</span>
+            <textarea className="field__input adminForm__textarea" value={expertForm.bio} onChange={setF("bio")} disabled={promoting} placeholder="A short professional bio shown on the expert's public profile…" />
+          </label>
+
+          <label className="field">
+            <span className="field__label">Short card description</span>
+            <textarea className="field__input adminForm__textarea adminForm__textarea--sm" value={expertForm.gridDescription} onChange={setF("gridDescription")} disabled={promoting} placeholder="1–2 sentences shown on browse cards. Defaults to bio if blank." />
+          </label>
+
+          <div className="adminForm__row adminForm__row--two">
+            <label className="field">
+              <span className="field__label">Profile image URL</span>
+              <input className="field__input" type="url" value={expertForm.profileImageUrl} onChange={setF("profileImageUrl")} disabled={promoting} placeholder="https://res.cloudinary.com/…" />
+            </label>
+            <label className="field">
+              <span className="field__label">Grid / card image URL</span>
+              <input className="field__input" type="url" value={expertForm.gridImageUrl} onChange={setF("gridImageUrl")} disabled={promoting} placeholder="https://res.cloudinary.com/…" />
+            </label>
+          </div>
+
+          <div className="adminForm__actions">
+            <button type="button" className="adminActionButton" onClick={handlePromoteCancel} disabled={promoting}>
+              Cancel
+            </button>
+            <button type="submit" className="button" disabled={promoting}>
+              {promoting ? "Promoting…" : isExpertFormEmpty(expertForm) ? "Promote (profile later)" : "Promote & save profile"}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* ── Users table ─────────────────────────────────────────────────── */}
+      <div className="adminTableWrap">
+        <table className="adminTable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Joined</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="adminTable__empty">No users found.</td>
+              </tr>
+            ) : (
+              filtered.map((u) => (
+                <tr key={u.userId} className={promotingUser?.userId === u.userId ? "adminTable__row--highlighted" : ""}>
+                  <td>{u.firstName} {u.lastName}</td>
+                  <td>{u.email}</td>
+                  <td>
+                    <span className={`statusBadge statusBadge--${roleIdOf(u.role) === 1 ? "active" : roleIdOf(u.role) === 2 ? "pending" : "ended"}`}>
+                      {u.role}
+                    </span>
+                  </td>
+                  <td>
+                    <span className={`statusBadge statusBadge--${u.isActive ? "active" : "ended"}`}>
+                      {u.isActive ? "Active" : "Inactive"}
+                    </span>
+                  </td>
+                  <td>{new Date(u.createdAt).toLocaleDateString()}</td>
+                  <td className="adminTable__actions">
+                    <select
+                      className="field__input adminTable__roleSelect"
+                      value={String(roleIdOf(u.role))}
+                      onChange={(ev) => handleRoleSelectChange(u, Number(ev.target.value))}
+                      disabled={promoting}
+                    >
+                      <option value="3">User</option>
+                      <option value="2">Expert</option>
+                      <option value="1">Admin</option>
+                    </select>
+                    <button
+                      type="button"
+                      className="adminActionButton"
+                      onClick={() => handleToggleActive(u)}
+                      disabled={promoting}
+                    >
+                      {u.isActive ? "Deactivate" : "Activate"}
+                    </button>
+                    <button
+                      type="button"
+                      className="adminActionButton adminActionButton--danger"
+                      onClick={() => handleDelete(u.userId, u.email)}
+                      disabled={promoting}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </>
+  );
+}

@@ -5,6 +5,7 @@ import { INTERNAL_NAV_ROUTES } from "../nav/menu";
 import About from "../pages/About";
 import AllPrograms from "../pages/AllPrograms";
 import Contact from "../pages/Contact";
+import CategoryProgramsPage from "../pages/CategoryProgramsPage";
 import GuidedProgramDetail from "../pages/GuidedProgramDetail";
 import ProgramDetailPage from "../pages/ProgramDetailPage";
 import Home from "../pages/Home";
@@ -74,6 +75,7 @@ export const router = createBrowserRouter([
       { path: "/learn/founders-story", element: <FoundersStory /> },
       { path: "/learn/know-your-experts", element: <KnowYourExperts /> },
       { path: "/learn/podcast", element: <Podcast /> },
+      { path: "/guided/:categorySlug/programs", element: <CategoryProgramsPage /> },
       { path: "/guided/:programSlug", element: <GuidedProgramDetail /> },
       { path: "/guided/:programSlug/:programId", element: <ProgramDetailPage /> },
       ...INTERNAL_NAV_ROUTES.filter(

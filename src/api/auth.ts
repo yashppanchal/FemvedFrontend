@@ -51,7 +51,6 @@ export interface LoginResponse {
   refreshToken?: string;
   accessTokenExpiresAt?: string;
   refreshTokenExpiresAt?: string;
-  // Backward compatibility for older response shape.
   token?: string;
   expiresAt?: string;
   role?: "admin" | "expert" | "user" | string;
@@ -71,5 +70,33 @@ export function registerUser(data: RegisterRequest): Promise<RegisterResponse> {
   return apiFetch<RegisterResponse>("/auth/register", {
     method: "POST",
     body: JSON.stringify(data),
+  });
+}
+
+export function refreshTokens(refreshToken: string): Promise<LoginResponse> {
+  return apiFetch<LoginResponse>("/auth/refresh", {
+    method: "POST",
+    body: JSON.stringify({ refreshToken }),
+  });
+}
+
+export function logoutUser(refreshToken: string): Promise<void> {
+  return apiFetch<void>("/auth/logout", {
+    method: "POST",
+    body: JSON.stringify({ refreshToken }),
+  });
+}
+
+export function forgotPassword(email: string): Promise<void> {
+  return apiFetch<void>("/auth/forgot-password", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+}
+
+export function resetPassword(token: string, newPassword: string): Promise<void> {
+  return apiFetch<void>("/auth/reset-password", {
+    method: "POST",
+    body: JSON.stringify({ token, newPassword }),
   });
 }

@@ -11,6 +11,184 @@
   max-width: 460px;
 }
 
+/* ---- Tab navigation ---- */
+
+.dashTabs {
+  display: flex;
+  gap: 4px;
+  margin: 24px 0 20px;
+  padding: 4px;
+  background: rgba(15, 15, 16, 0.04);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 560px;
+}
+
+.dashTabs__btn {
+  flex: 1;
+  height: 36px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+  white-space: nowrap;
+}
+
+.dashTabs__btn:hover {
+  background: rgba(15, 15, 16, 0.06);
+  color: var(--black);
+}
+
+.dashTabs__btn--active {
+  background: var(--white);
+  color: var(--black);
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(15, 15, 16, 0.1);
+}
+
+/* ---- Tab content area ---- */
+
+.dashContent {
+  width: 100%;
+  max-width: 760px;
+  text-align: left;
+}
+
+/* ---- Wide card for tables ---- */
+
+.dashCard--wide {
+  max-width: 100%;
+}
+
+/* ---- Loading / empty states ---- */
+
+.dashCard__loading,
+.dashCard__empty {
+  padding: 20px 0;
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ---- Dashboard table ---- */
+
+.dashTableWrap {
+  overflow-x: auto;
+  margin-top: 4px;
+}
+
+.dashTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.dashTable th {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.dashTable td {
+  padding: 12px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.dashTable tr:last-child td {
+  border-bottom: none;
+}
+
+.dashTable__actions {
+  display: flex;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.dashTable__btn {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--black);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+
+.dashTable__btn:hover {
+  background: rgba(86, 19, 27, 0.06);
+  border-color: rgba(86, 19, 27, 0.25);
+  color: var(--primaryHover);
+}
+
+.dashTable__btn--danger:hover {
+  background: rgba(200, 30, 30, 0.06);
+  border-color: rgba(200, 30, 30, 0.25);
+  color: #a01a1a;
+}
+
+/* ---- Status badge ---- */
+
+.statusBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+  background: rgba(15, 15, 16, 0.06);
+  color: var(--muted);
+}
+
+.statusBadge--active {
+  background: rgba(22, 135, 50, 0.1);
+  color: #157a2e;
+}
+
+.statusBadge--completed,
+.statusBadge--paid {
+  background: rgba(22, 100, 200, 0.1);
+  color: #1558a0;
+}
+
+.statusBadge--paused {
+  background: rgba(180, 120, 0, 0.1);
+  color: #9a6800;
+}
+
+.statusBadge--ended,
+.statusBadge--refunded,
+.statusBadge--cancelled {
+  background: rgba(200, 30, 30, 0.08);
+  color: #a01a1a;
+}
+
+@media (max-width: 560px) {
+  .dashTabs {
+    gap: 2px;
+  }
+
+  .dashTabs__btn {
+    font-size: 12px;
+    padding: 0 8px;
+  }
+}
+
 /* ---- Dashboard card ---- */
 
 .dashCard {
