@@ -347,3 +347,25 @@ export function recordExpertPayout(data: RecordPayoutRequest): Promise<ExpertPay
     body: JSON.stringify(data),
   });
 }
+
+export interface DurationPriceManagement {
+  priceId: string;
+  locationCode: string;
+  amount: number;
+  currencyCode: string;
+  currencySymbol: string;
+  isActive: boolean;
+}
+
+export interface DurationManagement {
+  durationId: string;
+  label: string;
+  weeks: number;
+  sortOrder: number;
+  isActive: boolean;
+  prices: DurationPriceManagement[];
+}
+
+export function getProgramDurations(programId: string): Promise<DurationManagement[]> {
+  return apiFetch<DurationManagement[]>(`/guided/programs/${encodeURIComponent(programId)}/durations`);
+}

@@ -151,14 +151,38 @@ export interface GuidedTreeCategory {
   programsInCategory?: GuidedTreeProgram[];
 }
 
+export interface GuidedTreeProgramDuration {
+  durationId?: string;
+  durationLabel?: string;
+  durationPrice?: string;
+}
+
+export interface GuidedTreeProgramDetailSection {
+  heading?: string;
+  description?: string;
+}
+
+export interface GuidedTreeProgramPageDetails {
+  overview?: string;
+  whatYouGet?: string[];
+  whoIsThisFor?: string[];
+  tags?: string[];
+  sortOrder?: number;
+  detailSections?: GuidedTreeProgramDetailSection[];
+}
+
 export interface GuidedTreeProgram {
   programId?: string;
   id?: string;
   _id?: string;
   programName?: string;
   name?: string;
+  programGridDescription?: string;
+  programGridImage?: string;
   isActive?: boolean;
   is_active?: boolean;
+  programDurations?: GuidedTreeProgramDuration[];
+  programPageDisplayDetails?: GuidedTreeProgramPageDetails;
 }
 
 export interface GuidedTreeResponse {
