@@ -2,7 +2,6 @@ import { type FormEvent, useEffect, useState } from "react";
 import {
   createGuidedProgram,
   fetchGuidedTree,
-  type GuidedTreeCategory,
 } from "../../api/guided";
 import { ApiError } from "../../api/client";
 import { useAuth } from "../../auth/useAuth";
@@ -11,6 +10,14 @@ interface FlatCategory {
   id: string;
   name: string;
   domainName: string;
+}
+
+interface DurationEntry {
+  label: string;
+  weeks: string;
+  priceIN: string;
+  priceUK: string;
+  priceUS: string;
 }
 
 function flattenCategories(tree: Awaited<ReturnType<typeof fetchGuidedTree>>): FlatCategory[] {
@@ -26,6 +33,8 @@ function flattenCategories(tree: Awaited<ReturnType<typeof fetchGuidedTree>>): F
   return result;
 }
 
+const initialDuration: DurationEntry = { label: "4 weeks", weeks: "4", priceIN: "", priceUK: "", priceUS: "" };
+
 const emptyForm = {
   categoryId: "",
   name: "",
@@ -36,17 +45,13 @@ const emptyForm = {
   tags: "",
   whatYouGet: "",
   whoIsThisFor: "",
-  durationLabel: "4 weeks",
-  durationWeeks: "4",
-  priceIN: "",
-  priceUK: "",
-  priceUS: "",
 };
 
 export default function ExpertCreateProgramTab() {
   const { tokens } = useAuth();
   const [categories, setCategories] = useState<FlatCategory[]>([]);
   const [form, setForm] = useState(emptyForm);
+  const [durations, setDurations] = useState<DurationEntry[]>([{ ...initialDuration }]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -70,6 +75,20 @@ export default function ExpertCreateProgramTab() {
     setForm((prev) => ({ ...prev, name, slug }));
   };
 
+  const setDuration =
+    (idx: number, key: keyof DurationEntry) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setDurations((prev) =>
+        prev.map((d, i) => (i === idx ? { ...d, [key]: e.target.value } : d)),
+      );
+    };
+
+  const addDuration = () =>
+    setDurations((prev) => [...prev, { ...initialDuration }]);
+
+  const removeDuration = (idx: number) =>
+    setDurations((prev) => prev.filter((_, i) => i !== idx));
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -80,14 +99,27 @@ export default function ExpertCreateProgramTab() {
       return;
     }
 
-    const prices = [];
-    if (form.priceIN) prices.push({ locationCode: "IN", amount: Number(form.priceIN), currencyCode: "INR", currencySymbol: "₹" });
-    if (form.priceUK) prices.push({ locationCode: "GB", amount: Number(form.priceUK), currencyCode: "GBP", currencySymbol: "£" });
-    if (form.priceUS) prices.push({ locationCode: "US", amount: Number(form.priceUS), currencyCode: "USD", currencySymbol: "$" });
-
-    if (prices.length === 0) {
-      setError("Please set a price for at least one region (India, UK, or US).");
-      return;
+    const mappedDurations = [];
+    for (let i = 0; i < durations.length; i++) {
+      const d = durations[i];
+      if (!d.label.trim()) {
+        setError(`Duration ${i + 1}: please enter a label (e.g. "4 weeks").`);
+        return;
+      }
+      const prices = [];
+      if (d.priceIN) prices.push({ locationCode: "IN", amount: Number(d.priceIN), currencyCode: "INR", currencySymbol: "₹" });
+      if (d.priceUK) prices.push({ locationCode: "GB", amount: Number(d.priceUK), currencyCode: "GBP", currencySymbol: "£" });
+      if (d.priceUS) prices.push({ locationCode: "US", amount: Number(d.priceUS), currencyCode: "USD", currencySymbol: "$" });
+      if (prices.length === 0) {
+        setError(`Duration ${i + 1} ("${d.label}"): please set a price for at least one region.`);
+        return;
+      }
+      mappedDurations.push({
+        label: d.label.trim(),
+        weeks: parseInt(d.weeks, 10) || 4,
+        sortOrder: i,
+        prices,
+      });
     }
 
     const accessToken = tokens?.accessToken;
@@ -106,14 +138,7 @@ export default function ExpertCreateProgramTab() {
         gridImageUrl: form.gridImageUrl.trim(),
         overview: form.overview.trim(),
         sortOrder: 0,
-        durations: [
-          {
-            label: form.durationLabel.trim(),
-            weeks: parseInt(form.durationWeeks, 10) || 4,
-            sortOrder: 0,
-            prices,
-          },
-        ],
+        durations: mappedDurations,
         whatYouGet: form.whatYouGet.split("\n").map((s) => s.trim()).filter(Boolean),
         whoIsThisFor: form.whoIsThisFor.split("\n").map((s) => s.trim()).filter(Boolean),
         tags: form.tags.split(",").map((s) => s.trim()).filter(Boolean),
@@ -121,6 +146,7 @@ export default function ExpertCreateProgramTab() {
       }, accessToken);
       setSuccess("Your program has been created and submitted for review. The admin team will publish it once approved.");
       setForm(emptyForm);
+      setDurations([{ ...initialDuration }]);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Something went wrong. Please try again.");
     } finally {
@@ -282,85 +308,104 @@ export default function ExpertCreateProgramTab() {
             </label>
           </div>
 
-          {/* ── Section 4: Duration ───────────────────────────── */}
+          {/* ── Section 4: Durations & Pricing ───────────────── */}
           <div className="expertForm__section">
-            <h3 className="expertForm__sectionTitle">Program Duration</h3>
-            <p className="expertForm__sectionHint">Set how long your program runs. You can add more duration options (e.g. 4 weeks, 8 weeks) after the program is created.</p>
-
-            <div className="expertForm__row">
-              <label className="field">
-                <span className="field__label">Duration Display Name <span className="field__techTerm">(duration label)</span></span>
-                <span className="field__hint">How the length is shown to clients on your program page.</span>
-                <input
-                  className="field__input"
-                  type="text"
-                  value={form.durationLabel}
-                  onChange={set("durationLabel")}
-                  disabled={submitting}
-                  placeholder="e.g. 4 weeks, 3 months"
-                />
-              </label>
-              <label className="field">
-                <span className="field__label">Total Length <span className="field__techTerm">(duration weeks)</span></span>
-                <span className="field__hint">Used internally to calculate program end dates.</span>
-                <input
-                  className="field__input"
-                  type="number"
-                  min="1"
-                  value={form.durationWeeks}
-                  onChange={set("durationWeeks")}
-                  disabled={submitting}
-                />
-              </label>
+            <div className="expertForm__sectionHeader">
+              <h3 className="expertForm__sectionTitle">Durations &amp; Pricing</h3>
+              <button
+                type="button"
+                className="adminActionButton adminActionButton--sm"
+                onClick={addDuration}
+                disabled={submitting}
+              >
+                + Add Duration
+              </button>
             </div>
-          </div>
+            <p className="expertForm__sectionHint">Add one or more duration options for your program. Each duration has its own pricing per region. At least one region price is required per duration.</p>
 
-          {/* ── Section 5: Pricing ───────────────────────────── */}
-          <div className="expertForm__section">
-            <h3 className="expertForm__sectionTitle">Pricing by Region</h3>
-            <p className="expertForm__sectionHint">Set the price for each region where you want to accept bookings. Leave a region blank to hide it from clients in that country. At least one price is required.</p>
+            {durations.map((dur, idx) => (
+              <div key={idx} className="durationBlock">
+                <div className="durationBlock__header">
+                  <span className="durationBlock__label">Duration {idx + 1}</span>
+                  {durations.length > 1 && (
+                    <button
+                      type="button"
+                      className="adminActionButton adminActionButton--sm adminActionButton--danger"
+                      onClick={() => removeDuration(idx)}
+                      disabled={submitting}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
 
-            <div className="expertForm__row expertForm__row--3">
-              <label className="field">
-                <span className="field__label">India <span className="field__currency">₹ INR</span></span>
-                <span className="field__hint">Price in Indian Rupees</span>
-                <input
-                  className="field__input"
-                  type="number"
-                  min="0"
-                  value={form.priceIN}
-                  onChange={set("priceIN")}
-                  placeholder="e.g. 33000"
-                  disabled={submitting}
-                />
-              </label>
-              <label className="field">
-                <span className="field__label">United Kingdom <span className="field__currency">£ GBP</span></span>
-                <span className="field__hint">Price in British Pounds</span>
-                <input
-                  className="field__input"
-                  type="number"
-                  min="0"
-                  value={form.priceUK}
-                  onChange={set("priceUK")}
-                  placeholder="e.g. 320"
-                  disabled={submitting}
-                />
-              </label>
-              <label className="field">
-                <span className="field__label">United States <span className="field__currency">$ USD</span></span>
-                <span className="field__hint">Price in US Dollars</span>
-                <input
-                  className="field__input"
-                  type="number"
-                  min="0"
-                  value={form.priceUS}
-                  onChange={set("priceUS")}
-                  placeholder="e.g. 400"
-                  disabled={submitting}
-                />
-              </label>
-            </div>
+                <div className="expertForm__row">
+                  <label className="field">
+                    <span className="field__label">Duration Label</span>
+                    <span className="field__hint">Shown to clients, e.g. "4 weeks", "3 months".</span>
+                    <input
+                      className="field__input"
+                      type="text"
+                      value={dur.label}
+                      onChange={setDuration(idx, "label")}
+                      disabled={submitting}
+                      placeholder="e.g. 4 weeks"
+                    />
+                  </label>
+                  <label className="field">
+                    <span className="field__label">Total Weeks</span>
+                    <span className="field__hint">Used internally to calculate end dates.</span>
+                    <input
+                      className="field__input"
+                      type="number"
+                      min="1"
+                      value={dur.weeks}
+                      onChange={setDuration(idx, "weeks")}
+                      disabled={submitting}
+                    />
+                  </label>
+                </div>
+
+                <div className="expertForm__row expertForm__row--3">
+                  <label className="field">
+                    <span className="field__label">India <span className="field__currency">₹ INR</span></span>
+                    <input
+                      className="field__input"
+                      type="number"
+                      min="0"
+                      value={dur.priceIN}
+                      onChange={setDuration(idx, "priceIN")}
+                      placeholder="e.g. 33000"
+                      disabled={submitting}
+                    />
+                  </label>
+                  <label className="field">
+                    <span className="field__label">United Kingdom <span className="field__currency">£ GBP</span></span>
+                    <input
+                      className="field__input"
+                      type="number"
+                      min="0"
+                      value={dur.priceUK}
+                      onChange={setDuration(idx, "priceUK")}
+                      placeholder="e.g. 320"
+                      disabled={submitting}
+                    />
+                  </label>
+                  <label className="field">
+                    <span className="field__label">United States <span className="field__currency">$ USD</span></span>
+                    <input
+                      className="field__input"
+                      type="number"
+                      min="0"
+                      value={dur.priceUS}
+                      onChange={setDuration(idx, "priceUS")}
+                      placeholder="e.g. 400"
+                      disabled={submitting}
+                    />
+                  </label>
+                </div>
+              </div>
+            ))}
           </div>
 
           <div className="expertForm__actions">

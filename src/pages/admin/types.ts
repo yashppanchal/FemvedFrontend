@@ -58,6 +58,14 @@ export type CategoryForm = {
   keyAreas: string;
 };
 
+export type DurationEntry = {
+  label: string;
+  weeks: string;
+  priceIN: string;
+  priceUK: string;
+  priceUS: string;
+};
+
 export type ProgramForm = {
   name: string;
   domainId: string;
@@ -66,11 +74,7 @@ export type ProgramForm = {
   gridImageUrl: string;
   overview: string;
   sortOrder: string;
-  durationLabel: string;
-  durationWeeks: string;
-  priceIN: string;
-  priceUK: string;
-  priceUS: string;
+  durations: DurationEntry[];
   whatYouGet: string;
   whoIsThisFor: string;
   tags: string;

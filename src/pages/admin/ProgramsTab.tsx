@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
-import type { CategoryRow, DomainRow, ProgramForm, ProgramRow } from "./types";
+import type { CategoryRow, DomainRow, DurationEntry, ProgramForm, ProgramRow } from "./types";
 
 type ProgramsTabProps = {
   programCreateSuccess: string | null;
@@ -8,12 +8,13 @@ type ProgramsTabProps = {
   onOpenAddModal: () => void;
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   programForm: ProgramForm;
-  onProgramFormChange: (updater: (prev: ProgramForm) => ProgramForm) => void;
+  onProgramFormChange: (form: ProgramForm | ((prev: ProgramForm) => ProgramForm)) => void;
   domains: DomainRow[];
   categoriesForProgramDomain: CategoryRow[];
   isProgramModalOpen: boolean;
   onCloseModal: () => void;
   isCreatingProgram: boolean;
+  isLoadingProgramEdit: boolean;
   editingProgramId: string | null;
   programs: ProgramRow[];
   categories: CategoryRow[];
@@ -34,6 +35,7 @@ export function ProgramsTab({
   isProgramModalOpen,
   onCloseModal,
   isCreatingProgram,
+  isLoadingProgramEdit,
   editingProgramId,
   programs,
   categories,
@@ -83,13 +85,16 @@ export function ProgramsTab({
             type="button"
             className="adminActionButton"
             onClick={onCloseModal}
-            disabled={isCreatingProgram}
+            disabled={isCreatingProgram || isLoadingProgramEdit}
           >
             Close
           </button>
         </div>
 
         {programCreateError && <p className="adminPanel__error">{programCreateError}</p>}
+        {isLoadingProgramEdit && (
+          <p className="adminPanel__hint" style={{ marginBottom: "12px" }}>Loading program details…</p>
+        )}
 
         <form className="form adminForm" onSubmit={onSubmit} noValidate>
 
@@ -149,7 +154,7 @@ export function ProgramsTab({
                 onChange={handleNameChange}
                 placeholder="e.g. Hormonal Balance Reset"
                 required
-                disabled={isCreatingProgram}
+                disabled={isCreatingProgram || isLoadingProgramEdit}
               />
             </label>
 
@@ -163,7 +168,7 @@ export function ProgramsTab({
                   value={programForm.gridImageUrl}
                   onChange={set("gridImageUrl")}
                   placeholder="https://res.cloudinary.com/..."
-                  disabled={isCreatingProgram}
+                  disabled={isCreatingProgram || isLoadingProgramEdit}
                 />
               </label>
 
@@ -176,7 +181,7 @@ export function ProgramsTab({
                   min={0}
                   value={programForm.sortOrder}
                   onChange={set("sortOrder")}
-                  disabled={isCreatingProgram}
+                  disabled={isCreatingProgram || isLoadingProgramEdit}
                 />
               </label>
             </div>
@@ -195,7 +200,7 @@ export function ProgramsTab({
                 onChange={set("overview")}
                 rows={4}
                 placeholder="e.g. This 6-week guided program is designed for women experiencing hormonal imbalances..."
-                disabled={isCreatingProgram}
+                disabled={isCreatingProgram || isLoadingProgramEdit}
               />
             </label>
 
@@ -208,7 +213,7 @@ export function ProgramsTab({
                 onChange={set("gridDescription")}
                 rows={2}
                 placeholder="e.g. A personalised 6-week plan to rebalance hormones naturally."
-                disabled={isCreatingProgram}
+                disabled={isCreatingProgram || isLoadingProgramEdit}
               />
             </label>
 
@@ -221,7 +226,7 @@ export function ProgramsTab({
                 value={programForm.tags}
                 onChange={set("tags")}
                 placeholder="hormones, stress, PCOS, gut-health"
-                disabled={isCreatingProgram}
+                disabled={isCreatingProgram || isLoadingProgramEdit}
               />
             </label>
           </div>
@@ -239,7 +244,7 @@ export function ProgramsTab({
                 onChange={set("whatYouGet")}
                 rows={4}
                 placeholder={"Weekly 1:1 video consultation (60 min)\nPersonalised nutrition plan\nWhatsApp support between sessions"}
-                disabled={isCreatingProgram}
+                disabled={isCreatingProgram || isLoadingProgramEdit}
               />
             </label>
 
@@ -252,88 +257,162 @@ export function ProgramsTab({
                 onChange={set("whoIsThisFor")}
                 rows={3}
                 placeholder={"Women experiencing irregular or painful periods\nThose struggling with fatigue or mood swings"}
-                disabled={isCreatingProgram}
+                disabled={isCreatingProgram || isLoadingProgramEdit}
               />
             </label>
           </div>
 
-          {/* ── Section 5: Duration ───────────────────────────────── */}
+          {/* ── Section 5: Durations + Pricing ───────────────────── */}
           <div className="expertForm__section">
-            <h4 className="expertForm__sectionTitle">Duration</h4>
-
-            <div className="adminForm__row adminForm__row--two">
-              <label className="field">
-                <span className="field__label">Duration Label <span className="field__required">*</span></span>
-                <span className="field__hint">How the length is shown to clients, e.g. "6 weeks".</span>
-                <input
-                  className="field__input"
-                  type="text"
-                  value={programForm.durationLabel}
-                  onChange={set("durationLabel")}
-                  placeholder="e.g. 4 weeks, 3 months"
-                  required
-                  disabled={isCreatingProgram}
-                />
-              </label>
-
-              <label className="field">
-                <span className="field__label">Total Weeks</span>
-                <span className="field__hint">Used internally for scheduling.</span>
-                <input
-                  className="field__input"
-                  type="number"
-                  min={1}
-                  value={programForm.durationWeeks}
-                  onChange={set("durationWeeks")}
-                  disabled={isCreatingProgram}
-                />
-              </label>
+            <div className="expertForm__sectionHeader">
+              <h4 className="expertForm__sectionTitle">Durations &amp; Pricing</h4>
+              <button
+                type="button"
+                className="adminActionButton"
+                disabled={isCreatingProgram || isLoadingProgramEdit}
+                onClick={() =>
+                  onProgramFormChange((prev) => ({
+                    ...prev,
+                    durations: [
+                      ...prev.durations,
+                      { label: "", weeks: "4", priceIN: "", priceUK: "", priceUS: "" } satisfies DurationEntry,
+                    ],
+                  }))
+                }
+              >
+                + Add Duration
+              </button>
             </div>
-          </div>
+            <p className="expertForm__sectionHint">
+              Add one or more duration options (e.g. 4 weeks, 8 weeks). Each can have its own price per region.
+              Leave a region price blank to hide that duration from clients in that country.
+            </p>
 
-          {/* ── Section 6: Pricing ────────────────────────────────── */}
-          <div className="expertForm__section">
-            <h4 className="expertForm__sectionTitle">Pricing by Region</h4>
-            <p className="expertForm__sectionHint">Set the price for each region. Leave blank to hide from clients in that country. At least one price is required.</p>
+            {programForm.durations.map((dur, idx) => (
+              <div key={idx} className="durationBlock">
+                <div className="durationBlock__header">
+                  <span className="durationBlock__label">Duration {idx + 1}</span>
+                  {programForm.durations.length > 1 && (
+                    <button
+                      type="button"
+                      className="adminActionButton adminActionButton--danger adminActionButton--sm"
+                      disabled={isCreatingProgram || isLoadingProgramEdit}
+                      onClick={() =>
+                        onProgramFormChange((prev) => ({
+                          ...prev,
+                          durations: prev.durations.filter((_, i) => i !== idx),
+                        }))
+                      }
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
 
-            <div className="expertForm__row expertForm__row--3">
-              <label className="field">
-                <span className="field__label">India <span className="field__currency">₹ INR</span></span>
-                <input
-                  className="field__input"
-                  type="number"
-                  min="0"
-                  value={programForm.priceIN}
-                  onChange={set("priceIN")}
-                  placeholder="e.g. 33000"
-                  disabled={isCreatingProgram}
-                />
-              </label>
-              <label className="field">
-                <span className="field__label">United Kingdom <span className="field__currency">£ GBP</span></span>
-                <input
-                  className="field__input"
-                  type="number"
-                  min="0"
-                  value={programForm.priceUK}
-                  onChange={set("priceUK")}
-                  placeholder="e.g. 320"
-                  disabled={isCreatingProgram}
-                />
-              </label>
-              <label className="field">
-                <span className="field__label">United States <span className="field__currency">$ USD</span></span>
-                <input
-                  className="field__input"
-                  type="number"
-                  min="0"
-                  value={programForm.priceUS}
-                  onChange={set("priceUS")}
-                  placeholder="e.g. 400"
-                  disabled={isCreatingProgram}
-                />
-              </label>
-            </div>
+                <div className="adminForm__row adminForm__row--two">
+                  <label className="field">
+                    <span className="field__label">Duration Label <span className="field__required">*</span></span>
+                    <span className="field__hint">Shown to clients, e.g. "6 weeks" or "3 months".</span>
+                    <input
+                      className="field__input"
+                      type="text"
+                      value={dur.label}
+                      onChange={(e) =>
+                        onProgramFormChange((prev) => ({
+                          ...prev,
+                          durations: prev.durations.map((d, i) =>
+                            i === idx ? { ...d, label: e.target.value } : d,
+                          ),
+                        }))
+                      }
+                      placeholder="e.g. 4 weeks"
+                      required
+                      disabled={isCreatingProgram || isLoadingProgramEdit}
+                    />
+                  </label>
+
+                  <label className="field">
+                    <span className="field__label">Total Weeks</span>
+                    <span className="field__hint">Used internally for scheduling.</span>
+                    <input
+                      className="field__input"
+                      type="number"
+                      min={1}
+                      value={dur.weeks}
+                      onChange={(e) =>
+                        onProgramFormChange((prev) => ({
+                          ...prev,
+                          durations: prev.durations.map((d, i) =>
+                            i === idx ? { ...d, weeks: e.target.value } : d,
+                          ),
+                        }))
+                      }
+                      disabled={isCreatingProgram || isLoadingProgramEdit}
+                    />
+                  </label>
+                </div>
+
+                <div className="expertForm__row expertForm__row--3">
+                  <label className="field">
+                    <span className="field__label">India <span className="field__currency">₹ INR</span></span>
+                    <input
+                      className="field__input"
+                      type="number"
+                      min="0"
+                      value={dur.priceIN}
+                      onChange={(e) =>
+                        onProgramFormChange((prev) => ({
+                          ...prev,
+                          durations: prev.durations.map((d, i) =>
+                            i === idx ? { ...d, priceIN: e.target.value } : d,
+                          ),
+                        }))
+                      }
+                      placeholder="e.g. 33000"
+                      disabled={isCreatingProgram || isLoadingProgramEdit}
+                    />
+                  </label>
+                  <label className="field">
+                    <span className="field__label">United Kingdom <span className="field__currency">£ GBP</span></span>
+                    <input
+                      className="field__input"
+                      type="number"
+                      min="0"
+                      value={dur.priceUK}
+                      onChange={(e) =>
+                        onProgramFormChange((prev) => ({
+                          ...prev,
+                          durations: prev.durations.map((d, i) =>
+                            i === idx ? { ...d, priceUK: e.target.value } : d,
+                          ),
+                        }))
+                      }
+                      placeholder="e.g. 320"
+                      disabled={isCreatingProgram || isLoadingProgramEdit}
+                    />
+                  </label>
+                  <label className="field">
+                    <span className="field__label">United States <span className="field__currency">$ USD</span></span>
+                    <input
+                      className="field__input"
+                      type="number"
+                      min="0"
+                      value={dur.priceUS}
+                      onChange={(e) =>
+                        onProgramFormChange((prev) => ({
+                          ...prev,
+                          durations: prev.durations.map((d, i) =>
+                            i === idx ? { ...d, priceUS: e.target.value } : d,
+                          ),
+                        }))
+                      }
+                      placeholder="e.g. 400"
+                      disabled={isCreatingProgram || isLoadingProgramEdit}
+                    />
+                  </label>
+                </div>
+              </div>
+            ))}
           </div>
 
           {/* ── Section 7: Detail Section ─────────────────────────── */}
@@ -349,7 +428,7 @@ export function ProgramsTab({
                 value={programForm.detailHeading}
                 onChange={set("detailHeading")}
                 placeholder="e.g. Why This Works"
-                disabled={isCreatingProgram}
+                disabled={isCreatingProgram || isLoadingProgramEdit}
               />
             </label>
 
@@ -361,16 +440,16 @@ export function ProgramsTab({
                 onChange={set("detailDescription")}
                 rows={3}
                 placeholder="Explain this section in detail..."
-                disabled={isCreatingProgram}
+                disabled={isCreatingProgram || isLoadingProgramEdit}
               />
             </label>
           </div>
 
           <div className="adminForm__actions">
-            <button type="button" className="adminActionButton" onClick={onCloseModal} disabled={isCreatingProgram}>
+            <button type="button" className="adminActionButton" onClick={onCloseModal} disabled={isCreatingProgram || isLoadingProgramEdit}>
               Cancel
             </button>
-            <button type="submit" className="button" disabled={isCreatingProgram}>
+            <button type="submit" className="button" disabled={isCreatingProgram || isLoadingProgramEdit}>
               {editingProgramId
                 ? isCreatingProgram ? "Updating…" : "Update Program"
                 : isCreatingProgram ? "Creating…" : "Create Program"}

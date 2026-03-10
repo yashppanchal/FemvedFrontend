@@ -1,5 +1,6 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { ApiError } from "../api/client";
+import { getProgramDurations } from "../api/admin";
 import {
   createGuidedProgram,
   createGuidedCategory,
@@ -23,6 +24,7 @@ import {
   type AdminTab,
   type CategoryForm,
   type CategoryRow,
+  type DurationEntry,
   type DomainForm,
   type DomainRow,
   type ProgramForm,
@@ -45,6 +47,8 @@ type GuidedHierarchyRows = {
   categoryRows: CategoryRow[];
   programRows: ProgramRow[];
   categoryFormById: Record<string, CategoryForm>;
+  programDurationsById: Record<string, DurationEntry[]>;
+  programFormById: Record<string, Partial<ProgramForm>>;
 };
 
 const PENDING_DOMAINS_STORAGE_KEY = "femved_admin_pending_domains";
@@ -68,6 +72,8 @@ const initialCategoryForm: CategoryForm = {
   keyAreas: "",
 };
 
+const initialDurationEntry = { label: "4 weeks", weeks: "4", priceIN: "", priceUK: "", priceUS: "" };
+
 const initialProgramForm: ProgramForm = {
   name: "",
   domainId: "",
@@ -76,11 +82,7 @@ const initialProgramForm: ProgramForm = {
   gridImageUrl: "",
   overview: "",
   sortOrder: "0",
-  durationLabel: "4 weeks",
-  durationWeeks: "4",
-  priceIN: "",
-  priceUK: "",
-  priceUS: "",
+  durations: [{ ...initialDurationEntry }],
   whatYouGet: "",
   whoIsThisFor: "",
   tags: "",
@@ -291,11 +293,18 @@ const removePendingDomain = (domainId: string) => {
   setPendingDomains(pending.filter((domain) => domain.id !== domainId));
 };
 
+const parseDurationWeeks = (label: string): string => {
+  const match = /(\d+)\s*week/i.exec(label);
+  return match ? match[1] : "";
+};
+
 const mapGuidedTreeToRows = (
   response: Awaited<ReturnType<typeof fetchGuidedTree>>,
 ): GuidedHierarchyRows => {
   const domainRows = mapGuidedDomainsToRows(response.domains ?? []);
   const categoryFormById: Record<string, CategoryForm> = {};
+  const programDurationsById: Record<string, DurationEntry[]> = {};
+  const programFormById: Record<string, Partial<ProgramForm>> = {};
   const programRows: ProgramRow[] = [];
 
   const categoryRows = (response.domains ?? []).flatMap(
@@ -354,6 +363,31 @@ const mapGuidedTreeToRows = (
               domainId,
               categoryId: id,
             });
+            const mappedDurations: DurationEntry[] = (program.programDurations ?? []).map((d) => ({
+              label: d.durationLabel ?? "",
+              weeks: parseDurationWeeks(d.durationLabel ?? ""),
+              priceIN: "",
+              priceUK: "",
+              priceUS: "",
+            }));
+            if (mappedDurations.length > 0) {
+              programDurationsById[programId] = mappedDurations;
+            }
+
+            const pageDetails = program.programPageDisplayDetails;
+            const firstSection = pageDetails?.detailSections?.[0];
+            programFormById[programId] = {
+              gridDescription: program.programGridDescription?.trim() ?? "",
+              gridImageUrl: program.programGridImage?.trim() ?? "",
+              overview: pageDetails?.overview?.trim() ?? "",
+              sortOrder: pageDetails?.sortOrder != null ? String(pageDetails.sortOrder) : "0",
+              whatYouGet: joinTextareaItems(pageDetails?.whatYouGet),
+              whoIsThisFor: joinTextareaItems(pageDetails?.whoIsThisFor),
+              tags: joinTextareaItems(pageDetails?.tags),
+              detailHeading: firstSection?.heading?.trim() ?? "",
+              detailDescription: firstSection?.description?.trim() ?? "",
+              durations: mappedDurations.length > 0 ? mappedDurations : undefined,
+            };
           }
 
           return {
@@ -366,7 +400,7 @@ const mapGuidedTreeToRows = (
     },
   );
 
-  return { domainRows, categoryRows, programRows, categoryFormById };
+  return { domainRows, categoryRows, programRows, categoryFormById, programDurationsById, programFormById };
 };
 
 export default function AdminDashboard() {
@@ -408,6 +442,12 @@ export default function AdminDashboard() {
   const [categoryFormById, setCategoryFormById] = useState<
     Record<string, CategoryForm>
   >({});
+  const [programDurationsById, setProgramDurationsById] = useState<
+    Record<string, DurationEntry[]>
+  >({});
+  const [programFormById, setProgramFormById] = useState<
+    Record<string, Partial<ProgramForm>>
+  >({});
 
   const [programForm, setProgramForm] =
     useState<ProgramForm>(initialProgramForm);
@@ -421,6 +461,7 @@ export default function AdminDashboard() {
   const [isCreatingProgram, setIsCreatingProgram] = useState(false);
   const [deletingProgramId, setDeletingProgramId] = useState<string | null>(null);
   const [isProgramModalOpen, setIsProgramModalOpen] = useState(false);
+  const [isLoadingProgramEdit, setIsLoadingProgramEdit] = useState(false);
 
   useEffect(() => {
     const timers: Array<ReturnType<typeof setTimeout>> = [];
@@ -492,7 +533,7 @@ export default function AdminDashboard() {
         setDomainLoadError(null);
 
         const treeResponse = await fetchGuidedTree();
-        const { domainRows, categoryRows, programRows, categoryFormById } =
+        const { domainRows, categoryRows, programRows, categoryFormById, programDurationsById, programFormById } =
           mapGuidedTreeToRows(treeResponse);
         const pendingDomains = getPendingDomains();
         const unresolvedPendingDomains = pendingDomains.filter(
@@ -504,6 +545,8 @@ export default function AdminDashboard() {
         setCategories(categoryRows);
         setPrograms(programRows);
         setCategoryFormById(categoryFormById);
+        setProgramDurationsById(programDurationsById);
+        setProgramFormById(programFormById);
         setPendingDomains(unresolvedPendingDomains);
       } catch {
         if (!isActive) return;
@@ -1028,22 +1071,44 @@ export default function AdminDashboard() {
     const gridDescription = programForm.gridDescription.trim();
     const gridImageUrl = programForm.gridImageUrl.trim();
     const overview = programForm.overview.trim();
-    const durationLabel = programForm.durationLabel.trim();
 
-    if (!overview || !durationLabel) {
-      setProgramCreateError("Overview and duration label are required.");
+    if (!overview) {
+      setProgramCreateError("Program description is required.");
       return;
     }
 
-    const prices: { locationCode: string; amount: number; currencyCode: string; currencySymbol: string }[] = [];
-    if (programForm.priceIN) prices.push({ locationCode: "IN", amount: Number(programForm.priceIN), currencyCode: "INR", currencySymbol: "₹" });
-    if (programForm.priceUK) prices.push({ locationCode: "GB", amount: Number(programForm.priceUK), currencyCode: "GBP", currencySymbol: "£" });
-    if (programForm.priceUS) prices.push({ locationCode: "US", amount: Number(programForm.priceUS), currencyCode: "USD", currencySymbol: "$" });
-
-    if (prices.length === 0) {
-      setProgramCreateError("Please set a price for at least one region (India, UK, or US).");
+    if (programForm.durations.length === 0) {
+      setProgramCreateError("At least one duration is required.");
       return;
     }
+
+    // Validate and map durations
+    const buildPrices = (d: DurationEntry) => {
+      const p: { locationCode: string; amount: number; currencyCode: string; currencySymbol: string }[] = [];
+      if (d.priceIN) p.push({ locationCode: "IN", amount: Number(d.priceIN), currencyCode: "INR", currencySymbol: "₹" });
+      if (d.priceUK) p.push({ locationCode: "GB", amount: Number(d.priceUK), currencyCode: "GBP", currencySymbol: "£" });
+      if (d.priceUS) p.push({ locationCode: "US", amount: Number(d.priceUS), currencyCode: "USD", currencySymbol: "$" });
+      return p;
+    };
+
+    for (let i = 0; i < programForm.durations.length; i++) {
+      const d = programForm.durations[i];
+      if (!d.label.trim()) {
+        setProgramCreateError(`Duration ${i + 1}: label is required.`);
+        return;
+      }
+      if (buildPrices(d).length === 0) {
+        setProgramCreateError(`Duration ${i + 1} ("${d.label}"): set a price for at least one region.`);
+        return;
+      }
+    }
+
+    const mappedDurations = programForm.durations.map((d, i) => ({
+      label: d.label.trim(),
+      weeks: parseNonNegativeNumber(d.weeks),
+      sortOrder: i,
+      prices: buildPrices(d),
+    }));
 
     const accessToken = tokens?.accessToken;
     if (!accessToken) {
@@ -1052,7 +1117,6 @@ export default function AdminDashboard() {
     }
 
     const sortOrder = parseNonNegativeNumber(programForm.sortOrder);
-    const durationWeeks = parseNonNegativeNumber(programForm.durationWeeks);
 
     const whatYouGet = parseTextareaItems(programForm.whatYouGet);
     const whoIsThisFor = parseTextareaItems(programForm.whoIsThisFor);
@@ -1116,14 +1180,7 @@ export default function AdminDashboard() {
           gridImageUrl,
           overview,
           sortOrder,
-          durations: [
-            {
-              label: durationLabel,
-              weeks: durationWeeks,
-              sortOrder: 0,
-              prices,
-            },
-          ],
+          durations: mappedDurations,
           whatYouGet,
           whoIsThisFor,
           tags,
@@ -1162,30 +1219,60 @@ export default function AdminDashboard() {
     }
   };
 
-  const startProgramEdit = (program: ProgramRow) => {
+  const startProgramEdit = async (program: ProgramRow) => {
+    const prefilled = programFormById[program.id] ?? {};
+    const fallbackDurations = programDurationsById[program.id];
+
+    setProgramCreateError(null);
+    setProgramCreateSuccess(null);
     setEditingProgramId(program.id);
+    setIsLoadingProgramEdit(true);
+    setIsProgramModalOpen(true);
+
+    let resolvedDurations: DurationEntry[] | null = null;
+    try {
+      const apiDurations = await getProgramDurations(program.id);
+      if (apiDurations.length > 0) {
+        resolvedDurations = apiDurations.map((d) => {
+          const priceByLocation = Object.fromEntries(
+            d.prices.filter((p) => p.isActive).map((p) => [p.locationCode, String(p.amount)]),
+          );
+          return {
+            label: d.label,
+            weeks: String(d.weeks),
+            priceIN: priceByLocation["IN"] ?? "",
+            priceUK: priceByLocation["GB"] ?? "",
+            priceUS: priceByLocation["US"] ?? "",
+          };
+        });
+      }
+    } catch {
+      // Fall back to tree-sourced durations (no prices) if fetch fails
+    } finally {
+      setIsLoadingProgramEdit(false);
+    }
+
+    const durations =
+      resolvedDurations ??
+      (fallbackDurations && fallbackDurations.length > 0
+        ? fallbackDurations.map((d) => ({ ...d }))
+        : [{ ...initialDurationEntry }]);
+
     setProgramForm({
       name: program.name,
       domainId: program.domainId,
       categoryId: program.categoryId,
-      gridDescription: "",
-      gridImageUrl: "",
-      overview: "",
-      sortOrder: "0",
-      durationLabel: "4 weeks",
-      durationWeeks: "4",
-      priceIN: "",
-      priceUK: "",
-      priceUS: "",
-      whatYouGet: "",
-      whoIsThisFor: "",
-      tags: "",
-      detailHeading: "",
-      detailDescription: "",
+      gridDescription: prefilled.gridDescription ?? "",
+      gridImageUrl: prefilled.gridImageUrl ?? "",
+      overview: prefilled.overview ?? "",
+      sortOrder: prefilled.sortOrder ?? "0",
+      durations,
+      whatYouGet: prefilled.whatYouGet ?? "",
+      whoIsThisFor: prefilled.whoIsThisFor ?? "",
+      tags: prefilled.tags ?? "",
+      detailHeading: prefilled.detailHeading ?? "",
+      detailDescription: prefilled.detailDescription ?? "",
     });
-    setProgramCreateError(null);
-    setProgramCreateSuccess(null);
-    setIsProgramModalOpen(true);
   };
 
   const handleProgramDelete = async (programId: string) => {
@@ -1302,6 +1389,7 @@ export default function AdminDashboard() {
             isProgramModalOpen={isProgramModalOpen}
             onCloseModal={closeProgramModal}
             isCreatingProgram={isCreatingProgram}
+            isLoadingProgramEdit={isLoadingProgramEdit}
             editingProgramId={editingProgramId}
             programs={programs}
             categories={categories}

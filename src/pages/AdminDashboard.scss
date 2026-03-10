@@ -651,3 +651,101 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* ── expertForm__ classes (shared with ExpertDashboard, used in ProgramsTab) ── */
+.expertForm__section {
+  display: grid;
+  gap: 16px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+}
+
+.expertForm__sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.expertForm__sectionTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.expertForm__sectionHint {
+  margin: -8px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.expertForm__row {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.expertForm__row--3 {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.expertForm__textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.expertForm__textarea--sm {
+  min-height: 64px;
+}
+
+/* ── Duration block ── */
+.durationBlock {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface, #fafafa);
+}
+
+.durationBlock__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.durationBlock__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.adminActionButton--sm {
+  height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.field__currency {
+  margin-left: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+@media (max-width: 640px) {
+  .expertForm__row,
+  .expertForm__row--3 {
+    grid-template-columns: 1fr;
+  }
+}
