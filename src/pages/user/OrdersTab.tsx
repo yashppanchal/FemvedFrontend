@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { getMyOrders, type MyOrder } from "../../api/users";
 import { ApiError } from "../../api/client";
 
-function formatCurrency(amount: number, currency: string) {
+function formatCurrency(amount: number | null | undefined, currency: string | null | undefined) {
+  if (amount == null) return "—";
+  if (!currency) return amount.toFixed(2);
   return new Intl.NumberFormat(undefined, { style: "currency", currency }).format(amount);
 }
 

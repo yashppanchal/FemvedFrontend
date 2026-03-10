@@ -25,20 +25,41 @@ function getStoredAccessToken(): string | null {
 export class ApiError extends Error {
   status: number;
   body: unknown;
+  /** Field-level validation errors keyed by field name, e.g. { email: ["Already exists."] } */
+  errors: Record<string, string[]> | null;
 
   constructor(status: number, body: unknown) {
-    // Try backend ProblemDetails "detail" field first, then "message", then generic
-    const msg =
-      typeof body === "object" && body !== null
-        ? (body as Record<string, unknown>).detail
-          ? String((body as Record<string, unknown>).detail)
-          : (body as Record<string, unknown>).message
-            ? String((body as Record<string, unknown>).message)
-            : `Request failed with status ${status}`
-        : `Request failed with status ${status}`;
+    const b = typeof body === "object" && body !== null
+      ? (body as Record<string, unknown>)
+      : null;
+
+    // Extract field-level errors first (most specific)
+    let fieldErrors: Record<string, string[]> | null = null;
+    if (b?.errors && typeof b.errors === "object") {
+      fieldErrors = b.errors as Record<string, string[]>;
+    }
+
+    let msg: string;
+    if (fieldErrors) {
+      // Join all field messages into a readable sentence
+      const messages = Object.values(fieldErrors).flat().filter(Boolean);
+      msg = messages.length > 0
+        ? messages.join(" ")
+        : String(b?.detail ?? b?.title ?? `Request failed with status ${status}`);
+    } else if (b?.detail) {
+      msg = String(b.detail);
+    } else if (b?.title) {
+      msg = String(b.title);
+    } else if (b?.message) {
+      msg = String(b.message);
+    } else {
+      msg = `Request failed with status ${status}`;
+    }
+
     super(msg);
     this.status = status;
     this.body = body;
+    this.errors = fieldErrors;
     this.name = "ApiError";
   }
 }

@@ -28,14 +28,14 @@ function profileToForm(p: ExpertProfileResponse): ProfileForm {
     displayName: p.displayName,
     title: p.title,
     bio: p.bio,
-    gridDescription: p.gridDescription,
-    detailedDescription: p.detailedDescription,
-    profileImageUrl: p.profileImageUrl,
-    gridImageUrl: p.gridImageUrl,
+    gridDescription: p.gridDescription ?? "",
+    detailedDescription: p.detailedDescription ?? "",
+    profileImageUrl: p.profileImageUrl ?? "",
+    gridImageUrl: p.gridImageUrl ?? "",
     specialisations: (p.specialisations ?? []).join(", "),
-    yearsExperience: String(p.yearsExperience),
+    yearsExperience: p.yearsExperience != null ? String(p.yearsExperience) : "",
     credentials: (p.credentials ?? []).join(", "),
-    locationCountry: p.locationCountry,
+    locationCountry: p.locationCountry ?? "",
     isActive: p.isActive,
   };
 }
@@ -49,7 +49,7 @@ const emptyForm: ProfileForm = {
   profileImageUrl: "",
   gridImageUrl: "",
   specialisations: "",
-  yearsExperience: "0",
+  yearsExperience: "",
   credentials: "",
   locationCountry: "",
   isActive: true,
@@ -105,18 +105,19 @@ export default function ExpertProfileTab() {
       return;
     }
 
+    const yearsRaw = parseInt(form.yearsExperience, 10);
     const payload: UpdateExpertProfileRequest = {
       displayName: form.displayName.trim(),
       title: form.title.trim(),
       bio: form.bio.trim(),
       gridDescription: form.gridDescription.trim() || form.bio.trim(),
       detailedDescription: form.detailedDescription.trim() || form.bio.trim(),
-      profileImageUrl: form.profileImageUrl.trim(),
-      gridImageUrl: form.gridImageUrl.trim(),
+      profileImageUrl: form.profileImageUrl.trim() || null,
+      gridImageUrl: form.gridImageUrl.trim() || null,
       specialisations: form.specialisations.split(",").map((s) => s.trim()).filter(Boolean),
-      yearsExperience: parseInt(form.yearsExperience, 10) || 0,
+      yearsExperience: yearsRaw > 0 ? yearsRaw : null,
       credentials: form.credentials.split(",").map((s) => s.trim()).filter(Boolean),
-      locationCountry: form.locationCountry.trim(),
+      locationCountry: form.locationCountry.trim() || null,
       isActive: form.isActive,
     };
 

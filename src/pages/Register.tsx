@@ -160,7 +160,7 @@ export default function Register() {
               >
                 {COUNTRY_LIST.map((c) => (
                   <option key={c.code} value={c.code}>
-                    {c.dialCode} {c.name}
+                    {c.dialCode}
                   </option>
                 ))}
               </select>
