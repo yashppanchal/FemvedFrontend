@@ -106,7 +106,7 @@ export function CategoriesTab({
           <div className="adminForm__row adminForm__row--two">
             <label className="field">
               <span className="field__label">
-                Hero Title (e.g., Balance Your Hormones Naturally)
+                Page Banner Heading (e.g., Balance Your Hormones Naturally)
               </span>
               <input
                 className="field__input"
@@ -118,14 +118,14 @@ export function CategoriesTab({
                     heroTitle: e.target.value,
                   }))
                 }
-                placeholder="Hero title"
+                placeholder="Big heading visitors see at the top of the page"
                 required
               />
             </label>
 
             <label className="field">
               <span className="field__label">
-                Hero Subtext (e.g., Practical plans tailored to your cycle)
+                Banner Subtext (e.g., Practical plans tailored to your cycle)
               </span>
               <input
                 className="field__input"
@@ -137,14 +137,14 @@ export function CategoriesTab({
                     heroSubtext: e.target.value,
                   }))
                 }
-                placeholder="Optional hero description"
+                placeholder="Short description shown below the banner heading"
               />
             </label>
           </div>
 
           <div className="adminForm__row adminForm__row--two">
             <label className="field">
-              <span className="field__label">CTA Label (e.g., Start Journey)</span>
+              <span className="field__label">Button Text (e.g., Start Journey)</span>
               <input
                 className="field__input"
                 type="text"
@@ -155,13 +155,13 @@ export function CategoriesTab({
                     ctaLabel: e.target.value,
                   }))
                 }
-                placeholder="Optional CTA label"
+                placeholder="Label shown on the call-to-action button (optional)"
               />
             </label>
 
             <label className="field">
               <span className="field__label">
-                CTA Link (e.g., https://femved.com/programs/pcos)
+                Button URL (e.g., https://femved.com/programs/pcos)
               </span>
               <input
                 className="field__input"
@@ -173,7 +173,7 @@ export function CategoriesTab({
                     ctaLink: e.target.value,
                   }))
                 }
-                placeholder="https://example.com"
+                placeholder="Where the button takes users (optional)"
               />
             </label>
           </div>
@@ -181,7 +181,7 @@ export function CategoriesTab({
           <div className="adminForm__row adminForm__row--two">
             <label className="field">
               <span className="field__label">
-                Page Header (e.g., PCOS Recovery Programs)
+                Programs Section Title (e.g., PCOS Recovery Programs)
               </span>
               <input
                 className="field__input"
@@ -193,7 +193,7 @@ export function CategoriesTab({
                     pageHeader: e.target.value,
                   }))
                 }
-                placeholder="Page header"
+                placeholder="Heading shown above the list of programs on this page"
                 required
               />
             </label>

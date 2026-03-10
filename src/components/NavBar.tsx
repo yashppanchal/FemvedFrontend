@@ -5,6 +5,12 @@ import { FaRegUser } from "react-icons/fa";
 import { IoChevronDown, IoMenu, IoClose } from "react-icons/io5";
 import { NAV_SECTIONS } from "../nav/menu";
 import { hasValidAccessToken, ROLE_ADMIN, ROLE_EXPERT, useAuth } from "../auth/useAuth";
+import {
+  loadGuidedPrograms,
+  getGuidedProgramsSnapshot,
+  normalizeSlug,
+  type GuidedProgramInfo,
+} from "../data/guidedPrograms";
 import logoUrl from "../assets/femvedlogo.png";
 import "./NavBar.scss";
 
@@ -13,6 +19,9 @@ export function NavBar() {
   const navigate = useNavigate();
   const { user, tokens, logout } = useAuth();
   const [openSectionId, setOpenSectionId] = useState<string | null>(null);
+  const [guidedCategories, setGuidedCategories] = useState<GuidedProgramInfo[]>(
+    () => getGuidedProgramsSnapshot("US") ?? [],
+  );
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAccessTokenValid, setIsAccessTokenValid] = useState(() =>
@@ -79,7 +88,40 @@ export function NavBar() {
     }
   }, [isAccessTokenValid]);
 
+  useEffect(() => {
+    loadGuidedPrograms("US")
+      .then(setGuidedCategories)
+      .catch(() => {});
+  }, []);
+
   const isAuthenticated = Boolean(user) && isAccessTokenValid;
+
+  // Build nav sections — replace the hardcoded "guided" items with live API data.
+  // For known categories, keep the static display name; for new ones, title-case the slug.
+  const staticGuidedItems =
+    NAV_SECTIONS.find((s) => s.id === "guided")?.items ?? [];
+  const dynamicGuidedItems =
+    guidedCategories.length > 0
+      ? guidedCategories.map((cat) => {
+          const slug = normalizeSlug(cat.slug);
+          const path = `/guided/${slug}`;
+          const staticMatch = staticGuidedItems.find(
+            (item) => item.type === "internal" && item.path === path,
+          );
+          const label =
+            staticMatch?.label ??
+            (cat.slug ?? "")
+              .replace(/-/g, " ")
+              .replace(/\b\w/g, (c) => c.toUpperCase());
+          return { type: "internal" as const, label, path };
+        })
+      : null;
+  const navSections = NAV_SECTIONS.map((section) =>
+    section.id === "guided" && dynamicGuidedItems
+      ? { ...section, items: dynamicGuidedItems }
+      : section,
+  );
+
   const isAdmin = user?.role.id === ROLE_ADMIN.id;
   const canViewExpertDashboard =
     user?.role.id === ROLE_EXPERT.id && hasValidAccessToken(tokens);
@@ -120,7 +162,7 @@ export function NavBar() {
 
       {/* ---- Desktop menu ---- */}
       <div className="menu" aria-label="Primary navigation">
-        {NAV_SECTIONS.map((section) => {
+        {navSections.map((section) => {
           const isOpen = openSectionId === section.id;
           const isActive = section.items.some(
             (i) => i.type === "internal" && pathname.startsWith(i.path),
@@ -303,7 +345,7 @@ export function NavBar() {
             </div>
 
             <div className="mobileDrawer__body">
-              {NAV_SECTIONS.map((section) => {
+              {navSections.map((section) => {
                 const isSectionOpen = openMobileSections.has(section.id);
                 return (
                   <div

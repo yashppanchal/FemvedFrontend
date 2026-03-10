@@ -14,6 +14,7 @@ import {
   updateGuidedProgram,
 } from "../api/guided";
 import { useAuth } from "../auth/useAuth";
+import { bumpGuidedProgramsCacheVersion } from "../data/guidedPrograms";
 import { AdminTabs } from "./admin/AdminTabs";
 import { CategoriesTab } from "./admin/CategoriesTab";
 import { DomainsTab } from "./admin/DomainsTab";
@@ -857,6 +858,7 @@ export default function AdminDashboard() {
           }));
         }
 
+        bumpGuidedProgramsCacheVersion();
         setCategoryCreateSuccess(`Category "${categoryType}" updated.`);
         closeCategoryModal();
       } catch (err) {
@@ -930,6 +932,7 @@ export default function AdminDashboard() {
           keyAreas: joinTextareaItems(parseTextareaItems(categoryForm.keyAreas)),
         },
       }));
+      bumpGuidedProgramsCacheVersion();
       setCategoryCreateSuccess(`Category "${categoryType}" created.`);
       closeCategoryModal();
     } catch (err) {
@@ -997,6 +1000,7 @@ export default function AdminDashboard() {
       if (programForm.categoryId === categoryId) {
         setProgramForm((prev) => ({ ...prev, categoryId: "" }));
       }
+      bumpGuidedProgramsCacheVersion();
       setCategoryCreateSuccess("Category deleted.");
     } catch (err) {
       if (err instanceof ApiError) {
