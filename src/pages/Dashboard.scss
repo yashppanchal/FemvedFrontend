@@ -21,7 +21,7 @@
   background: rgba(15, 15, 16, 0.04);
   border-radius: 12px;
   width: 100%;
-  max-width: 560px;
+  max-width: 640px;
 }
 
 .dashTabs__btn {
@@ -56,7 +56,7 @@
 
 .dashContent {
   width: 100%;
-  max-width: 760px;
+  max-width: 100%;
   text-align: left;
 }
 
@@ -194,6 +194,7 @@
 .dashCard {
   width: 100%;
   max-width: 520px;
+  margin: 0 auto;
   padding: 28px 28px 24px;
   border: 1px solid var(--border);
   border-radius: 16px;
