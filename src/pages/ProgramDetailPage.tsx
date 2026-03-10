@@ -141,9 +141,11 @@ export default function ProgramDetailPage() {
 
     try {
       const gateway = selectedCountryCode === "IN" ? "CashFree" : "PayPal";
+      // Translate "UK" to ISO 3166-1 alpha-2 "GB" that the backend uses for pricing lookup
+      const apiCountryCode = selectedCountryCode === "UK" ? "GB" : selectedCountryCode;
       const order = await initiateOrder({
         durationId: selectedDuration.durationId,
-        countryCode: selectedCountryCode,
+        countryCode: apiCountryCode,
         gateway,
         idempotencyKey: crypto.randomUUID(),
       });
