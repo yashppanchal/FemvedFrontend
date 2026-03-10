@@ -20,7 +20,9 @@ export default function CategoryProgramsPage() {
   const [allCategories, setAllCategories] = useState<GuidedProgramInfo[]>(
     () => getGuidedProgramsSnapshot(country) ?? [],
   );
-  const [loading, setLoading] = useState(() => getGuidedProgramsSnapshot(country) === null);
+  const [loading, setLoading] = useState(
+    () => getGuidedProgramsSnapshot(country) === null,
+  );
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
@@ -50,7 +52,9 @@ export default function CategoryProgramsPage() {
         }
       });
 
-    return () => { isActive = false; };
+    return () => {
+      isActive = false;
+    };
   }, [country]);
 
   const category = useMemo(() => {
@@ -101,39 +105,66 @@ export default function CategoryProgramsPage() {
     <section className="page categoryProgramsPage">
       {/* ── Two-panel layout ─────────────────────────────────────────────── */}
       <div className="categoryProgramsPage__layout">
-
         {/* ── Left sticky sidebar ───────────────────────────────────────── */}
         <aside className="categoryProgramsPage__sidebar">
           <div className="categoryProgramsPage__sidebarInner">
             {/* Breadcrumb lives inside the sidebar — visually anchored to the warm panel */}
-            <nav className="categoryProgramsPage__breadcrumb" aria-label="Breadcrumb">
-              <Link className="categoryProgramsPage__breadcrumbLink" to="/">Home</Link>
-              <span className="categoryProgramsPage__breadcrumbSep" aria-hidden="true">›</span>
+            <nav
+              className="categoryProgramsPage__breadcrumb"
+              aria-label="Breadcrumb"
+            >
+              <Link className="categoryProgramsPage__breadcrumbLink" to="/">
+                Home
+              </Link>
+              <span
+                className="categoryProgramsPage__breadcrumbSep"
+                aria-hidden="true"
+              >
+                ›
+              </span>
               <Link
                 className="categoryProgramsPage__breadcrumbLink"
                 to={`/guided/${categorySlug}`}
               >
                 {category.programType || categorySlug}
               </Link>
-              <span className="categoryProgramsPage__breadcrumbSep" aria-hidden="true">›</span>
-              <span className="categoryProgramsPage__breadcrumbCurrent">Programs</span>
+              <span
+                className="categoryProgramsPage__breadcrumbSep"
+                aria-hidden="true"
+              >
+                ›
+              </span>
+              <span className="categoryProgramsPage__breadcrumbCurrent">
+                Programs
+              </span>
             </nav>
 
             <div className="categoryProgramsPage__sidebarHead">
               <p className="categoryProgramsPage__eyebrow">Guided 1:1 Care</p>
-              <h1 className="categoryProgramsPage__title">{category.programType}</h1>
+              <h1 className="categoryProgramsPage__title">
+                {category.programType}
+              </h1>
               {category.heroSubtext && (
-                <p className="categoryProgramsPage__subtext">{category.heroSubtext}</p>
+                <p className="categoryProgramsPage__subtext">
+                  {category.heroSubtext}
+                </p>
               )}
             </div>
 
             {whatsIncluded.length > 0 && (
               <div className="categoryProgramsPage__included">
-                <h2 className="categoryProgramsPage__sectionHeading">What's included</h2>
+                <h2 className="categoryProgramsPage__sectionHeading">
+                  What's included
+                </h2>
                 <ul className="categoryProgramsPage__includedList">
                   {whatsIncluded.map((item, i) => (
                     <li key={i} className="categoryProgramsPage__includedItem">
-                      <span className="categoryProgramsPage__includedCheck" aria-hidden="true">✓</span>
+                      <span
+                        className="categoryProgramsPage__includedCheck"
+                        aria-hidden="true"
+                      >
+                        ✓
+                      </span>
                       <span>{item}</span>
                     </li>
                   ))}
@@ -143,7 +174,9 @@ export default function CategoryProgramsPage() {
 
             {keyAreas.length > 0 && (
               <div className="categoryProgramsPage__keyAreas">
-                <h2 className="categoryProgramsPage__sectionHeading">Key areas</h2>
+                <h2 className="categoryProgramsPage__sectionHeading">
+                  Key areas
+                </h2>
                 <div className="categoryProgramsPage__keyAreaChips">
                   {keyAreas.map((area, i) => (
                     <span key={i} className="categoryProgramsPage__keyAreaChip">
@@ -154,11 +187,11 @@ export default function CategoryProgramsPage() {
               </div>
             )}
 
-            <div className="categoryProgramsPage__sidebarMeta">
+            {/* <div className="categoryProgramsPage__sidebarMeta">
               <span className="categoryProgramsPage__programsBadge">
                 {programs.length} {programs.length === 1 ? "program" : "programs"} available
               </span>
-            </div>
+            </div> */}
           </div>
         </aside>
 
@@ -198,46 +231,70 @@ export default function CategoryProgramsPage() {
                     {program.imageUrl ? (
                       <img
                         className="categoryProgramsPage__image"
-                        src={optimizeCloudinaryImageUrl(program.imageUrl, { width: 640, crop: "fill" })}
-                        srcSet={buildCloudinarySrcSet(program.imageUrl, [320, 480, 640, 800], { crop: "fill" })}
+                        src={optimizeCloudinaryImageUrl(program.imageUrl, {
+                          width: 640,
+                          crop: "fill",
+                        })}
+                        srcSet={buildCloudinarySrcSet(
+                          program.imageUrl,
+                          [320, 480, 640, 800],
+                          { crop: "fill" },
+                        )}
                         sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 340px"
                         alt={program.programName}
                         loading="lazy"
                         decoding="async"
                       />
                     ) : (
-                      <div className="categoryProgramsPage__fallback" aria-hidden="true">
+                      <div
+                        className="categoryProgramsPage__fallback"
+                        aria-hidden="true"
+                      >
                         {program.programName.charAt(0)}
                       </div>
                     )}
                   </div>
 
                   <div className="categoryProgramsPage__body">
-                    <h3 className="categoryProgramsPage__programName">{program.programName}</h3>
+                    <h3 className="categoryProgramsPage__programName">
+                      {program.programName}
+                    </h3>
                     <p className="categoryProgramsPage__expert">
                       By <strong>{program.expertName}</strong>
                       {program.expertTitle && (
                         <span className="categoryProgramsPage__expertTitle">
-                          {" "}· {program.expertTitle}
+                          {" "}
+                          · {program.expertTitle}
                         </span>
                       )}
                     </p>
-                    <p className="categoryProgramsPage__description">{program.body}</p>
+                    <p className="categoryProgramsPage__description">
+                      {program.body}
+                    </p>
 
                     {(program.programDurations ?? []).length > 0 && (
                       <div className="categoryProgramsPage__durations">
                         {(program.programDurations ?? []).map((d) => (
-                          <span className="categoryProgramsPage__durationChip" key={d.durationId}>
+                          <span
+                            className="categoryProgramsPage__durationChip"
+                            key={d.durationId}
+                          >
                             {d.durationLabel}
                             {d.durationPrice && (
-                              <strong className="categoryProgramsPage__price"> · {d.durationPrice}</strong>
+                              <strong className="categoryProgramsPage__price">
+                                {" "}
+                                · {d.durationPrice}
+                              </strong>
                             )}
                           </span>
                         ))}
                       </div>
                     )}
 
-                    <span className="categoryProgramsPage__detailsLink" aria-hidden="true">
+                    <span
+                      className="categoryProgramsPage__detailsLink"
+                      aria-hidden="true"
+                    >
                       View Details →
                     </span>
                   </div>
@@ -247,10 +304,16 @@ export default function CategoryProgramsPage() {
           )}
 
           <div className="categoryProgramsPage__footer">
-            <Link className="categoryProgramsPage__backLink" to={`/guided/${categorySlug}`}>
+            <Link
+              className="categoryProgramsPage__backLink"
+              to={`/guided/${categorySlug}`}
+            >
               ← Back to {category.programType}
             </Link>
-            <Link className="categoryProgramsPage__allLink" to="/all-guided-programs">
+            <Link
+              className="categoryProgramsPage__allLink"
+              to="/all-guided-programs"
+            >
               Browse all programs
             </Link>
           </div>

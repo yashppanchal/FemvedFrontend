@@ -1,6 +1,5 @@
 .categoryProgramsPage {
   padding-top: 0;
-  padding-bottom: 80px;
 }
 
 // ── Breadcrumb — sits at the top of the sidebar panel ──────────────────────
@@ -41,7 +40,6 @@
   grid-template-columns: clamp(280px, 28%, 420px) 1fr;
   gap: 0;
   align-items: start;
-  margin-bottom: 48px;
 
   // Break out of the .container max-width wrapper in App.tsx
   width: 100vw;
@@ -52,11 +50,7 @@
 // ── Sidebar ─────────────────────────────────────────────────────────────────
 
 .categoryProgramsPage__sidebar {
-  position: sticky;
-  top: 0;
-  max-height: 100vh;
-  overflow-y: auto;
-  scrollbar-width: none;
+  align-self: stretch;
   // Left edge padding mirrors the container's own padding
   padding: 40px clamp(16px, 3vw, 40px) 40px clamp(20px, 5vw, 80px);
   background: linear-gradient(
@@ -67,17 +61,23 @@
   );
   border-right: 1px solid rgba(86, 19, 27, 0.08);
 
-  &::-webkit-scrollbar {
-    display: none;
-  }
 }
 
 .categoryProgramsPage__sidebarInner {
+  position: sticky;
+  top: 0;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  scrollbar-width: none;
   display: flex;
   flex-direction: column;
   gap: 0;
   // Max width keeps text readable on very wide screens
   max-width: 340px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 // ── Sidebar head (eyebrow + title + subtext) ─────────────────────────────────
@@ -167,12 +167,6 @@
 
 // ── Key areas (pill chips) ───────────────────────────────────────────────────
 
-.categoryProgramsPage__keyAreas {
-  padding-bottom: 22px;
-  border-bottom: 1px solid rgba(86, 19, 27, 0.08);
-  margin-bottom: 22px;
-}
-
 .categoryProgramsPage__keyAreaChips {
   display: flex;
   flex-wrap: wrap;
@@ -192,10 +186,6 @@
 
 // ── Programs count badge ─────────────────────────────────────────────────────
 
-.categoryProgramsPage__sidebarMeta {
-  // no border — last item
-}
-
 .categoryProgramsPage__programsBadge {
   display: inline-flex;
   align-items: center;
@@ -212,6 +202,9 @@
 
 .categoryProgramsPage__main {
   min-width: 0;
+  min-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
   padding: 40px clamp(20px, 5vw, 80px) 40px clamp(16px, 3vw, 40px);
 }
 
@@ -250,7 +243,9 @@
   box-shadow:
     0 2px 8px rgba(15, 15, 16, 0.04),
     0 8px 24px rgba(15, 15, 16, 0.04);
-  transition: box-shadow 0.22s ease, transform 0.22s ease;
+  transition:
+    box-shadow 0.22s ease,
+    transform 0.22s ease;
   cursor: pointer;
 }
 
@@ -386,7 +381,10 @@
   padding: 6px 14px;
   border: 1.5px solid rgba(86, 19, 27, 0.22);
   border-radius: 12px;
-  transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
   pointer-events: none; // card link handles clicks
 }
 
@@ -405,7 +403,7 @@
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-  margin-top: 36px;
+  margin-top: auto;
   padding-top: 24px;
   border-top: 1px solid var(--border);
 }
@@ -442,15 +440,15 @@
   }
 
   .categoryProgramsPage__sidebar {
-    position: static;
-    max-height: none;
-    overflow: visible;
     border-right: none;
     border-bottom: 1px solid rgba(86, 19, 27, 0.08);
     padding: 32px clamp(20px, 5vw, 80px);
   }
 
   .categoryProgramsPage__sidebarInner {
+    position: static;
+    max-height: none;
+    overflow: visible;
     max-width: none;
   }
 
@@ -466,6 +464,7 @@
   }
 
   .categoryProgramsPage__main {
+    min-height: auto;
     padding: 32px clamp(20px, 5vw, 80px);
   }
 
