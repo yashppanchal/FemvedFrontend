@@ -1,24 +1,325 @@
-.programDetailPage {
-  width: 100%;
-  background: transparent;
+/* ================================================================== */
+/*  ProgramDetailPage — full-bleed redesign                           */
+/* ================================================================== */
+
+/* ── Loading / error states ──────────────────────────────────────── */
+.pdp--state {
+  display: grid;
+  place-items: center;
+  min-height: 60vh;
 }
 
-.programDetailPage__enrollButton {
-  width: 100%;
-  margin-top: 16px;
-  justify-content: center;
+.pdp__stateInner {
+  text-align: center;
+  display: grid;
+  gap: 14px;
+  place-items: center;
+}
 
-  &:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+.pdp__stateSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: pdpSpin 700ms linear infinite;
+}
+
+@keyframes pdpSpin {
+  to { transform: rotate(360deg); }
+}
+
+.pdp__stateText {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* ── Hero ────────────────────────────────────────────────────────── */
+.pdp__hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  height: 62vh;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.pdp__heroContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(24px, 4vw, 52px) clamp(24px, 5.5vw, 80px);
+  padding-left: clamp(24px, 7vw, 96px);
+}
+
+.pdp__backBtn {
+  align-self: flex-start;
+  margin-bottom: clamp(20px, 3vw, 36px);
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+
+  &:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(86, 19, 27, 0.04);
   }
 }
 
-.programDetailPage__checkoutError {
-  margin: 12px 0 0;
+.pdp__heroEyebrow {
+  margin: 0 0 12px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--secondary);
+  font-weight: 700;
+}
+
+.pdp__heroTitle {
+  margin: 0 0 16px;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  font-size: clamp(28px, 3.6vw, 58px);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  color: var(--black);
+  max-width: 18ch;
+}
+
+.pdp__heroByline {
+  margin: 0 0 clamp(20px, 3vw, 36px);
+  font-size: clamp(15px, 1.15vw, 18px);
+  color: var(--muted);
+  line-height: 1.5;
+
+  strong {
+    color: var(--black);
+    font-weight: 600;
+  }
+}
+
+.pdp__heroBylineSub {
+  opacity: 0.7;
+}
+
+.pdp__heroCtaBtn {
+  align-self: flex-start;
+  height: 52px;
+  padding: 0 28px;
+  font-size: 16px;
+  border-radius: 14px;
+}
+
+.pdp__heroMedia {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+.pdp__heroImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.pdp__heroMediaFallback {
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(227, 200, 174, 0.7) 0%, rgba(227, 200, 174, 0) 65%),
+    linear-gradient(135deg, rgba(86, 19, 27, 0.08), rgba(255, 255, 255, 0.9));
+}
+
+/* ── Enroll Band ─────────────────────────────────────────────────── */
+.pdp__enrollBand {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 400px);
+  gap: clamp(24px, 4vw, 56px);
+  align-items: start;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  padding: clamp(32px, 5.5vw, 80px) clamp(24px, 5.5vw, 72px);
+  padding-left: clamp(24px, 7vw, 96px);
+  border-top: 1px solid var(--border);
+  background:
+    radial-gradient(circle at 10% 75%, rgba(86, 19, 27, 0.05) 0%, rgba(86, 19, 27, 0) 55%),
+    radial-gradient(circle at 90% 25%, rgba(167, 127, 96, 0.09) 0%, rgba(167, 127, 96, 0) 52%),
+    linear-gradient(108deg, rgba(255, 255, 255, 0.98) 0%, rgba(227, 200, 174, 0.22) 100%);
+}
+
+.pdp__enrollLeft {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 2.5vw, 32px);
+}
+
+.pdp__overview {
+  margin: 0;
+  font-size: clamp(16px, 1.3vw, 20px);
+  line-height: 1.75;
+  color: rgba(15, 15, 16, 0.72);
+  max-width: 60ch;
+}
+
+.pdp__firstDetailTitle {
+  margin: 0 0 10px;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  font-size: clamp(22px, 2vw, 34px);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  color: var(--primary);
+}
+
+.pdp__firstDetailBody {
+  margin: 0;
+  font-size: clamp(15px, 1.15vw, 18px);
+  line-height: 1.75;
+  color: rgba(15, 15, 16, 0.7);
+  max-width: 56ch;
+}
+
+/* Enrollment card */
+.pdp__enrollCard {
+  position: sticky;
+  top: 96px;
+  border-radius: 20px;
+  background: var(--white);
+  border: 1px solid rgba(15, 15, 16, 0.09);
+  box-shadow:
+    0 24px 60px rgba(15, 15, 16, 0.1),
+    0 1px 0 rgba(15, 15, 16, 0.05);
+  padding: clamp(22px, 2.5vw, 36px);
+}
+
+.pdp__enrollCardLabel {
+  margin: 0 0 6px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 700;
+  text-align: center;
+}
+
+.pdp__enrollCardPrice {
+  margin: 0 0 14px;
+  text-align: center;
+  font-family: var(--fontTitle);
+  font-size: clamp(40px, 3.4vw, 56px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--primary);
+  font-weight: 400;
+}
+
+.pdp__enrollCardDivider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0 0 20px;
+}
+
+/* Duration selector */
+.pdp__durationGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.pdp__durationGrid--single {
+  max-width: 200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pdp__durationBtn {
+  width: 100%;
+  min-height: 46px;
   padding: 10px 12px;
+  border: 1.5px solid rgba(86, 19, 27, 0.35);
+  background: transparent;
+  color: var(--primary);
+  border-radius: 999px;
+  font-weight: 600;
+  font-family: inherit;
+  font-size: clamp(13px, 0.95vw, 16px);
+  cursor: pointer;
+  opacity: 0.75;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    opacity 160ms ease;
+
+  &:hover {
+    opacity: 1;
+    border-color: var(--primary);
+    box-shadow: 0 8px 20px rgba(86, 19, 27, 0.14);
+  }
+
+  &--active {
+    opacity: 1;
+    background: var(--primary);
+    color: var(--white);
+    border-color: var(--primary);
+    box-shadow: 0 10px 24px rgba(86, 19, 27, 0.26);
+
+    &:hover {
+      color: var(--white);
+    }
+  }
+}
+
+/* Trust list */
+.pdp__trustList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 18px;
+  display: grid;
+  gap: 8px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: rgba(15, 15, 16, 0.72);
+    line-height: 1.4;
+
+    &::before {
+      content: "✓";
+      flex: 0 0 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(94, 148, 99, 0.12);
+      border: 1px solid rgba(94, 148, 99, 0.28);
+      color: #4a7d4f;
+      font-size: 11px;
+      font-weight: 700;
+    }
+  }
+}
+
+/* Checkout error */
+.pdp__checkoutError {
+  margin: 0 0 12px;
+  padding: 10px 14px;
   border-radius: 10px;
   background: rgba(200, 30, 30, 0.08);
   color: #a01a1a;
@@ -26,349 +327,336 @@
   line-height: 1.5;
 }
 
-.programDetailPage__hero {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  min-height: 360px;
-  background-color: #574f4e;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-  color: var(--white);
-}
-
-.programDetailPage__heroInner {
-  padding-top: clamp(60px, 10vw, 110px);
-  padding-bottom: clamp(30px, 5vw, 56px);
-}
-
-.programDetailPage__backButton {
-  margin-bottom: 18px;
-  padding: 8px 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  background: rgba(255, 255, 255, 0.15);
-  color: var(--white);
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.2;
-  cursor: pointer;
-  transition:
-    background-color 180ms ease,
-    border-color 180ms ease;
-}
-
-.programDetailPage__backButton:hover {
-  background: rgba(255, 255, 255, 0.22);
-  border-color: rgba(255, 255, 255, 0.8);
-}
-
-.programDetailPage__meta {
-  margin: 0 0 14px;
-  font-size: 18px;
-  line-height: 1.4;
-  font-size: clamp(18px, 1.2vw, 22px);
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.programDetailPage__meta strong {
-  font-weight: 600;
-}
-
-.programDetailPage__title {
-  margin: 0 0 12px;
+/* Enroll button */
+.pdp__enrollBtn {
   width: 100%;
-  max-width: none;
-  font-family: var(--fontTitle);
-  font-size: clamp(24px, 2.8vw, 40px);
-  letter-spacing: -0.02em;
-  line-height: 1.15;
-  color: var(--white);
-  font-weight: 400;
-  white-space: nowrap;
-}
-
-.programDetailPage__contentWrap {
-  margin-top: 0;
-  padding-bottom: 56px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
-  gap: clamp(22px, 3vw, 32px);
-  align-items: start;
-}
-
-.programDetailPage__content {
+  height: 50px;
+  justify-content: center;
+  font-size: 16px;
   border-radius: 14px;
-  background: var(--white);
-  padding: clamp(18px, 2.2vw, 28px);
-  border: 1px solid rgba(15, 15, 16, 0.08);
-  box-shadow: 0 14px 34px rgba(15, 15, 16, 0.05);
-  margin-top: 48px;
-}
 
-.programDetailPage__content p {
-  margin: 0;
-  max-width: 52ch;
-  font-size: clamp(15px, 1.4vw, 18px);
-  color: rgba(26, 26, 26, 0.72);
-  line-height: 1.6;
-}
-
-.programDetailPage__content h2 {
-  margin: 0;
-  font-family: var(--fontTitle);
-  font-weight: 400;
-  letter-spacing: -0.03em;
-  color: var(--primary);
-  font-size: clamp(28px, 2.4vw, 42px);
-  line-height: 1.08;
-  margin-bottom: 12px;
-  margin-top: 48px;
-}
-
-.programDetailPage__content ul {
-  margin: 0;
-  max-width: 52ch;
-  font-size: clamp(15px, 1.4vw, 18px);
-  color: rgba(26, 26, 26, 0.72);
-  line-height: 1.6;
-}
-
-.programDetailPage__content .programDetailPage__listReveal {
-  margin: 0;
-  max-width: 52ch;
-  font-size: clamp(15px, 1.4vw, 18px);
-  color: rgba(26, 26, 26, 0.72);
-  line-height: 1.6;
-}
-
-.programDetailPage__stickyCard {
-  position: sticky;
-  top: 110px;
-  border-radius: 14px;
-  background: #fff;
-  border: 1px solid rgba(15, 15, 16, 0.08);
-  box-shadow: 0 16px 36px rgba(15, 15, 16, 0.07);
-  padding: clamp(18px, 2.4vw, 30px);
-  margin-top: 48px;
-
-  p {
-    text-align: center;
-    font-size: 16px;
-    margin-bottom: 6px;
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
   }
 }
 
-.programDetailPage__priceDivider {
-  margin: 12px;
-  border: none;
-  border-top: 1px solid rgba(15, 15, 16, 0.12);
-  margin-bottom: 24px;
-}
-
-.programDetailPage__priceTitle {
-  margin: 0 0 18px;
+/* ── Section scaffold ────────────────────────────────────────────── */
+.pdp__sectionIntro {
+  max-width: 58ch;
+  margin: 0 auto clamp(24px, 3vw, 44px);
   text-align: center;
-  font-size: clamp(32px, 2.8vw, 48px);
-  line-height: 1.2;
-  color: var(--primary);
-  font-weight: 600;
 }
 
-.programDetailPage__priceOptions {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-.programDetailPage__priceOptions .programDetailPage__priceBtn {
-  width: 100%;
-  min-width: 0;
-}
-
-.programDetailPage__priceOptions--single {
-  max-width: 220px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.programDetailPage__stickyPointers {
-  margin: 0 auto;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 8px;
-  width: fit-content;
-}
-
-.programDetailPage__stickyPointers li {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
-  color: rgba(15, 15, 16, 0.78);
-  font-size: clamp(15px, 1.1vw, 20px);
-  line-height: 1.35;
-  text-align: left;
-}
-
-.programDetailPage__stickyPointers li::before {
-  content: "\2713";
-  color: #5e9463;
-  line-height: 1;
-}
-
-.programDetailPage__priceBtn {
-  width: 100%;
-  min-width: 0;
-  min-height: 46px;
-  padding: 10px 12px;
-  border: 1px solid var(--primary);
-  background: transparent;
-  color: var(--primary);
-  border-radius: 999px;
-  font-weight: 600;
-  font-family: inherit;
-  font-size: clamp(14px, 1vw, 17px);
-  line-height: 1.2;
-  opacity: 0.78;
-  box-shadow: none;
-  cursor: pointer;
-  transition:
-    background-color 180ms ease,
-    color 180ms ease,
-    border-color 180ms ease,
-    box-shadow 180ms ease,
-    opacity 180ms ease;
-}
-
-.programDetailPage__priceBtn:hover {
-  opacity: 0.95;
-  box-shadow: 0 10px 22px rgba(86, 19, 27, 0.16);
-  cursor: pointer;
-}
-
-.programDetailPage__priceBtn--active {
-  opacity: 1;
-  background: var(--primary);
-  color: var(--white);
-  border-color: var(--primary);
-  box-shadow: 0 10px 22px rgba(86, 19, 27, 0.24);
-}
-
-.programDetailPage__priceBtn--active:hover {
-  // background: var(--primary-hover);
-  color: var(--white);
-}
-
-.programDetailPage__priceText {
-  margin: 0 0 10px;
-  text-align: center;
-  font-size: clamp(15px, 1.2vw, 22px);
-  color: rgba(15, 15, 16, 0.78);
-  font-weight: 600;
-}
-
-.programDetailPage__priceSubtext {
+.pdp__sectionTitle {
   margin: 0;
-  text-align: center;
-  font-size: clamp(14px, 1.1vw, 18px);
-  line-height: 1.7;
-  color: rgba(15, 15, 16, 0.66);
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  font-size: clamp(28px, 3.2vw, 46px);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: var(--primary);
 }
 
-.programDetailPage__expertSection {
+/* ── What You'll Receive ─────────────────────────────────────────── */
+.pdp__benefitsSection {
   width: 100vw;
   margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  background: #f8f4f3;
-  padding: clamp(28px, 4vw, 56px) 0;
+  padding: clamp(40px, 5.5vw, 80px) clamp(24px, 7vw, 96px);
+  border-top: 1px solid var(--border);
+  background: var(--white);
 }
 
-.programDetailPage__expertInner {
+.pdp__benefitGrid {
+  max-width: 980px;
+  margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
-  gap: clamp(20px, 4vw, 56px);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+
+  .pdp__benefitItem {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 420ms ease, transform 420ms ease;
+  }
+
+  &.revealOnScroll--visible .pdp__benefitItem {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pdp__benefitItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 15, 16, 0.07);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 16px rgba(15, 15, 16, 0.05);
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(15, 15, 16, 0.78);
+}
+
+.pdp__benefitCheck {
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(86, 19, 27, 0.07);
+  border: 1px solid rgba(86, 19, 27, 0.16);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 1px;
+}
+
+/* ── Who Should Join ─────────────────────────────────────────────── */
+.pdp__whoSection {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  padding: clamp(40px, 5.5vw, 80px) clamp(24px, 7vw, 96px);
+  border-top: 1px solid var(--border);
+  background: #f8f4f3;
+}
+
+.pdp__whoGrid {
+  max-width: 980px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+
+  .pdp__whoItem {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 420ms ease, transform 420ms ease;
+  }
+
+  &.revealOnScroll--visible .pdp__whoItem {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pdp__whoItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 15, 16, 0.07);
+  background: rgba(255, 255, 255, 0.8);
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(15, 15, 16, 0.78);
+}
+
+.pdp__whoArrow {
+  flex: 0 0 auto;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--secondary);
+  margin-top: 1px;
+}
+
+/* ── Remaining Detail Sections ───────────────────────────────────── */
+.pdp__detailSections {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  border-top: 1px solid var(--border);
+  background: var(--white);
+}
+
+.pdp__detailSectionsInner {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: clamp(40px, 5.5vw, 80px) clamp(24px, 7vw, 96px);
+  display: grid;
+  gap: clamp(18px, 2.2vw, 26px);
+}
+
+.pdp__detailRow {
+  padding: clamp(20px, 2.2vw, 30px) clamp(20px, 2.2vw, 32px);
+  border-radius: 16px;
+  border-left: 3px solid var(--primary);
+  background: rgba(227, 200, 174, 0.1);
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 380ms ease, transform 380ms ease;
+
+  &--alt {
+    border-left: none;
+    border-right: 3px solid var(--secondary);
+    background: rgba(86, 19, 27, 0.035);
+    transform: translateX(10px);
+  }
+
+  &.revealOnScroll--visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.pdp__detailRowTitle {
+  margin: 0 0 8px;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  font-size: clamp(20px, 1.8vw, 28px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--primary);
+}
+
+.pdp__detailRowBody {
+  margin: 0;
+  font-size: clamp(15px, 1.15vw, 17px);
+  line-height: 1.75;
+  color: rgba(15, 15, 16, 0.7);
+}
+
+/* ── Expert Section ──────────────────────────────────────────────── */
+.pdp__expertSection {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  background: #f0ebe9;
+  padding: clamp(40px, 5vw, 72px) 0;
+  border-top: 1px solid var(--border);
+}
+
+.pdp__expertInner {
+  display: grid;
+  grid-template-columns: minmax(220px, 340px) minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 64px);
   align-items: stretch;
 }
 
-.programDetailPage__expertLeft {
+.pdp__expertLeft {
   position: relative;
-  border-radius: 18px;
+  border-radius: 20px;
   overflow: hidden;
-  min-height: clamp(280px, 34vw, 440px);
+  min-height: clamp(300px, 36vw, 480px);
   height: 100%;
   background: #d5c3bd;
 }
 
-.programDetailPage__expertPhoto,
-.programDetailPage__expertPhotoFallback {
+.pdp__expertPhoto,
+.pdp__expertPhotoFallback {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.programDetailPage__expertPhotoFallback {
+.pdp__expertPhotoFallback {
   display: grid;
   place-items: center;
-  color: rgba(15, 15, 16, 0.7);
+  color: rgba(15, 15, 16, 0.65);
   font-size: clamp(56px, 6vw, 88px);
   font-weight: 600;
 }
 
-.programDetailPage__expertOverlay {
+.pdp__expertOverlay {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 18px 16px;
+  padding: 20px 18px;
   background: linear-gradient(
     180deg,
     rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.6) 45%,
+    rgba(0, 0, 0, 0.58) 42%,
     rgba(0, 0, 0, 0.78) 100%
   );
 }
 
-.programDetailPage__expertName {
+.pdp__expertName {
   margin: 0;
   font-family: var(--fontTitle);
-  font-size: clamp(22px, 2vw, 34px);
+  font-size: clamp(22px, 2vw, 36px);
   line-height: 1.2;
   color: var(--white);
+  font-weight: 400;
 }
 
-.programDetailPage__expertTitle {
+.pdp__expertTitle {
   margin: 4px 0 0;
-  font-size: clamp(14px, 1.1vw, 18px);
+  font-size: clamp(13px, 1vw, 17px);
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.88);
 }
 
-.programDetailPage__expertRight p {
-  margin: 0;
-  font-size: clamp(15px, 1.25vw, 22px);
-  line-height: 1.8;
-  color: rgba(15, 15, 16, 0.84);
+.pdp__expertRight {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  p {
+    margin: 0;
+    font-size: clamp(16px, 1.3vw, 22px);
+    line-height: 1.8;
+    color: rgba(15, 15, 16, 0.82);
+  }
 }
 
-@media (max-width: 960px) {
-  .programDetailPage__contentWrap {
+/* ── Responsive ──────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .pdp__enrollBand {
     grid-template-columns: 1fr;
-    margin-top: 0;
   }
 
-  .programDetailPage__stickyCard {
+  .pdp__enrollCard {
     position: static;
+    max-width: 480px;
+  }
+}
+
+@media (max-width: 860px) {
+  .pdp__hero {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    max-height: none;
   }
 
-  .programDetailPage__expertInner {
+  .pdp__heroMedia {
+    min-height: 260px;
+    order: -1;
+    max-height: 54vw;
+  }
+
+  .pdp__heroContent {
+    padding: clamp(28px, 5vw, 52px) clamp(20px, 5vw, 40px);
+  }
+
+  .pdp__heroTitle {
+    max-width: 100%;
+  }
+
+  .pdp__expertInner {
     grid-template-columns: 1fr;
   }
 
-  .programDetailPage__expertLeft {
-    min-height: clamp(260px, 55vw, 420px);
+  .pdp__expertLeft {
+    min-height: clamp(260px, 58vw, 440px);
+  }
+}
+
+@media (max-width: 640px) {
+  .pdp__enrollBand,
+  .pdp__benefitsSection,
+  .pdp__whoSection,
+  .pdp__detailSections .pdp__detailSectionsInner {
+    padding-left: clamp(18px, 5vw, 28px);
+    padding-right: clamp(18px, 5vw, 28px);
+  }
+
+  .pdp__heroCtaBtn {
+    width: 100%;
+    justify-content: center;
   }
 }

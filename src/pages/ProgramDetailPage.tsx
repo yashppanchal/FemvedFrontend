@@ -100,12 +100,12 @@ export default function ProgramDetailPage() {
       ) ?? selectedProgram.programDurations[0]
     );
   }, [selectedDurationLabel, selectedProgram]);
+
   const programDurations = selectedProgram?.programDurations ?? [];
-  const priceOptionsClassName = `programDetailPage__priceOptions${
-    programDurations.length === 1
-      ? " programDetailPage__priceOptions--single"
-      : ""
+  const priceOptionsClassName = `pdp__durationGrid${
+    programDurations.length === 1 ? " pdp__durationGrid--single" : ""
   }`;
+
   const optimizedProgramHeroImage = optimizeCloudinaryImageUrl(
     selectedProgram?.imageUrl,
     { width: 1600, crop: "fill" },
@@ -123,7 +123,6 @@ export default function ProgramDetailPage() {
   async function handleEnroll() {
     if (!selectedDuration) return;
 
-    // Fix 3: check token validity, not just presence of user object
     if (!user || !hasValidAccessToken(tokens)) {
       navigate("/login", { state: { from: location } });
       return;
@@ -157,7 +156,6 @@ export default function ProgramDetailPage() {
           | "production";
         const cashfree = await load({ mode });
 
-        // Fix 1: inspect checkout() result — don't navigate if user cancelled
         const result = await cashfree.checkout({
           paymentSessionId: order.paymentSessionId,
           redirectTarget: "_modal",
@@ -171,7 +169,6 @@ export default function ProgramDetailPage() {
           return;
         }
 
-        // Fix 4: pass returnTo so the processing page can navigate back reliably
         const returnTo = encodeURIComponent(window.location.pathname);
         navigate(
           `/payment/processing?orderId=${encodeURIComponent(order.orderId)}&returnTo=${returnTo}`,
@@ -219,117 +216,130 @@ export default function ProgramDetailPage() {
 
   if (loading) {
     return (
-      <section className="page programDetailPage">
-        <h1 className="page__title">Loading program...</h1>
+      <section className="page pdp pdp--state">
+        <div className="pdp__stateInner">
+          <div className="pdp__stateSpinner" aria-label="Loading" />
+          <p className="pdp__stateText">Loading program…</p>
+        </div>
       </section>
     );
   }
 
   if (hasError) {
     return (
-      <section className="page programDetailPage">
-        <h1 className="page__title">Unable to load program</h1>
-        <p className="page__lead">
-          Please refresh and try again. Go back to <Link to="/">home</Link>.
-        </p>
+      <section className="page pdp pdp--state">
+        <div className="pdp__stateInner">
+          <h1 className="page__title">Unable to load program</h1>
+          <p className="page__lead">
+            Please refresh and try again. Go back to <Link to="/">home</Link>.
+          </p>
+        </div>
       </section>
     );
   }
 
   if (!selectedProgram) {
     return (
-      <section className="page programDetailPage">
-        <h1 className="page__title">Program not found</h1>
-        <p className="page__lead">
-          This program does not exist yet. Go back to <Link to="/">home</Link>.
-        </p>
+      <section className="page pdp pdp--state">
+        <div className="pdp__stateInner">
+          <h1 className="page__title">Program not found</h1>
+          <p className="page__lead">
+            This program does not exist yet. Go back to <Link to="/">home</Link>.
+          </p>
+        </div>
       </section>
     );
   }
 
+  const details = selectedProgram.programPageDisplayDetails;
+  const whatYouGet = details?.whatYouGet ?? [];
+  const whoIsThisFor = details?.whoIsThisFor ?? [];
+  const detailSections = details?.detailSections ?? [];
+
   return (
-    <section className="page programDetailPage">
-      <header
-        className="programDetailPage__hero"
-        style={
-          selectedProgram.imageUrl
-            ? {
-                backgroundImage: `linear-gradient(rgba(15, 15, 16, 0.35), rgba(15, 15, 16, 0.45)), url("${optimizedProgramHeroImage}")`,
-              }
-            : undefined
-        }
-      >
-        <div className="programDetailPage__heroInner container">
+    <section className="page pdp">
+
+      {/* ── Hero ──────────────────────────────────────────────────────── */}
+      <header className="pdp__hero">
+        <div className="pdp__heroContent">
           <button
             type="button"
-            className="programDetailPage__backButton"
+            className="pdp__backBtn"
             onClick={() => navigate(-1)}
           >
-            Back
+            ← Back
           </button>
-          <h1 className="programDetailPage__title">
-            {selectedProgram.programName}
-          </h1>
-          <p className="programDetailPage__meta">
-            By <strong>{selectedProgram.expertName}</strong>
+          <p className="pdp__heroEyebrow">Guided 1:1 Program</p>
+          <h1 className="pdp__heroTitle">{selectedProgram.programName}</h1>
+          <p className="pdp__heroByline">
+            With <strong>{selectedProgram.expertName}</strong>
+            {selectedProgram.expertTitle && (
+              <span className="pdp__heroBylineSub">
+                {" "}· {selectedProgram.expertTitle}
+              </span>
+            )}
           </p>
+          {selectedDuration && (
+            <button
+              type="button"
+              className="button pdp__heroCtaBtn"
+              onClick={handleEnroll}
+              disabled={checkoutLoading}
+            >
+              {checkoutLoading
+                ? "Processing…"
+                : `Enroll — ${selectedDuration.durationPrice}`}
+            </button>
+          )}
+        </div>
+
+        <div className="pdp__heroMedia">
+          {selectedProgram.imageUrl ? (
+            <img
+              src={optimizedProgramHeroImage}
+              alt={selectedProgram.programName}
+              className="pdp__heroImage"
+              loading="eager"
+            />
+          ) : (
+            <div className="pdp__heroMediaFallback" aria-hidden="true" />
+          )}
         </div>
       </header>
 
-      <div className="programDetailPage__contentWrap container">
-        <article className="programDetailPage__content">
-          <p>{selectedProgram.programPageDisplayDetails?.overview}</p>
-          <h3>
-            {
-              selectedProgram.programPageDisplayDetails?.detailSections?.[0]
-                ?.heading
-            }
-          </h3>
-          <p>
-            {
-              selectedProgram.programPageDisplayDetails?.detailSections?.[0]
-                ?.description
-            }
-          </p>
-          <h2>What you'll receive in this program:</h2>
-          <RevealOnScroll className="programDetailPage__listReveal">
-            {selectedProgram.programPageDisplayDetails?.whatYouGet?.map(
-              (item, idx) => (
-                <li key={item} style={{ transitionDelay: `${idx * 180}ms` }}>
-                  {item}
-                </li>
-              ),
-            )}
-          </RevealOnScroll>
-          <h2>Who should join this program:</h2>
-          <RevealOnScroll className="programDetailPage__listReveal">
-            {selectedProgram.programPageDisplayDetails?.whoIsThisFor?.map(
-              (item, idx) => (
-                <li key={item} style={{ transitionDelay: `${idx * 180}ms` }}>
-                  {item}
-                </li>
-              ),
-            )}
-          </RevealOnScroll>
-        </article>
+      {/* ── Overview + Enroll Card ────────────────────────────────────── */}
+      <section className="pdp__enrollBand">
+        <div className="pdp__enrollLeft">
+          {details?.overview && (
+            <p className="pdp__overview">{details.overview}</p>
+          )}
+          {detailSections[0] && (
+            <div className="pdp__firstDetail">
+              <h3 className="pdp__firstDetailTitle">
+                {detailSections[0].heading}
+              </h3>
+              <p className="pdp__firstDetailBody">
+                {detailSections[0].description}
+              </p>
+            </div>
+          )}
+        </div>
 
-        <aside className="programDetailPage__stickyCard">
-          <p>Course Fee:</p>
-          <h3 className="programDetailPage__priceTitle">
+        <aside className="pdp__enrollCard">
+          <p className="pdp__enrollCardLabel">Course Fee</p>
+          <div className="pdp__enrollCardPrice">
             {selectedDuration?.durationPrice ?? ""}
-          </h3>
-          <hr className="programDetailPage__priceDivider" />
+          </div>
+          <hr className="pdp__enrollCardDivider" />
+
           <div className={priceOptionsClassName}>
             {programDurations.map((duration) => {
               const isActive = duration.durationLabel === selectedDurationLabel;
-              const durationButtonClassName = `programDetailPage__priceBtn${
-                isActive ? " programDetailPage__priceBtn--active" : ""
-              }`;
               return (
                 <button
                   key={duration.durationLabel}
                   type="button"
-                  className={durationButtonClassName}
+                  className={`pdp__durationBtn${isActive ? " pdp__durationBtn--active" : ""}`}
                   onClick={() =>
                     setSelectedDurationLabel(duration.durationLabel)
                   }
@@ -340,63 +350,121 @@ export default function ProgramDetailPage() {
               );
             })}
           </div>
-          <ul className="programDetailPage__stickyPointers">
+
+          <ul className="pdp__trustList">
             <li>Personalized plan</li>
             <li>Complete privacy</li>
             <li>Client-Expert confidentiality</li>
           </ul>
+
           {checkoutError && (
-            <p className="programDetailPage__checkoutError">{checkoutError}</p>
+            <p className="pdp__checkoutError">{checkoutError}</p>
           )}
+
           <button
             type="button"
-            className="button programDetailPage__enrollButton"
+            className="button pdp__enrollBtn"
             onClick={handleEnroll}
             disabled={checkoutLoading || !selectedDuration}
           >
             {checkoutLoading ? "Processing…" : "Enroll Now"}
           </button>
         </aside>
-      </div>
+      </section>
 
-      <section className="programDetailPage__expertSection">
-        <div className="programDetailPage__expertInner container">
-          <div className="programDetailPage__expertLeft">
+      {/* ── What You'll Receive ───────────────────────────────────────── */}
+      {whatYouGet.length > 0 && (
+        <section className="pdp__benefitsSection">
+          <div className="pdp__sectionIntro">
+            <h2 className="pdp__sectionTitle">What you'll receive</h2>
+          </div>
+          <RevealOnScroll className="pdp__benefitGrid">
+            {whatYouGet.map((item, idx) => (
+              <div
+                key={item}
+                className="pdp__benefitItem"
+                style={{ transitionDelay: `${idx * 70}ms` }}
+              >
+                <span className="pdp__benefitCheck" aria-hidden="true">✓</span>
+                {item}
+              </div>
+            ))}
+          </RevealOnScroll>
+        </section>
+      )}
+
+      {/* ── Who Is This For ──────────────────────────────────────────── */}
+      {whoIsThisFor.length > 0 && (
+        <section className="pdp__whoSection">
+          <div className="pdp__sectionIntro">
+            <h2 className="pdp__sectionTitle">Who should join</h2>
+          </div>
+          <RevealOnScroll className="pdp__whoGrid">
+            {whoIsThisFor.map((item, idx) => (
+              <div
+                key={item}
+                className="pdp__whoItem"
+                style={{ transitionDelay: `${idx * 70}ms` }}
+              >
+                <span className="pdp__whoArrow" aria-hidden="true">→</span>
+                {item}
+              </div>
+            ))}
+          </RevealOnScroll>
+        </section>
+      )}
+
+      {/* ── Remaining Detail Sections ─────────────────────────────────── */}
+      {detailSections.length > 1 && (
+        <section className="pdp__detailSections">
+          <div className="pdp__detailSectionsInner">
+            {detailSections.slice(1).map((section, idx) => (
+              <RevealOnScroll
+                key={section.heading}
+                className={`pdp__detailRow${idx % 2 === 1 ? " pdp__detailRow--alt" : ""}`}
+              >
+                <h3 className="pdp__detailRowTitle">{section.heading}</h3>
+                <p className="pdp__detailRowBody">{section.description}</p>
+              </RevealOnScroll>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ── Expert ────────────────────────────────────────────────────── */}
+      <section className="pdp__expertSection">
+        <div className="pdp__expertInner container">
+          <div className="pdp__expertLeft">
             {selectedProgram.expertGridImageUrl ? (
               <img
                 src={optimizedExpertImage}
                 srcSet={expertImageSrcSet}
                 sizes="(max-width: 768px) 92vw, 420px"
                 alt={selectedProgram.expertName}
-                className="programDetailPage__expertPhoto"
+                className="pdp__expertPhoto"
                 loading="lazy"
                 decoding="async"
               />
             ) : (
-              <div
-                className="programDetailPage__expertPhotoFallback"
-                aria-hidden="true"
-              >
+              <div className="pdp__expertPhotoFallback" aria-hidden="true">
                 {selectedProgram.expertName.charAt(0)}
               </div>
             )}
             <RevealOnScroll
-              className="programDetailPage__expertOverlay"
+              className="pdp__expertOverlay"
               triggerBottomPercent={10}
             >
-              <h3 className="programDetailPage__expertName">
-                {selectedProgram.expertName}
-              </h3>
-              <p className="programDetailPage__expertTitle">
-                {selectedProgram.expertTitle}
-              </p>
+              <h3 className="pdp__expertName">{selectedProgram.expertName}</h3>
+              <p className="pdp__expertTitle">{selectedProgram.expertTitle}</p>
             </RevealOnScroll>
           </div>
-          <RevealOnScroll className="programDetailPage__expertRight">
+
+          <RevealOnScroll className="pdp__expertRight">
             <p>{selectedProgram.expertDetailedDescription}</p>
           </RevealOnScroll>
         </div>
       </section>
+
     </section>
   );
 }
