@@ -1,5 +1,5 @@
 import "./CategoryProgramsPage.scss";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useCountry } from "../country/useCountry";
 import {
@@ -17,6 +17,9 @@ import {
 export default function CategoryProgramsPage() {
   const { categorySlug } = useParams<{ categorySlug: string }>();
   const { country } = useCountry();
+  const pageRef = useRef<HTMLElement | null>(null);
+  const sidebarInnerRef = useRef<HTMLDivElement | null>(null);
+  const footerRef = useRef<HTMLDivElement | null>(null);
   const [allCategories, setAllCategories] = useState<GuidedProgramInfo[]>(
     () => getGuidedProgramsSnapshot(country) ?? [],
   );
@@ -57,6 +60,53 @@ export default function CategoryProgramsPage() {
     };
   }, [country]);
 
+  useEffect(() => {
+    const onWheel = (event: WheelEvent) => {
+      if (window.matchMedia("(max-width: 1100px)").matches) return;
+
+      const sidebar = sidebarInnerRef.current;
+      const footer = footerRef.current;
+      const page = pageRef.current;
+      if (!sidebar || !footer) return;
+
+      const sidebarCanScroll = sidebar.scrollHeight - sidebar.clientHeight > 1;
+      if (!sidebarCanScroll) return;
+
+      if (event.deltaY > 0) {
+        const sidebarRemainingScroll =
+          sidebar.scrollHeight - sidebar.clientHeight - sidebar.scrollTop;
+        if (sidebarRemainingScroll <= 1) return;
+
+        const footerTop = footer.getBoundingClientRect().top;
+        const triggerLine = window.innerHeight * 0.8;
+        const footerReachedTriggerZone = footerTop <= triggerLine;
+        if (!footerReachedTriggerZone) return;
+
+        event.preventDefault();
+        sidebar.scrollTop = Math.min(
+          sidebar.scrollTop + event.deltaY,
+          sidebar.scrollHeight - sidebar.clientHeight,
+        );
+        return;
+      }
+
+      if (event.deltaY < 0) {
+        if (!page) return;
+        if (sidebar.scrollTop <= 1) return;
+
+        const pageTop = page.getBoundingClientRect().top;
+        const pageAtTopBoundary = pageTop >= 0;
+        if (!pageAtTopBoundary) return;
+
+        event.preventDefault();
+        sidebar.scrollTop = Math.max(0, sidebar.scrollTop + event.deltaY);
+      }
+    };
+
+    window.addEventListener("wheel", onWheel, { passive: false });
+    return () => window.removeEventListener("wheel", onWheel);
+  }, []);
+
   const category = useMemo(() => {
     if (!categorySlug) return null;
     const desired = normalizeSlug(categorySlug);
@@ -73,7 +123,7 @@ export default function CategoryProgramsPage() {
 
   if (loading) {
     return (
-      <section className="page categoryProgramsPage">
+      <section className="page categoryProgramsPage" ref={pageRef}>
         <p className="categoryProgramsPage__loading">Loading programs…</p>
       </section>
     );
@@ -81,7 +131,7 @@ export default function CategoryProgramsPage() {
 
   if (hasError) {
     return (
-      <section className="page categoryProgramsPage">
+      <section className="page categoryProgramsPage" ref={pageRef}>
         <h1 className="page__title">Unable to load programs</h1>
         <p className="page__lead">
           Please refresh and try again or go back <Link to="/">home</Link>.
@@ -92,7 +142,7 @@ export default function CategoryProgramsPage() {
 
   if (!category) {
     return (
-      <section className="page categoryProgramsPage">
+      <section className="page categoryProgramsPage" ref={pageRef}>
         <h1 className="page__title">Category not found</h1>
         <p className="page__lead">
           <Link to="/all-guided-programs">Browse all programs</Link>
@@ -102,12 +152,12 @@ export default function CategoryProgramsPage() {
   }
 
   return (
-    <section className="page categoryProgramsPage">
+    <section className="page categoryProgramsPage" ref={pageRef}>
       {/* ── Two-panel layout ─────────────────────────────────────────────── */}
       <div className="categoryProgramsPage__layout">
         {/* ── Left sticky sidebar ───────────────────────────────────────── */}
         <aside className="categoryProgramsPage__sidebar">
-          <div className="categoryProgramsPage__sidebarInner">
+          <div className="categoryProgramsPage__sidebarInner" ref={sidebarInnerRef}>
             {/* Breadcrumb lives inside the sidebar — visually anchored to the warm panel */}
             <nav
               className="categoryProgramsPage__breadcrumb"
@@ -303,7 +353,7 @@ export default function CategoryProgramsPage() {
             </div>
           )}
 
-          <div className="categoryProgramsPage__footer">
+          <div className="categoryProgramsPage__footer" ref={footerRef}>
             <Link
               className="categoryProgramsPage__backLink"
               to={`/guided/${categorySlug}`}

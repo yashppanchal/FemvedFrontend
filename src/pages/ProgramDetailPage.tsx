@@ -141,7 +141,8 @@ export default function ProgramDetailPage() {
     try {
       const gateway = selectedCountryCode === "IN" ? "CashFree" : "PayPal";
       // Translate "UK" to ISO 3166-1 alpha-2 "GB" that the backend uses for pricing lookup
-      const apiCountryCode = selectedCountryCode === "UK" ? "GB" : selectedCountryCode;
+      const apiCountryCode =
+        selectedCountryCode === "UK" ? "GB" : selectedCountryCode;
       const order = await initiateOrder({
         durationId: selectedDuration.durationId,
         countryCode: apiCountryCode,
@@ -244,7 +245,8 @@ export default function ProgramDetailPage() {
         <div className="pdp__stateInner">
           <h1 className="page__title">Program not found</h1>
           <p className="page__lead">
-            This program does not exist yet. Go back to <Link to="/">home</Link>.
+            This program does not exist yet. Go back to <Link to="/">home</Link>
+            .
           </p>
         </div>
       </section>
@@ -258,7 +260,6 @@ export default function ProgramDetailPage() {
 
   return (
     <section className="page pdp">
-
       {/* ── Hero ──────────────────────────────────────────────────────── */}
       <header className="pdp__hero">
         <div className="pdp__heroContent">
@@ -275,11 +276,12 @@ export default function ProgramDetailPage() {
             With <strong>{selectedProgram.expertName}</strong>
             {selectedProgram.expertTitle && (
               <span className="pdp__heroBylineSub">
-                {" "}· {selectedProgram.expertTitle}
+                {" "}
+                · {selectedProgram.expertTitle}
               </span>
             )}
           </p>
-          {selectedDuration && (
+          {/* {selectedDuration && (
             <button
               type="button"
               className="button pdp__heroCtaBtn"
@@ -290,7 +292,7 @@ export default function ProgramDetailPage() {
                 ? "Processing…"
                 : `Enroll — ${selectedDuration.durationPrice}`}
             </button>
-          )}
+          )} */}
         </div>
 
         <div className="pdp__heroMedia">
@@ -385,7 +387,9 @@ export default function ProgramDetailPage() {
                 className="pdp__benefitItem"
                 style={{ transitionDelay: `${idx * 70}ms` }}
               >
-                <span className="pdp__benefitCheck" aria-hidden="true">✓</span>
+                <span className="pdp__benefitCheck" aria-hidden="true">
+                  ✓
+                </span>
                 {item}
               </div>
             ))}
@@ -406,7 +410,9 @@ export default function ProgramDetailPage() {
                 className="pdp__whoItem"
                 style={{ transitionDelay: `${idx * 70}ms` }}
               >
-                <span className="pdp__whoArrow" aria-hidden="true">→</span>
+                <span className="pdp__whoArrow" aria-hidden="true">
+                  →
+                </span>
                 {item}
               </div>
             ))}
@@ -464,7 +470,6 @@ export default function ProgramDetailPage() {
           </RevealOnScroll>
         </div>
       </section>
-
     </section>
   );
 }

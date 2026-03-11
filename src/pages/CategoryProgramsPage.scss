@@ -1,5 +1,6 @@
 .categoryProgramsPage {
   padding-top: 0;
+  padding-bottom: 0;
 }
 
 // ── Breadcrumb — sits at the top of the sidebar panel ──────────────────────
@@ -52,7 +53,7 @@
 .categoryProgramsPage__sidebar {
   align-self: stretch;
   // Left edge padding mirrors the container's own padding
-  padding: 40px clamp(16px, 3vw, 40px) 40px clamp(20px, 5vw, 80px);
+  padding: 40px clamp(16px, 3vw, 40px) 40px 40px;
   background: linear-gradient(
     148deg,
     rgba(227, 200, 174, 0.2) 0%,
@@ -60,7 +61,6 @@
     rgba(255, 255, 255, 0.4) 100%
   );
   border-right: 1px solid rgba(86, 19, 27, 0.08);
-
 }
 
 .categoryProgramsPage__sidebarInner {
@@ -403,7 +403,7 @@
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-  margin-top: auto;
+  margin-top: 24px;
   padding-top: 24px;
   border-top: 1px solid var(--border);
 }
