@@ -369,3 +369,47 @@ export interface DurationManagement {
 export function getProgramDurations(programId: string): Promise<DurationManagement[]> {
   return apiFetch<DurationManagement[]>(`/guided/programs/${encodeURIComponent(programId)}/durations`);
 }
+
+export function updateDuration(
+  programId: string,
+  durationId: string,
+  data: { label?: string; weeks?: number },
+): Promise<void> {
+  return apiFetch<void>(
+    `/guided/programs/${encodeURIComponent(programId)}/durations/${encodeURIComponent(durationId)}`,
+    { method: "PUT", body: JSON.stringify(data) },
+  );
+}
+
+export function updateDurationPrice(
+  programId: string,
+  durationId: string,
+  priceId: string,
+  data: { amount: number; currencyCode: string; currencySymbol: string },
+): Promise<void> {
+  return apiFetch<void>(
+    `/guided/programs/${encodeURIComponent(programId)}/durations/${encodeURIComponent(durationId)}/prices/${encodeURIComponent(priceId)}`,
+    { method: "PUT", body: JSON.stringify(data) },
+  );
+}
+
+export function addDurationPrice(
+  programId: string,
+  durationId: string,
+  data: { locationCode: string; amount: number; currencyCode: string; currencySymbol: string },
+): Promise<string> {
+  return apiFetch<string>(
+    `/guided/programs/${encodeURIComponent(programId)}/durations/${encodeURIComponent(durationId)}/prices`,
+    { method: "POST", body: JSON.stringify(data) },
+  );
+}
+
+export function addProgramDuration(
+  programId: string,
+  data: { label: string; weeks: number; sortOrder: number; prices: { locationCode: string; amount: number; currencyCode: string; currencySymbol: string }[] },
+): Promise<string> {
+  return apiFetch<string>(
+    `/guided/programs/${encodeURIComponent(programId)}/durations`,
+    { method: "POST", body: JSON.stringify(data) },
+  );
+}

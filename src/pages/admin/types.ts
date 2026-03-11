@@ -59,6 +59,10 @@ export type CategoryForm = {
 };
 
 export type DurationEntry = {
+  durationId?: string;          // present when editing an existing duration
+  priceIdIN?: string;           // existing price row IDs for upsert logic
+  priceIdUK?: string;
+  priceIdUS?: string;
   label: string;
   weeks: string;
   priceIN: string;

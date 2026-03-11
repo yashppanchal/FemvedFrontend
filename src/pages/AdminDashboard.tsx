@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { ApiError } from "../api/client";
-import { getProgramDurations } from "../api/admin";
+import { getProgramDurations, updateDuration, updateDurationPrice, addDurationPrice, addProgramDuration } from "../api/admin";
 import {
   createGuidedProgram,
   createGuidedCategory,
@@ -1131,22 +1131,65 @@ export default function AdminDashboard() {
     if (editingProgramId) {
       try {
         setIsCreatingProgram(true);
+
+        // 1. Update core program fields
         const res = await updateGuidedProgram(
           editingProgramId,
-          {
-            name,
-            gridDescription,
-            gridImageUrl,
-            overview,
-            sortOrder,
-            whatYouGet,
-            whoIsThisFor,
-            tags,
-            detailSections,
-          },
+          { name, gridDescription, gridImageUrl, overview, sortOrder, whatYouGet, whoIsThisFor, tags, detailSections },
           accessToken,
         );
         if (!res.isUpdated) throw new Error("Update did not complete.");
+
+        // 2. Save duration + price changes
+        const PRICE_META: Record<string, { code: string; symbol: string }> = {
+          IN: { code: "INR", symbol: "₹" },
+          GB: { code: "GBP", symbol: "£" },
+          US: { code: "USD", symbol: "$" },
+        };
+
+        for (let i = 0; i < programForm.durations.length; i++) {
+          const d = programForm.durations[i];
+
+          if (d.durationId) {
+            // Existing duration — update label/weeks + upsert prices
+            await updateDuration(editingProgramId, d.durationId, {
+              label: d.label.trim(),
+              weeks: parseNonNegativeNumber(d.weeks),
+            });
+
+            const priceEntries: Array<{ locationCode: string; value: string; priceId: string | undefined }> = [
+              { locationCode: "IN", value: d.priceIN, priceId: d.priceIdIN },
+              { locationCode: "GB", value: d.priceUK, priceId: d.priceIdUK },
+              { locationCode: "US", value: d.priceUS, priceId: d.priceIdUS },
+            ];
+
+            for (const { locationCode, value, priceId } of priceEntries) {
+              if (!value) continue;
+              const meta = PRICE_META[locationCode];
+              const amount = Number(value);
+              if (priceId) {
+                await updateDurationPrice(editingProgramId, d.durationId, priceId, {
+                  amount, currencyCode: meta.code, currencySymbol: meta.symbol,
+                });
+              } else {
+                await addDurationPrice(editingProgramId, d.durationId, {
+                  locationCode, amount, currencyCode: meta.code, currencySymbol: meta.symbol,
+                });
+              }
+            }
+          } else {
+            // New duration added during edit — create it with prices
+            const prices = buildPrices(d);
+            if (prices.length > 0) {
+              await addProgramDuration(editingProgramId, {
+                label: d.label.trim(),
+                weeks: parseNonNegativeNumber(d.weeks),
+                sortOrder: i,
+                prices,
+              });
+            }
+          }
+        }
 
         setPrograms((prev) =>
           prev.map((program) =>
@@ -1155,6 +1198,7 @@ export default function AdminDashboard() {
               : program,
           ),
         );
+        bumpGuidedProgramsCacheVersion();
         setProgramCreateSuccess(`Program "${name}" updated.`);
         closeProgramModal();
       } catch (err) {
@@ -1235,14 +1279,18 @@ export default function AdminDashboard() {
       if (apiDurations.length > 0) {
         resolvedDurations = apiDurations.map((d) => {
           const priceByLocation = Object.fromEntries(
-            d.prices.filter((p) => p.isActive).map((p) => [p.locationCode, String(p.amount)]),
+            d.prices.filter((p) => p.isActive).map((p) => [p.locationCode, p]),
           );
           return {
+            durationId: d.durationId,
+            priceIdIN: priceByLocation["IN"]?.priceId,
+            priceIdUK: priceByLocation["GB"]?.priceId,
+            priceIdUS: priceByLocation["US"]?.priceId,
             label: d.label,
             weeks: String(d.weeks),
-            priceIN: priceByLocation["IN"] ?? "",
-            priceUK: priceByLocation["GB"] ?? "",
-            priceUS: priceByLocation["US"] ?? "",
+            priceIN: priceByLocation["IN"] ? String(priceByLocation["IN"].amount) : "",
+            priceUK: priceByLocation["GB"] ? String(priceByLocation["GB"].amount) : "",
+            priceUS: priceByLocation["US"] ? String(priceByLocation["US"].amount) : "",
           };
         });
       }
