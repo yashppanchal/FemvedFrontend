@@ -55,7 +55,7 @@ export default function OrdersTab() {
                   <td>{o.discountAmount > 0 ? formatCurrency(o.discountAmount, o.currency) : "—"}</td>
                   <td>{o.couponCode ?? "—"}</td>
                   <td>
-                    <span className={`statusBadge statusBadge--${o.status.toLowerCase()}`}>
+                    <span className={`statusBadge statusBadge--${(o.status || "").toLowerCase()}`}>
                       {o.status}
                     </span>
                   </td>

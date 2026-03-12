@@ -27,7 +27,8 @@ export interface MyProgramAccess {
   programId: string;
   programName: string;
   expertName: string;
-  accessStatus: string;
+  // sometimes backend may return null/undefined when status is not yet set
+  accessStatus?: string | null;
   startedAt: string | null;
   pausedAt: string | null;
   completedAt: string | null;
