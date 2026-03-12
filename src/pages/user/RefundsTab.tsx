@@ -50,7 +50,7 @@ export default function RefundsTab() {
                   <td>{formatCurrency(r.amount, r.currency)}</td>
                   <td>{r.reason}</td>
                   <td>
-                    <span className={`statusBadge statusBadge--${r.status.toLowerCase()}`}>
+                    <span className={`statusBadge statusBadge--${(r.status || "").toLowerCase()}`}>
                       {r.status}
                     </span>
                   </td>

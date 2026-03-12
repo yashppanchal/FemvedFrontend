@@ -69,36 +69,39 @@ export default function MyProgramsTab() {
             </thead>
             <tbody>
               {programs.map((p) => (
-                <tr key={p.accessId}>
-                  <td>{p.programName}</td>
-                  <td>{p.expertName}</td>
-                  <td>{p.durationLabel}</td>
-                  <td>
-                    <span className={`statusBadge statusBadge--${p.accessStatus.toLowerCase()}`}>
-                      {p.accessStatus}
-                    </span>
-                  </td>
-                  <td className="dashTable__actions">
-                    {p.accessStatus === "Active" && (
-                      <button
-                        type="button"
-                        className="dashTable__btn"
-                        onClick={() => handlePause(p.accessId)}
-                      >
-                        Pause
-                      </button>
-                    )}
-                    {(p.accessStatus === "Active" || p.accessStatus === "Paused") && (
-                      <button
-                        type="button"
-                        className="dashTable__btn dashTable__btn--danger"
-                        onClick={() => handleEnd(p.accessId)}
-                      >
-                        End
-                      </button>
-                    )}
-                  </td>
-                </tr>
+                p ? (
+                  <tr key={p.accessId}>
+                    <td>{p.programName}</td>
+                    <td>{p.expertName}</td>
+                    <td>{p.durationLabel}</td>
+                    <td>
+                      {/* guard against missing/undefined status */}
+                      <span className={`statusBadge statusBadge--${(p.accessStatus || "").toLowerCase()}`}>
+                        {p.accessStatus ?? ""}
+                      </span>
+                    </td>
+                    <td className="dashTable__actions">
+                      {p.accessStatus === "Active" && (
+                        <button
+                          type="button"
+                          className="dashTable__btn"
+                          onClick={() => handlePause(p.accessId)}
+                        >
+                          Pause
+                        </button>
+                      )}
+                      {(p.accessStatus === "Active" || p.accessStatus === "Paused") && (
+                        <button
+                          type="button"
+                          className="dashTable__btn dashTable__btn--danger"
+                          onClick={() => handleEnd(p.accessId)}
+                        >
+                          End
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ) : null
               ))}
             </tbody>
           </table>
