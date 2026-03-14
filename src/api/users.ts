@@ -27,13 +27,16 @@ export interface MyProgramAccess {
   programId: string;
   programName: string;
   expertName: string;
-  // sometimes backend may return null/undefined when status is not yet set
-  accessStatus?: string | null;
+  status: string;
   startedAt: string | null;
   pausedAt: string | null;
   completedAt: string | null;
   purchasedAt: string | null;
   durationLabel: string;
+  scheduledStartAt: string | null;
+  endDate: string | null;
+  requestedStartDate: string | null;
+  startRequestStatus: string | null;
 }
 
 export interface MyOrder {
@@ -94,6 +97,13 @@ export function pauseMyEnrollment(accessId: string): Promise<void> {
 
 export function endMyEnrollment(accessId: string): Promise<void> {
   return apiFetch<void>(`/users/me/enrollments/${accessId}/end`, { method: "POST" });
+}
+
+export function requestStartDate(accessId: string, requestedStartDate: string): Promise<void> {
+  return apiFetch<void>(`/users/me/enrollments/${accessId}/request-start`, {
+    method: "POST",
+    body: JSON.stringify({ requestedStartDate }),
+  });
 }
 
 export function requestGdprDeletion(): Promise<void> {

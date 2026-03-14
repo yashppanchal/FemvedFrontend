@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import { getExpertPrograms, type ExpertProgram } from "../../api/experts";
 import { ApiError } from "../../api/client";
 
-export default function ExpertProgramsTab() {
+interface Props {
+  onViewEnrollments: (programId: string, programName: string) => void;
+}
+
+export default function ExpertProgramsTab({ onViewEnrollments }: Props) {
   const [programs, setPrograms] = useState<ExpertProgram[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +46,20 @@ export default function ExpertProgramsTab() {
               {programs.map((p) => (
                 <tr key={p.programId}>
                   <td>{p.programName}</td>
-                  <td>{p.totalEnrollments}</td>
+                  <td>
+                    {p.totalEnrollments > 0 ? (
+                      <button
+                        type="button"
+                        className="expertTable__linkBtn"
+                        onClick={() => onViewEnrollments(p.programId, p.programName)}
+                        title="View enrollments for this program"
+                      >
+                        {p.totalEnrollments}
+                      </button>
+                    ) : (
+                      <span>0</span>
+                    )}
+                  </td>
                   <td>{p.activeEnrollments}</td>
                   <td>
                     <span className={`statusBadge statusBadge--${(p.status || "").toLowerCase() === "active" ? "active" : "ended"}`}>

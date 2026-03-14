@@ -12,6 +12,8 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import MeetTheTeam from "../pages/MeetTheTeam";
 import Register from "../pages/Register";
+import ForgotPassword from "../pages/ForgotPassword";
+import ResetPassword from "../pages/ResetPassword";
 import Dashboard from "../pages/Dashboard";
 import ExpertClients from "../pages/ExpertClients";
 import AdminDashboard from "../pages/AdminDashboard";
@@ -48,6 +50,8 @@ export const router = createBrowserRouter([
       { path: "/terms", element: <Terms /> },
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
+      { path: "/forgot-password", element: <ForgotPassword /> },
+      { path: "/reset-password", element: <ResetPassword /> },
       {
         element: <AuthenticatedRoute />,
         children: [

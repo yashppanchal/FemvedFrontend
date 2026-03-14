@@ -5,6 +5,8 @@ import {
   pauseExpertEnrollment,
   resumeEnrollment,
   endExpertEnrollment,
+  approveStartDate,
+  declineStartDate,
   getEnrollmentComments,
   postEnrollmentComment,
   type ExpertEnrollment,
@@ -12,17 +14,39 @@ import {
 } from "../../api/experts";
 import { ApiError } from "../../api/client";
 
-export default function ExpertEnrollmentsTab() {
+interface Props {
+  filterProgramId?: string | null;
+  filterProgramName?: string | null;
+  onClearFilter?: () => void;
+}
+
+const STATUS_OPTIONS = ["All", "NotStarted", "Active", "Paused", "Completed", "Cancelled"];
+
+const today = () => new Date().toISOString().split("T")[0];
+
+export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramName, onClearFilter }: Props) {
   const [enrollments, setEnrollments] = useState<ExpertEnrollment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
+  // Filters
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [monthFilter, setMonthFilter] = useState("");
+  const [yearFilter, setYearFilter] = useState("");
+
+  // Comments modal
   const [commentsEnrollmentId, setCommentsEnrollmentId] = useState<string | null>(null);
   const [comments, setComments] = useState<EnrollmentComment[]>([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [postingComment, setPostingComment] = useState(false);
+
+  // Start date picker modal
+  const [startPickerId, setStartPickerId] = useState<string | null>(null);
+  const [startDate, setStartDate] = useState(today());
+  const [startingId, setStartingId] = useState<string | null>(null);
 
   useEffect(() => {
     getExpertEnrollments()
@@ -33,9 +57,9 @@ export default function ExpertEnrollmentsTab() {
       .finally(() => setLoading(false));
   }, []);
 
-  const updateStatus = (enrollmentId: string, status: string) =>
+  const updateStatus = (enrollmentId: string, status: string, extra?: Partial<ExpertEnrollment>) =>
     setEnrollments((prev) =>
-      prev.map((e) => (e.accessId === enrollmentId ? { ...e, status } : e))
+      prev.map((e) => (e.accessId === enrollmentId ? { ...e, status, ...extra } : e))
     );
 
   const runAction = async (accessId: string, action: () => Promise<void>, newStatus: string) => {
@@ -46,6 +70,27 @@ export default function ExpertEnrollmentsTab() {
       getExpertEnrollments().then(setEnrollments).catch(() => {});
     } catch (err) {
       setActionError(err instanceof ApiError ? err.message : "Action failed.");
+    }
+  };
+
+  const handleStartConfirm = async () => {
+    if (!startPickerId) return;
+    setStartingId(startPickerId);
+    setActionError(null);
+    try {
+      await startEnrollment(startPickerId, startDate !== today() ? startDate : undefined);
+      if (startDate === today()) {
+        updateStatus(startPickerId, "Active", { startedAt: new Date().toISOString() });
+      } else {
+        updateStatus(startPickerId, "NotStarted", { scheduledStartAt: startDate });
+      }
+      getExpertEnrollments().then(setEnrollments).catch(() => {});
+    } catch (err) {
+      setActionError(err instanceof ApiError ? err.message : "Action failed.");
+    } finally {
+      setStartingId(null);
+      setStartPickerId(null);
+      setStartDate(today());
     }
   };
 
@@ -78,6 +123,25 @@ export default function ExpertEnrollmentsTab() {
     }
   };
 
+  // Build year list from enrolled dates
+  const years = [...new Set(enrollments.map((e) => new Date(e.enrolledAt).getFullYear()))].sort((a, b) => b - a);
+
+  const filtered = enrollments.filter((e) => {
+    if (filterProgramId && e.programId !== filterProgramId) return false;
+    const fullName = `${e.userFirstName} ${e.userLastName}`.toLowerCase();
+    if (search && !fullName.includes(search.toLowerCase()) && !e.userEmail.toLowerCase().includes(search.toLowerCase()) && !e.programName.toLowerCase().includes(search.toLowerCase())) return false;
+    if (statusFilter !== "All" && e.accessStatus !== statusFilter) return false;
+    if (monthFilter) {
+      const m = new Date(e.enrolledAt).getMonth() + 1;
+      if (m !== parseInt(monthFilter)) return false;
+    }
+    if (yearFilter) {
+      const y = new Date(e.enrolledAt).getFullYear();
+      if (y !== parseInt(yearFilter)) return false;
+    }
+    return true;
+  });
+
   if (loading) return <p className="expertSection__loading">Loading enrollments…</p>;
   if (error) return <p className="form__error">{error}</p>;
 
@@ -87,10 +151,58 @@ export default function ExpertEnrollmentsTab() {
         <h2 className="expertSection__title">Enrollments</h2>
       </div>
 
+      {filterProgramName && (
+        <div className="expertSection__filterBanner">
+          <span>Filtered by: <strong>{filterProgramName}</strong></span>
+          <button type="button" className="expertTable__btn" onClick={onClearFilter}>Clear filter</button>
+        </div>
+      )}
+
+      {/* Filters */}
+      <div className="expertPanel__toolbar">
+        <input
+          className="field__input expertPanel__search"
+          type="search"
+          placeholder="Search by name, email or program…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <select
+          className="field__input expertPanel__select"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          {STATUS_OPTIONS.map((s) => (
+            <option key={s} value={s}>{s === "All" ? "All statuses" : s}</option>
+          ))}
+        </select>
+        <select
+          className="field__input expertPanel__select"
+          value={monthFilter}
+          onChange={(e) => setMonthFilter(e.target.value)}
+        >
+          <option value="">All months</option>
+          {["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map((m, i) => (
+            <option key={m} value={i + 1}>{m}</option>
+          ))}
+        </select>
+        <select
+          className="field__input expertPanel__select"
+          value={yearFilter}
+          onChange={(e) => setYearFilter(e.target.value)}
+        >
+          <option value="">All years</option>
+          {years.map((y) => (
+            <option key={y} value={y}>{y}</option>
+          ))}
+        </select>
+        <span className="expertPanel__count">{filtered.length} enrollments</span>
+      </div>
+
       {actionError && <p className="form__error">{actionError}</p>}
 
-      {enrollments.length === 0 ? (
-        <p className="expertSection__empty">No enrollments yet.</p>
+      {filtered.length === 0 ? (
+        <p className="expertSection__empty">No enrollments match your filters.</p>
       ) : (
         <div className="expertTableWrap">
           <table className="expertTable">
@@ -100,11 +212,14 @@ export default function ExpertEnrollmentsTab() {
                 <th>Program</th>
                 <th>Duration</th>
                 <th>Status</th>
+                <th>Start / End Date</th>
+                <th>Requested Start</th>
+                <th>Enrolled</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {enrollments.map((e) => (
+              {filtered.map((e) => (
                 <tr key={e.accessId}>
                   <td>
                     <div>{e.userFirstName + " " + e.userLastName}</div>
@@ -113,19 +228,58 @@ export default function ExpertEnrollmentsTab() {
                   <td>{e.programName}</td>
                   <td>{e.durationLabel}</td>
                   <td>
-                    <span className={`statusBadge statusBadge--${(e.accessStatus || "").toLowerCase()}`}>
-                      {e.accessStatus}
+                    <span className={`statusBadge statusBadge--${(e.scheduledStartAt && e.accessStatus === "NotStarted" ? "scheduled" : (e.accessStatus || "")).toLowerCase()}`}>
+                      {e.scheduledStartAt && e.accessStatus === "NotStarted" ? "Scheduled" : e.accessStatus}
                     </span>
                   </td>
+                  <td>
+                    {e.startedAt ? (
+                      <>
+                        <div>Started: {new Date(e.startedAt).toLocaleDateString()}</div>
+                        {e.endDate && <div className="expertTable__sub">Ends: {new Date(e.endDate).toLocaleDateString()}</div>}
+                      </>
+                    ) : e.scheduledStartAt ? (
+                      <div>{new Date(e.scheduledStartAt).toLocaleDateString()}</div>
+                    ) : "—"}
+                  </td>
+                  <td>
+                    {e.requestedStartDate ? (
+                      <>
+                        <div>{new Date(e.requestedStartDate).toLocaleDateString()}</div>
+                        {e.startRequestStatus && (
+                          <div className="expertTable__sub">{e.startRequestStatus}</div>
+                        )}
+                      </>
+                    ) : "—"}
+                  </td>
+                  <td>{new Date(e.enrolledAt).toLocaleDateString()}</td>
                   <td className="expertTable__actions">
-                    {e.accessStatus === "Pending" && (
+                    {e.accessStatus === "NotStarted" && (
                       <button
                         type="button"
                         className="expertTable__btn"
-                        onClick={() => runAction(e.accessId, () => startEnrollment(e.accessId), "Active")}
+                        onClick={() => { setStartPickerId(e.accessId); setStartDate(today()); }}
                       >
-                        Start
+                        {e.scheduledStartAt ? "Reschedule" : "Start"}
                       </button>
+                    )}
+                    {e.startRequestStatus === "Pending" && (
+                      <>
+                        <button
+                          type="button"
+                          className="expertTable__btn expertTable__btn--success"
+                          onClick={() => runAction(e.accessId, () => approveStartDate(e.accessId), e.accessStatus)}
+                        >
+                          Approve
+                        </button>
+                        <button
+                          type="button"
+                          className="expertTable__btn expertTable__btn--danger"
+                          onClick={() => runAction(e.accessId, () => declineStartDate(e.accessId), e.accessStatus)}
+                        >
+                          Decline
+                        </button>
+                      </>
                     )}
                     {e.accessStatus === "Active" && (
                       <button
@@ -149,7 +303,7 @@ export default function ExpertEnrollmentsTab() {
                       <button
                         type="button"
                         className="expertTable__btn expertTable__btn--danger"
-                        onClick={() => runAction(e.accessId, () => endExpertEnrollment(e.accessId), "Ended")}
+                        onClick={() => runAction(e.accessId, () => endExpertEnrollment(e.accessId), "Completed")}
                       >
                         End
                       </button>
@@ -169,6 +323,48 @@ export default function ExpertEnrollmentsTab() {
         </div>
       )}
 
+      {/* Start date picker modal */}
+      {startPickerId && (
+        <div className="expertModal__backdrop" onClick={() => setStartPickerId(null)}>
+          <div className="expertModal" onClick={(ev) => ev.stopPropagation()}>
+            <div className="expertModal__header">
+              <h3 className="expertModal__title">Start Program</h3>
+              <button type="button" className="expertModal__close" onClick={() => setStartPickerId(null)}>✕</button>
+            </div>
+            <div className="expertModal__body">
+              <label className="field">
+                <span className="field__label">Start date</span>
+                <input
+                  className="field__input"
+                  type="date"
+                  value={startDate}
+                  min={today()}
+                  onChange={(ev) => setStartDate(ev.target.value)}
+                  disabled={!!startingId}
+                />
+              </label>
+              {startDate === today() ? (
+                <p className="expertModal__hint">Program will start immediately today.</p>
+              ) : (
+                <p className="expertModal__hint">
+                  Program will be scheduled for {new Date(startDate + "T00:00:00").toLocaleDateString()}.
+                  An email will be sent now confirming the schedule, and again 24 hours before the start date.
+                </p>
+              )}
+            </div>
+            <div className="expertModal__footer">
+              <button type="button" className="expertTable__btn" onClick={() => setStartPickerId(null)} disabled={!!startingId}>
+                Cancel
+              </button>
+              <button type="button" className="button" onClick={handleStartConfirm} disabled={!!startingId}>
+                {startingId ? "Confirming…" : startDate === today() ? "Start now" : "Schedule"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Comments modal */}
       {commentsEnrollmentId && (
         <div className="expertModal__backdrop" onClick={() => setCommentsEnrollmentId(null)}>
           <div className="expertModal" onClick={(ev) => ev.stopPropagation()}>

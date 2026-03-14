@@ -105,6 +105,10 @@ export interface ExpertEnrollment {
   startedAt: string | null;
   pausedAt: string | null;
   completedAt: string | null;
+  scheduledStartAt: string | null;
+  endDate: string | null;
+  requestedStartDate: string | null;
+  startRequestStatus: string | null;
   enrolledAt: string;
 }
 
@@ -141,8 +145,11 @@ export function getExpertEnrollments(): Promise<ExpertEnrollment[]> {
   return apiFetch<ExpertEnrollment[]>("/experts/me/enrollments");
 }
 
-export function startEnrollment(accessId: string): Promise<void> {
-  return apiFetch<void>(`/experts/me/enrollments/${accessId}/start`, { method: "POST" });
+export function startEnrollment(accessId: string, scheduledDate?: string): Promise<void> {
+  return apiFetch<void>(`/experts/me/enrollments/${accessId}/start`, {
+    method: "POST",
+    body: JSON.stringify(scheduledDate ? { scheduledDate } : {}),
+  });
 }
 
 export function pauseExpertEnrollment(accessId: string): Promise<void> {
@@ -155,6 +162,14 @@ export function resumeEnrollment(accessId: string): Promise<void> {
 
 export function endExpertEnrollment(accessId: string): Promise<void> {
   return apiFetch<void>(`/experts/me/enrollments/${accessId}/end`, { method: "POST" });
+}
+
+export function approveStartDate(accessId: string): Promise<void> {
+  return apiFetch<void>(`/experts/me/enrollments/${accessId}/approve-start`, { method: "POST" });
+}
+
+export function declineStartDate(accessId: string): Promise<void> {
+  return apiFetch<void>(`/experts/me/enrollments/${accessId}/decline-start`, { method: "POST" });
 }
 
 export function getEnrollmentComments(accessId: string): Promise<EnrollmentComment[]> {

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import {
   getAdminEnrollments,
   adminStartEnrollment,
+  adminApproveStartDate,
+  adminDeclineStartDate,
   adminPauseEnrollment,
   adminResumeEnrollment,
   adminEndEnrollment,
@@ -12,18 +14,37 @@ import {
 } from "../../api/admin";
 import { ApiError } from "../../api/client";
 
-export default function AdminEnrollmentsTab() {
+const STATUS_OPTIONS = ["All", "NotStarted", "Active", "Paused", "Completed", "Cancelled"];
+const today = () => new Date().toISOString().split("T")[0];
+
+interface Props {
+  filterExpertId?: string | null;
+  filterProgramId?: string | null;
+}
+
+export default function AdminEnrollmentsTab({ filterExpertId, filterProgramId }: Props) {
   const [enrollments, setEnrollments] = useState<AdminEnrollment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
   const [actionError, setActionError] = useState<string | null>(null);
 
+  // Filters
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [monthFilter, setMonthFilter] = useState("");
+  const [yearFilter, setYearFilter] = useState("");
+
+  // Comments modal
   const [commentsId, setCommentsId] = useState<string | null>(null);
   const [comments, setComments] = useState<AdminEnrollmentComment[]>([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [posting, setPosting] = useState(false);
+
+  // Start date picker modal
+  const [startPickerId, setStartPickerId] = useState<string | null>(null);
+  const [startDate, setStartDate] = useState(today());
+  const [startingId, setStartingId] = useState<string | null>(null);
 
   useEffect(() => {
     getAdminEnrollments()
@@ -44,6 +65,28 @@ export default function AdminEnrollmentsTab() {
       updateStatus(id, newStatus);
     } catch (err) {
       setActionError(err instanceof ApiError ? err.message : "Action failed.");
+    }
+  };
+
+  const handleStartConfirm = async () => {
+    if (!startPickerId) return;
+    setStartingId(startPickerId);
+    setActionError(null);
+    try {
+      await adminStartEnrollment(startPickerId, startDate !== today() ? startDate : undefined);
+      if (startDate === today()) {
+        updateStatus(startPickerId, "Active");
+      } else {
+        setEnrollments((prev) =>
+          prev.map((e) => e.accessId === startPickerId ? { ...e, scheduledStartAt: startDate } : e)
+        );
+      }
+    } catch (err) {
+      setActionError(err instanceof ApiError ? err.message : "Action failed.");
+    } finally {
+      setStartingId(null);
+      setStartPickerId(null);
+      setStartDate(today());
     }
   };
 
@@ -76,11 +119,30 @@ export default function AdminEnrollmentsTab() {
     }
   };
 
-  const filtered = enrollments.filter(
-    (e) =>
-      (e.userFirstName + " " + e.userLastName).toLowerCase().includes(search.toLowerCase()) ||
-      e.programName.toLowerCase().includes(search.toLowerCase()),
-  );
+  const years = [...new Set(enrollments.map((e) => new Date(e.enrolledAt).getFullYear()))].sort((a, b) => b - a);
+
+  const filtered = enrollments.filter((e) => {
+    if (filterExpertId && e.expertId !== filterExpertId) return false;
+    if (filterProgramId && e.programId !== filterProgramId) return false;
+    const fullName = `${e.userFirstName} ${e.userLastName}`.toLowerCase();
+    if (
+      search &&
+      !fullName.includes(search.toLowerCase()) &&
+      !e.programName.toLowerCase().includes(search.toLowerCase()) &&
+      !(e.expertName ?? "").toLowerCase().includes(search.toLowerCase())
+    )
+      return false;
+    if (statusFilter !== "All" && e.accessStatus !== statusFilter) return false;
+    if (monthFilter) {
+      const m = new Date(e.enrolledAt).getMonth() + 1;
+      if (m !== parseInt(monthFilter)) return false;
+    }
+    if (yearFilter) {
+      const y = new Date(e.enrolledAt).getFullYear();
+      if (y !== parseInt(yearFilter)) return false;
+    }
+    return true;
+  });
 
   if (loading) return <p className="adminPanel__loading">Loading enrollments…</p>;
   if (error) return <p className="adminPanel__error">{error}</p>;
@@ -91,10 +153,37 @@ export default function AdminEnrollmentsTab() {
         <input
           className="field__input adminPanel__search"
           type="search"
-          placeholder="Search by user or program…"
+          placeholder="Search by user, expert or program…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
+        <select
+          className="field__input adminPanel__select"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          {STATUS_OPTIONS.map((s) => (
+            <option key={s} value={s}>{s === "All" ? "All statuses" : s}</option>
+          ))}
+        </select>
+        <select
+          className="field__input adminPanel__select"
+          value={monthFilter}
+          onChange={(e) => setMonthFilter(e.target.value)}
+        >
+          <option value="">All months</option>
+          {["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map((m, i) => (
+            <option key={m} value={i + 1}>{m}</option>
+          ))}
+        </select>
+        <select
+          className="field__input adminPanel__select"
+          value={yearFilter}
+          onChange={(e) => setYearFilter(e.target.value)}
+        >
+          <option value="">All years</option>
+          {years.map((y) => <option key={y} value={y}>{y}</option>)}
+        </select>
         <span className="adminPanel__count">{filtered.length} enrollments</span>
       </div>
 
@@ -109,13 +198,16 @@ export default function AdminEnrollmentsTab() {
               <th>Program</th>
               <th>Duration</th>
               <th>Status</th>
+              <th>Start / End Date</th>
+              <th>Requested Start</th>
+              <th>Enrolled</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={6} className="adminTable__empty">No enrollments found.</td>
+                <td colSpan={9} className="adminTable__empty">No enrollments found.</td>
               </tr>
             ) : (
               filtered.map((e) => (
@@ -128,19 +220,58 @@ export default function AdminEnrollmentsTab() {
                   <td>{e.programName}</td>
                   <td>{e.durationLabel}</td>
                   <td>
-                    <span className={`statusBadge statusBadge--${(e.accessStatus || "").toLowerCase()}`}>
-                      {e.accessStatus}
+                    <span className={`statusBadge statusBadge--${(e.scheduledStartAt && e.accessStatus === "NotStarted" ? "scheduled" : (e.accessStatus || "")).toLowerCase()}`}>
+                      {e.scheduledStartAt && e.accessStatus === "NotStarted" ? "Scheduled" : e.accessStatus}
                     </span>
                   </td>
+                  <td>
+                    {e.startedAt ? (
+                      <>
+                        <div>{new Date(e.startedAt).toLocaleDateString()}</div>
+                        {e.endDate && <div className="adminTable__sub">Ends: {new Date(e.endDate).toLocaleDateString()}</div>}
+                      </>
+                    ) : e.scheduledStartAt ? (
+                      <div>{new Date(e.scheduledStartAt).toLocaleDateString()}</div>
+                    ) : "—"}
+                  </td>
+                  <td>
+                    {e.requestedStartDate ? (
+                      <>
+                        <div>{new Date(e.requestedStartDate).toLocaleDateString()}</div>
+                        {e.startRequestStatus && (
+                          <div className="adminTable__sub">{e.startRequestStatus}</div>
+                        )}
+                      </>
+                    ) : "—"}
+                  </td>
+                  <td>{new Date(e.enrolledAt).toLocaleDateString()}</td>
                   <td className="adminTable__actions">
-                    {e.accessStatus === "Pending" && (
+                    {e.accessStatus === "NotStarted" && (
                       <button
                         type="button"
                         className="adminActionButton"
-                        onClick={() => runAction(e.accessId, () => adminStartEnrollment(e.accessId), "Active")}
+                        onClick={() => { setStartPickerId(e.accessId); setStartDate(today()); }}
                       >
-                        Start
+                        {e.scheduledStartAt ? "Reschedule" : "Start"}
                       </button>
+                    )}
+                    {e.startRequestStatus === "Pending" && (
+                      <>
+                        <button
+                          type="button"
+                          className="adminActionButton"
+                          onClick={() => runAction(e.accessId, () => adminApproveStartDate(e.accessId), e.accessStatus)}
+                        >
+                          Approve
+                        </button>
+                        <button
+                          type="button"
+                          className="adminActionButton adminActionButton--danger"
+                          onClick={() => runAction(e.accessId, () => adminDeclineStartDate(e.accessId), e.accessStatus)}
+                        >
+                          Decline
+                        </button>
+                      </>
                     )}
                     {e.accessStatus === "Active" && (
                       <button
@@ -164,7 +295,7 @@ export default function AdminEnrollmentsTab() {
                       <button
                         type="button"
                         className="adminActionButton adminActionButton--danger"
-                        onClick={() => runAction(e.accessId, () => adminEndEnrollment(e.accessId), "Ended")}
+                        onClick={() => runAction(e.accessId, () => adminEndEnrollment(e.accessId), "Completed")}
                       >
                         End
                       </button>
@@ -184,6 +315,48 @@ export default function AdminEnrollmentsTab() {
         </table>
       </div>
 
+      {/* Start date picker modal */}
+      {startPickerId && (
+        <div className="adminModal__backdrop" onClick={() => setStartPickerId(null)}>
+          <div className="adminModal" onClick={(ev) => ev.stopPropagation()}>
+            <div className="adminModal__header">
+              <h3 className="adminModal__title">Start Program</h3>
+              <button type="button" className="adminModal__close" onClick={() => setStartPickerId(null)}>✕</button>
+            </div>
+            <div className="adminModal__body">
+              <label className="field">
+                <span className="field__label">Start date</span>
+                <input
+                  className="field__input"
+                  type="date"
+                  value={startDate}
+                  min={today()}
+                  onChange={(ev) => setStartDate(ev.target.value)}
+                  disabled={!!startingId}
+                />
+              </label>
+              {startDate === today() ? (
+                <p>Program will start immediately today.</p>
+              ) : (
+                <p>
+                  Program will be scheduled for {new Date(startDate + "T00:00:00").toLocaleDateString()}.
+                  Emails will be sent to all parties confirming the schedule.
+                </p>
+              )}
+            </div>
+            <div className="adminModal__compose">
+              <button type="button" className="adminActionButton" onClick={() => setStartPickerId(null)} disabled={!!startingId}>
+                Cancel
+              </button>
+              <button type="button" className="button" onClick={handleStartConfirm} disabled={!!startingId}>
+                {startingId ? "Confirming…" : startDate === today() ? "Start now" : "Schedule"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Comments modal */}
       {commentsId && (
         <div className="adminModal__backdrop" onClick={() => setCommentsId(null)}>
           <div className="adminModal" onClick={(ev) => ev.stopPropagation()}>
