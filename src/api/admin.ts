@@ -13,9 +13,8 @@ export interface AdminUser {
   email: string;
   firstName: string;
   lastName: string;
-  mobileNumber: string;
-  countryCode: string;
-  role: string;
+  roleId: number;
+  roleName: string;
   isActive: boolean;
   createdAt: string;
 }
@@ -86,6 +85,10 @@ export interface AdminEnrollment {
   startedAt: string | null;
   pausedAt: string | null;
   completedAt: string | null;
+  scheduledStartAt: string | null;
+  endDate: string | null;
+  requestedStartDate: string | null;
+  startRequestStatus: string | null;
   durationLabel: string;
   enrolledAt: string;
 }
@@ -198,6 +201,13 @@ export function changeUserRole(userId: string, roleId: number): Promise<AdminUse
   });
 }
 
+export function adminChangeUserEmail(userId: string, newEmail: string): Promise<AdminUser> {
+  return apiFetch<AdminUser>("/admin/users/" + userId + "/email", {
+    method: "PUT",
+    body: JSON.stringify({ newEmail }),
+  });
+}
+
 export function deleteAdminUser(userId: string): Promise<void> {
   return apiFetch<void>("/admin/users/" + userId, { method: "DELETE" });
 }
@@ -297,8 +307,36 @@ export function postAdminEnrollmentComment(accessId: string, updateNote: string)
   });
 }
 
-export function adminStartEnrollment(accessId: string): Promise<void> {
-  return apiFetch<void>("/admin/enrollments/" + accessId + "/start", { method: "POST" });
+export function adminStartEnrollment(accessId: string, scheduledDate?: string): Promise<void> {
+  return apiFetch<void>("/admin/enrollments/" + accessId + "/start", {
+    method: "POST",
+    body: JSON.stringify(scheduledDate ? { scheduledDate } : {}),
+  });
+}
+
+export interface AdminExpertProgram {
+  programId: string;
+  programName: string;
+  status: string;
+  totalEnrollments: number;
+  activeEnrollments: number;
+  createdAt: string;
+}
+
+export function getAdminExpertPrograms(expertId: string): Promise<AdminExpertProgram[]> {
+  return apiFetch<AdminExpertProgram[]>("/admin/experts/" + expertId + "/programs");
+}
+
+export function getAdminExpertEnrollments(expertId: string): Promise<AdminEnrollment[]> {
+  return apiFetch<AdminEnrollment[]>("/admin/enrollments?expertId=" + expertId);
+}
+
+export function adminApproveStartDate(accessId: string): Promise<void> {
+  return apiFetch<void>("/admin/enrollments/" + accessId + "/approve-start", { method: "POST" });
+}
+
+export function adminDeclineStartDate(accessId: string): Promise<void> {
+  return apiFetch<void>("/admin/enrollments/" + accessId + "/decline-start", { method: "POST" });
 }
 
 export function adminPauseEnrollment(accessId: string): Promise<void> {

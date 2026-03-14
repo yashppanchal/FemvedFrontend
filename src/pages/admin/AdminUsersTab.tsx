@@ -6,6 +6,7 @@ import {
   changeUserRole,
   deleteAdminUser,
   adminCreateExpertProfile,
+  adminChangeUserEmail,
   type AdminUser,
   type AdminCreateExpertProfileRequest,
 } from "../../api/admin";
@@ -51,6 +52,8 @@ function isExpertFormEmpty(f: ExpertForm): boolean {
   return Object.values(f).every((v) => !v.trim());
 }
 
+const ROLE_NAMES: Record<number, string> = { 1: "Admin", 2: "Expert", 3: "User" };
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function AdminUsersTab() {
@@ -65,6 +68,12 @@ export default function AdminUsersTab() {
   const [expertForm, setExpertForm] = useState<ExpertForm>(emptyExpertForm);
   const [promoting, setPromoting] = useState(false);
   const [promoteError, setPromoteError] = useState<string | null>(null);
+
+  // Email edit panel state
+  const [emailEditUser, setEmailEditUser] = useState<AdminUser | null>(null);
+  const [emailInput, setEmailInput] = useState("");
+  const [savingEmail, setSavingEmail] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   useEffect(() => {
     getAdminUsers()
@@ -97,7 +106,15 @@ export default function AdminUsersTab() {
     } else {
       // User or Admin — change directly
       changeUserRole(user.userId, roleId)
-        .then((updated) => setUsers((prev) => prev.map((u) => (u.userId === user.userId ? updated : u))))
+        .then(() =>
+          setUsers((prev) =>
+            prev.map((u) =>
+              u.userId === user.userId
+                ? { ...u, roleId, roleName: ROLE_NAMES[roleId] ?? String(roleId) }
+                : u,
+            ),
+          ),
+        )
         .catch((err) => setActionError(err instanceof ApiError ? err.message : "Failed to change role."));
     }
   };
@@ -109,8 +126,12 @@ export default function AdminUsersTab() {
     setPromoting(true);
     try {
       // Step 1: change role to Expert
-      const updated = await changeUserRole(promotingUser.userId, 2);
-      setUsers((prev) => prev.map((u) => (u.userId === promotingUser.userId ? updated : u)));
+      await changeUserRole(promotingUser.userId, 2);
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.userId === promotingUser.userId ? { ...u, roleId: 2, roleName: "Expert" } : u,
+        ),
+      );
 
       // Step 2: if any profile fields filled, create expert profile
       if (!isExpertFormEmpty(expertForm)) {
@@ -129,6 +150,33 @@ export default function AdminUsersTab() {
   const handlePromoteCancel = () => {
     setPromotingUser(null);
     setPromoteError(null);
+  };
+
+  const openEmailEdit = (user: AdminUser) => {
+    setEmailEditUser(user);
+    setEmailInput(user.email);
+    setEmailError(null);
+  };
+
+  const closeEmailEdit = () => {
+    setEmailEditUser(null);
+    setEmailError(null);
+  };
+
+  const handleEmailSave = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!emailEditUser) return;
+    setEmailError(null);
+    setSavingEmail(true);
+    try {
+      const updated = await adminChangeUserEmail(emailEditUser.userId, emailInput.trim());
+      setUsers((prev) => prev.map((u) => (u.userId === emailEditUser.userId ? updated : u)));
+      setEmailEditUser(null);
+    } catch (err) {
+      setEmailError(err instanceof ApiError ? err.message : "Failed to update email.");
+    } finally {
+      setSavingEmail(false);
+    }
   };
 
   const handleDelete = async (userId: string, email: string) => {
@@ -150,11 +198,6 @@ export default function AdminUsersTab() {
       (u.email ?? "").toLowerCase().includes(search.toLowerCase()) ||
       `${u.firstName ?? ""} ${u.lastName ?? ""}`.toLowerCase().includes(search.toLowerCase()),
   );
-
-  const roleIdOf = (role: string) =>
-    (role ?? "").toLowerCase().includes("admin") ? 1
-    : (role ?? "").toLowerCase().includes("expert") ? 2
-    : 3;
 
   if (loading) return <p className="adminPanel__loading">Loading users…</p>;
   if (error) return <p className="adminPanel__error">{error}</p>;
@@ -258,6 +301,40 @@ export default function AdminUsersTab() {
         </form>
       )}
 
+      {/* ── Email edit panel ─────────────────────────────────────────────── */}
+      {emailEditUser && (
+        <form className="adminForm adminForm--expertPromotion" onSubmit={handleEmailSave} noValidate>
+          <div className="adminForm__promotionHeader">
+            <div>
+              <h3 className="adminForm__title">
+                Change email — {emailEditUser.firstName} {emailEditUser.lastName}
+              </h3>
+              <p className="adminForm__subtitle">Current: {emailEditUser.email}</p>
+            </div>
+            <button type="button" className="adminModal__close" onClick={closeEmailEdit} disabled={savingEmail}>✕</button>
+          </div>
+          {emailError && <p className="adminPanel__error">{emailError}</p>}
+          <label className="field">
+            <span className="field__label">New email address</span>
+            <input
+              className="field__input"
+              type="email"
+              value={emailInput}
+              onChange={(e) => setEmailInput(e.target.value)}
+              disabled={savingEmail}
+              placeholder="new@example.com"
+              required
+            />
+          </label>
+          <div className="adminForm__actions">
+            <button type="button" className="adminActionButton" onClick={closeEmailEdit} disabled={savingEmail}>Cancel</button>
+            <button type="submit" className="button" disabled={savingEmail || !emailInput.trim()}>
+              {savingEmail ? "Saving…" : "Save email"}
+            </button>
+          </div>
+        </form>
+      )}
+
       {/* ── Users table ─────────────────────────────────────────────────── */}
       <div className="adminTableWrap">
         <table className="adminTable">
@@ -278,12 +355,19 @@ export default function AdminUsersTab() {
               </tr>
             ) : (
               filtered.map((u) => (
-                <tr key={u.userId} className={promotingUser?.userId === u.userId ? "adminTable__row--highlighted" : ""}>
+                <tr
+                  key={u.userId}
+                  className={
+                    promotingUser?.userId === u.userId || emailEditUser?.userId === u.userId
+                      ? "adminTable__row--highlighted"
+                      : ""
+                  }
+                >
                   <td>{u.firstName} {u.lastName}</td>
                   <td>{u.email}</td>
                   <td>
-                    <span className={`statusBadge statusBadge--${roleIdOf(u.role) === 1 ? "active" : roleIdOf(u.role) === 2 ? "pending" : "ended"}`}>
-                      {u.role}
+                    <span className={`statusBadge statusBadge--${u.roleId === 1 ? "active" : u.roleId === 2 ? "pending" : "ended"}`}>
+                      {u.roleName}
                     </span>
                   </td>
                   <td>
@@ -295,7 +379,7 @@ export default function AdminUsersTab() {
                   <td className="adminTable__actions">
                     <select
                       className="field__input adminTable__roleSelect"
-                      value={String(roleIdOf(u.role))}
+                      value={String(u.roleId)}
                       onChange={(ev) => handleRoleSelectChange(u, Number(ev.target.value))}
                       disabled={promoting}
                     >
@@ -303,6 +387,14 @@ export default function AdminUsersTab() {
                       <option value="2">Expert</option>
                       <option value="1">Admin</option>
                     </select>
+                    <button
+                      type="button"
+                      className="adminActionButton"
+                      onClick={() => openEmailEdit(u)}
+                      disabled={promoting}
+                    >
+                      Edit email
+                    </button>
                     <button
                       type="button"
                       className="adminActionButton"

@@ -1,12 +1,19 @@
 import { useEffect, useState } from "react";
-import { getMyProgramAccess, pauseMyEnrollment, endMyEnrollment, type MyProgramAccess } from "../../api/users";
+import { getMyProgramAccess, pauseMyEnrollment, endMyEnrollment, requestStartDate, type MyProgramAccess } from "../../api/users";
 import { ApiError } from "../../api/client";
+
+const today = () => new Date().toISOString().split("T")[0];
 
 export default function MyProgramsTab() {
   const [programs, setPrograms] = useState<MyProgramAccess[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+
+  // Request start date modal
+  const [requestStartId, setRequestStartId] = useState<string | null>(null);
+  const [requestDate, setRequestDate] = useState(today());
+  const [requesting, setRequesting] = useState(false);
 
   useEffect(() => {
     getMyProgramAccess()
@@ -17,14 +24,13 @@ export default function MyProgramsTab() {
       .finally(() => setLoading(false));
   }, []);
 
+  const reload = () => getMyProgramAccess().then(setPrograms).catch(() => {});
+
   const handlePause = async (accessId: string) => {
     setActionError(null);
     try {
       await pauseMyEnrollment(accessId);
-      setPrograms((prev) =>
-        prev.map((p) => p.accessId === accessId ? { ...p, accessStatus: "Paused" } : p)
-      );
-      getMyProgramAccess().then(setPrograms).catch(() => {});
+      reload();
     } catch (err) {
       setActionError(err instanceof ApiError ? err.message : "Action failed.");
     }
@@ -35,13 +41,34 @@ export default function MyProgramsTab() {
     setActionError(null);
     try {
       await endMyEnrollment(accessId);
-      setPrograms((prev) =>
-        prev.map((p) => p.accessId === accessId ? { ...p, accessStatus: "Ended" } : p)
-      );
-      getMyProgramAccess().then(setPrograms).catch(() => {});
+      reload();
     } catch (err) {
       setActionError(err instanceof ApiError ? err.message : "Action failed.");
     }
+  };
+
+  const handleRequestStart = async () => {
+    if (!requestStartId) return;
+    setRequesting(true);
+    setActionError(null);
+    try {
+      await requestStartDate(requestStartId, requestDate);
+      reload();
+    } catch (err) {
+      setActionError(err instanceof ApiError ? err.message : "Failed to request start date.");
+    } finally {
+      setRequesting(false);
+      setRequestStartId(null);
+      setRequestDate(today());
+    }
+  };
+
+  const formatDate = (d: string | null) =>
+    d ? new Date(d).toLocaleDateString() : "—";
+
+  const statusLabel = (p: MyProgramAccess): string => {
+    if (p.status === "NotStarted" && p.scheduledStartAt) return "Scheduled";
+    return p.status;
   };
 
   if (loading) return <p className="dashCard__loading">Loading programs…</p>;
@@ -64,6 +91,8 @@ export default function MyProgramsTab() {
                 <th>Expert</th>
                 <th>Duration</th>
                 <th>Status</th>
+                <th>Start Date</th>
+                <th>End Date</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -75,13 +104,35 @@ export default function MyProgramsTab() {
                     <td>{p.expertName}</td>
                     <td>{p.durationLabel}</td>
                     <td>
-                      {/* guard against missing/undefined status */}
-                      <span className={`statusBadge statusBadge--${(p.accessStatus || "").toLowerCase()}`}>
-                        {p.accessStatus ?? ""}
+                      <span className={`statusBadge statusBadge--${statusLabel(p).toLowerCase()}`}>
+                        {statusLabel(p)}
                       </span>
+                      {p.startRequestStatus === "Pending" && (
+                        <div className="dashTable__sub">Start request pending</div>
+                      )}
+                      {p.startRequestStatus === "Declined" && (
+                        <div className="dashTable__sub dashTable__sub--warn">Start request declined</div>
+                      )}
                     </td>
+                    <td>
+                      {p.startedAt
+                        ? formatDate(p.startedAt)
+                        : p.scheduledStartAt
+                          ? `Scheduled: ${formatDate(p.scheduledStartAt)}`
+                          : "—"}
+                    </td>
+                    <td>{formatDate(p.endDate)}</td>
                     <td className="dashTable__actions">
-                      {p.accessStatus === "Active" && (
+                      {p.status === "NotStarted" && !p.scheduledStartAt && p.startRequestStatus !== "Pending" && (
+                        <button
+                          type="button"
+                          className="dashTable__btn"
+                          onClick={() => { setRequestStartId(p.accessId); setRequestDate(today()); }}
+                        >
+                          Request Start Date
+                        </button>
+                      )}
+                      {p.status === "Active" && (
                         <button
                           type="button"
                           className="dashTable__btn"
@@ -90,7 +141,7 @@ export default function MyProgramsTab() {
                           Pause
                         </button>
                       )}
-                      {(p.accessStatus === "Active" || p.accessStatus === "Paused") && (
+                      {(p.status === "Active" || p.status === "Paused") && (
                         <button
                           type="button"
                           className="dashTable__btn dashTable__btn--danger"
@@ -105,6 +156,42 @@ export default function MyProgramsTab() {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* Request start date modal */}
+      {requestStartId && (
+        <div className="dashModal__backdrop" onClick={() => setRequestStartId(null)}>
+          <div className="dashModal" onClick={(ev) => ev.stopPropagation()}>
+            <div className="dashModal__header">
+              <h3 className="dashModal__title">Request Start Date</h3>
+              <button type="button" className="dashModal__close" onClick={() => setRequestStartId(null)}>✕</button>
+            </div>
+            <div className="dashModal__body">
+              <label className="field">
+                <span className="field__label">Preferred start date</span>
+                <input
+                  className="field__input"
+                  type="date"
+                  value={requestDate}
+                  min={today()}
+                  onChange={(ev) => setRequestDate(ev.target.value)}
+                  disabled={requesting}
+                />
+              </label>
+              <p className="dashModal__hint">
+                Your expert will review and confirm or suggest an alternative date.
+              </p>
+            </div>
+            <div className="dashModal__footer">
+              <button type="button" className="dashTable__btn" onClick={() => setRequestStartId(null)} disabled={requesting}>
+                Cancel
+              </button>
+              <button type="button" className="button" onClick={handleRequestStart} disabled={requesting}>
+                {requesting ? "Requesting…" : "Request"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

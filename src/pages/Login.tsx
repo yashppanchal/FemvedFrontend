@@ -89,6 +89,9 @@ export default function Login() {
         </form>
 
         <p className="authCard__footer">
+          <Link to="/forgot-password">Forgot your password?</Link>
+        </p>
+        <p className="authCard__footer">
           Don&rsquo;t have an account?{" "}
           <Link to="/register">Create an account</Link>
         </p>

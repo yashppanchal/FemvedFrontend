@@ -20,6 +20,22 @@ const TABS: { id: ExpertTab; label: string }[] = [
 export default function ExpertDashboard() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<ExpertTab>("profile");
+  const [filterProgramId, setFilterProgramId] = useState<string | null>(null);
+  const [filterProgramName, setFilterProgramName] = useState<string | null>(null);
+
+  const handleViewEnrollments = (programId: string, programName: string) => {
+    setFilterProgramId(programId);
+    setFilterProgramName(programName);
+    setActiveTab("enrollments");
+  };
+
+  const handleTabChange = (tab: ExpertTab) => {
+    if (tab !== "enrollments") {
+      setFilterProgramId(null);
+      setFilterProgramName(null);
+    }
+    setActiveTab(tab);
+  };
 
   return (
     <section className="page page--expertDashboard">
@@ -34,7 +50,7 @@ export default function ExpertDashboard() {
             key={tab.id}
             type="button"
             className={`expertTabs__btn${activeTab === tab.id ? " expertTabs__btn--active" : ""}`}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => handleTabChange(tab.id)}
           >
             {tab.label}
           </button>
@@ -43,8 +59,14 @@ export default function ExpertDashboard() {
 
       <div className="expertContent">
         {activeTab === "profile" && <ExpertProfileTab />}
-        {activeTab === "programs" && <ExpertProgramsTab />}
-        {activeTab === "enrollments" && <ExpertEnrollmentsTab />}
+        {activeTab === "programs" && <ExpertProgramsTab onViewEnrollments={handleViewEnrollments} />}
+        {activeTab === "enrollments" && (
+          <ExpertEnrollmentsTab
+            filterProgramId={filterProgramId}
+            filterProgramName={filterProgramName}
+            onClearFilter={() => { setFilterProgramId(null); setFilterProgramName(null); }}
+          />
+        )}
         {activeTab === "earnings" && <ExpertEarningsTab />}
         {activeTab === "create" && <ExpertCreateProgramTab />}
       </div>
