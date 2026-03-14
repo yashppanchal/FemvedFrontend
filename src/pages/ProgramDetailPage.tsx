@@ -135,18 +135,28 @@ export default function ProgramDetailPage() {
       return;
     }
 
+    // Translate "UK" to ISO 3166-1 alpha-2 "GB" that the backend uses for pricing lookup
+    const apiCountryCode = selectedCountryCode === "UK" ? "GB" : selectedCountryCode;
+
+    // Non-India users choose between PayPal and Stripe on a dedicated page
+    if (apiCountryCode !== "IN") {
+      navigate("/payment/select-provider", {
+        state: {
+          durationId: selectedDuration.durationId,
+          countryCode: apiCountryCode,
+        },
+      });
+      return;
+    }
+
     setCheckoutLoading(true);
     setCheckoutError(null);
 
     try {
-      const gateway = selectedCountryCode === "IN" ? "CashFree" : "PayPal";
-      // Translate "UK" to ISO 3166-1 alpha-2 "GB" that the backend uses for pricing lookup
-      const apiCountryCode =
-        selectedCountryCode === "UK" ? "GB" : selectedCountryCode;
       const order = await initiateOrder({
         durationId: selectedDuration.durationId,
         countryCode: apiCountryCode,
-        gateway,
+        gateway: "CashFree",
         idempotencyKey: crypto.randomUUID(),
       });
 
@@ -174,14 +184,6 @@ export default function ProgramDetailPage() {
         navigate(
           `/payment/processing?orderId=${encodeURIComponent(order.orderId)}&returnTo=${returnTo}`,
         );
-      } else if (order.gateway === "PAYPAL") {
-        if (!order.approvalUrl) {
-          setCheckoutError(
-            "PayPal checkout link is missing. Please try again.",
-          );
-          return;
-        }
-        window.location.assign(order.approvalUrl);
       } else {
         setCheckoutError(
           "Unexpected payment gateway. Please try again or contact support.",

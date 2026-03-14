@@ -1,6 +1,6 @@
 import { apiFetch } from "./client";
 
-export type PaymentGateway = "CashFree" | "PayPal";
+export type PaymentGateway = "CashFree" | "PayPal" | "Stripe";
 
 export type OrderStatus = "Pending" | "Paid" | "Failed" | "Cancelled";
 
@@ -19,7 +19,7 @@ export interface InitiateOrderResponse {
   amount: number;
   currency: string;
   symbol: string;
-  gateway: "CASHFREE" | "PAYPAL";
+  gateway: "CASHFREE" | "PAYPAL" | "STRIPE";
   /** PayPal only — URL to redirect the user to */
   approvalUrl?: string;
 }
