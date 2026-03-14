@@ -24,6 +24,7 @@ import NotFound from "../pages/NotFound";
 import OrderHistory from "../pages/OrderHistory";
 import PaymentCancel from "../pages/PaymentCancel";
 import PaymentProcessing from "../pages/PaymentProcessing";
+import PaymentProviderSelection from "../pages/PaymentProviderSelection";
 import PaymentSuccess from "../pages/PaymentSuccess";
 import Placeholder from "../pages/Placeholder";
 import Podcast from "../pages/Podcast";
@@ -72,6 +73,7 @@ export const router = createBrowserRouter([
           { path: "/expert-dashboard/clients", element: <ExpertClients /> },
         ],
       },
+      { path: "/payment/select-provider", element: <PaymentProviderSelection /> },
       { path: "/payment/cancel", element: <PaymentCancel /> },
       { path: "/payment-cancel", element: <PaymentCancel /> },
       { path: "/payment/success", element: <PaymentSuccess /> },
