@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAdminSummary, type AdminSummary } from "../../api/admin";
+import { getAdminSummary, getAdminOrders, type AdminSummary } from "../../api/admin";
 import { ApiError } from "../../api/client";
 
 function StatCard({ label, value }: { label: string; value: string | number }) {
@@ -11,14 +11,37 @@ function StatCard({ label, value }: { label: string; value: string | number }) {
   );
 }
 
+function formatCurrency(amount: number, currency: string) {
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  } catch {
+    return `${currency} ${amount.toFixed(2)}`;
+  }
+}
+
 export default function SummaryTab() {
   const [summary, setSummary] = useState<AdminSummary | null>(null);
+  const [revenueByCurrency, setRevenueByCurrency] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getAdminSummary()
-      .then(setSummary)
+    Promise.all([getAdminSummary(), getAdminOrders()])
+      .then(([s, orders]) => {
+        setSummary(s);
+        // Compute per-currency totals from paid orders
+        const byCurrency: Record<string, number> = {};
+        for (const o of orders) {
+          if (o.status === "Paid" && o.currency && o.amount) {
+            byCurrency[o.currency] = (byCurrency[o.currency] ?? 0) + o.amount;
+          }
+        }
+        setRevenueByCurrency(byCurrency);
+      })
       .catch((err) => {
         setError(err instanceof ApiError ? err.message : "Failed to load summary.");
       })
@@ -29,13 +52,22 @@ export default function SummaryTab() {
   if (error) return <p className="adminPanel__error">{error}</p>;
   if (!summary) return null;
 
-  const revenue = new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0,
-  }).format(summary.totalRevenue);
-
   const fmt = (n: number) => new Intl.NumberFormat().format(n);
+
+  const currencyEntries = Object.entries(revenueByCurrency);
+  let revenueDisplay: string;
+  if (currencyEntries.length === 0) {
+    // Fallback: no paid orders found, show raw total
+    revenueDisplay = fmt(summary.totalRevenue);
+  } else if (currencyEntries.length === 1) {
+    const [currency, amount] = currencyEntries[0];
+    revenueDisplay = formatCurrency(amount, currency);
+  } else {
+    // Multiple currencies — show each separated by " | "
+    revenueDisplay = currencyEntries
+      .map(([currency, amount]) => formatCurrency(amount, currency))
+      .join(" | ");
+  }
 
   return (
     <div className="summaryGrid">
@@ -43,7 +75,7 @@ export default function SummaryTab() {
       <StatCard label="Total experts" value={fmt(summary.totalExperts)} />
       <StatCard label="Total programs" value={fmt(summary.totalPrograms)} />
       <StatCard label="Total orders" value={fmt(summary.totalOrders)} />
-      <StatCard label="Total revenue" value={revenue} />
+      <StatCard label="Total revenue" value={revenueDisplay} />
     </div>
   );
 }

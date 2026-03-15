@@ -45,13 +45,13 @@ export default function ExpertProgramsTab({ onViewEnrollments }: Props) {
             <tbody>
               {programs.map((p) => (
                 <tr key={p.programId}>
-                  <td>{p.programName}</td>
+                  <td>{p.name}</td>
                   <td>
                     {p.totalEnrollments > 0 ? (
                       <button
                         type="button"
                         className="expertTable__linkBtn"
-                        onClick={() => onViewEnrollments(p.programId, p.programName)}
+                        onClick={() => onViewEnrollments(p.programId, p.name)}
                         title="View enrollments for this program"
                       >
                         {p.totalEnrollments}
@@ -62,7 +62,7 @@ export default function ExpertProgramsTab({ onViewEnrollments }: Props) {
                   </td>
                   <td>{p.activeEnrollments}</td>
                   <td>
-                    <span className={`statusBadge statusBadge--${(p.status || "").toLowerCase() === "active" ? "active" : "ended"}`}>
+                    <span className={`statusBadge statusBadge--${(p.status || "").toLowerCase() === "published" ? "active" : (p.status || "").toLowerCase() === "archived" ? "cancelled" : "notstarted"}`}>
                       {p.status}
                     </span>
                   </td>

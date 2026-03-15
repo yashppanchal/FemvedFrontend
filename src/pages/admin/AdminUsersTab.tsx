@@ -107,7 +107,9 @@ export default function AdminUsersTab() {
       setExpertForm({ ...emptyExpertForm, displayName: `${user.firstName} ${user.lastName}`.trim() });
       setPromoteError(null);
     } else {
-      // User or Admin — change directly
+      // User or Admin — confirm before changing
+      const newRoleName = ROLE_NAMES[roleId] ?? String(roleId);
+      if (!confirm(`Change ${user.firstName} ${user.lastName} to ${newRoleName}?`)) return;
       changeUserRole(user.userId, roleId)
         .then(() =>
           setUsers((prev) =>
@@ -184,12 +186,12 @@ export default function AdminUsersTab() {
 
   const handleDelete = async (userId: string, email: string) => {
     setActionError(null);
-    if (!confirm(`Delete user ${email}? This cannot be undone.`)) return;
+    if (!confirm(`Archive user ${email}? They will be soft-deleted and can re-register with the same email.`)) return;
     try {
       await deleteAdminUser(userId);
       setUsers((prev) => prev.filter((u) => u.userId !== userId));
     } catch (err) {
-      setActionError(err instanceof ApiError ? err.message : "Failed to delete user.");
+      setActionError(err instanceof ApiError ? err.message : "Failed to archive user.");
     }
   };
 
@@ -422,7 +424,7 @@ export default function AdminUsersTab() {
                       onClick={() => handleDelete(u.userId, u.email)}
                       disabled={promoting}
                     >
-                      Delete
+                      Archive
                     </button>
                   </td>
                 </tr>

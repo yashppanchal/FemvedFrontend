@@ -439,7 +439,8 @@
 .adminTable__actions {
   display: flex;
   gap: 6px;
-  white-space: nowrap;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 /* ---- Danger action button variant ---- */
@@ -528,6 +529,16 @@
 .statusBadge--refunded {
   background: rgba(200, 30, 30, 0.08);
   color: #a01a1a;
+}
+
+.statusBadge--notstarted {
+  background: rgba(15, 15, 16, 0.08);
+  color: var(--muted);
+}
+
+.statusBadge--scheduled {
+  background: rgba(86, 19, 27, 0.08);
+  color: var(--primaryHover);
 }
 
 .statusBadge--resolved {

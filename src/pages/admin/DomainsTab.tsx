@@ -111,7 +111,7 @@ export function DomainsTab({
                         disabled={deletingDomainId === domain.id}
                         onClick={() => onDelete(domain.id)}
                       >
-                        {deletingDomainId === domain.id ? "Deleting..." : "Delete"}
+                        {deletingDomainId === domain.id ? "Archiving..." : "Archive"}
                       </button>
                     </div>
                   </td>

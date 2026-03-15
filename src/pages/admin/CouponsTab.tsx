@@ -65,6 +65,7 @@ export default function CouponsTab() {
     setFormError(null);
     if (!form.code.trim()) { setFormError("Coupon code is required."); return; }
     if (!form.discountValue || form.discountValue <= 0) { setFormError("Discount value must be greater than 0."); return; }
+    if (form.discountType === "Percentage" && form.discountValue > 100) { setFormError("Percentage discount cannot exceed 100%."); return; }
 
     setSubmitting(true);
     try {
@@ -210,7 +211,7 @@ export default function CouponsTab() {
                 <tr key={c.couponId}>
                   <td><code>{c.code}</code></td>
                   <td>{c.discountType}</td>
-                  <td>{c.discountType === "Percentage" ? `${c.discountValue}%` : `$${c.discountValue}`}</td>
+                  <td>{c.discountType === "Percentage" ? `${c.discountValue}%` : c.discountValue.toFixed(2)}</td>
                   <td>{c.usedCount} / {c.maxUses ?? "∞"}</td>
                   <td>{c.validUntil ? new Date(c.validUntil).toLocaleDateString() : "Never"}</td>
                   <td>

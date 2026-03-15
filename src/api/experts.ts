@@ -39,12 +39,14 @@ export interface ExpertProfileResponse {
 
 export interface ExpertProgram {
   programId: string;
-  programName: string;
-  description: string;
+  name: string;
+  slug: string;
   status: string;
+  gridImageUrl: string | null;
   totalEnrollments: number;
   activeEnrollments: number;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface EnrollmentComment {
@@ -101,6 +103,7 @@ export interface ExpertEnrollment {
   programId: string;
   programName: string;
   durationLabel: string;
+  durationWeeks: number;
   accessStatus: string;
   startedAt: string | null;
   pausedAt: string | null;

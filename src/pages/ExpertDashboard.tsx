@@ -7,15 +7,19 @@ import ExpertEarningsTab from "./expert/ExpertEarningsTab";
 import ExpertCreateProgramTab from "./expert/ExpertCreateProgramTab";
 import "./ExpertDashboard.scss";
 
+const ENABLE_CREATE_PROGRAM = import.meta.env.VITE_ENABLE_CREATE_PROGRAM === "true";
+
 type ExpertTab = "profile" | "programs" | "enrollments" | "earnings" | "create";
 
-const TABS: { id: ExpertTab; label: string }[] = [
+const ALL_TABS: { id: ExpertTab; label: string; hidden?: boolean }[] = [
   { id: "profile", label: "Profile" },
   { id: "programs", label: "My Programs" },
   { id: "enrollments", label: "Enrollments" },
   { id: "earnings", label: "Earnings" },
-  { id: "create", label: "Create Program" },
+  { id: "create", label: "Create Program", hidden: !ENABLE_CREATE_PROGRAM },
 ];
+
+const TABS = ALL_TABS.filter((t) => !t.hidden);
 
 export default function ExpertDashboard() {
   const { user } = useAuth();

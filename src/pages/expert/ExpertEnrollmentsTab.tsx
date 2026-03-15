@@ -20,7 +20,8 @@ interface Props {
   onClearFilter?: () => void;
 }
 
-const STATUS_OPTIONS = ["All", "NotStarted", "Active", "Paused", "Completed", "Cancelled"];
+const STATUS_OPTIONS = ["All", "NotStarted", "Scheduled", "Active", "Paused", "Completed", "Cancelled"];
+const PAGE_SIZE = 20;
 
 const today = () => new Date().toISOString().split("T")[0];
 
@@ -36,12 +37,18 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
   const [monthFilter, setMonthFilter] = useState("");
   const [yearFilter, setYearFilter] = useState("");
 
+  // Pagination
+  const [page, setPage] = useState(1);
+
   // Comments modal
   const [commentsEnrollmentId, setCommentsEnrollmentId] = useState<string | null>(null);
   const [comments, setComments] = useState<EnrollmentComment[]>([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [postingComment, setPostingComment] = useState(false);
+
+  // Action in-progress guard
+  const [actioningId, setActioningId] = useState<string | null>(null);
 
   // Start date picker modal
   const [startPickerId, setStartPickerId] = useState<string | null>(null);
@@ -59,17 +66,20 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
 
   const updateStatus = (enrollmentId: string, status: string, extra?: Partial<ExpertEnrollment>) =>
     setEnrollments((prev) =>
-      prev.map((e) => (e.accessId === enrollmentId ? { ...e, status, ...extra } : e))
+      prev.map((e) => (e.accessId === enrollmentId ? { ...e, accessStatus: status, ...extra } : e))
     );
 
   const runAction = async (accessId: string, action: () => Promise<void>, newStatus: string) => {
     setActionError(null);
+    setActioningId(accessId);
     try {
       await action();
       updateStatus(accessId, newStatus);
       getExpertEnrollments().then(setEnrollments).catch(() => {});
     } catch (err) {
       setActionError(err instanceof ApiError ? err.message : "Action failed.");
+    } finally {
+      setActioningId(null);
     }
   };
 
@@ -126,11 +136,16 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
   // Build year list from enrolled dates
   const years = [...new Set(enrollments.map((e) => new Date(e.enrolledAt).getFullYear()))].sort((a, b) => b - a);
 
+  // Reset page when any filter changes
+  useEffect(() => { setPage(1); }, [search, statusFilter, monthFilter, yearFilter, filterProgramId]);
+
   const filtered = enrollments.filter((e) => {
     if (filterProgramId && e.programId !== filterProgramId) return false;
     const fullName = `${e.userFirstName} ${e.userLastName}`.toLowerCase();
     if (search && !fullName.includes(search.toLowerCase()) && !e.userEmail.toLowerCase().includes(search.toLowerCase()) && !e.programName.toLowerCase().includes(search.toLowerCase())) return false;
-    if (statusFilter !== "All" && e.accessStatus !== statusFilter) return false;
+    if (statusFilter === "Scheduled") {
+      if (!(e.accessStatus === "NotStarted" && e.scheduledStartAt)) return false;
+    } else if (statusFilter !== "All" && e.accessStatus !== statusFilter) return false;
     if (monthFilter) {
       const m = new Date(e.enrolledAt).getMonth() + 1;
       if (m !== parseInt(monthFilter)) return false;
@@ -197,6 +212,13 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
           ))}
         </select>
         <span className="expertPanel__count">{filtered.length} enrollments</span>
+        {Math.ceil(filtered.length / PAGE_SIZE) > 1 && (
+          <div className="expertPanel__pagination">
+            <button type="button" className="expertTable__btn" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
+            <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(filtered.length / PAGE_SIZE)}</span>
+            <button type="button" className="expertTable__btn" disabled={page >= Math.ceil(filtered.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
+          </div>
+        )}
       </div>
 
       {actionError && <p className="form__error">{actionError}</p>}
@@ -205,7 +227,7 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
         <p className="expertSection__empty">No enrollments match your filters.</p>
       ) : (
         <div className="expertTableWrap">
-          <table className="expertTable">
+          <table className="expertTable expertTable--wide">
             <thead>
               <tr>
                 <th>Client</th>
@@ -219,7 +241,7 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
               </tr>
             </thead>
             <tbody>
-              {filtered.map((e) => (
+              {filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((e) => (
                 <tr key={e.accessId}>
                   <td>
                     <div>{e.userFirstName + " " + e.userLastName}</div>
@@ -236,10 +258,21 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
                     {e.startedAt ? (
                       <>
                         <div>Started: {new Date(e.startedAt).toLocaleDateString()}</div>
-                        {e.endDate && <div className="expertTable__sub">Ends: {new Date(e.endDate).toLocaleDateString()}</div>}
+                        {e.endDate
+                          ? <div className="expertTable__sub">Ends: {new Date(e.endDate).toLocaleDateString()}</div>
+                          : e.durationWeeks > 0 && <div className="expertTable__sub">Ends: {new Date(new Date(e.startedAt).getTime() + e.durationWeeks * 7 * 86400000).toLocaleDateString()}</div>
+                        }
+                        {e.accessStatus === "Paused" && e.pausedAt && (
+                          <div className="expertTable__sub">Paused since {new Date(e.pausedAt).toLocaleDateString()}</div>
+                        )}
                       </>
                     ) : e.scheduledStartAt ? (
-                      <div>{new Date(e.scheduledStartAt).toLocaleDateString()}</div>
+                      <>
+                        <div>{new Date(e.scheduledStartAt).toLocaleDateString()}</div>
+                        {e.durationWeeks > 0 && (
+                          <div className="expertTable__sub">Projected end: {new Date(new Date(e.scheduledStartAt).getTime() + e.durationWeeks * 7 * 86400000).toLocaleDateString()}</div>
+                        )}
+                      </>
                     ) : "—"}
                   </td>
                   <td>
@@ -253,68 +286,76 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
                     ) : "—"}
                   </td>
                   <td>{new Date(e.enrolledAt).toLocaleDateString()}</td>
-                  <td className="expertTable__actions">
-                    {e.accessStatus === "NotStarted" && (
-                      <button
-                        type="button"
-                        className="expertTable__btn"
-                        onClick={() => { setStartPickerId(e.accessId); setStartDate(today()); }}
-                      >
-                        {e.scheduledStartAt ? "Reschedule" : "Start"}
-                      </button>
-                    )}
-                    {e.startRequestStatus === "Pending" && (
-                      <>
+                  <td className="expertTable__actionsCell">
+                    <div className="expertTable__actions">
+                      {e.accessStatus === "NotStarted" && (
                         <button
                           type="button"
-                          className="expertTable__btn expertTable__btn--success"
-                          onClick={() => runAction(e.accessId, () => approveStartDate(e.accessId), e.accessStatus)}
+                          className="expertTable__btn"
+                          onClick={() => { setStartPickerId(e.accessId); setStartDate(e.scheduledStartAt ? e.scheduledStartAt.split("T")[0] : today()); }}
+                          disabled={actioningId === e.accessId}
                         >
-                          Approve
+                          {e.scheduledStartAt ? "Reschedule" : "Start"}
                         </button>
+                      )}
+                      {e.startRequestStatus === "Pending" && (
+                        <>
+                          <button
+                            type="button"
+                            className="expertTable__btn expertTable__btn--success"
+                            onClick={() => runAction(e.accessId, () => approveStartDate(e.accessId), e.accessStatus)}
+                            disabled={actioningId === e.accessId}
+                          >
+                            Approve
+                          </button>
+                          <button
+                            type="button"
+                            className="expertTable__btn expertTable__btn--danger"
+                            onClick={() => runAction(e.accessId, () => declineStartDate(e.accessId), e.accessStatus)}
+                            disabled={actioningId === e.accessId}
+                          >
+                            Decline
+                          </button>
+                        </>
+                      )}
+                      {e.accessStatus === "Active" && (
+                        <button
+                          type="button"
+                          className="expertTable__btn"
+                          onClick={() => runAction(e.accessId, () => pauseExpertEnrollment(e.accessId), "Paused")}
+                          disabled={actioningId === e.accessId}
+                        >
+                          Pause
+                        </button>
+                      )}
+                      {e.accessStatus === "Paused" && (
+                        <button
+                          type="button"
+                          className="expertTable__btn"
+                          onClick={() => runAction(e.accessId, () => resumeEnrollment(e.accessId), "Active")}
+                          disabled={actioningId === e.accessId}
+                        >
+                          Resume
+                        </button>
+                      )}
+                      {(e.accessStatus === "Active" || e.accessStatus === "Paused") && (
                         <button
                           type="button"
                           className="expertTable__btn expertTable__btn--danger"
-                          onClick={() => runAction(e.accessId, () => declineStartDate(e.accessId), e.accessStatus)}
+                          onClick={() => runAction(e.accessId, () => endExpertEnrollment(e.accessId), "Completed")}
+                          disabled={actioningId === e.accessId}
                         >
-                          Decline
+                          End
                         </button>
-                      </>
-                    )}
-                    {e.accessStatus === "Active" && (
+                      )}
                       <button
                         type="button"
                         className="expertTable__btn"
-                        onClick={() => runAction(e.accessId, () => pauseExpertEnrollment(e.accessId), "Paused")}
+                        onClick={() => openComments(e.accessId)}
                       >
-                        Pause
+                        Comments
                       </button>
-                    )}
-                    {e.accessStatus === "Paused" && (
-                      <button
-                        type="button"
-                        className="expertTable__btn"
-                        onClick={() => runAction(e.accessId, () => resumeEnrollment(e.accessId), "Active")}
-                      >
-                        Resume
-                      </button>
-                    )}
-                    {(e.accessStatus === "Active" || e.accessStatus === "Paused") && (
-                      <button
-                        type="button"
-                        className="expertTable__btn expertTable__btn--danger"
-                        onClick={() => runAction(e.accessId, () => endExpertEnrollment(e.accessId), "Completed")}
-                      >
-                        End
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      className="expertTable__btn"
-                      onClick={() => openComments(e.accessId)}
-                    >
-                      Comments
-                    </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -328,7 +369,7 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
         <div className="expertModal__backdrop" onClick={() => setStartPickerId(null)}>
           <div className="expertModal" onClick={(ev) => ev.stopPropagation()}>
             <div className="expertModal__header">
-              <h3 className="expertModal__title">Start Program</h3>
+              <h3 className="expertModal__title">{enrollments.find(e => e.accessId === startPickerId)?.scheduledStartAt ? "Reschedule Program" : "Start Program"}</h3>
               <button type="button" className="expertModal__close" onClick={() => setStartPickerId(null)}>✕</button>
             </div>
             <div className="expertModal__body">

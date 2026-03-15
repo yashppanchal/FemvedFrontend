@@ -545,7 +545,7 @@ export function ProgramsTab({
                         onClick={() => onDelete(program.id)}
                         disabled={deletingProgramId === program.id}
                       >
-                        {deletingProgramId === program.id ? "Deleting…" : "Delete"}
+                        {deletingProgramId === program.id ? "Archiving…" : "Archive"}
                       </button>
                     </div>
                   </td>

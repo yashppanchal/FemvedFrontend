@@ -167,6 +167,10 @@
   min-width: 620px;
 }
 
+.expertTable--wide {
+  min-width: 1100px;
+}
+
 .expertTable th,
 .expertTable td {
   padding: 12px 14px;
@@ -228,10 +232,16 @@
 
 /* ---- Table action buttons ---- */
 
+.expertTable__actionsCell {
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
 .expertTable__actions {
   display: flex;
   gap: 6px;
-  white-space: nowrap;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .expertTable__btn {
@@ -520,6 +530,16 @@
 .statusBadge--cancelled {
   background: rgba(200, 30, 30, 0.08);
   color: #a01a1a;
+}
+
+.statusBadge--notstarted {
+  background: rgba(15, 15, 16, 0.08);
+  color: var(--muted);
+}
+
+.statusBadge--scheduled {
+  background: rgba(86, 19, 27, 0.08);
+  color: var(--primaryHover);
 }
 
 @media (max-width: 900px) {

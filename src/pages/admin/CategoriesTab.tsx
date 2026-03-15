@@ -323,7 +323,7 @@ export function CategoriesTab({
                         onClick={() => onDelete(category.id)}
                         disabled={deletingCategoryId === category.id}
                       >
-                        {deletingCategoryId === category.id ? "Deleting..." : "Delete"}
+                        {deletingCategoryId === category.id ? "Archiving..." : "Archive"}
                       </button>
                     </div>
                   </td>

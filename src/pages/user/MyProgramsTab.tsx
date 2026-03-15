@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getMyProgramAccess, pauseMyEnrollment, endMyEnrollment, requestStartDate, type MyProgramAccess } from "../../api/users";
+import { getMyProgramAccess, pauseMyEnrollment, resumeMyEnrollment, endMyEnrollment, requestStartDate, type MyProgramAccess } from "../../api/users";
 import { ApiError } from "../../api/client";
 
 const today = () => new Date().toISOString().split("T")[0];
@@ -9,6 +9,9 @@ export default function MyProgramsTab() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [pausingId, setPausingId] = useState<string | null>(null);
+  const [resumingId, setResumingId] = useState<string | null>(null);
+  const [endingId, setEndingId] = useState<string | null>(null);
 
   // Request start date modal
   const [requestStartId, setRequestStartId] = useState<string | null>(null);
@@ -24,26 +27,50 @@ export default function MyProgramsTab() {
       .finally(() => setLoading(false));
   }, []);
 
-  const reload = () => getMyProgramAccess().then(setPrograms).catch(() => {});
+  const reload = () =>
+    getMyProgramAccess()
+      .then(setPrograms)
+      .catch((err) => {
+        setActionError(err instanceof ApiError ? err.message : "Failed to refresh programs.");
+      });
 
   const handlePause = async (accessId: string) => {
     setActionError(null);
+    setPausingId(accessId);
     try {
       await pauseMyEnrollment(accessId);
       reload();
     } catch (err) {
       setActionError(err instanceof ApiError ? err.message : "Action failed.");
+    } finally {
+      setPausingId(null);
+    }
+  };
+
+  const handleResume = async (accessId: string) => {
+    setActionError(null);
+    setResumingId(accessId);
+    try {
+      await resumeMyEnrollment(accessId);
+      reload();
+    } catch (err) {
+      setActionError(err instanceof ApiError ? err.message : "Action failed.");
+    } finally {
+      setResumingId(null);
     }
   };
 
   const handleEnd = async (accessId: string) => {
     if (!confirm("Are you sure you want to end this enrollment?")) return;
     setActionError(null);
+    setEndingId(accessId);
     try {
       await endMyEnrollment(accessId);
       reload();
     } catch (err) {
       setActionError(err instanceof ApiError ? err.message : "Action failed.");
+    } finally {
+      setEndingId(null);
     }
   };
 
@@ -65,6 +92,16 @@ export default function MyProgramsTab() {
 
   const formatDate = (d: string | null) =>
     d ? new Date(d).toLocaleDateString() : "—";
+
+  const projectedEndDate = (p: MyProgramAccess): string => {
+    if (p.endDate) return formatDate(p.endDate);
+    if (p.scheduledStartAt && p.durationWeeks) {
+      const end = new Date(p.scheduledStartAt);
+      end.setDate(end.getDate() + p.durationWeeks * 7);
+      return end.toLocaleDateString();
+    }
+    return "—";
+  };
 
   const statusLabel = (p: MyProgramAccess): string => {
     if (p.status === "NotStarted" && p.scheduledStartAt) return "Scheduled";
@@ -120,8 +157,13 @@ export default function MyProgramsTab() {
                         : p.scheduledStartAt
                           ? `Scheduled: ${formatDate(p.scheduledStartAt)}`
                           : "—"}
+                      {p.status === "Paused" && p.pausedAt && (
+                        <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 2 }}>
+                          Paused since {formatDate(p.pausedAt)}
+                        </div>
+                      )}
                     </td>
-                    <td>{formatDate(p.endDate)}</td>
+                    <td>{projectedEndDate(p)}</td>
                     <td className="dashTable__actions">
                       {p.status === "NotStarted" && !p.scheduledStartAt && p.startRequestStatus !== "Pending" && (
                         <button
@@ -137,8 +179,19 @@ export default function MyProgramsTab() {
                           type="button"
                           className="dashTable__btn"
                           onClick={() => handlePause(p.accessId)}
+                          disabled={pausingId === p.accessId}
                         >
-                          Pause
+                          {pausingId === p.accessId ? "Pausing…" : "Pause"}
+                        </button>
+                      )}
+                      {p.status === "Paused" && (
+                        <button
+                          type="button"
+                          className="dashTable__btn"
+                          onClick={() => handleResume(p.accessId)}
+                          disabled={resumingId === p.accessId}
+                        >
+                          {resumingId === p.accessId ? "Resuming…" : "Resume"}
                         </button>
                       )}
                       {(p.status === "Active" || p.status === "Paused") && (
@@ -146,8 +199,9 @@ export default function MyProgramsTab() {
                           type="button"
                           className="dashTable__btn dashTable__btn--danger"
                           onClick={() => handleEnd(p.accessId)}
+                          disabled={endingId === p.accessId}
                         >
-                          End
+                          {endingId === p.accessId ? "Ending…" : "End"}
                         </button>
                       )}
                     </td>

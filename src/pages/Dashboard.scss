@@ -142,6 +142,39 @@
   color: #a01a1a;
 }
 
+/* ---- Orders toolbar (search / filter / pagination) ---- */
+
+.dashPanel__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.dashPanel__search {
+  flex: 1;
+  min-width: 180px;
+  max-width: 280px;
+}
+
+.dashPanel__select {
+  min-width: 140px;
+}
+
+.dashPanel__count {
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.dashPanel__pagination {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
 /* ---- Status badge ---- */
 
 .statusBadge {
@@ -153,6 +186,16 @@
   text-transform: capitalize;
   background: rgba(15, 15, 16, 0.06);
   color: var(--muted);
+}
+
+.statusBadge--notstarted {
+  background: rgba(15, 15, 16, 0.08);
+  color: var(--muted);
+}
+
+.statusBadge--scheduled {
+  background: rgba(86, 19, 27, 0.08);
+  color: var(--primaryHover);
 }
 
 .statusBadge--active {

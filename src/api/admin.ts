@@ -90,6 +90,7 @@ export interface AdminEnrollment {
   requestedStartDate: string | null;
   startRequestStatus: string | null;
   durationLabel: string;
+  durationWeeks: number;
   enrolledAt: string;
 }
 
@@ -126,12 +127,113 @@ export interface AuditLogEntry {
   createdAt: string;
 }
 
-export interface AnalyticsSummary {
-  period: string;
+// ── Analytics DTOs ────────────────────────────────────────────────────────────
+
+export interface CurrencySales {
+  currencyCode: string;
+  currencySymbol: string;
+  totalRevenue: number;
+  orderCount: number;
+  averageOrderValue: number;
+}
+
+export interface GatewaySales {
+  gateway: string;
+  currencyCode: string;
+  currencySymbol: string;
+  totalRevenue: number;
+  orderCount: number;
+}
+
+export interface CountrySales {
+  locationCode: string;
+  currencyCode: string;
+  currencySymbol: string;
+  totalRevenue: number;
+  orderCount: number;
+}
+
+export interface MonthlySales {
+  year: number;
+  month: number;
+  monthLabel: string;
+  currencyCode: string;
+  currencySymbol: string;
+  totalRevenue: number;
+  orderCount: number;
+}
+
+export interface SalesAnalytics {
+  totalOrders: number;
+  paidOrders: number;
+  pendingOrders: number;
+  failedOrders: number;
+  refundedOrders: number;
+  ordersWithDiscount: number;
+  totalDiscountGiven: number;
+  revenueByCurrentcy: CurrencySales[]; // backend typo preserved
+  revenueByGateway: GatewaySales[];
+  revenueByCountry: CountrySales[];
+  revenueByMonth: MonthlySales[];
+}
+
+export interface MonthlyUserStats {
+  year: number;
+  month: number;
+  monthLabel: string;
   newUsers: number;
-  newOrders: number;
-  revenue: number;
+  newBuyers: number;
+}
+
+export interface Cohort {
+  year: number;
+  month: number;
+  monthLabel: string;
+  usersRegistered: number;
+  purchasedWithin30Days: number;
+  purchasedWithin60Days: number;
+  purchasedWithin90Days: number;
+  rate30Days: number;
+}
+
+export interface UserAnalytics {
+  totalRegistered: number;
+  totalBuyers: number;
+  repeatBuyers: number;
+  repeatRatio: number;
+  conversionRate: number;
+  newUsersByMonth: MonthlyUserStats[];
+  cohorts: Cohort[];
+}
+
+export interface ProgramStats {
+  programId: string;
+  programName: string | null;
+  expertName: string;
+  categoryName: string;
+  status: string;
+  totalSales: number;
   activeEnrollments: number;
+  completedEnrollments: number;
+  totalEnrollments: number;
+  revenue: CurrencyAmount[];
+}
+
+export interface ExpertRevenue {
+  expertId: string;
+  expertName: string;
+  commissionRate: number;
+  totalSales: number;
+  totalEnrollments: number;
+  activeEnrollments: number;
+  totalRevenue: CurrencyAmount[];
+  expertShare: CurrencyAmount[];
+  platformRevenue: CurrencyAmount[];
+}
+
+export interface ProgramAnalytics {
+  programs: ProgramStats[];
+  experts: ExpertRevenue[];
 }
 
 export interface CurrencyAmount {
@@ -371,8 +473,16 @@ export function getAuditLog(limit = 50, offset = 0): Promise<AuditLogEntry[]> {
   return apiFetch<AuditLogEntry[]>(`/admin/audit-log?limit=${limit}&offset=${offset}`);
 }
 
-export function getAnalytics(period: string = "month"): Promise<AnalyticsSummary[]> {
-  return apiFetch<AnalyticsSummary[]>("/admin/analytics?period=" + period);
+export function getSalesAnalytics(): Promise<SalesAnalytics> {
+  return apiFetch<SalesAnalytics>("/admin/analytics/sales");
+}
+
+export function getUserAnalytics(): Promise<UserAnalytics> {
+  return apiFetch<UserAnalytics>("/admin/analytics/users");
+}
+
+export function getProgramAnalytics(): Promise<ProgramAnalytics> {
+  return apiFetch<ProgramAnalytics>("/admin/analytics/programs");
 }
 
 export function getExpertPayoutAnalytics(): Promise<ExpertPayoutBalance[]> {

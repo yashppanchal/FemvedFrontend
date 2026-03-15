@@ -757,6 +757,9 @@ export default function AdminDashboard() {
       return;
     }
 
+    const domainName = domains.find((d) => d.id === domainId)?.name ?? "this domain";
+    if (!confirm(`Archive "${domainName}"? This will also archive all its categories and programs. Active enrollments will block the operation.`)) return;
+
     const categoryIdsInDomain = categories
       .filter((category) => category.domainId === domainId)
       .map((category) => category.id);
@@ -789,12 +792,12 @@ export default function AdminDashboard() {
       if (categoryForm.domainId === domainId) resetCategoryForm();
       if (programForm.domainId === domainId) resetProgramForm();
       removePendingDomain(domainId);
-      setDomainCreateSuccess("Domain deleted.");
+      setDomainCreateSuccess("Domain archived.");
     } catch (err) {
       if (err instanceof ApiError) {
         setDomainCreateError(err.message);
       } else {
-        setDomainCreateError("Unable to delete domain. Please try again.");
+        setDomainCreateError("Unable to archive domain. Please try again.");
       }
     } finally {
       setDeletingDomainId(null);
@@ -1019,6 +1022,9 @@ export default function AdminDashboard() {
       return;
     }
 
+    const categoryName = categories.find((c) => c.id === categoryId)?.name ?? "this category";
+    if (!confirm(`Archive "${categoryName}"? This will also archive all its programs. Active enrollments will block the operation.`)) return;
+
     try {
       setDeletingCategoryId(categoryId);
       const response = await deleteGuidedCategory(categoryId, accessToken);
@@ -1044,12 +1050,12 @@ export default function AdminDashboard() {
         setProgramForm((prev) => ({ ...prev, categoryId: "" }));
       }
       bumpGuidedProgramsCacheVersion();
-      setCategoryCreateSuccess("Category deleted.");
+      setCategoryCreateSuccess("Category archived.");
     } catch (err) {
       if (err instanceof ApiError) {
         setCategoryCreateError(err.message);
       } else {
-        setCategoryCreateError("Unable to delete category. Please try again.");
+        setCategoryCreateError("Unable to archive category. Please try again.");
       }
     } finally {
       setDeletingCategoryId(null);

@@ -33,6 +33,7 @@ export interface MyProgramAccess {
   completedAt: string | null;
   purchasedAt: string | null;
   durationLabel: string;
+  durationWeeks: number;
   scheduledStartAt: string | null;
   endDate: string | null;
   requestedStartDate: string | null;
@@ -93,6 +94,10 @@ export function getMyRefunds(): Promise<MyRefund[]> {
 
 export function pauseMyEnrollment(accessId: string): Promise<void> {
   return apiFetch<void>(`/users/me/enrollments/${accessId}/pause`, { method: "POST" });
+}
+
+export function resumeMyEnrollment(accessId: string): Promise<void> {
+  return apiFetch<void>(`/users/me/enrollments/${accessId}/resume`, { method: "POST" });
 }
 
 export function endMyEnrollment(accessId: string): Promise<void> {

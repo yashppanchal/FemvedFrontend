@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { getMyOrders, type MyOrder } from "../../api/users";
 import { ApiError } from "../../api/client";
 
+const PAGE_SIZE = 10;
+const STATUS_OPTIONS = ["All", "Paid", "Pending", "Failed", "Cancelled", "Refunded"];
+
 function formatCurrency(amount: number | null | undefined, currency: string | null | undefined) {
   if (amount == null) return "—";
   if (!currency) return amount.toFixed(2);
@@ -12,6 +15,9 @@ export default function OrdersTab() {
   const [orders, setOrders] = useState<MyOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     getMyOrders()
@@ -22,6 +28,15 @@ export default function OrdersTab() {
       .finally(() => setLoading(false));
   }, []);
 
+  // Reset to page 1 when filters change
+  useEffect(() => { setPage(1); }, [search, statusFilter]);
+
+  const filtered = orders.filter((o) => {
+    if (statusFilter !== "All" && (o.status ?? "") !== statusFilter) return false;
+    const q = search.toLowerCase();
+    return (o.programName ?? "").toLowerCase().includes(q) || (o.couponCode ?? "").toLowerCase().includes(q);
+  });
+
   if (loading) return <p className="dashCard__loading">Loading orders…</p>;
   if (error) return <p className="dashCard__error">{error}</p>;
 
@@ -30,7 +45,35 @@ export default function OrdersTab() {
       <div className="dashCard__header">
         <h2 className="dashCard__heading">Order History</h2>
       </div>
-      {orders.length === 0 ? (
+
+      <div className="dashPanel__toolbar">
+        <input
+          className="field__input dashPanel__search"
+          type="search"
+          placeholder="Search by program or coupon…"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <select
+          className="field__input dashPanel__select"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          {STATUS_OPTIONS.map((s) => (
+            <option key={s} value={s}>{s === "All" ? "All statuses" : s}</option>
+          ))}
+        </select>
+        <span className="dashPanel__count">{filtered.length} orders</span>
+        {Math.ceil(filtered.length / PAGE_SIZE) > 1 && (
+          <div className="dashPanel__pagination">
+            <button type="button" className="dashTable__btn" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
+            <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(filtered.length / PAGE_SIZE)}</span>
+            <button type="button" className="dashTable__btn" disabled={page >= Math.ceil(filtered.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
+          </div>
+        )}
+      </div>
+
+      {filtered.length === 0 ? (
         <p className="dashCard__empty">No orders found.</p>
       ) : (
         <div className="dashTableWrap">
@@ -47,7 +90,7 @@ export default function OrdersTab() {
               </tr>
             </thead>
             <tbody>
-              {orders.map((o) => (
+              {filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((o) => (
                 <tr key={o.orderId}>
                   <td>{o.programName}</td>
                   <td>{o.durationLabel}</td>
