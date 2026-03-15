@@ -29,9 +29,9 @@ export default function SummaryTab() {
   if (error) return <p className="adminPanel__error">{error}</p>;
   if (!summary) return null;
 
-  const revenue = new Intl.NumberFormat(undefined, {
+  const revenue = new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "USD",
+    currency: "INR",
     maximumFractionDigits: 0,
   }).format(summary.totalRevenue);
 

@@ -3,6 +3,7 @@ import { getGdprRequests, processGdprRequest, type GdprRequest } from "../../api
 import { ApiError } from "../../api/client";
 
 type StatusFilter = "Pending" | "Approved" | "all";
+const PAGE_SIZE = 20;
 
 export default function GdprTab() {
   const [requests, setRequests] = useState<GdprRequest[]>([]);
@@ -10,6 +11,7 @@ export default function GdprTab() {
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("Pending");
   const [actionError, setActionError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     setLoading(true);
@@ -22,6 +24,9 @@ export default function GdprTab() {
       })
       .finally(() => setLoading(false));
   }, [statusFilter]);
+
+  // Reset page when filter changes
+  useEffect(() => { setPage(1); }, [statusFilter]);
 
   const handleResolve = async (requestId: string) => {
     if (!confirm("Mark this GDPR request as resolved?")) return;
@@ -36,6 +41,8 @@ export default function GdprTab() {
 
   if (loading) return <p className="adminPanel__loading">Loading GDPR requests…</p>;
   if (error) return <p className="adminPanel__error">{error}</p>;
+
+  const totalPages = Math.ceil(requests.length / PAGE_SIZE);
 
   return (
     <>
@@ -53,6 +60,13 @@ export default function GdprTab() {
           ))}
         </div>
         <span className="adminPanel__count">{requests.length} requests</span>
+        {totalPages > 1 && (
+          <div className="adminPanel__pagination">
+            <button type="button" className="adminActionButton" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
+            <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {totalPages}</span>
+            <button type="button" className="adminActionButton" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>Next →</button>
+          </div>
+        )}
       </div>
 
       {actionError && <p className="adminPanel__error">{actionError}</p>}
@@ -75,7 +89,7 @@ export default function GdprTab() {
                 <td colSpan={6} className="adminTable__empty">No GDPR requests.</td>
               </tr>
             ) : (
-              requests.map((r) => (
+              requests.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((r) => (
                 <tr key={r.requestId}>
                   <td>
                     <div>{r.userEmail}</div>

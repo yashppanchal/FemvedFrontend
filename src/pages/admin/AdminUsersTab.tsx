@@ -1,4 +1,6 @@
 import { type FormEvent, useEffect, useState } from "react";
+
+const PAGE_SIZE = 20;
 import {
   getAdminUsers,
   activateAdminUser,
@@ -62,6 +64,7 @@ export default function AdminUsersTab() {
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
   // Expert promotion panel state
   const [promotingUser, setPromotingUser] = useState<AdminUser | null>(null);
@@ -199,6 +202,9 @@ export default function AdminUsersTab() {
       `${u.firstName ?? ""} ${u.lastName ?? ""}`.toLowerCase().includes(search.toLowerCase()),
   );
 
+  // Reset to page 1 whenever search changes
+  useEffect(() => { setPage(1); }, [search]);
+
   if (loading) return <p className="adminPanel__loading">Loading users…</p>;
   if (error) return <p className="adminPanel__error">{error}</p>;
 
@@ -213,6 +219,13 @@ export default function AdminUsersTab() {
           onChange={(e) => setSearch(e.target.value)}
         />
         <span className="adminPanel__count">{filtered.length} users</span>
+        {Math.ceil(filtered.length / PAGE_SIZE) > 1 && (
+          <div className="adminPanel__pagination">
+            <button type="button" className="adminActionButton" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
+            <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(filtered.length / PAGE_SIZE)}</span>
+            <button type="button" className="adminActionButton" disabled={page >= Math.ceil(filtered.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
+          </div>
+        )}
       </div>
 
       {actionError && <p className="adminPanel__error">{actionError}</p>}
@@ -354,7 +367,7 @@ export default function AdminUsersTab() {
                 <td colSpan={6} className="adminTable__empty">No users found.</td>
               </tr>
             ) : (
-              filtered.map((u) => (
+              filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((u) => (
                 <tr
                   key={u.userId}
                   className={
