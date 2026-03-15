@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+
+const PAGE_SIZE = 20;
 import { getAdminOrders, refundOrder, type AdminOrder } from "../../api/admin";
 import { ApiError } from "../../api/client";
 
@@ -13,6 +15,7 @@ export default function AdminOrdersTab() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     getAdminOrders()
@@ -43,6 +46,9 @@ export default function AdminOrdersTab() {
       (o.userEmail ?? "").toLowerCase().includes(search.toLowerCase()),
   );
 
+  // Reset to page 1 when search changes
+  useEffect(() => { setPage(1); }, [search]);
+
   if (loading) return <p className="adminPanel__loading">Loading orders…</p>;
   if (error) return <p className="adminPanel__error">{error}</p>;
 
@@ -57,6 +63,13 @@ export default function AdminOrdersTab() {
           onChange={(e) => setSearch(e.target.value)}
         />
         <span className="adminPanel__count">{filtered.length} orders</span>
+        {Math.ceil(filtered.length / PAGE_SIZE) > 1 && (
+          <div className="adminPanel__pagination">
+            <button type="button" className="adminActionButton" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
+            <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(filtered.length / PAGE_SIZE)}</span>
+            <button type="button" className="adminActionButton" disabled={page >= Math.ceil(filtered.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
+          </div>
+        )}
       </div>
 
       <div className="adminTableWrap">
@@ -80,7 +93,7 @@ export default function AdminOrdersTab() {
                 <td colSpan={9} className="adminTable__empty">No orders found.</td>
               </tr>
             ) : (
-              filtered.map((o) => (
+              filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((o) => (
                 <tr key={o.orderId}>
                   <td>
                     <div>{o.userName}</div>

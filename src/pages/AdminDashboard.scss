@@ -199,6 +199,10 @@
   border-collapse: collapse;
 }
 
+.adminTable--wide {
+  min-width: 1080px;
+}
+
 .adminTable th,
 .adminTable td {
   padding: 12px 14px;

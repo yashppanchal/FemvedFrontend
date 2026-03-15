@@ -16,6 +16,7 @@ import { ApiError } from "../../api/client";
 
 const STATUS_OPTIONS = ["All", "NotStarted", "Active", "Paused", "Completed", "Cancelled"];
 const today = () => new Date().toISOString().split("T")[0];
+const PAGE_SIZE = 20;
 
 interface Props {
   filterExpertId?: string | null;
@@ -40,6 +41,9 @@ export default function AdminEnrollmentsTab({ filterExpertId, filterProgramId }:
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [posting, setPosting] = useState(false);
+
+  // Pagination
+  const [page, setPage] = useState(1);
 
   // Start date picker modal
   const [startPickerId, setStartPickerId] = useState<string | null>(null);
@@ -121,6 +125,9 @@ export default function AdminEnrollmentsTab({ filterExpertId, filterProgramId }:
 
   const years = [...new Set(enrollments.map((e) => new Date(e.enrolledAt).getFullYear()))].sort((a, b) => b - a);
 
+  // Reset page when any filter changes
+  useEffect(() => { setPage(1); }, [search, statusFilter, monthFilter, yearFilter]);
+
   const filtered = enrollments.filter((e) => {
     if (filterExpertId && e.expertId !== filterExpertId) return false;
     if (filterProgramId && e.programId !== filterProgramId) return false;
@@ -185,12 +192,19 @@ export default function AdminEnrollmentsTab({ filterExpertId, filterProgramId }:
           {years.map((y) => <option key={y} value={y}>{y}</option>)}
         </select>
         <span className="adminPanel__count">{filtered.length} enrollments</span>
+        {Math.ceil(filtered.length / PAGE_SIZE) > 1 && (
+          <div className="adminPanel__pagination">
+            <button type="button" className="adminActionButton" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
+            <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(filtered.length / PAGE_SIZE)}</span>
+            <button type="button" className="adminActionButton" disabled={page >= Math.ceil(filtered.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
+          </div>
+        )}
       </div>
 
       {actionError && <p className="adminPanel__error">{actionError}</p>}
 
       <div className="adminTableWrap">
-        <table className="adminTable">
+        <table className="adminTable adminTable--wide">
           <thead>
             <tr>
               <th>User</th>
@@ -210,7 +224,7 @@ export default function AdminEnrollmentsTab({ filterExpertId, filterProgramId }:
                 <td colSpan={9} className="adminTable__empty">No enrollments found.</td>
               </tr>
             ) : (
-              filtered.map((e) => (
+              filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((e) => (
                 <tr key={e.accessId}>
                   <td>
                     <div>{e.userFirstName} {e.userLastName}</div>

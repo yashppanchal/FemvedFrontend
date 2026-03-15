@@ -53,7 +53,19 @@ export class ApiError extends Error {
     } else if (b?.message) {
       msg = String(b.message);
     } else {
-      msg = `Request failed with status ${status}`;
+      const statusMessages: Record<number, string> = {
+        400: "The request was invalid. Please check your input and try again.",
+        401: "You are not authorised to perform this action. Please log in again.",
+        403: "Access denied. You do not have permission to do this.",
+        404: "The requested resource was not found.",
+        409: "A conflict occurred. The resource may already exist.",
+        422: "The request could not be processed. Please check your input.",
+        429: "Too many requests. Please wait a moment and try again.",
+        500: "Something went wrong on the server. Please try again later.",
+        502: "The server is temporarily unavailable. Please try again shortly.",
+        503: "The service is currently unavailable. Please try again later.",
+      };
+      msg = statusMessages[status] ?? `Request failed with status ${status}`;
     }
 
     super(msg);
