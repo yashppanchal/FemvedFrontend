@@ -76,7 +76,7 @@ export default function PaymentProviderSelection() {
 
         {/* Logo */}
         <img
-          src="/favicon/favicon-96x96.png"
+          src="https://femvedfrontend.netlify.app/assets/femvedlogo-U5RU3QLH.png"
           alt="FemVed"
           className="providerCard__logo"
         />
