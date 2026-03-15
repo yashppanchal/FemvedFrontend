@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { initiateOrder } from "../api/orders";
 import { ApiError } from "../api/client";
+import "./PaymentProviderSelection.scss";
 
 interface SelectProviderState {
   durationId: string;
@@ -16,18 +17,19 @@ export default function PaymentProviderSelection() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // If navigated here directly without state, send back
   if (!state?.durationId || !state?.countryCode) {
     return (
-      <section className="page">
-        <div style={{ padding: "2rem", textAlign: "center" }}>
-          <p>Invalid page state. Please go back and try again.</p>
+      <section className="page page--providerSelection">
+        <div className="providerCard">
+          <p className="providerCard__sub">
+            Invalid page state. Please go back and try again.
+          </p>
           <button
             type="button"
-            className="button"
+            className="providerCard__back"
             onClick={() => navigate(-1)}
           >
-            Go Back
+            ← Go Back
           </button>
         </div>
       </section>
@@ -69,60 +71,104 @@ export default function PaymentProviderSelection() {
   }
 
   return (
-    <section className="page">
-      <div
-        style={{
-          maxWidth: "480px",
-          margin: "4rem auto",
-          padding: "2rem",
-          textAlign: "center",
-        }}
-      >
-        <h1 style={{ marginBottom: "0.5rem" }}>Choose Payment Method</h1>
-        <p style={{ color: "var(--color-text-muted, #666)", marginBottom: "2rem" }}>
+    <section className="page page--providerSelection">
+      <div className="providerCard">
+
+        {/* Logo */}
+        <img
+          src="/favicon/favicon-96x96.png"
+          alt="FemVed"
+          className="providerCard__logo"
+        />
+
+        {/* Secure badge */}
+        <div className="providerCard__lockBadge">
+          <svg
+            className="providerCard__lockIcon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          Secure checkout
+        </div>
+
+        <h1 className="providerCard__title">Choose Payment Method</h1>
+        <p className="providerCard__sub">
           Select how you'd like to complete your purchase.
         </p>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <hr className="providerCard__divider" />
+
+        <div className="providerCard__options">
+          {/* PayPal */}
           <button
             type="button"
-            className="button"
+            className="providerCard__btn"
             disabled={loading}
             onClick={() => handleSelect("PayPal")}
-            style={{ width: "100%", padding: "0.875rem" }}
+            aria-label="Pay with PayPal"
           >
-            {loading ? "Processing…" : "Pay with PayPal"}
+            <span className="providerCard__btnIcon providerCard__btnIcon--paypal">
+              🅿
+            </span>
+            <span className="providerCard__btnText">
+              <span className="providerCard__btnTitle">PayPal</span>
+              <span className="providerCard__btnDesc">
+                Pay using your PayPal balance or linked card
+              </span>
+            </span>
+            <span className="providerCard__btnArrow" aria-hidden="true">›</span>
           </button>
 
+          {/* Stripe / Card */}
           <button
             type="button"
-            className="button"
+            className="providerCard__btn"
             disabled={loading}
             onClick={() => handleSelect("Stripe")}
-            style={{ width: "100%", padding: "0.875rem" }}
+            aria-label="Pay with card via Stripe"
           >
-            {loading ? "Processing…" : "Pay with Card (Stripe)"}
+            <span className="providerCard__btnIcon providerCard__btnIcon--stripe">
+              💳
+            </span>
+            <span className="providerCard__btnText">
+              <span className="providerCard__btnTitle">Credit / Debit Card</span>
+              <span className="providerCard__btnDesc">
+                Visa, Mastercard, Amex — powered by Stripe
+              </span>
+            </span>
+            <span className="providerCard__btnArrow" aria-hidden="true">›</span>
           </button>
         </div>
 
         {error && (
-          <p style={{ color: "red", marginTop: "1rem" }}>{error}</p>
+          <p className="providerCard__error" role="alert">{error}</p>
         )}
 
         <button
           type="button"
-          style={{
-            marginTop: "1.5rem",
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            color: "var(--color-text-muted, #666)",
-            textDecoration: "underline",
-          }}
+          className="providerCard__back"
           onClick={() => navigate(-1)}
         >
-          ← Back
+          ← Back to program
         </button>
+
+        {/* Trust indicators */}
+        <div className="providerCard__trust">
+          <span>256-bit SSL encryption</span>
+          <span className="providerCard__trustDot" />
+          <span>PCI DSS compliant</span>
+          <span className="providerCard__trustDot" />
+          <span>No card data stored</span>
+        </div>
+
       </div>
     </section>
   );

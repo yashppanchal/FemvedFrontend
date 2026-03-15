@@ -1,0 +1,208 @@
+.page--providerSelection {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--off-white, #faf9f7);
+}
+
+.providerCard {
+  width: min(100%, 520px);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--white);
+  box-shadow: 0 14px 42px rgba(15, 15, 16, 0.08);
+  padding: 48px 40px 40px;
+  text-align: center;
+
+  @media (max-width: 480px) {
+    padding: 36px 24px 32px;
+    margin: 0 16px;
+    border-radius: 16px;
+  }
+}
+
+/* ── Logo ── */
+.providerCard__logo {
+  width: 80px;
+  height: auto;
+  margin: 0 auto 24px;
+  display: block;
+}
+
+/* ── Lock badge ── */
+.providerCard__lockBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted, #6b6b6b);
+  background: #f4f4f2;
+  border-radius: 999px;
+  padding: 4px 12px;
+  margin-bottom: 28px;
+  letter-spacing: 0.01em;
+}
+
+.providerCard__lockIcon {
+  width: 13px;
+  height: 13px;
+  opacity: 0.65;
+}
+
+/* ── Title ── */
+.providerCard__title {
+  font-size: clamp(1.25rem, 3vw, 1.6rem);
+  font-weight: 700;
+  color: var(--text, #0f0f10);
+  margin: 0 0 8px;
+  line-height: 1.2;
+}
+
+.providerCard__sub {
+  font-size: 14px;
+  color: var(--text-muted, #6b6b6b);
+  margin: 0 0 36px;
+  line-height: 1.5;
+}
+
+/* ── Divider ── */
+.providerCard__divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0 0 28px;
+}
+
+/* ── Provider buttons ── */
+.providerCard__options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.providerCard__btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  cursor: pointer;
+  transition: border-color 0.18s, box-shadow 0.18s, transform 0.12s;
+  text-align: left;
+
+  &:hover:not(:disabled) {
+    border-color: var(--primary, #6b1a2a);
+    box-shadow: 0 4px 16px rgba(107, 26, 42, 0.1);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.providerCard__btnIcon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.providerCard__btnIcon--paypal {
+  background: #f0f5ff;
+}
+
+.providerCard__btnIcon--stripe {
+  background: #f0f0ff;
+}
+
+.providerCard__btnText {
+  flex: 1;
+}
+
+.providerCard__btnTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text, #0f0f10);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.providerCard__btnDesc {
+  font-size: 12px;
+  color: var(--text-muted, #6b6b6b);
+  display: block;
+}
+
+.providerCard__btnArrow {
+  color: var(--text-muted, #6b6b6b);
+  font-size: 18px;
+  transition: transform 0.15s;
+
+  .providerCard__btn:hover:not(:disabled) & {
+    transform: translateX(3px);
+  }
+}
+
+/* ── Error ── */
+.providerCard__error {
+  font-size: 13px;
+  color: #c0392b;
+  background: #fdf2f0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: 4px;
+  margin-bottom: 16px;
+}
+
+/* ── Back link ── */
+.providerCard__back {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-muted, #6b6b6b);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 0;
+  transition: color 0.15s;
+
+  &:hover {
+    color: var(--text, #0f0f10);
+  }
+}
+
+/* ── Trust footer ── */
+.providerCard__trust {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted, #6b6b6b);
+}
+
+.providerCard__trustDot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.4;
+}
