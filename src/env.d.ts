@@ -33,6 +33,8 @@ declare module "@cashfreepayments/cashfree-js" {
 
 interface ImportMetaEnv {
   readonly VITE_CASHFREE_MODE: "sandbox" | "production";
+  readonly VITE_API_BASE_URL?: string;
+  readonly VITE_ENABLE_CREATE_PROGRAM?: string;
 }
 
 interface ImportMeta {

@@ -2,7 +2,7 @@
 /*  Lightweight fetch wrapper for the Femved API                       */
 /* ------------------------------------------------------------------ */
 
-const BASE_URL = "https://api.femved.com/api/v1";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://api.femved.com/api/v1";
 const TOKENS_STORAGE_KEY = "femved_tokens";
 
 interface StoredTokens {
