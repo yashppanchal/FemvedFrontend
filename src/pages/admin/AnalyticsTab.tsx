@@ -20,11 +20,6 @@ function fmtPct(n: number) {
   return n.toFixed(1) + "%";
 }
 
-function fmtCurrencyAmount(c: { currencySymbol: string; totalRevenue?: number; amount?: number }) {
-  const val = c.totalRevenue ?? (c as { amount?: number }).amount ?? 0;
-  return `${c.currencySymbol}${new Intl.NumberFormat().format(val)}`;
-}
-
 function CurrencyAmountList({ items }: { items: CurrencyAmount[] }) {
   if (!items || items.length === 0) return <span>—</span>;
   return (
