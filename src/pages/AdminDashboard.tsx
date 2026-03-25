@@ -1354,6 +1354,7 @@ export default function AdminDashboard() {
       name: program.name,
       domainId: program.domainId,
       categoryId: program.categoryId,
+      expertId: program.expertId ?? "",
       gridDescription: prefilled.gridDescription ?? "",
       gridImageUrl: prefilled.gridImageUrl ?? "",
       overview: prefilled.overview ?? "",
