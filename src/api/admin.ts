@@ -28,6 +28,15 @@ export interface AdminExpert {
   isActive: boolean;
   locationCountry: string;
   createdAt: string;
+  bio: string | null;
+  gridDescription: string | null;
+  detailedDescription: string | null;
+  profileImageUrl: string | null;
+  gridImageUrl: string | null;
+  specialisations: string[] | null;
+  credentials: string[] | null;
+  yearsExperience: number | null;
+  commissionRate: number;
 }
 
 export interface AdminCoupon {
@@ -414,6 +423,27 @@ export function adminStartEnrollment(accessId: string, scheduledDate?: string): 
     method: "POST",
     body: JSON.stringify(scheduledDate ? { scheduledDate } : {}),
   });
+}
+
+export interface AdminProgram {
+  programId: string;
+  name: string | null;
+  slug: string;
+  status: string;
+  isActive: boolean;
+  isDeleted: boolean;
+  expertId: string;
+  expertName: string;
+  categoryId: string;
+  categoryName: string;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export function getAdminPrograms(statusFilter?: string): Promise<AdminProgram[]> {
+  const q = statusFilter ? `?status=${encodeURIComponent(statusFilter)}` : "";
+  return apiFetch<AdminProgram[]>("/admin/programs" + q);
 }
 
 export interface AdminExpertProgram {

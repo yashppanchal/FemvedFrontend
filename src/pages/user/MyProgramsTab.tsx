@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getMyProgramAccess, pauseMyEnrollment, resumeMyEnrollment, endMyEnrollment, requestStartDate, type MyProgramAccess } from "../../api/users";
 import { ApiError } from "../../api/client";
 
+const PAGE_SIZE = 15;
 const today = () => new Date().toISOString().split("T")[0];
 
 export default function MyProgramsTab() {
@@ -12,6 +13,7 @@ export default function MyProgramsTab() {
   const [pausingId, setPausingId] = useState<string | null>(null);
   const [resumingId, setResumingId] = useState<string | null>(null);
   const [endingId, setEndingId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
 
   // Request start date modal
   const [requestStartId, setRequestStartId] = useState<string | null>(null);
@@ -120,7 +122,15 @@ export default function MyProgramsTab() {
       {programs.length === 0 ? (
         <p className="dashCard__empty">You have not enrolled in any programs yet.</p>
       ) : (
-        <div className="dashTableWrap">
+        <>
+          {Math.ceil(programs.length / PAGE_SIZE) > 1 && (
+            <div className="dashPanel__pagination" style={{ marginBottom: 12 }}>
+              <button type="button" className="dashTable__btn" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
+              <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(programs.length / PAGE_SIZE)}</span>
+              <button type="button" className="dashTable__btn" disabled={page >= Math.ceil(programs.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
+            </div>
+          )}
+          <div className="dashTableWrap">
           <table className="dashTable">
             <thead>
               <tr>
@@ -134,7 +144,7 @@ export default function MyProgramsTab() {
               </tr>
             </thead>
             <tbody>
-              {programs.map((p) => (
+              {programs.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((p) => (
                 p ? (
                   <tr key={p.accessId}>
                     <td>{p.programName}</td>
@@ -210,7 +220,8 @@ export default function MyProgramsTab() {
               ))}
             </tbody>
           </table>
-        </div>
+          </div>
+        </>
       )}
 
       {/* Request start date modal */}

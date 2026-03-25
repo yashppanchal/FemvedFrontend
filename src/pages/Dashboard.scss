@@ -1,86 +1,211 @@
+/* ================================================================== */
+/*  User Dashboard — Professional Full-Width Layout                    */
+/* ================================================================== */
+
 .page--dashboard {
+  padding: 0 24px;
+  min-height: 100vh;
+  background: #f7f7f8;
+  text-align: left;
+  width: 100vw;
+  margin-left: calc(-1 * (100vw - 100%) / 2);
+  max-width: none;
+}
+
+/* ── Sidebar + content layout ─────────────────────────────────────── */
+
+.dashLayout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
+  gap: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--white);
+  box-shadow: 0 1px 3px rgba(15, 15, 16, 0.04);
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────── */
+
+.dashSidebar {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding-top: 40px;
-  min-height: 100vh;
+  gap: 2px;
+  padding: 24px 12px;
+  background: var(--white);
+  border-right: 1px solid var(--border);
+  position: sticky;
+  top: 64px;
+  height: calc(100vh - 64px);
+  overflow-y: auto;
 }
 
-.page--dashboard .page__lead {
-  max-width: 460px;
+.dashSidebar__greeting {
+  padding: 0 14px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
 }
 
-/* ---- Tab navigation ---- */
-
-.dashTabs {
-  display: flex;
-  gap: 4px;
-  margin: 24px 0 20px;
-  padding: 4px;
-  background: rgba(15, 15, 16, 0.04);
-  border-radius: 12px;
-  width: 100%;
-  max-width: 640px;
+.dashSidebar__title {
+  margin: 0;
+  font-size: 18px;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  color: var(--black);
+  letter-spacing: -0.02em;
 }
 
-.dashTabs__btn {
-  flex: 1;
-  height: 36px;
-  padding: 0 12px;
+.dashSidebar__lead {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.dashSidebar__tab {
+  height: 38px;
+  padding: 0 14px;
   border: none;
-  border-radius: 9px;
+  border-radius: 8px;
   background: transparent;
   color: var(--muted);
   font: inherit;
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 500;
   cursor: pointer;
-  transition: background 160ms ease, color 160ms ease;
-  white-space: nowrap;
+  text-align: left;
+  transition: color 150ms ease, background-color 150ms ease;
 }
 
-.dashTabs__btn:hover {
-  background: rgba(15, 15, 16, 0.06);
+.dashSidebar__tab:hover {
   color: var(--black);
+  background: rgba(15, 15, 16, 0.04);
 }
 
-.dashTabs__btn--active {
-  background: var(--white);
-  color: var(--black);
+.dashSidebar__tab--active {
+  color: var(--primary);
+  background: rgba(86, 19, 27, 0.06);
   font-weight: 600;
-  box-shadow: 0 1px 4px rgba(15, 15, 16, 0.1);
 }
 
-/* ---- Tab content area ---- */
+.dashSidebar__tab--active:hover {
+  color: var(--primary);
+  background: rgba(86, 19, 27, 0.08);
+}
+
+/* ── Content area ────────────────────────────────────────────────── */
 
 .dashContent {
   width: 100%;
-  max-width: 100%;
   text-align: left;
+  padding: 24px 28px;
 }
 
-/* ---- Wide card for tables ---- */
+/* ── Dashboard card ──────────────────────────────────────────────── */
+
+.dashCard {
+  width: 100%;
+  max-width: 600px;
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--white);
+  box-shadow: 0 1px 3px rgba(15, 15, 16, 0.04);
+  text-align: left;
+}
 
 .dashCard--wide {
   max-width: 100%;
 }
 
-/* ---- Loading / empty states ---- */
+.dashCard__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.dashCard__heading {
+  margin: 0;
+  font-size: 22px;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  color: var(--black);
+  letter-spacing: -0.01em;
+}
+
+.dashCard__editBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--black);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.dashCard__editBtn:hover {
+  color: var(--primaryHover);
+  border-color: rgba(86, 19, 27, 0.25);
+  background: rgba(86, 19, 27, 0.04);
+  box-shadow: 0 1px 3px rgba(86, 19, 27, 0.08);
+}
+
+.dashCard__editBtn:focus-visible {
+  outline: 3px solid rgba(86, 19, 27, 0.18);
+  outline-offset: 2px;
+}
+
+/* ── Loading / empty states ──────────────────────────────────────── */
 
 .dashCard__loading,
 .dashCard__empty {
-  padding: 20px 0;
+  padding: 32px 0;
   color: var(--muted);
   font-size: 14px;
   text-align: center;
 }
 
-/* ---- Dashboard table ---- */
+/* ── Success / Error messages ────────────────────────────────────── */
+
+.dashCard__success {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: rgba(22, 135, 50, 0.06);
+  border: 1px solid rgba(22, 135, 50, 0.12);
+  color: #157a2e;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.dashCard__error {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: rgba(200, 30, 30, 0.05);
+  border: 1px solid rgba(200, 30, 30, 0.1);
+  color: #a01a1a;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ── Dashboard table ─────────────────────────────────────────────── */
 
 .dashTableWrap {
   overflow-x: auto;
   margin-top: 4px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--white);
+  box-shadow: 0 1px 3px rgba(15, 15, 16, 0.04);
 }
 
 .dashTable {
@@ -91,20 +216,29 @@
 
 .dashTable th {
   text-align: left;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--border);
-  font-size: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(15, 15, 16, 0.06);
+  font-size: 11px;
   font-weight: 600;
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   white-space: nowrap;
+  background: rgba(15, 15, 16, 0.025);
 }
 
 .dashTable td {
-  padding: 12px 12px;
-  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(15, 15, 16, 0.06);
   vertical-align: middle;
+}
+
+.dashTable tbody tr {
+  transition: background-color 120ms ease;
+}
+
+.dashTable tbody tr:hover {
+  background: rgba(15, 15, 16, 0.015);
 }
 
 .dashTable tr:last-child td {
@@ -118,31 +252,68 @@
 }
 
 .dashTable__btn {
-  height: 28px;
-  padding: 0 10px;
+  height: 30px;
+  padding: 0 12px;
   border: 1px solid var(--border);
-  border-radius: 6px;
-  background: transparent;
+  border-radius: 8px;
+  background: var(--white);
   color: var(--black);
   font: inherit;
   font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
-  transition: background 140ms ease, border-color 140ms ease;
+  transition: all 150ms ease;
 }
 
 .dashTable__btn:hover {
-  background: rgba(86, 19, 27, 0.06);
-  border-color: rgba(86, 19, 27, 0.25);
   color: var(--primaryHover);
+  border-color: rgba(86, 19, 27, 0.25);
+  background: rgba(86, 19, 27, 0.04);
+  box-shadow: 0 1px 3px rgba(86, 19, 27, 0.08);
 }
 
 .dashTable__btn--danger:hover {
-  background: rgba(200, 30, 30, 0.06);
-  border-color: rgba(200, 30, 30, 0.25);
   color: #a01a1a;
+  border-color: rgba(200, 30, 30, 0.25);
+  background: rgba(200, 30, 30, 0.04);
+  box-shadow: 0 1px 3px rgba(200, 30, 30, 0.08);
 }
 
-/* ---- Orders toolbar (search / filter / pagination) ---- */
+/* ── Profile info (view mode) ────────────────────────────────────── */
+
+.profileInfo {
+  display: grid;
+  gap: 0;
+}
+
+.profileInfo__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(15, 15, 16, 0.06);
+}
+
+.profileInfo__row:last-child {
+  border-bottom: none;
+}
+
+.profileInfo__label {
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.profileInfo__value {
+  font-size: 15px;
+  color: var(--black);
+  text-align: right;
+  word-break: break-word;
+}
+
+/* ── Toolbar (search / filter / pagination) ──────────────────────── */
 
 .dashPanel__toolbar {
   display: flex;
@@ -175,177 +346,7 @@
   margin-left: auto;
 }
 
-/* ---- Status badge ---- */
-
-.statusBadge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: capitalize;
-  background: rgba(15, 15, 16, 0.06);
-  color: var(--muted);
-}
-
-.statusBadge--notstarted {
-  background: rgba(15, 15, 16, 0.08);
-  color: var(--muted);
-}
-
-.statusBadge--scheduled {
-  background: rgba(86, 19, 27, 0.08);
-  color: var(--primaryHover);
-}
-
-.statusBadge--active {
-  background: rgba(22, 135, 50, 0.1);
-  color: #157a2e;
-}
-
-.statusBadge--completed,
-.statusBadge--paid {
-  background: rgba(22, 100, 200, 0.1);
-  color: #1558a0;
-}
-
-.statusBadge--paused {
-  background: rgba(180, 120, 0, 0.1);
-  color: #9a6800;
-}
-
-.statusBadge--ended,
-.statusBadge--refunded,
-.statusBadge--cancelled {
-  background: rgba(200, 30, 30, 0.08);
-  color: #a01a1a;
-}
-
-@media (max-width: 560px) {
-  .dashTabs {
-    gap: 2px;
-  }
-
-  .dashTabs__btn {
-    font-size: 12px;
-    padding: 0 8px;
-  }
-}
-
-/* ---- Dashboard card ---- */
-
-.dashCard {
-  width: 100%;
-  max-width: 520px;
-  margin: 0 auto;
-  padding: 28px 28px 24px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  background: var(--white);
-  box-shadow: 0 14px 40px rgba(15, 15, 16, 0.07);
-  text-align: left;
-}
-
-.dashCard__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.dashCard__heading {
-  margin: 0;
-  font-size: 20px;
-  font-family: var(--fontTitle);
-  font-weight: 400;
-  color: var(--black);
-}
-
-.dashCard__editBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 34px;
-  padding: 0 14px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--black);
-  font: inherit;
-  font-size: 13px;
-  cursor: pointer;
-  transition: color 180ms ease, border-color 180ms ease,
-    background-color 180ms ease;
-}
-
-.dashCard__editBtn:hover {
-  color: var(--primaryHover);
-  border-color: rgba(86, 19, 27, 0.25);
-  background: rgba(86, 19, 27, 0.04);
-}
-
-.dashCard__editBtn:focus-visible {
-  outline: 3px solid rgba(86, 19, 27, 0.18);
-  outline-offset: 2px;
-}
-
-/* ---- Success / Error messages ---- */
-
-.dashCard__success {
-  margin: 0 0 16px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: rgba(22, 135, 50, 0.08);
-  color: #157a2e;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.dashCard__error {
-  margin: 0 0 16px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: rgba(200, 30, 30, 0.08);
-  color: #a01a1a;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-/* ---- Profile info (view mode) ---- */
-
-.profileInfo {
-  display: grid;
-  gap: 0;
-}
-
-.profileInfo__row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.profileInfo__row:last-child {
-  border-bottom: none;
-}
-
-.profileInfo__label {
-  font-size: 13px;
-  color: var(--muted);
-  letter-spacing: 0.02em;
-  flex-shrink: 0;
-}
-
-.profileInfo__value {
-  font-size: 15px;
-  color: var(--black);
-  text-align: right;
-  word-break: break-word;
-}
-
-/* ---- Edit form tweaks ---- */
+/* ── Edit form tweaks ────────────────────────────────────────────── */
 
 .dashCard__row {
   display: grid;
@@ -379,8 +380,7 @@
   font: inherit;
   font-weight: 600;
   cursor: pointer;
-  transition: color 180ms ease, border-color 180ms ease,
-    background-color 180ms ease;
+  transition: all 150ms ease;
 }
 
 .dashCard__cancelBtn:hover {
@@ -395,7 +395,7 @@
   outline-offset: 2px;
 }
 
-/* ---- Disabled input style ---- */
+/* ── Disabled input style ────────────────────────────────────────── */
 
 .field__input--disabled {
   background: rgba(15, 15, 16, 0.04);
@@ -403,7 +403,7 @@
   cursor: not-allowed;
 }
 
-/* ---- Phone field (reuse from Register) ---- */
+/* ── Phone field ─────────────────────────────────────────────────── */
 
 .page--dashboard .phoneField {
   display: flex;
@@ -448,9 +448,107 @@
   box-shadow: none !important;
 }
 
-@media (max-width: 480px) {
+/* ── Status badges ────────────────────────────────────────────────── */
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+  background: rgba(15, 15, 16, 0.05);
+  color: var(--muted);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.statusBadge--notstarted {
+  background: rgba(15, 15, 16, 0.06);
+  color: var(--muted);
+}
+
+.statusBadge--scheduled {
+  background: rgba(86, 19, 27, 0.06);
+  color: var(--primaryHover);
+}
+
+.statusBadge--active {
+  background: rgba(22, 135, 50, 0.08);
+  color: #157a2e;
+}
+
+.statusBadge--completed,
+.statusBadge--paid {
+  background: rgba(22, 100, 200, 0.08);
+  color: #1558a0;
+}
+
+.statusBadge--paused {
+  background: rgba(180, 120, 0, 0.08);
+  color: #9a6800;
+}
+
+.statusBadge--ended,
+.statusBadge--refunded,
+.statusBadge--cancelled {
+  background: rgba(200, 30, 30, 0.06);
+  color: #a01a1a;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .dashLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .dashSidebar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 12px 16px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    position: static;
+    height: auto;
+    overflow-y: visible;
+    align-items: center;
+  }
+
+  .dashSidebar__greeting {
+    width: 100%;
+    padding: 0 2px 12px;
+    margin-bottom: 4px;
+  }
+
+  .dashSidebar__tab {
+    height: 34px;
+    padding: 0 12px;
+    font-size: 13px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+
+  .dashSidebar__tab--active {
+    color: var(--white);
+    background: var(--primary);
+    border-color: var(--primary);
+  }
+
+  .dashContent {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .dashContent {
+    padding: 12px;
+  }
+
   .dashCard {
-    padding: 22px 18px;
+    padding: 20px;
   }
 
   .dashCard__row {
@@ -459,6 +557,7 @@
 
   .dashCard__actions {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .dashCard__saveBtn,

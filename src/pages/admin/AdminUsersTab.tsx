@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useState } from "react";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 15;
 import {
   getAdminUsers,
   activateAdminUser,

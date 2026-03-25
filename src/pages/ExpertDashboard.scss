@@ -1,60 +1,105 @@
+/* ================================================================== */
+/*  Expert Dashboard — Professional Full-Width Layout                  */
+/* ================================================================== */
+
 .page--expertDashboard {
-  padding-top: 40px;
+  padding: 0 24px;
+  min-height: 100vh;
+  background: #f7f7f8;
+  width: 100vw;
+  margin-left: calc(-1 * (100vw - 100%) / 2);
+  max-width: none;
 }
 
-.page--expertDashboard .page__lead {
-  max-width: 560px;
+/* ── Sidebar + content layout ─────────────────────────────────────── */
+
+.expertLayout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
+  gap: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--white);
+  box-shadow: 0 1px 3px rgba(15, 15, 16, 0.04);
 }
 
-/* ---- Tab navigation ---- */
+/* ── Sidebar ─────────────────────────────────────────────────────── */
 
-.expertTabs {
+.expertSidebar {
   display: flex;
-  gap: 4px;
-  margin: 24px 0 20px;
-  padding: 4px;
-  background: rgba(15, 15, 16, 0.04);
-  border-radius: 12px;
-  width: 100%;
-  max-width: 680px;
+  flex-direction: column;
+  gap: 2px;
+  padding: 24px 12px;
+  background: var(--white);
+  border-right: 1px solid var(--border);
+  position: sticky;
+  top: 64px;
+  height: calc(100vh - 64px);
+  overflow-y: auto;
 }
 
-.expertTabs__btn {
-  flex: 1;
-  height: 36px;
-  padding: 0 12px;
+.expertSidebar__greeting {
+  padding: 0 14px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+.expertSidebar__title {
+  margin: 0;
+  font-size: 18px;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  color: var(--black);
+  letter-spacing: -0.02em;
+}
+
+.expertSidebar__lead {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.expertSidebar__tab {
+  height: 38px;
+  padding: 0 14px;
   border: none;
-  border-radius: 9px;
+  border-radius: 8px;
   background: transparent;
   color: var(--muted);
   font: inherit;
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 500;
   cursor: pointer;
-  transition: background 160ms ease, color 160ms ease;
-  white-space: nowrap;
+  text-align: left;
+  transition: color 150ms ease, background-color 150ms ease;
 }
 
-.expertTabs__btn:hover {
-  background: rgba(15, 15, 16, 0.06);
+.expertSidebar__tab:hover {
   color: var(--black);
+  background: rgba(15, 15, 16, 0.04);
 }
 
-.expertTabs__btn--active {
-  background: var(--white);
-  color: var(--black);
+.expertSidebar__tab--active {
+  color: var(--primary);
+  background: rgba(86, 19, 27, 0.06);
   font-weight: 600;
-  box-shadow: 0 1px 4px rgba(15, 15, 16, 0.1);
 }
 
-/* ---- Content area ---- */
+.expertSidebar__tab--active:hover {
+  color: var(--primary);
+  background: rgba(86, 19, 27, 0.08);
+}
+
+/* ── Content area ────────────────────────────────────────────────── */
 
 .expertContent {
   margin-top: 0;
   width: 100%;
-  max-width: 880px;
   display: grid;
   gap: 28px;
+  padding: 24px 28px;
 }
 
 .expertSection + .expertSection {
@@ -68,6 +113,7 @@
   font-weight: 400;
   font-size: 24px;
   color: var(--black);
+  letter-spacing: -0.01em;
 }
 
 .expertSection__header {
@@ -83,11 +129,13 @@
 
 .expertSection__success {
   margin: 0 0 14px;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border-radius: 10px;
-  background: rgba(22, 135, 50, 0.08);
+  background: rgba(22, 135, 50, 0.06);
+  border: 1px solid rgba(22, 135, 50, 0.12);
   color: #157a2e;
   font-size: 14px;
+  font-weight: 500;
 }
 
 .expertForm {
@@ -125,15 +173,16 @@
 .expertProfileDetails {
   border: 1px solid var(--border);
   border-radius: 12px;
-  background: rgba(15, 15, 16, 0.02);
+  background: var(--white);
+  box-shadow: 0 1px 3px rgba(15, 15, 16, 0.04);
 }
 
 .expertProfileDetails__row {
   display: grid;
   grid-template-columns: 180px 1fr;
   gap: 10px;
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(15, 15, 16, 0.06);
 }
 
 .expertProfileDetails__row:last-child {
@@ -154,11 +203,15 @@
   word-break: break-word;
 }
 
+/* ── Tables ──────────────────────────────────────────────────────── */
+
 .expertTableWrap {
   width: 100%;
   overflow-x: auto;
   border: 1px solid var(--border);
   border-radius: 12px;
+  background: var(--white);
+  box-shadow: 0 1px 3px rgba(15, 15, 16, 0.04);
 }
 
 .expertTable {
@@ -173,19 +226,29 @@
 
 .expertTable th,
 .expertTable td {
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(15, 15, 16, 0.06);
   text-align: left;
   font-size: 14px;
   color: var(--black);
 }
 
 .expertTable th {
-  background: rgba(15, 15, 16, 0.03);
-  font-size: 12px;
-  letter-spacing: 0.03em;
+  background: rgba(15, 15, 16, 0.025);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--muted);
+  white-space: nowrap;
+}
+
+.expertTable tbody tr {
+  transition: background-color 120ms ease;
+}
+
+.expertTable tbody tr:hover {
+  background: rgba(15, 15, 16, 0.015);
 }
 
 .expertTable tr:last-child td {
@@ -210,13 +273,14 @@
   line-height: 1.6;
 }
 
-/* ---- Loading / empty / subtitle ---- */
+/* ── Loading / empty / subtitle ──────────────────────────────────── */
 
 .expertSection__loading,
 .expertSection__empty {
-  padding: 16px 0;
+  padding: 32px 0;
   color: var(--muted);
   font-size: 14px;
+  text-align: center;
 }
 
 .expertSection__subtitle {
@@ -230,7 +294,7 @@
   margin-top: 28px;
 }
 
-/* ---- Table action buttons ---- */
+/* ── Table action buttons ────────────────────────────────────────── */
 
 .expertTable__actionsCell {
   white-space: nowrap;
@@ -245,28 +309,32 @@
 }
 
 .expertTable__btn {
-  height: 28px;
-  padding: 0 10px;
+  height: 30px;
+  padding: 0 12px;
   border: 1px solid var(--border);
-  border-radius: 6px;
-  background: transparent;
+  border-radius: 8px;
+  background: var(--white);
   color: var(--black);
   font: inherit;
   font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
-  transition: background 140ms ease, border-color 140ms ease;
+  transition: all 150ms ease;
+  white-space: nowrap;
 }
 
 .expertTable__btn:hover {
-  background: rgba(86, 19, 27, 0.06);
-  border-color: rgba(86, 19, 27, 0.25);
   color: var(--primaryHover);
+  border-color: rgba(86, 19, 27, 0.25);
+  background: rgba(86, 19, 27, 0.04);
+  box-shadow: 0 1px 3px rgba(86, 19, 27, 0.08);
 }
 
 .expertTable__btn--danger:hover {
-  background: rgba(200, 30, 30, 0.06);
-  border-color: rgba(200, 30, 30, 0.25);
   color: #a01a1a;
+  border-color: rgba(200, 30, 30, 0.25);
+  background: rgba(200, 30, 30, 0.04);
+  box-shadow: 0 1px 3px rgba(200, 30, 30, 0.08);
 }
 
 .expertTable__sub {
@@ -275,7 +343,7 @@
   margin-top: 2px;
 }
 
-/* ---- Form extras ---- */
+/* ── Form extras ─────────────────────────────────────────────────── */
 
 .expertForm__section {
   display: grid;
@@ -283,13 +351,14 @@
   padding: 20px;
   border: 1px solid var(--border);
   border-radius: 12px;
-  background: rgba(15, 15, 16, 0.015);
+  background: var(--white);
+  box-shadow: 0 1px 3px rgba(15, 15, 16, 0.04);
 }
 
 .expertForm__sectionTitle {
   margin: 0 0 2px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.03em;
   text-transform: uppercase;
   color: var(--primary);
@@ -383,29 +452,31 @@
   grid-template-columns: 1fr 1fr 1fr;
 }
 
-/* ---- Modal ---- */
+/* ── Modal ────────────────────────────────────────────────────────── */
 
 .expertModal__backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(15, 15, 16, 0.45);
+  background: rgba(15, 15, 16, 0.55);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 200;
-  padding: 20px;
+  padding: 24px;
 }
 
 .expertModal {
   background: var(--white);
   border-radius: 16px;
   width: 100%;
-  max-width: 540px;
-  max-height: 80vh;
+  max-width: 600px;
+  max-height: 85vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(15, 15, 16, 0.2);
+  box-shadow: 0 24px 80px rgba(15, 15, 16, 0.2);
+  border: 1px solid var(--border);
 }
 
 .expertModal__header {
@@ -418,15 +489,16 @@
 
 .expertModal__title {
   margin: 0;
-  font-size: 17px;
-  font-weight: 600;
+  font-family: var(--fontTitle);
+  font-size: 18px;
+  font-weight: 400;
 }
 
 .expertModal__close {
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
   background: transparent;
   cursor: pointer;
   font-size: 14px;
@@ -434,14 +506,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 140ms ease;
+  transition: all 140ms ease;
 }
 
 .expertModal__close:hover {
-  background: rgba(15, 15, 16, 0.06);
+  background: rgba(15, 15, 16, 0.04);
+  border-color: rgba(15, 15, 16, 0.2);
 }
 
-/* ---- Comments list ---- */
+/* ── Comments list ────────────────────────────────────────────────── */
 
 .expertComments {
   list-style: none;
@@ -455,9 +528,10 @@
 }
 
 .expertComments__item {
-  padding: 10px 12px;
-  background: rgba(15, 15, 16, 0.03);
-  border-radius: 8px;
+  padding: 12px 14px;
+  background: rgba(15, 15, 16, 0.02);
+  border: 1px solid rgba(15, 15, 16, 0.06);
+  border-radius: 10px;
 }
 
 .expertComments__author {
@@ -484,7 +558,7 @@
 }
 
 .expertModal__compose {
-  padding: 12px 20px 16px;
+  padding: 14px 20px 18px;
   border-top: 1px solid var(--border);
   display: flex;
   gap: 10px;
@@ -496,57 +570,101 @@
   min-height: 56px;
 }
 
-/* ---- Status badge (shared with dashboard) ---- */
+/* ── Status badges ────────────────────────────────────────────────── */
 
 .statusBadge {
-  display: inline-block;
-  padding: 2px 8px;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
   border-radius: 20px;
   font-size: 11px;
   font-weight: 600;
   text-transform: capitalize;
-  background: rgba(15, 15, 16, 0.06);
+  background: rgba(15, 15, 16, 0.05);
   color: var(--muted);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 
 .statusBadge--active {
-  background: rgba(22, 135, 50, 0.1);
+  background: rgba(22, 135, 50, 0.08);
   color: #157a2e;
 }
 
 .statusBadge--completed,
 .statusBadge--paid {
-  background: rgba(22, 100, 200, 0.1);
+  background: rgba(22, 100, 200, 0.08);
   color: #1558a0;
 }
 
 .statusBadge--paused {
-  background: rgba(180, 120, 0, 0.1);
+  background: rgba(180, 120, 0, 0.08);
   color: #9a6800;
 }
 
 .statusBadge--ended,
 .statusBadge--inactive,
 .statusBadge--cancelled {
-  background: rgba(200, 30, 30, 0.08);
+  background: rgba(200, 30, 30, 0.06);
   color: #a01a1a;
 }
 
 .statusBadge--notstarted {
-  background: rgba(15, 15, 16, 0.08);
+  background: rgba(15, 15, 16, 0.06);
   color: var(--muted);
 }
 
 .statusBadge--scheduled {
-  background: rgba(86, 19, 27, 0.08);
+  background: rgba(86, 19, 27, 0.06);
   color: var(--primaryHover);
 }
 
-@media (max-width: 900px) {
-  .expertContent {
-    padding: 18px;
+/* ── Responsive ──────────────────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .expertLayout {
+    grid-template-columns: 1fr;
   }
 
+  .expertSidebar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 12px 16px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    position: static;
+    height: auto;
+    overflow-y: visible;
+    align-items: center;
+  }
+
+  .expertSidebar__greeting {
+    width: 100%;
+    padding: 0 2px 12px;
+    margin-bottom: 4px;
+  }
+
+  .expertSidebar__tab {
+    height: 34px;
+    padding: 0 12px;
+    font-size: 13px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+
+  .expertSidebar__tab--active {
+    color: var(--white);
+    background: var(--primary);
+    border-color: var(--primary);
+  }
+
+  .expertContent {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 900px) {
   .expertForm__row,
   .expertForm__row--3 {
     grid-template-columns: 1fr;
@@ -555,13 +673,15 @@
   .expertProfileDetails__row {
     grid-template-columns: 1fr;
   }
+}
 
-  .expertTabs {
-    gap: 2px;
+@media (max-width: 640px) {
+  .expertContent {
+    padding: 12px;
   }
 
-  .expertTabs__btn {
+  .expertSidebar__tab {
     font-size: 12px;
-    padding: 0 8px;
+    padding: 0 10px;
   }
 }

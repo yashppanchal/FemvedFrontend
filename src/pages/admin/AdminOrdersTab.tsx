@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 15;
 import { getAdminOrders, refundOrder, type AdminOrder } from "../../api/admin";
 import { ApiError } from "../../api/client";
 

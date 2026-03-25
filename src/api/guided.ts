@@ -102,6 +102,7 @@ export interface CreateGuidedProgramDetailSectionRequest {
 
 export interface CreateGuidedProgramRequest {
   categoryId: string;
+  expertId?: string;
   name: string;
   slug: string;
   gridDescription: string;
@@ -376,6 +377,32 @@ export function deleteGuidedProgram(
     bumpGuidedProgramsCacheVersion();
     return response;
   });
+}
+
+export async function submitProgramForReview(programId: string): Promise<void> {
+  await apiFetch<void>(`/guided/programs/${encodeURIComponent(programId)}/submit`, {
+    method: "POST",
+  });
+}
+
+export async function publishProgram(programId: string): Promise<void> {
+  await apiFetch<void>(`/guided/programs/${encodeURIComponent(programId)}/publish`, {
+    method: "POST",
+  });
+  bumpGuidedProgramsCacheVersion();
+}
+
+export async function rejectProgram(programId: string): Promise<void> {
+  await apiFetch<void>(`/guided/programs/${encodeURIComponent(programId)}/reject`, {
+    method: "POST",
+  });
+}
+
+export async function archiveProgram(programId: string): Promise<void> {
+  await apiFetch<void>(`/guided/programs/${encodeURIComponent(programId)}/archive`, {
+    method: "POST",
+  });
+  bumpGuidedProgramsCacheVersion();
 }
 
 export function fetchGuidedTree(): Promise<GuidedTreeResponse> {

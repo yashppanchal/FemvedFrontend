@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { getMyRefunds, type MyRefund } from "../../api/users";
 import { ApiError } from "../../api/client";
 
+const PAGE_SIZE = 15;
+
 function formatCurrency(amount: number, currency: string) {
   return new Intl.NumberFormat(undefined, { style: "currency", currency }).format(amount);
 }
@@ -10,6 +12,7 @@ export default function RefundsTab() {
   const [refunds, setRefunds] = useState<MyRefund[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     getMyRefunds()
@@ -31,36 +34,45 @@ export default function RefundsTab() {
       {refunds.length === 0 ? (
         <p className="dashCard__empty">No refunds found.</p>
       ) : (
-        <div className="dashTableWrap">
-          <table className="dashTable">
-            <thead>
-              <tr>
-                <th>Program</th>
-                <th>Amount</th>
-                <th>Reason</th>
-                <th>Status</th>
-                <th>Requested</th>
-                <th>Resolved</th>
-              </tr>
-            </thead>
-            <tbody>
-              {refunds.map((r) => (
-                <tr key={r.refundId}>
-                  <td>{r.programName}</td>
-                  <td>{formatCurrency(r.amount, r.currency)}</td>
-                  <td>{r.reason}</td>
-                  <td>
-                    <span className={`statusBadge statusBadge--${(r.status || "").toLowerCase()}`}>
-                      {r.status}
-                    </span>
-                  </td>
-                  <td>{new Date(r.createdAt).toLocaleDateString()}</td>
-                  <td>{r.resolvedAt ? new Date(r.resolvedAt).toLocaleDateString() : "Pending"}</td>
+        <>
+          {Math.ceil(refunds.length / PAGE_SIZE) > 1 && (
+            <div className="dashPanel__pagination" style={{ marginBottom: 12 }}>
+              <button type="button" className="dashTable__btn" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
+              <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(refunds.length / PAGE_SIZE)}</span>
+              <button type="button" className="dashTable__btn" disabled={page >= Math.ceil(refunds.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
+            </div>
+          )}
+          <div className="dashTableWrap">
+            <table className="dashTable">
+              <thead>
+                <tr>
+                  <th>Program</th>
+                  <th>Amount</th>
+                  <th>Reason</th>
+                  <th>Status</th>
+                  <th>Requested</th>
+                  <th>Resolved</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {refunds.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((r) => (
+                  <tr key={r.refundId}>
+                    <td>{r.programName}</td>
+                    <td>{formatCurrency(r.amount, r.currency)}</td>
+                    <td>{r.reason}</td>
+                    <td>
+                      <span className={`statusBadge statusBadge--${(r.status || "").toLowerCase()}`}>
+                        {r.status}
+                      </span>
+                    </td>
+                    <td>{new Date(r.createdAt).toLocaleDateString()}</td>
+                    <td>{r.resolvedAt ? new Date(r.resolvedAt).toLocaleDateString() : "Pending"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
   );

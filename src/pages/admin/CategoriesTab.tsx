@@ -1,6 +1,8 @@
-import { type FormEvent } from "react";
+import { type FormEvent, useState } from "react";
 import { createPortal } from "react-dom";
 import type { CategoryForm, CategoryRow, DomainRow } from "./types";
+
+const PAGE_SIZE = 15;
 
 type CategoriesTabProps = {
   categoryCreateSuccess: string | null;
@@ -37,6 +39,8 @@ export function CategoriesTab({
   categoryForm,
   onCategoryFormChange,
 }: CategoriesTabProps) {
+  const [page, setPage] = useState(1);
+
   const categoryModal = isCategoryModalOpen ? (
     <div className="adminModalBackdrop" role="presentation">
       <section
@@ -293,6 +297,14 @@ export function CategoriesTab({
         <p className="adminPanel__success">{categoryCreateSuccess}</p>
       )}
 
+      {Math.ceil(categories.length / PAGE_SIZE) > 1 && (
+        <div className="adminPanel__pagination">
+          <button type="button" className="adminActionButton" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
+          <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(categories.length / PAGE_SIZE)}</span>
+          <button type="button" className="adminActionButton" disabled={page >= Math.ceil(categories.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
+        </div>
+      )}
+
       <div className="adminTableWrap">
         <table className="adminTable">
           <thead>
@@ -304,7 +316,7 @@ export function CategoriesTab({
           </thead>
           <tbody>
             {categories.length > 0 ? (
-              categories.map((category) => (
+              categories.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((category) => (
                 <tr key={category.id}>
                   <td>{category.name}</td>
                   <td>{domains.find((domain) => domain.id === category.domainId)?.name}</td>

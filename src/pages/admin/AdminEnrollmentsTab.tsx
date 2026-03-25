@@ -16,7 +16,7 @@ import { ApiError } from "../../api/client";
 
 const STATUS_OPTIONS = ["All", "NotStarted", "Scheduled", "Active", "Paused", "Completed", "Cancelled"];
 const today = () => new Date().toISOString().split("T")[0];
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 15;
 
 interface Props {
   filterExpertId?: string | null;

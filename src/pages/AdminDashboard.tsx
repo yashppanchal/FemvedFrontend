@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { ApiError } from "../api/client";
-import { getProgramDurations, updateDuration, updateDurationPrice, addDurationPrice, addProgramDuration } from "../api/admin";
+import { getProgramDurations, updateDuration, updateDurationPrice, addDurationPrice, addProgramDuration, getAdminPrograms, getAdminExperts, type AdminExpert } from "../api/admin";
 import {
   createGuidedProgram,
   createGuidedCategory,
@@ -9,6 +9,10 @@ import {
   deleteGuidedDomain,
   deleteGuidedProgram,
   fetchGuidedTree,
+  submitProgramForReview,
+  publishProgram,
+  rejectProgram,
+  archiveProgram,
   type GuidedTreeDomain,
   updateGuidedCategory,
   updateGuidedDomain,
@@ -38,7 +42,6 @@ import AdminOrdersTab from "./admin/AdminOrdersTab";
 import AdminEnrollmentsTab from "./admin/AdminEnrollmentsTab";
 import AnalyticsTab from "./admin/AnalyticsTab";
 import GdprTab from "./admin/GdprTab";
-import AuditLogTab from "./admin/AuditLogTab";
 import ExpertPayoutsTab from "./admin/ExpertPayoutsTab";
 import "./AdminDashboard.scss";
 
@@ -78,6 +81,7 @@ const initialProgramForm: ProgramForm = {
   name: "",
   domainId: "",
   categoryId: "",
+  expertId: "",
   gridDescription: "",
   gridImageUrl: "",
   overview: "",
@@ -404,11 +408,12 @@ const mapGuidedTreeToRows = (
 };
 
 export default function AdminDashboard() {
-  const { tokens } = useAuth();
+  const { tokens, user } = useAuth();
   const [activeTab, setActiveTab] = useState<AdminTab>("summary");
   const [domains, setDomains] = useState<DomainRow[]>([]);
   const [categories, setCategories] = useState<CategoryRow[]>([]);
   const [programs, setPrograms] = useState<ProgramRow[]>([]);
+  const [expertsList, setExpertsList] = useState<AdminExpert[]>([]);
 
   const [domainForm, setDomainForm] = useState<DomainForm>(initialDomainForm);
   const [editingDomainId, setEditingDomainId] = useState<string | null>(null);
@@ -460,6 +465,7 @@ export default function AdminDashboard() {
   >(null);
   const [isCreatingProgram, setIsCreatingProgram] = useState(false);
   const [deletingProgramId, setDeletingProgramId] = useState<string | null>(null);
+  const [statusChangingId, setStatusChangingId] = useState<string | null>(null);
   const [isProgramModalOpen, setIsProgramModalOpen] = useState(false);
   const [isLoadingProgramEdit, setIsLoadingProgramEdit] = useState(false);
 
@@ -532,7 +538,11 @@ export default function AdminDashboard() {
         setIsDomainsLoading(true);
         setDomainLoadError(null);
 
-        const treeResponse = await fetchGuidedTree();
+        const [treeResponse, adminPrograms, adminExperts] = await Promise.all([
+          fetchGuidedTree(),
+          getAdminPrograms().catch(() => []),
+          getAdminExperts().catch(() => []),
+        ]);
         const { domainRows, categoryRows, programRows, categoryFormById, programDurationsById, programFormById } =
           mapGuidedTreeToRows(treeResponse);
         const pendingDomains = getPendingDomains();
@@ -540,14 +550,36 @@ export default function AdminDashboard() {
           (pending) => !domainRows.some((domain) => domain.id === pending.id),
         );
 
+        // Merge admin programs (all statuses) into the tree-sourced programs
+        const treeIds = new Set(programRows.map((p) => p.id));
+        const extraPrograms: ProgramRow[] = adminPrograms
+          .filter((ap) => !treeIds.has(ap.programId))
+          .map((ap) => ({
+            id: ap.programId,
+            name: ap.name ?? "Untitled",
+            domainId: "",
+            categoryId: ap.categoryId,
+            status: ap.status,
+            expertName: ap.expertName,
+            expertId: ap.expertId,
+          }));
+
+        // Enrich tree-sourced programs with status from admin API
+        const adminMap = new Map(adminPrograms.map((ap) => [ap.programId, ap]));
+        const enrichedTreePrograms = programRows.map((p) => {
+          const ap = adminMap.get(p.id);
+          return ap ? { ...p, status: ap.status, expertName: ap.expertName, expertId: ap.expertId } : p;
+        });
+
         if (!isActive) return;
         setDomains(dedupeDomainRows([...domainRows, ...unresolvedPendingDomains]));
         setCategories(categoryRows);
-        setPrograms(programRows);
+        setPrograms([...enrichedTreePrograms, ...extraPrograms]);
         setCategoryFormById(categoryFormById);
         setProgramDurationsById(programDurationsById);
         setProgramFormById(programFormById);
         setPendingDomains(unresolvedPendingDomains);
+        setExpertsList(adminExperts);
       } catch {
         if (!isActive) return;
         setDomainLoadError("Unable to load domains.");
@@ -1074,6 +1106,11 @@ export default function AdminDashboard() {
       return;
     }
 
+    if (!editingProgramId && !programForm.expertId) {
+      setProgramCreateError("Please select an expert for this program.");
+      return;
+    }
+
     const gridDescription = programForm.gridDescription.trim();
     const gridImageUrl = programForm.gridImageUrl.trim();
     const overview = programForm.overview.trim();
@@ -1221,23 +1258,24 @@ export default function AdminDashboard() {
 
     try {
       setIsCreatingProgram(true);
-      const response = await createGuidedProgram(
-        {
-          categoryId: programForm.categoryId,
-          name,
-          slug,
-          gridDescription,
-          gridImageUrl,
-          overview,
-          sortOrder,
-          durations: mappedDurations,
-          whatYouGet,
-          whoIsThisFor,
-          tags,
-          detailSections,
-        },
-        accessToken,
-      );
+      const createPayload: Parameters<typeof createGuidedProgram>[0] = {
+        categoryId: programForm.categoryId,
+        name,
+        slug,
+        gridDescription,
+        gridImageUrl,
+        overview,
+        sortOrder,
+        durations: mappedDurations,
+        whatYouGet,
+        whoIsThisFor,
+        tags,
+        detailSections,
+      };
+      if (programForm.expertId) {
+        createPayload.expertId = programForm.expertId;
+      }
+      const response = await createGuidedProgram(createPayload, accessToken);
 
       const createdId =
         extractCreatedProgramId(response) ??
@@ -1360,16 +1398,41 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleProgramStatusChange = async (programId: string, action: "submit" | "publish" | "reject" | "archive") => {
+    setProgramCreateError(null);
+    setProgramCreateSuccess(null);
+    setStatusChangingId(programId);
+    try {
+      if (action === "submit") {
+        await submitProgramForReview(programId);
+        setPrograms((prev) => prev.map((p) => p.id === programId ? { ...p, status: "PendingReview" } : p));
+        setProgramCreateSuccess("Program submitted for review.");
+      } else if (action === "publish") {
+        await publishProgram(programId);
+        setPrograms((prev) => prev.map((p) => p.id === programId ? { ...p, status: "Published" } : p));
+        setProgramCreateSuccess("Program published successfully.");
+      } else if (action === "reject") {
+        await rejectProgram(programId);
+        setPrograms((prev) => prev.map((p) => p.id === programId ? { ...p, status: "Draft" } : p));
+        setProgramCreateSuccess("Program declined and returned to draft.");
+      } else if (action === "archive") {
+        await archiveProgram(programId);
+        setPrograms((prev) => prev.map((p) => p.id === programId ? { ...p, status: "Archived" } : p));
+        setProgramCreateSuccess("Program archived.");
+      }
+    } catch (err) {
+      setProgramCreateError(err instanceof ApiError ? err.message : `Failed to ${action} program.`);
+    } finally {
+      setStatusChangingId(null);
+    }
+  };
+
   return (
     <section className="page page--adminDashboard">
-      <h1 className="page__title">Admin Dashboard</h1>
-      <p className="page__lead">
-        Manage platform users, domains, categories, and programs from a single
-        admin workspace.
-      </p>
-
       <div className="adminContent">
-        <AdminTabs activeTab={activeTab} onTabChange={setActiveTab} />
+        <AdminTabs activeTab={activeTab} onTabChange={setActiveTab} userName={user?.firstName} />
+
+        <div className="adminMain">
 
         {activeTab === "summary" && <SummaryTab />}
 
@@ -1386,8 +1449,6 @@ export default function AdminDashboard() {
         {activeTab === "analytics" && <AnalyticsTab />}
 
         {activeTab === "gdpr" && <GdprTab />}
-
-        {activeTab === "auditlog" && <AuditLogTab />}
 
         {activeTab === "payouts" && <ExpertPayoutsTab />}
 
@@ -1450,8 +1511,12 @@ export default function AdminDashboard() {
             onStartEdit={startProgramEdit}
             onDelete={handleProgramDelete}
             deletingProgramId={deletingProgramId}
+            expertsList={expertsList}
+            onStatusChange={handleProgramStatusChange}
+            statusChangingId={statusChangingId}
           />
         )}
+        </div>
       </div>
     </section>
   );

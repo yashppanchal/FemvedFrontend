@@ -41,14 +41,14 @@ function expertToForm(e: AdminExpert): EditForm {
   return {
     displayName: e.displayName ?? "",
     title: e.title ?? "",
-    bio: "",
-    gridDescription: "",
-    specialisations: "",
-    credentials: "",
-    yearsExperience: "",
+    bio: e.bio ?? "",
+    gridDescription: e.gridDescription ?? "",
+    specialisations: e.specialisations?.join(", ") ?? "",
+    credentials: e.credentials?.join(", ") ?? "",
+    yearsExperience: e.yearsExperience != null ? String(e.yearsExperience) : "",
     locationCountry: e.locationCountry ?? "",
-    profileImageUrl: "",
-    gridImageUrl: "",
+    profileImageUrl: e.profileImageUrl ?? "",
+    gridImageUrl: e.gridImageUrl ?? "",
     newEmail: "",
   };
 }
@@ -73,6 +73,7 @@ function formToRequest(f: EditForm): AdminCreateExpertProfileRequest {
   return req;
 }
 
+const PAGE_SIZE = 15;
 const today = () => new Date().toISOString().split("T")[0];
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -82,6 +83,7 @@ export default function ExpertsTab() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
   // Edit panel state
   const [editingExpert, setEditingExpert] = useState<AdminExpert | null>(null);
@@ -89,6 +91,9 @@ export default function ExpertsTab() {
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
   const [editSuccess, setEditSuccess] = useState<string | null>(null);
+
+  // Profile detail view
+  const [profileExpertId, setProfileExpertId] = useState<string | null>(null);
 
   // Expanded expert programs/enrollments
   const [expandedExpertId, setExpandedExpertId] = useState<string | null>(null);
@@ -285,9 +290,16 @@ export default function ExpertsTab() {
           type="search"
           placeholder="Search by name or email…"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
         />
         <span className="adminPanel__count">{filtered.length} experts</span>
+        {Math.ceil(filtered.length / PAGE_SIZE) > 1 && (
+          <div className="adminPanel__pagination">
+            <button type="button" className="adminActionButton" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
+            <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(filtered.length / PAGE_SIZE)}</span>
+            <button type="button" className="adminActionButton" disabled={page >= Math.ceil(filtered.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
+          </div>
+        )}
       </div>
 
       {/* ── Edit panel ──────────────────────────────────────────────────── */}
@@ -389,7 +401,7 @@ export default function ExpertsTab() {
                 <td colSpan={6} className="adminTable__empty">No experts found.</td>
               </tr>
             ) : (
-              filtered.flatMap((e) => {
+              filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).flatMap((e) => {
                 const rows = [
                   <tr key={e.expertId} className={editingExpert?.expertId === e.expertId ? "adminTable__row--highlighted" : ""}>
                     <td>{e.displayName || "—"}</td>
@@ -402,6 +414,9 @@ export default function ExpertsTab() {
                       </span>
                     </td>
                     <td className="adminTable__actions">
+                      <button type="button" className="adminActionButton" onClick={() => setProfileExpertId(profileExpertId === e.expertId ? null : e.expertId)}>
+                        {profileExpertId === e.expertId ? "Hide profile" : "View profile"}
+                      </button>
                       <button type="button" className="adminActionButton" onClick={() => toggleExpand(e.expertId)}>
                         {expandedExpertId === e.expertId ? "Hide details" : "View programs"}
                       </button>
@@ -417,6 +432,64 @@ export default function ExpertsTab() {
                     </td>
                   </tr>
                 ];
+
+                if (profileExpertId === e.expertId) {
+                  rows.push(
+                    <tr key={`${e.expertId}-profile`}>
+                      <td colSpan={6} className="adminTable__expandedRow">
+                        <div className="adminExpandedSection">
+                          <h4 className="adminExpandedSection__title">Expert Profile Details</h4>
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem 2rem", fontSize: 14 }}>
+                            <div><strong>Display Name:</strong> {e.displayName || "—"}</div>
+                            <div><strong>Title:</strong> {e.title || "—"}</div>
+                            <div><strong>Email:</strong> {e.userEmail}</div>
+                            <div><strong>Location:</strong> {e.locationCountry || "—"}</div>
+                            <div><strong>Years Experience:</strong> {e.yearsExperience ?? "—"}</div>
+                            <div><strong>Commission Rate:</strong> {e.commissionRate}%</div>
+                            <div><strong>Active:</strong> {e.isActive ? "Yes" : "No"}</div>
+                            <div><strong>Created:</strong> {new Date(e.createdAt).toLocaleDateString()}</div>
+                          </div>
+                          {e.bio && (
+                            <div style={{ marginTop: "0.75rem" }}><strong>Bio:</strong><p style={{ marginTop: 4, whiteSpace: "pre-wrap" }}>{e.bio}</p></div>
+                          )}
+                          {e.gridDescription && (
+                            <div style={{ marginTop: "0.5rem" }}><strong>Card Description:</strong><p style={{ marginTop: 4 }}>{e.gridDescription}</p></div>
+                          )}
+                          {e.detailedDescription && (
+                            <div style={{ marginTop: "0.5rem" }}><strong>Detailed Description:</strong><p style={{ marginTop: 4, whiteSpace: "pre-wrap" }}>{e.detailedDescription}</p></div>
+                          )}
+                          {e.specialisations && e.specialisations.length > 0 && (
+                            <div style={{ marginTop: "0.5rem" }}><strong>Specialisations:</strong> {e.specialisations.join(", ")}</div>
+                          )}
+                          {e.credentials && e.credentials.length > 0 && (
+                            <div style={{ marginTop: "0.5rem" }}><strong>Credentials:</strong> {e.credentials.join(", ")}</div>
+                          )}
+                          {(e.profileImageUrl || e.gridImageUrl) && (
+                            <div style={{ marginTop: "0.75rem", display: "flex", gap: "1rem" }}>
+                              {e.profileImageUrl && (
+                                <div>
+                                  <strong>Profile Image:</strong>
+                                  <img src={e.profileImageUrl} alt="Profile" style={{ display: "block", maxWidth: 120, maxHeight: 120, marginTop: 4, borderRadius: 8 }} />
+                                </div>
+                              )}
+                              {e.gridImageUrl && (
+                                <div>
+                                  <strong>Grid Image:</strong>
+                                  <img src={e.gridImageUrl} alt="Grid" style={{ display: "block", maxWidth: 120, maxHeight: 120, marginTop: 4, borderRadius: 8 }} />
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          {!e.bio && !e.specialisations?.length && !e.credentials?.length && !e.profileImageUrl && (
+                            <p className="adminPanel__empty" style={{ marginTop: "0.75rem" }}>
+                              Profile is incomplete — bio, specialisations, credentials, and images are not set. Use "Edit profile" to add them.
+                            </p>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                }
 
                 if (expandedExpertId === e.expertId) {
                   rows.push(

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { getExpertPrograms, type ExpertProgram } from "../../api/experts";
 import { ApiError } from "../../api/client";
 
+const PAGE_SIZE = 15;
+
 interface Props {
   onViewEnrollments: (programId: string, programName: string) => void;
 }
@@ -10,6 +12,7 @@ export default function ExpertProgramsTab({ onViewEnrollments }: Props) {
   const [programs, setPrograms] = useState<ExpertProgram[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     getExpertPrograms()
@@ -31,19 +34,27 @@ export default function ExpertProgramsTab({ onViewEnrollments }: Props) {
       {programs.length === 0 ? (
         <p className="expertSection__empty">No programs found. Use the Create Program tab to add one.</p>
       ) : (
-        <div className="expertTableWrap">
-          <table className="expertTable">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Total Enrolled</th>
-                <th>Active</th>
-                <th>Status</th>
-                <th>Created</th>
-              </tr>
-            </thead>
-            <tbody>
-              {programs.map((p) => (
+        <>
+          {Math.ceil(programs.length / PAGE_SIZE) > 1 && (
+            <div className="adminPanel__pagination" style={{ marginBottom: 12 }}>
+              <button type="button" className="expertTable__btn" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
+              <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(programs.length / PAGE_SIZE)}</span>
+              <button type="button" className="expertTable__btn" disabled={page >= Math.ceil(programs.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
+            </div>
+          )}
+          <div className="expertTableWrap">
+            <table className="expertTable">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Total Enrolled</th>
+                  <th>Active</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                </tr>
+              </thead>
+              <tbody>
+                {programs.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((p) => (
                 <tr key={p.programId}>
                   <td>{p.name}</td>
                   <td>
@@ -70,8 +81,9 @@ export default function ExpertProgramsTab({ onViewEnrollments }: Props) {
                 </tr>
               ))}
             </tbody>
-          </table>
-        </div>
+            </table>
+          </div>
+        </>
       )}
     </section>
   );

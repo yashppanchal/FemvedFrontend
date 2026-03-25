@@ -9,6 +9,8 @@ import {
 } from "../../api/admin";
 import { ApiError } from "../../api/client";
 
+const PAGE_SIZE = 15;
+
 const emptyForm: CreateCouponRequest & { isActive: boolean } = {
   code: "",
   discountType: "Percentage",
@@ -27,6 +29,7 @@ export default function CouponsTab() {
   const [form, setForm] = useState(emptyForm);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     getAdminCoupons()
@@ -188,6 +191,14 @@ export default function CouponsTab() {
         </form>
       )}
 
+      {Math.ceil(coupons.length / PAGE_SIZE) > 1 && (
+        <div className="adminPanel__pagination">
+          <button type="button" className="adminActionButton" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
+          <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(coupons.length / PAGE_SIZE)}</span>
+          <button type="button" className="adminActionButton" disabled={page >= Math.ceil(coupons.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
+        </div>
+      )}
+
       <div className="adminTableWrap">
         <table className="adminTable">
           <thead>
@@ -207,7 +218,7 @@ export default function CouponsTab() {
                 <td colSpan={7} className="adminTable__empty">No coupons.</td>
               </tr>
             ) : (
-              coupons.map((c) => (
+              coupons.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((c) => (
                 <tr key={c.couponId}>
                   <td><code>{c.code}</code></td>
                   <td>{c.discountType}</td>

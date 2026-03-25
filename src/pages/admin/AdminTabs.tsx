@@ -3,6 +3,7 @@ import type { AdminTab } from "./types";
 type AdminTabsProps = {
   activeTab: AdminTab;
   onTabChange: (tab: AdminTab) => void;
+  userName?: string;
 };
 
 const TABS: { id: AdminTab; label: string }[] = [
@@ -16,14 +17,19 @@ const TABS: { id: AdminTab; label: string }[] = [
   { id: "orders", label: "Orders" },
   { id: "enrollments", label: "Enrollments" },
   { id: "analytics", label: "Analytics" },
-  { id: "gdpr", label: "GDPR" },
-  { id: "auditlog", label: "Audit Log" },
+  { id: "gdpr", label: "Data Requests" },
   { id: "payouts", label: "Payouts" },
 ];
 
-export function AdminTabs({ activeTab, onTabChange }: AdminTabsProps) {
+export function AdminTabs({ activeTab, onTabChange, userName }: AdminTabsProps) {
   return (
-    <div className="adminTabs" role="tablist" aria-label="Admin dashboard sections">
+    <nav className="adminTabs" role="tablist" aria-label="Admin dashboard sections">
+      <div className="adminTabs__greeting">
+        <h1 className="adminTabs__title">Admin Dashboard</h1>
+        <p className="adminTabs__lead">
+          {userName ? `Welcome, ${userName}` : "Manage your platform"}
+        </p>
+      </div>
       {TABS.map((tab) => (
         <button
           key={tab.id}
@@ -36,6 +42,6 @@ export function AdminTabs({ activeTab, onTabChange }: AdminTabsProps) {
           {tab.label}
         </button>
       ))}
-    </div>
+    </nav>
   );
 }

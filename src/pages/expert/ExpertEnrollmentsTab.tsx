@@ -21,7 +21,7 @@ interface Props {
 }
 
 const STATUS_OPTIONS = ["All", "NotStarted", "Scheduled", "Active", "Paused", "Completed", "Cancelled"];
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 15;
 
 const today = () => new Date().toISOString().split("T")[0];
 

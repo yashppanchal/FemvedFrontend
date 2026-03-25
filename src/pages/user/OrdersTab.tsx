@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getMyOrders, type MyOrder } from "../../api/users";
 import { ApiError } from "../../api/client";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 15;
 const STATUS_OPTIONS = ["All", "Paid", "Pending", "Failed", "Cancelled", "Refunded"];
 
 function formatCurrency(amount: number | null | undefined, currency: string | null | undefined) {

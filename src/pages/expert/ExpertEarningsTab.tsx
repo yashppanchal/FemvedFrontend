@@ -7,6 +7,8 @@ import {
 } from "../../api/experts";
 import { ApiError } from "../../api/client";
 
+const PAGE_SIZE = 15;
+
 function fmt(amount: number, symbol: string) {
   return `${symbol}${amount.toFixed(2)}`;
 }
@@ -16,6 +18,7 @@ export default function ExpertEarningsTab() {
   const [payouts, setPayouts] = useState<ExpertPayoutRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     Promise.all([
@@ -105,28 +108,37 @@ export default function ExpertEarningsTab() {
       {payouts.length === 0 ? (
         <p className="expertSection__empty">No payouts received yet.</p>
       ) : (
-        <div className="expertTableWrap">
-          <table className="expertTable">
-            <thead>
-              <tr>
-                <th>Amount</th>
-                <th>Reference</th>
-                <th>Processed by</th>
-                <th>Paid at</th>
-              </tr>
-            </thead>
-            <tbody>
-              {payouts.map((p) => (
+        <>
+          {Math.ceil(payouts.length / PAGE_SIZE) > 1 && (
+            <div className="adminPanel__pagination" style={{ marginBottom: 12 }}>
+              <button type="button" className="expertTable__btn" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
+              <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(payouts.length / PAGE_SIZE)}</span>
+              <button type="button" className="expertTable__btn" disabled={page >= Math.ceil(payouts.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
+            </div>
+          )}
+          <div className="expertTableWrap">
+            <table className="expertTable">
+              <thead>
+                <tr>
+                  <th>Amount</th>
+                  <th>Reference</th>
+                  <th>Processed by</th>
+                  <th>Paid at</th>
+                </tr>
+              </thead>
+              <tbody>
+                {payouts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((p) => (
                 <tr key={p.payoutId}>
                   <td><strong>{fmt(p.amount, p.currencySymbol)}</strong></td>
                   <td>{p.paymentReference ?? "—"}</td>
                   <td>{p.paidByName}</td>
                   <td>{new Date(p.paidAt).toLocaleDateString()}</td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </section>
   );

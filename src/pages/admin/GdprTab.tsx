@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { getGdprRequests, processGdprRequest, type GdprRequest } from "../../api/admin";
 import { ApiError } from "../../api/client";
 
-type StatusFilter = "Pending" | "Approved" | "all";
-const PAGE_SIZE = 20;
+type StatusFilter = "Pending" | "Completed" | "all";
+const PAGE_SIZE = 15;
 
 export default function GdprTab() {
   const [requests, setRequests] = useState<GdprRequest[]>([]);
@@ -20,7 +20,7 @@ export default function GdprTab() {
     getGdprRequests(status)
       .then(setRequests)
       .catch((err) => {
-        setError(err instanceof ApiError ? err.message : "Failed to load GDPR requests.");
+        setError(err instanceof ApiError ? err.message : "Failed to load data requests.");
       })
       .finally(() => setLoading(false));
   }, [statusFilter]);
@@ -29,17 +29,17 @@ export default function GdprTab() {
   useEffect(() => { setPage(1); }, [statusFilter]);
 
   const handleResolve = async (requestId: string) => {
-    if (!confirm("Mark this GDPR request as resolved?")) return;
+    if (!confirm("Mark this data request as resolved?")) return;
     setActionError(null);
     try {
-      const updated = await processGdprRequest(requestId, "Approved", null);
+      const updated = await processGdprRequest(requestId, "Complete", null);
       setRequests((prev) => prev.map((r) => (r.requestId === requestId ? updated : r)));
     } catch (err) {
       setActionError(err instanceof ApiError ? err.message : "Failed to resolve request.");
     }
   };
 
-  if (loading) return <p className="adminPanel__loading">Loading GDPR requests…</p>;
+  if (loading) return <p className="adminPanel__loading">Loading data requests…</p>;
   if (error) return <p className="adminPanel__error">{error}</p>;
 
   const totalPages = Math.ceil(requests.length / PAGE_SIZE);
@@ -48,7 +48,7 @@ export default function GdprTab() {
     <>
       <div className="adminPanel__toolbar">
         <div className="adminPanel__segmented">
-          {(["Pending", "Approved", "all"] as StatusFilter[]).map((s) => (
+          {(["Pending", "Completed", "all"] as StatusFilter[]).map((s) => (
             <button
               key={s}
               type="button"
@@ -86,7 +86,7 @@ export default function GdprTab() {
           <tbody>
             {requests.length === 0 ? (
               <tr>
-                <td colSpan={6} className="adminTable__empty">No GDPR requests.</td>
+                <td colSpan={6} className="adminTable__empty">No data requests.</td>
               </tr>
             ) : (
               requests.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((r) => (
@@ -104,7 +104,7 @@ export default function GdprTab() {
                   <td>{new Date(r.createdAt).toLocaleDateString()}</td>
                   <td>{r.resolvedAt ? new Date(r.resolvedAt).toLocaleDateString() : "—"}</td>
                   <td className="adminTable__actions">
-                    {r.status !== "Approved" && (
+                    {r.status === "Pending" && (
                       <button
                         type="button"
                         className="adminActionButton"

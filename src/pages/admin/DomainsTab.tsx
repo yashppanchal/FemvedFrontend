@@ -1,5 +1,7 @@
-import type { FormEvent } from "react";
+import { type FormEvent, useState } from "react";
 import type { DomainForm, DomainRow } from "./types";
+
+const PAGE_SIZE = 15;
 
 type DomainsTabProps = {
   isDomainsLoading: boolean;
@@ -34,6 +36,8 @@ export function DomainsTab({
   onStartEdit,
   onDelete,
 }: DomainsTabProps) {
+  const [page, setPage] = useState(1);
+
   return (
     <section className="adminPanel" role="tabpanel" aria-label="Domains">
       <div className="adminPanel__header">
@@ -83,6 +87,14 @@ export function DomainsTab({
         </div>
       </form>
 
+      {Math.ceil(domains.length / PAGE_SIZE) > 1 && (
+        <div className="adminPanel__pagination">
+          <button type="button" className="adminActionButton" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
+          <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(domains.length / PAGE_SIZE)}</span>
+          <button type="button" className="adminActionButton" disabled={page >= Math.ceil(domains.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
+        </div>
+      )}
+
       <div className="adminTableWrap">
         <table className="adminTable">
           <thead>
@@ -93,7 +105,7 @@ export function DomainsTab({
           </thead>
           <tbody>
             {domains.length > 0 ? (
-              domains.map((domain) => (
+              domains.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((domain) => (
                 <tr key={domain.id}>
                   <td>{domain.name}</td>
                   <td>

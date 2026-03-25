@@ -21,29 +21,32 @@ export default function Dashboard() {
 
   return (
     <section className="page page--dashboard">
-      <h1 className="page__title">Dashboard</h1>
-      <p className="page__lead">
-        Welcome back, {user?.firstName ?? "there"}.
-      </p>
+      <div className="dashLayout">
+        <nav className="dashSidebar" aria-label="Dashboard sections">
+          <div className="dashSidebar__greeting">
+            <h1 className="dashSidebar__title">Dashboard</h1>
+            <p className="dashSidebar__lead">
+              Welcome back, {user?.firstName ?? "there"}
+            </p>
+          </div>
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              className={`dashSidebar__tab${activeTab === tab.id ? " dashSidebar__tab--active" : ""}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
 
-      <nav className="dashTabs" aria-label="Dashboard sections">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            className={`dashTabs__btn${activeTab === tab.id ? " dashTabs__btn--active" : ""}`}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </nav>
-
-      <div className="dashContent">
-        {activeTab === "profile" && <ProfileTab />}
-        {activeTab === "programs" && <MyProgramsTab />}
-        {activeTab === "orders" && <OrdersTab />}
-        {activeTab === "refunds" && <RefundsTab />}
+        <div className="dashContent">
+          {activeTab === "profile" && <ProfileTab />}
+          {activeTab === "programs" && <MyProgramsTab />}
+          {activeTab === "orders" && <OrdersTab />}
+          {activeTab === "refunds" && <RefundsTab />}
+        </div>
       </div>
     </section>
   );

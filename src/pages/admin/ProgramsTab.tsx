@@ -1,6 +1,9 @@
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
+import type { AdminExpert } from "../../api/admin";
 import type { CategoryRow, DomainRow, DurationEntry, ProgramForm, ProgramRow } from "./types";
+
+const PAGE_SIZE = 15;
 
 type ProgramsTabProps = {
   programCreateSuccess: string | null;
@@ -21,6 +24,9 @@ type ProgramsTabProps = {
   onStartEdit: (program: ProgramRow) => void;
   onDelete: (programId: string) => void;
   deletingProgramId: string | null;
+  expertsList: AdminExpert[];
+  onStatusChange?: (programId: string, action: "submit" | "publish" | "reject" | "archive") => void;
+  statusChangingId?: string | null;
 };
 
 export function ProgramsTab({
@@ -42,9 +48,14 @@ export function ProgramsTab({
   onStartEdit,
   onDelete,
   deletingProgramId,
+  expertsList,
+  onStatusChange,
+  statusChangingId,
 }: ProgramsTabProps) {
   const [domainFilter, setDomainFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [page, setPage] = useState(1);
 
   const set = (key: keyof ProgramForm) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
@@ -65,9 +76,13 @@ export function ProgramsTab({
     return programs.filter((program) => {
       const matchesDomain = domainFilter === "all" || program.domainId === domainFilter;
       const matchesCategory = categoryFilter === "all" || program.categoryId === categoryFilter;
-      return matchesDomain && matchesCategory;
+      const matchesStatus = statusFilter === "all" || (program.status ?? "").toLowerCase() === statusFilter.toLowerCase();
+      return matchesDomain && matchesCategory && matchesStatus;
     });
-  }, [programs, domainFilter, categoryFilter]);
+  }, [programs, domainFilter, categoryFilter, statusFilter]);
+
+  // Reset page when filters change
+  useEffect(() => { setPage(1); }, [domainFilter, categoryFilter, statusFilter]);
 
   const programModal = isProgramModalOpen ? (
     <div className="adminModalBackdrop" role="presentation">
@@ -139,6 +154,31 @@ export function ProgramsTab({
               </label>
             </div>
           </div>
+
+          {/* ── Section 1b: Expert ────────────────────────────────── */}
+          {!editingProgramId && (
+            <div className="expertForm__section">
+              <h4 className="expertForm__sectionTitle">Assign Expert</h4>
+              <label className="field">
+                <span className="field__label">Expert <span className="field__required">*</span></span>
+                <span className="field__hint">The expert who will deliver this program.</span>
+                <select
+                  className="field__input"
+                  value={programForm.expertId}
+                  onChange={(e) => onProgramFormChange((prev) => ({ ...prev, expertId: e.target.value }))}
+                  required
+                  disabled={isCreatingProgram || isLoadingProgramEdit}
+                >
+                  <option value="">— Select expert —</option>
+                  {expertsList.filter((e) => e.isActive).map((expert) => (
+                    <option key={expert.expertId} value={expert.expertId}>
+                      {expert.displayName || expert.userEmail} {expert.title ? `(${expert.title})` : ""}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          )}
 
           {/* ── Section 2: Basic Info ─────────────────────────────── */}
           <div className="expertForm__section">
@@ -471,8 +511,19 @@ export function ProgramsTab({
 
       {programCreateSuccess && <p className="adminPanel__success">{programCreateSuccess}</p>}
 
-      <div className="adminForm__row adminForm__row--two">
-        <label className="field">
+      <div className="adminPanel__toolbar" style={{ gap: "1rem", flexWrap: "wrap" }}>
+        <label className="field" style={{ flex: "1 1 200px" }}>
+          <span className="field__label">Filter by Status</span>
+          <select className="field__input" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+            <option value="all">All statuses</option>
+            <option value="Draft">Draft</option>
+            <option value="PendingReview">Pending Review</option>
+            <option value="Published">Published</option>
+            <option value="Archived">Archived</option>
+          </select>
+        </label>
+
+        <label className="field" style={{ flex: "1 1 200px" }}>
           <span className="field__label">Filter by Domain</span>
           <select
             className="field__input"
@@ -498,7 +549,7 @@ export function ProgramsTab({
           </select>
         </label>
 
-        <label className="field">
+        <label className="field" style={{ flex: "1 1 200px" }}>
           <span className="field__label">Filter by Category</span>
           <select
             className="field__input"
@@ -513,23 +564,39 @@ export function ProgramsTab({
         </label>
       </div>
 
+      {Math.ceil(filteredPrograms.length / PAGE_SIZE) > 1 && (
+        <div className="adminPanel__pagination">
+          <button type="button" className="adminActionButton" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
+          <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(filteredPrograms.length / PAGE_SIZE)}</span>
+          <button type="button" className="adminActionButton" disabled={page >= Math.ceil(filteredPrograms.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
+        </div>
+      )}
+
       <div className="adminTableWrap">
         <table className="adminTable">
           <thead>
             <tr>
               <th>Program</th>
-              <th>Domain</th>
+              <th>Expert</th>
               <th>Category</th>
+              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {filteredPrograms.length > 0 ? (
-              filteredPrograms.map((program) => (
+              filteredPrograms.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((program) => (
                 <tr key={program.id}>
                   <td>{program.name}</td>
-                  <td>{domains.find((domain) => domain.id === program.domainId)?.name ?? "—"}</td>
+                  <td>{program.expertName ?? "—"}</td>
                   <td>{categories.find((category) => category.id === program.categoryId)?.name ?? "—"}</td>
+                  <td>
+                    {program.status && (
+                      <span className={`statusBadge statusBadge--${program.status.toLowerCase()}`}>
+                        {program.status === "PendingReview" ? "Pending Review" : program.status}
+                      </span>
+                    )}
+                  </td>
                   <td>
                     <div className="adminActionGroup">
                       <button
@@ -539,21 +606,54 @@ export function ProgramsTab({
                       >
                         Edit
                       </button>
-                      <button
-                        type="button"
-                        className="adminActionButton adminActionButton--danger"
-                        onClick={() => onDelete(program.id)}
-                        disabled={deletingProgramId === program.id}
-                      >
-                        {deletingProgramId === program.id ? "Archiving…" : "Archive"}
-                      </button>
+                      {(program.status === "Draft" || program.status === "PendingReview") && onStatusChange && (
+                        <button
+                          type="button"
+                          className="button"
+                          style={{ height: 32, padding: "0 12px", fontSize: 13 }}
+                          onClick={() => onStatusChange(program.id, "publish")}
+                          disabled={statusChangingId === program.id}
+                        >
+                          {statusChangingId === program.id ? "Publishing…" : "Publish"}
+                        </button>
+                      )}
+                      {program.status === "PendingReview" && onStatusChange && (
+                        <button
+                          type="button"
+                          className="adminActionButton adminActionButton--danger"
+                          onClick={() => onStatusChange(program.id, "reject")}
+                          disabled={statusChangingId === program.id}
+                        >
+                          {statusChangingId === program.id ? "Declining…" : "Decline"}
+                        </button>
+                      )}
+                      {program.status === "Published" && onStatusChange && (
+                        <button
+                          type="button"
+                          className="adminActionButton adminActionButton--danger"
+                          onClick={() => onStatusChange(program.id, "archive")}
+                          disabled={statusChangingId === program.id}
+                        >
+                          {statusChangingId === program.id ? "Archiving…" : "Archive"}
+                        </button>
+                      )}
+                      {(!program.status || program.status === "Draft") && (
+                        <button
+                          type="button"
+                          className="adminActionButton adminActionButton--danger"
+                          onClick={() => onDelete(program.id)}
+                          disabled={deletingProgramId === program.id}
+                        >
+                          {deletingProgramId === program.id ? "Deleting…" : "Delete"}
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={4} className="adminTable__empty">No programs match the selected filters.</td>
+                <td colSpan={5} className="adminTable__empty">No programs match the selected filters.</td>
               </tr>
             )}
           </tbody>

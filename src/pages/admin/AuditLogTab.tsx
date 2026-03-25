@@ -7,7 +7,7 @@ export default function AuditLogTab() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
-  const PAGE_SIZE = 50;
+  const PAGE_SIZE = 15;
 
   useEffect(() => {
     setLoading(true);

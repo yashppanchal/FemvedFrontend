@@ -10,7 +10,6 @@ export type AdminTab =
   | "enrollments"
   | "analytics"
   | "gdpr"
-  | "auditlog"
   | "payouts";
 
 export type UserRow = {
@@ -39,6 +38,9 @@ export type ProgramRow = {
   name: string;
   domainId: string;
   categoryId: string;
+  status?: string;
+  expertName?: string;
+  expertId?: string;
 };
 
 export type DomainForm = {
@@ -74,6 +76,7 @@ export type ProgramForm = {
   name: string;
   domainId: string;
   categoryId: string;
+  expertId: string;
   gridDescription: string;
   gridImageUrl: string;
   overview: string;

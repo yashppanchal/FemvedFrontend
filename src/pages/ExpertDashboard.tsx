@@ -43,36 +43,39 @@ export default function ExpertDashboard() {
 
   return (
     <section className="page page--expertDashboard">
-      <h1 className="page__title">Expert Dashboard</h1>
-      <p className="page__lead">
-        Welcome, {user?.firstName ?? "Expert"}. Manage your profile, programs, and clients.
-      </p>
+      <div className="expertLayout">
+        <nav className="expertSidebar" aria-label="Expert dashboard sections">
+          <div className="expertSidebar__greeting">
+            <h1 className="expertSidebar__title">Expert Dashboard</h1>
+            <p className="expertSidebar__lead">
+              Welcome, {user?.firstName ?? "Expert"}
+            </p>
+          </div>
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              className={`expertSidebar__tab${activeTab === tab.id ? " expertSidebar__tab--active" : ""}`}
+              onClick={() => handleTabChange(tab.id)}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
 
-      <nav className="expertTabs" aria-label="Expert dashboard sections">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            className={`expertTabs__btn${activeTab === tab.id ? " expertTabs__btn--active" : ""}`}
-            onClick={() => handleTabChange(tab.id)}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </nav>
-
-      <div className="expertContent">
-        {activeTab === "profile" && <ExpertProfileTab />}
-        {activeTab === "programs" && <ExpertProgramsTab onViewEnrollments={handleViewEnrollments} />}
-        {activeTab === "enrollments" && (
-          <ExpertEnrollmentsTab
-            filterProgramId={filterProgramId}
-            filterProgramName={filterProgramName}
-            onClearFilter={() => { setFilterProgramId(null); setFilterProgramName(null); }}
-          />
-        )}
-        {activeTab === "earnings" && <ExpertEarningsTab />}
-        {activeTab === "create" && <ExpertCreateProgramTab />}
+        <div className="expertContent">
+          {activeTab === "profile" && <ExpertProfileTab />}
+          {activeTab === "programs" && <ExpertProgramsTab onViewEnrollments={handleViewEnrollments} />}
+          {activeTab === "enrollments" && (
+            <ExpertEnrollmentsTab
+              filterProgramId={filterProgramId}
+              filterProgramName={filterProgramName}
+              onClearFilter={() => { setFilterProgramId(null); setFilterProgramName(null); }}
+            />
+          )}
+          {activeTab === "earnings" && <ExpertEarningsTab />}
+          {activeTab === "create" && <ExpertCreateProgramTab />}
+        </div>
       </div>
     </section>
   );

@@ -7,6 +7,8 @@ import {
 } from "../../api/admin";
 import { ApiError } from "../../api/client";
 
+const PAGE_SIZE = 15;
+
 function formatBalance(amounts: CurrencyAmount[]): string {
   if (amounts.length === 0) return "—";
   return amounts
@@ -28,6 +30,7 @@ export default function ExpertPayoutsTab() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [submitting, setSubmitting] = useState(false);
@@ -84,6 +87,13 @@ export default function ExpertPayoutsTab() {
     <>
       <div className="adminPanel__toolbar">
         <span className="adminPanel__count">{balances.length} experts</span>
+        {Math.ceil(balances.length / PAGE_SIZE) > 1 && (
+          <div className="adminPanel__pagination">
+            <button type="button" className="adminActionButton" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
+            <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(balances.length / PAGE_SIZE)}</span>
+            <button type="button" className="adminActionButton" disabled={page >= Math.ceil(balances.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
+          </div>
+        )}
       </div>
 
       {showForm && (
@@ -178,7 +188,7 @@ export default function ExpertPayoutsTab() {
                 <td colSpan={7} className="adminTable__empty">No payout data.</td>
               </tr>
             ) : (
-              balances.map((b) => (
+              balances.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((b) => (
                 <tr key={b.expertId}>
                   <td>{b.expertName}</td>
                   <td>{b.commissionRate}%</td>
