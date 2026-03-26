@@ -3,7 +3,8 @@ import { createPortal } from "react-dom";
 import type { AdminExpert } from "../../api/admin";
 import type { CategoryRow, DomainRow, DurationEntry, ProgramForm, ProgramRow } from "./types";
 
-const PAGE_SIZE = 15;
+import { PAGE_SIZE } from "../../constants";
+import { useEscapeKey } from "../../useEscapeKey";
 
 type ProgramsTabProps = {
   programCreateSuccess: string | null;
@@ -57,6 +58,8 @@ export function ProgramsTab({
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [expertFilter, setExpertFilter] = useState<string>("all");
   const [page, setPage] = useState(1);
+
+  useEscapeKey(onCloseModal, isProgramModalOpen && !isCreatingProgram);
 
   const set = (key: keyof ProgramForm) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>

@@ -9,8 +9,8 @@ import {
   type Testimonial,
 } from "../../api/admin";
 import { ApiError } from "../../api/client";
-
-const PAGE_SIZE = 15;
+import { PAGE_SIZE } from "../../constants";
+import { useEscapeKey } from "../../useEscapeKey";
 
 type TestimonialForm = {
   reviewerName: string;
@@ -118,10 +118,13 @@ export default function TestimonialsTab() {
   };
 
   const closeModal = () => {
+    if (saving) return;
     setIsModalOpen(false);
     setEditingId(null);
     setForm(initialForm);
   };
+
+  useEscapeKey(closeModal, isModalOpen);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -314,7 +317,7 @@ export default function TestimonialsTab() {
           <div className="adminModal" onClick={(e) => e.stopPropagation()}>
             <div className="adminModal__header">
               <h2>{editingId ? "Edit Testimonial" : "Add Testimonial"}</h2>
-              <button type="button" className="adminModal__close" onClick={closeModal}>×</button>
+              <button type="button" className="adminModal__close" onClick={closeModal} aria-label="Close">×</button>
             </div>
             <form className="adminForm" onSubmit={handleSubmit}>
               <label className="adminForm__label">

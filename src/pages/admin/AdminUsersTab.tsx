@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useState } from "react";
 
-const PAGE_SIZE = 15;
+import { PAGE_SIZE } from "../../constants";
 import {
   getAdminUsers,
   activateAdminUser,
@@ -262,7 +262,7 @@ export default function AdminUsersTab() {
                 All fields below are optional. The expert can complete their profile later from their dashboard.
               </p>
             </div>
-            <button type="button" className="adminModal__close" onClick={handlePromoteCancel} disabled={promoting}>
+            <button type="button" className="adminModal__close" onClick={handlePromoteCancel} disabled={promoting} aria-label="Close">
               ✕
             </button>
           </div>
@@ -344,7 +344,7 @@ export default function AdminUsersTab() {
               </h3>
               <p className="adminForm__subtitle">Current: {emailEditUser.email}</p>
             </div>
-            <button type="button" className="adminModal__close" onClick={closeEmailEdit} disabled={savingEmail}>✕</button>
+            <button type="button" className="adminModal__close" onClick={closeEmailEdit} disabled={savingEmail} aria-label="Close">✕</button>
           </div>
           {emailError && <p className="adminPanel__error">{emailError}</p>}
           <label className="field">

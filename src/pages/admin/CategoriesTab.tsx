@@ -1,8 +1,9 @@
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import type { CategoryForm, CategoryRow, DomainRow } from "./types";
 
-const PAGE_SIZE = 15;
+import { PAGE_SIZE } from "../../constants";
+import { useEscapeKey } from "../../useEscapeKey";
 
 type CategoriesTabProps = {
   categoryCreateSuccess: string | null;
@@ -40,6 +41,12 @@ export function CategoriesTab({
   onCategoryFormChange,
 }: CategoriesTabProps) {
   const [page, setPage] = useState(1);
+  useEscapeKey(onCloseModal, isCategoryModalOpen && !isCreatingCategory);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => { setPage(1); }, [search]);
+
+  const filtered = categories.filter(c => c.name.toLowerCase().includes(search.toLowerCase()));
 
   const categoryModal = isCategoryModalOpen ? (
     <div className="adminModalBackdrop" role="presentation">
@@ -297,11 +304,16 @@ export function CategoriesTab({
         <p className="adminPanel__success">{categoryCreateSuccess}</p>
       )}
 
-      {Math.ceil(categories.length / PAGE_SIZE) > 1 && (
+      <div className="adminPanel__toolbar">
+        <input className="field__input adminPanel__search" type="search" placeholder="Search categories…" value={search} onChange={(e) => setSearch(e.target.value)} />
+        <span className="adminPanel__count">{filtered.length} categories</span>
+      </div>
+
+      {Math.ceil(filtered.length / PAGE_SIZE) > 1 && (
         <div className="adminPanel__pagination">
           <button type="button" className="adminActionButton" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
-          <span style={{ fontSize: 13, color: "var(--muted)" }}>{Math.min(page * PAGE_SIZE, categories.length)} of {categories.length}</span>
-          <button type="button" className="adminActionButton" disabled={page >= Math.ceil(categories.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
+          <span style={{ fontSize: 13, color: "var(--muted)" }}>{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}</span>
+          <button type="button" className="adminActionButton" disabled={page >= Math.ceil(filtered.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
         </div>
       )}
 
@@ -315,8 +327,8 @@ export function CategoriesTab({
             </tr>
           </thead>
           <tbody>
-            {categories.length > 0 ? (
-              categories.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((category) => (
+            {filtered.length > 0 ? (
+              filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((category) => (
                 <tr key={category.id}>
                   <td>{category.name}</td>
                   <td>{domains.find((domain) => domain.id === category.domainId)?.name}</td>

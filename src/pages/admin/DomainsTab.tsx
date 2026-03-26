@@ -1,7 +1,7 @@
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import type { DomainForm, DomainRow } from "./types";
 
-const PAGE_SIZE = 15;
+import { PAGE_SIZE } from "../../constants";
 
 type DomainsTabProps = {
   isDomainsLoading: boolean;
@@ -37,6 +37,11 @@ export function DomainsTab({
   onDelete,
 }: DomainsTabProps) {
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => { setPage(1); }, [search]);
+
+  const filtered = domains.filter(d => d.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <section className="adminPanel" role="tabpanel" aria-label="Domains">
@@ -87,11 +92,16 @@ export function DomainsTab({
         </div>
       </form>
 
-      {Math.ceil(domains.length / PAGE_SIZE) > 1 && (
+      <div className="adminPanel__toolbar">
+        <input className="field__input adminPanel__search" type="search" placeholder="Search domains…" value={search} onChange={(e) => setSearch(e.target.value)} />
+        <span className="adminPanel__count">{filtered.length} domains</span>
+      </div>
+
+      {Math.ceil(filtered.length / PAGE_SIZE) > 1 && (
         <div className="adminPanel__pagination">
           <button type="button" className="adminActionButton" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
-          <span style={{ fontSize: 13, color: "var(--muted)" }}>{Math.min(page * PAGE_SIZE, domains.length)} of {domains.length}</span>
-          <button type="button" className="adminActionButton" disabled={page >= Math.ceil(domains.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
+          <span style={{ fontSize: 13, color: "var(--muted)" }}>{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}</span>
+          <button type="button" className="adminActionButton" disabled={page >= Math.ceil(filtered.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
         </div>
       )}
 
@@ -104,8 +114,8 @@ export function DomainsTab({
             </tr>
           </thead>
           <tbody>
-            {domains.length > 0 ? (
-              domains.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((domain) => (
+            {filtered.length > 0 ? (
+              filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((domain) => (
                 <tr key={domain.id}>
                   <td>{domain.name}</td>
                   <td>

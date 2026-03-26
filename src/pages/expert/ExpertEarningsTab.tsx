@@ -7,7 +7,7 @@ import {
 } from "../../api/experts";
 import { ApiError } from "../../api/client";
 
-const PAGE_SIZE = 15;
+import { PAGE_SIZE } from "../../constants";
 
 function fmt(amount: number, symbol: string) {
   return `${symbol}${amount.toFixed(2)}`;

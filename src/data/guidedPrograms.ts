@@ -1,4 +1,5 @@
 import type { CountryCode } from "../country/useCountry";
+import { BASE_URL } from "../api/client";
 
 export type GuidedProgramCard = {
   programDurations?: Array<{
@@ -293,7 +294,7 @@ async function doFetch(countryCode: CountryCode, version: number): Promise<Guide
     const apiCountryCode = countryCode === "UK" ? "GB" : countryCode;
     const query = new URLSearchParams({ countryCode: apiCountryCode });
     const response = await fetch(
-      `https://api.femved.com/api/v1/guided/tree?${query.toString()}`,
+      `${BASE_URL}/guided/tree?${query.toString()}`,
     );
     if (!response.ok) {
       throw new Error(`Failed guided tree request: ${response.status}`);

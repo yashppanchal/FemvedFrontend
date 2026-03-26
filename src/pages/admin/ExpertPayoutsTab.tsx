@@ -6,8 +6,8 @@ import {
   type CurrencyAmount,
 } from "../../api/admin";
 import { ApiError } from "../../api/client";
-
-const PAGE_SIZE = 15;
+import { PAGE_SIZE } from "../../constants";
+import { useToast } from "../../useToast";
 
 function formatBalance(amounts: CurrencyAmount[]): string {
   if (amounts.length === 0) return "—";
@@ -29,6 +29,7 @@ export default function ExpertPayoutsTab() {
   const [balances, setBalances] = useState<ExpertPayoutBalance[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { toast, showSuccess, showError } = useToast();
 
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
@@ -59,6 +60,7 @@ export default function ExpertPayoutsTab() {
       setFormError("Expert, amount, and currency are required.");
       return;
     }
+    if (!confirm(`Record payout of ${amount} ${form.currencyCode}? This action cannot be undone.`)) return;
     setSubmitting(true);
     try {
       await recordExpertPayout({
@@ -70,7 +72,8 @@ export default function ExpertPayoutsTab() {
         notes: form.notes || undefined,
       });
       setShowForm(false);
-      // Reload balances silently — do not set global loading to avoid hiding errors
+      showSuccess("Payout recorded successfully.");
+      // Reload balances silently
       const updated = await getExpertPayoutAnalytics();
       setBalances(updated);
     } catch (err) {
@@ -95,6 +98,8 @@ export default function ExpertPayoutsTab() {
           </div>
         )}
       </div>
+
+      {toast && <p role="alert" aria-live="polite" className={`adminPanel__${toast.type}`}>{toast.message}</p>}
 
       {showForm && (
         <form className="adminForm" onSubmit={handleSubmit} noValidate>

@@ -8,8 +8,8 @@ import {
   type CreateCouponRequest,
 } from "../../api/admin";
 import { ApiError } from "../../api/client";
-
-const PAGE_SIZE = 15;
+import { PAGE_SIZE } from "../../constants";
+import { useToast } from "../../useToast";
 
 const emptyForm: CreateCouponRequest & { isActive: boolean } = {
   code: "",
@@ -30,6 +30,10 @@ export default function CouponsTab() {
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const { toast, showSuccess, showError } = useToast();
+
+  useEffect(() => { setPage(1); }, [search]);
 
   useEffect(() => {
     getAdminCoupons()
@@ -80,6 +84,7 @@ export default function CouponsTab() {
         setCoupons((prev) => [created, ...prev]);
       }
       setShowForm(false);
+      showSuccess(editId ? "Coupon updated." : "Coupon created.");
     } catch (err) {
       setFormError(err instanceof ApiError ? err.message : "Failed to save coupon.");
     } finally {
@@ -88,21 +93,26 @@ export default function CouponsTab() {
   };
 
   const handleDelete = async (couponId: string, code: string) => {
-    if (!confirm(`Delete coupon "${code}"?`)) return;
+    if (!confirm(`Delete coupon "${code}"? This cannot be undone.`)) return;
     try {
       await deleteAdminCoupon(couponId);
       setCoupons((prev) => prev.filter((c) => c.couponId !== couponId));
+      showSuccess("Coupon deleted.");
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Failed to delete coupon.");
+      showError(err instanceof ApiError ? err.message : "Failed to delete coupon.");
     }
   };
+
+  const filtered = coupons.filter(c => c.code.toLowerCase().includes(search.toLowerCase()));
 
   if (loading) return <p className="adminPanel__loading">Loading coupons…</p>;
   if (error) return <p className="adminPanel__error">{error}</p>;
 
   return (
     <>
+      {toast && <p role="alert" aria-live="polite" className={`adminPanel__${toast.type}`}>{toast.message}</p>}
       <div className="adminPanel__toolbar">
+        <input className="field__input adminPanel__search" type="search" placeholder="Search by coupon code…" value={search} onChange={(e) => setSearch(e.target.value)} />
         <button type="button" className="button" onClick={openCreate}>
           + Add coupon
         </button>
@@ -212,11 +222,11 @@ export default function CouponsTab() {
         </form>
       )}
 
-      {Math.ceil(coupons.length / PAGE_SIZE) > 1 && (
+      {Math.ceil(filtered.length / PAGE_SIZE) > 1 && (
         <div className="adminPanel__pagination">
           <button type="button" className="adminActionButton" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
-          <span style={{ fontSize: 13, color: "var(--muted)" }}>{Math.min(page * PAGE_SIZE, coupons.length)} of {coupons.length}</span>
-          <button type="button" className="adminActionButton" disabled={page >= Math.ceil(coupons.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
+          <span style={{ fontSize: 13, color: "var(--muted)" }}>{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}</span>
+          <button type="button" className="adminActionButton" disabled={page >= Math.ceil(filtered.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
         </div>
       )}
 
@@ -234,12 +244,12 @@ export default function CouponsTab() {
             </tr>
           </thead>
           <tbody>
-            {coupons.length === 0 ? (
+            {filtered.length === 0 ? (
               <tr>
                 <td colSpan={7} className="adminTable__empty">No coupons.</td>
               </tr>
             ) : (
-              coupons.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((c) => (
+              filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((c) => (
                 <tr key={c.couponId}>
                   <td><code>{c.code}</code></td>
                   <td>{c.discountType}</td>

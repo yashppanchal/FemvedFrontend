@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useEscapeKey } from "../../useEscapeKey";
 import {
   getExpertEnrollments,
   startEnrollment,
@@ -13,6 +14,7 @@ import {
   type EnrollmentComment,
 } from "../../api/experts";
 import { ApiError } from "../../api/client";
+import { getStatusBadgeClass, formatStatus } from "../../statusBadge";
 
 interface Props {
   filterProgramId?: string | null;
@@ -21,7 +23,7 @@ interface Props {
 }
 
 const STATUS_OPTIONS = ["All", "NotStarted", "Scheduled", "Active", "Paused", "Completed", "Cancelled"];
-const PAGE_SIZE = 15;
+import { PAGE_SIZE } from "../../constants";
 
 const today = () => new Date().toISOString().split("T")[0];
 
@@ -54,6 +56,8 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
   const [startPickerId, setStartPickerId] = useState<string | null>(null);
   const [startDate, setStartDate] = useState(today());
   const [startingId, setStartingId] = useState<string | null>(null);
+
+  useEscapeKey(() => { if (commentsEnrollmentId) setCommentsEnrollmentId(null); else if (startPickerId) setStartPickerId(null); }, !!(startPickerId || commentsEnrollmentId));
 
   useEffect(() => {
     getExpertEnrollments()
@@ -250,8 +254,8 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
                   <td>{e.programName}</td>
                   <td>{e.durationLabel}</td>
                   <td>
-                    <span className={`statusBadge statusBadge--${(e.scheduledStartAt && e.accessStatus === "NotStarted" ? "scheduled" : (e.accessStatus || "")).toLowerCase()}`}>
-                      {e.scheduledStartAt && e.accessStatus === "NotStarted" ? "Scheduled" : e.accessStatus}
+                    <span className={`statusBadge statusBadge--${getStatusBadgeClass(e.scheduledStartAt && e.accessStatus === "NotStarted" ? "Scheduled" : e.accessStatus)}`}>
+                      {e.scheduledStartAt && e.accessStatus === "NotStarted" ? "Scheduled" : formatStatus(e.accessStatus)}
                     </span>
                   </td>
                   <td>
@@ -370,7 +374,7 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
           <div className="expertModal" onClick={(ev) => ev.stopPropagation()}>
             <div className="expertModal__header">
               <h3 className="expertModal__title">{enrollments.find(e => e.accessId === startPickerId)?.scheduledStartAt ? "Reschedule Program" : "Start Program"}</h3>
-              <button type="button" className="expertModal__close" onClick={() => setStartPickerId(null)}>✕</button>
+              <button type="button" className="expertModal__close" onClick={() => setStartPickerId(null)} aria-label="Close">✕</button>
             </div>
             <div className="expertModal__body">
               <label className="field">
@@ -415,6 +419,7 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
                 type="button"
                 className="expertModal__close"
                 onClick={() => setCommentsEnrollmentId(null)}
+                aria-label="Close"
               >
                 ✕
               </button>

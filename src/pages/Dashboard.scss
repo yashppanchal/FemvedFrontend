@@ -497,6 +497,86 @@
   color: #a01a1a;
 }
 
+/* ── Modal (user dashboard) ──────────────────────────────────────── */
+
+.dashModal__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(15, 15, 16, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 24px;
+  overflow-y: auto;
+}
+
+.dashModal {
+  width: min(560px, calc(100% - 48px));
+  max-height: calc(100vh - 80px);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 24px 80px rgba(15, 15, 16, 0.2);
+  margin: auto 0;
+  overflow: hidden;
+}
+
+.dashModal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dashModal__title {
+  margin: 0;
+  font-family: var(--fontTitle);
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.dashModal__close {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 140ms ease;
+}
+
+.dashModal__close:hover {
+  background: rgba(15, 15, 16, 0.04);
+  border-color: rgba(15, 15, 16, 0.2);
+}
+
+.dashModal__body {
+  padding: 4px 0;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.dashModal__actions {
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
 /* ── Responsive ──────────────────────────────────────────────────── */
 
 @media (max-width: 1024px) {

@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { getAuditLog, type AuditLogEntry } from "../../api/admin";
 import { ApiError } from "../../api/client";
+import { PAGE_SIZE } from "../../constants";
 
 export default function AuditLogTab() {
   const [entries, setEntries] = useState<AuditLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
-  const PAGE_SIZE = 15;
+
 
   useEffect(() => {
     setLoading(true);

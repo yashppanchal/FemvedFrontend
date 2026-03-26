@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-const PAGE_SIZE = 15;
+import { PAGE_SIZE } from "../../constants";
 import { getAdminOrders, refundOrder, type AdminOrder } from "../../api/admin";
 import { ApiError } from "../../api/client";
+import { useEscapeKey } from "../../useEscapeKey";
+import { useToast } from "../../useToast";
+import { getStatusBadgeClass } from "../../statusBadge";
 
 function formatCurrency(amount: number | null | undefined, currency: string | null | undefined) {
   if (amount == null) return "—";
@@ -25,12 +28,16 @@ export default function AdminOrdersTab() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [page, setPage] = useState(1);
+  const { toast, showSuccess } = useToast();
 
   // Refund modal
   const [refundTarget, setRefundTarget] = useState<RefundTarget | null>(null);
   const [refundReason, setRefundReason] = useState("");
   const [refunding, setRefunding] = useState(false);
   const [refundError, setRefundError] = useState<string | null>(null);
+
+  const closeRefundModal = useCallback(() => { if (!refunding) setRefundTarget(null); }, [refunding]);
+  useEscapeKey(closeRefundModal, !!refundTarget);
 
   useEffect(() => {
     getAdminOrders()
@@ -60,6 +67,7 @@ export default function AdminOrdersTab() {
         prev.map((o) => (o.orderId === refundTarget.orderId ? { ...o, status: "Refunded" } : o))
       );
       setRefundTarget(null);
+      showSuccess("Refund processed successfully.");
     } catch (err) {
       setRefundError(err instanceof ApiError ? err.message : "Failed to process refund.");
     } finally {
@@ -87,6 +95,7 @@ export default function AdminOrdersTab() {
 
   return (
     <>
+      {toast && <p role="alert" aria-live="polite" className={`adminPanel__${toast.type}`}>{toast.message}</p>}
       <div className="adminPanel__toolbar">
         <input
           className="field__input adminPanel__search"
@@ -145,13 +154,13 @@ export default function AdminOrdersTab() {
                   <td>{o.durationLabel}</td>
                   <td>{formatCurrency(o.amount, o.currency)}</td>
                   <td>
-                    <span className={`statusBadge statusBadge--${(o.gateway ?? "").toLowerCase()}`}>
+                    <span className="statusBadge statusBadge--notstarted">
                       {o.gateway ?? "—"}
                     </span>
                   </td>
                   <td>{o.couponCode ?? "—"}</td>
                   <td>
-                    <span className={`statusBadge statusBadge--${(o.status ?? "").toLowerCase()}`}>
+                    <span className={`statusBadge statusBadge--${getStatusBadgeClass(o.status)}`}>
                       {o.status}
                     </span>
                   </td>
@@ -180,7 +189,7 @@ export default function AdminOrdersTab() {
           <div className="adminModal" style={{ maxWidth: 480 }} onClick={(ev) => ev.stopPropagation()}>
             <div className="adminModal__header">
               <h3 className="adminModal__title">Confirm Refund</h3>
-              <button type="button" className="adminModal__close" onClick={() => setRefundTarget(null)} disabled={refunding}>✕</button>
+              <button type="button" className="adminModal__close" onClick={() => setRefundTarget(null)} disabled={refunding} aria-label="Close">✕</button>
             </div>
             <div className="adminModal__body">
               <p style={{ margin: "0 0 4px", fontSize: 14 }}>

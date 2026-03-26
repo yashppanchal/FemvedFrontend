@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
+import { useEscapeKey } from "../../useEscapeKey";
 import { getMyProgramAccess, pauseMyEnrollment, resumeMyEnrollment, endMyEnrollment, requestStartDate, type MyProgramAccess } from "../../api/users";
 import { ApiError } from "../../api/client";
 
-const PAGE_SIZE = 15;
+import { PAGE_SIZE } from "../../constants";
 const today = () => new Date().toISOString().split("T")[0];
 
 export default function MyProgramsTab() {
@@ -19,6 +20,8 @@ export default function MyProgramsTab() {
   const [requestStartId, setRequestStartId] = useState<string | null>(null);
   const [requestDate, setRequestDate] = useState(today());
   const [requesting, setRequesting] = useState(false);
+
+  useEscapeKey(() => setRequestStartId(null), !!requestStartId);
 
   useEffect(() => {
     getMyProgramAccess()
@@ -230,7 +233,7 @@ export default function MyProgramsTab() {
           <div className="dashModal" onClick={(ev) => ev.stopPropagation()}>
             <div className="dashModal__header">
               <h3 className="dashModal__title">Request Start Date</h3>
-              <button type="button" className="dashModal__close" onClick={() => setRequestStartId(null)}>✕</button>
+              <button type="button" className="dashModal__close" onClick={() => setRequestStartId(null)} aria-label="Close">✕</button>
             </div>
             <div className="dashModal__body">
               <label className="field">

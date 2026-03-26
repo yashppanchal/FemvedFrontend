@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getMyRefunds, type MyRefund } from "../../api/users";
 import { ApiError } from "../../api/client";
 
-const PAGE_SIZE = 15;
+import { PAGE_SIZE } from "../../constants";
 
 function formatCurrency(amount: number, currency: string) {
   return new Intl.NumberFormat(undefined, { style: "currency", currency }).format(amount);

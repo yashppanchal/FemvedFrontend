@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { getExpertPrograms, type ExpertProgram } from "../../api/experts";
 import { ApiError } from "../../api/client";
 
-const PAGE_SIZE = 15;
+import { PAGE_SIZE } from "../../constants";
+import { getStatusBadgeClass, formatStatus } from "../../statusBadge";
 
 interface Props {
   onViewEnrollments: (programId: string, programName: string) => void;
@@ -73,8 +74,8 @@ export default function ExpertProgramsTab({ onViewEnrollments }: Props) {
                   </td>
                   <td>{p.activeEnrollments}</td>
                   <td>
-                    <span className={`statusBadge statusBadge--${(p.status || "").toLowerCase() === "published" ? "active" : (p.status || "").toLowerCase() === "archived" ? "cancelled" : "notstarted"}`}>
-                      {p.status}
+                    <span className={`statusBadge statusBadge--${getStatusBadgeClass(p.status)}`}>
+                      {formatStatus(p.status)}
                     </span>
                   </td>
                   <td>{new Date(p.createdAt).toLocaleDateString()}</td>

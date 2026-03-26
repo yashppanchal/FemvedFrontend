@@ -1,4 +1,5 @@
 import { type FormEvent, useEffect, useState } from "react";
+import { useEscapeKey } from "../../useEscapeKey";
 import {
   getAdminExperts,
   activateAdminExpert,
@@ -73,7 +74,9 @@ function formToRequest(f: EditForm): AdminCreateExpertProfileRequest {
   return req;
 }
 
-const PAGE_SIZE = 15;
+import { PAGE_SIZE } from "../../constants";
+import { useToast } from "../../useToast";
+import { getStatusBadgeClass, formatStatus } from "../../statusBadge";
 const today = () => new Date().toISOString().split("T")[0];
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -84,6 +87,10 @@ export default function ExpertsTab() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const { toast, showSuccess, showError } = useToast();
+
+  // Reset page on search change
+  useEffect(() => { setPage(1); }, [search]);
 
   // Edit panel state
   const [editingExpert, setEditingExpert] = useState<AdminExpert | null>(null);
@@ -108,6 +115,8 @@ export default function ExpertsTab() {
   const [startDate, setStartDate] = useState(today());
   const [startingId, setStartingId] = useState<string | null>(null);
 
+  useEscapeKey(() => setStartPickerId(null), !!startPickerId);
+
   useEffect(() => {
     getAdminExperts()
       .then(setExperts)
@@ -124,7 +133,7 @@ export default function ExpertsTab() {
         : await activateAdminExpert(expert.expertId);
       setExperts((prev) => prev.map((e) => (e.expertId === expert.expertId ? updated : e)));
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Failed to update expert.");
+      showError(err instanceof ApiError ? err.message : "Failed to update expert.");
     }
   };
 
@@ -136,7 +145,7 @@ export default function ExpertsTab() {
       if (editingExpert?.expertId === expertId) setEditingExpert(null);
       if (expandedExpertId === expertId) setExpandedExpertId(null);
     } catch (err) {
-      alert(err instanceof ApiError ? err.message : "Failed to delete expert.");
+      showError(err instanceof ApiError ? err.message : "Failed to delete expert.");
     }
   };
 
@@ -284,13 +293,14 @@ export default function ExpertsTab() {
 
   return (
     <>
+      {toast && <p role="alert" aria-live="polite" className={`adminPanel__${toast.type}`}>{toast.message}</p>}
       <div className="adminPanel__toolbar">
         <input
           className="field__input adminPanel__search"
           type="search"
           placeholder="Search by name or email…"
           value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          onChange={(e) => setSearch(e.target.value)}
         />
         <span className="adminPanel__count">{filtered.length} experts</span>
         {Math.ceil(filtered.length / PAGE_SIZE) > 1 && (
@@ -310,7 +320,7 @@ export default function ExpertsTab() {
               <h3 className="adminForm__title">Edit profile — {editingExpert.displayName || editingExpert.userEmail}</h3>
               <p className="adminForm__subtitle">Only filled fields will be updated. Leave blank to keep existing values.</p>
             </div>
-            <button type="button" className="adminModal__close" onClick={closeEdit} disabled={saving}>✕</button>
+            <button type="button" className="adminModal__close" onClick={closeEdit} disabled={saving} aria-label="Close">✕</button>
           </div>
 
           {editError && <p className="adminPanel__error">{editError}</p>}
@@ -521,8 +531,8 @@ export default function ExpertsTab() {
                                       <td>{p.totalEnrollments}</td>
                                       <td>{p.activeEnrollments}</td>
                                       <td>
-                                        <span className={`statusBadge statusBadge--${(p.status || "").toLowerCase() === "published" ? "active" : (p.status || "").toLowerCase() === "draft" ? "notstarted" : (p.status || "").toLowerCase() === "pendingreview" ? "scheduled" : "ended"}`}>
-                                          {p.status === "PendingReview" ? "Pending Review" : p.status}
+                                        <span className={`statusBadge statusBadge--${getStatusBadgeClass(p.status)}`}>
+                                          {formatStatus(p.status)}
                                         </span>
                                       </td>
                                     </tr>
@@ -560,8 +570,8 @@ export default function ExpertsTab() {
                                       <td>{enr.programName}</td>
                                       <td>{enr.durationLabel}</td>
                                       <td>
-                                        <span className={`statusBadge statusBadge--${(enr.scheduledStartAt && enr.accessStatus === "NotStarted" ? "scheduled" : (enr.accessStatus || "")).toLowerCase()}`}>
-                                          {enr.scheduledStartAt && enr.accessStatus === "NotStarted" ? "Scheduled" : enr.accessStatus}
+                                        <span className={`statusBadge statusBadge--${getStatusBadgeClass(enr.scheduledStartAt && enr.accessStatus === "NotStarted" ? "Scheduled" : enr.accessStatus)}`}>
+                                          {enr.scheduledStartAt && enr.accessStatus === "NotStarted" ? "Scheduled" : formatStatus(enr.accessStatus)}
                                         </span>
                                       </td>
                                       <td>
@@ -639,7 +649,7 @@ export default function ExpertsTab() {
           <div className="adminModal" onClick={(ev) => ev.stopPropagation()}>
             <div className="adminModal__header">
               <h3 className="adminModal__title">Start Program</h3>
-              <button type="button" className="adminModal__close" onClick={() => setStartPickerId(null)}>✕</button>
+              <button type="button" className="adminModal__close" onClick={() => setStartPickerId(null)} aria-label="Close">✕</button>
             </div>
             <div className="adminModal__body">
               <label className="field">

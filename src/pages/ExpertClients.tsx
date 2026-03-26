@@ -1,5 +1,6 @@
 import "./ExpertDashboard.scss";
 import { useEffect, useState } from "react";
+import { useEscapeKey } from "../useEscapeKey";
 import {
   getExpertEnrollments,
   startEnrollment,
@@ -22,6 +23,8 @@ export default function ExpertClients() {
   const [startPickerId, setStartPickerId] = useState<string | null>(null);
   const [startDate, setStartDate] = useState(today());
   const [startingId, setStartingId] = useState<string | null>(null);
+
+  useEscapeKey(() => setStartPickerId(null), !!startPickerId);
 
   useEffect(() => {
     getExpertEnrollments()
@@ -169,7 +172,7 @@ export default function ExpertClients() {
           <div className="expertModal" onClick={(ev) => ev.stopPropagation()}>
             <div className="expertModal__header">
               <h3 className="expertModal__title">Start Program</h3>
-              <button type="button" className="expertModal__close" onClick={() => setStartPickerId(null)}>✕</button>
+              <button type="button" className="expertModal__close" onClick={() => setStartPickerId(null)} aria-label="Close">✕</button>
             </div>
             <div className="expertModal__body">
               <label className="field">

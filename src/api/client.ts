@@ -7,18 +7,76 @@ const TOKENS_STORAGE_KEY = "femved_tokens";
 
 interface StoredTokens {
   accessToken?: string;
+  accessTokenExpiresAt?: string;
+  refreshToken?: string;
+  refreshTokenExpiresAt?: string;
 }
 
-function getStoredAccessToken(): string | null {
+function getStoredTokens(): StoredTokens | null {
   try {
     const raw = localStorage.getItem(TOKENS_STORAGE_KEY);
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as StoredTokens;
-    return typeof parsed.accessToken === "string" && parsed.accessToken
-      ? parsed.accessToken
-      : null;
+    return JSON.parse(raw) as StoredTokens;
   } catch {
     return null;
+  }
+}
+
+function getStoredAccessToken(): string | null {
+  const tokens = getStoredTokens();
+  return typeof tokens?.accessToken === "string" && tokens.accessToken
+    ? tokens.accessToken
+    : null;
+}
+
+function isAccessTokenExpired(): boolean {
+  const tokens = getStoredTokens();
+  if (!tokens?.accessTokenExpiresAt) return true;
+  const expiry = Date.parse(tokens.accessTokenExpiresAt);
+  if (Number.isNaN(expiry)) return true;
+  // Treat as expired 30s before actual expiry to avoid race conditions
+  return expiry - 30_000 < Date.now();
+}
+
+let refreshPromise: Promise<string | null> | null = null;
+
+async function tryRefreshToken(): Promise<string | null> {
+  // Deduplicate concurrent refresh attempts
+  if (refreshPromise) return refreshPromise;
+
+  refreshPromise = (async () => {
+    const tokens = getStoredTokens();
+    if (!tokens?.refreshToken) return null;
+
+    try {
+      const res = await fetch(`${BASE_URL}/auth/refresh`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refreshToken: tokens.refreshToken }),
+      });
+      if (!res.ok) return null;
+
+      const data = await res.json();
+      const newAccessToken = data.accessToken ?? data.token;
+      if (!newAccessToken) return null;
+
+      const updated: StoredTokens = {
+        accessToken: newAccessToken,
+        accessTokenExpiresAt: data.accessTokenExpiresAt ?? data.expiresAt ?? tokens.accessTokenExpiresAt,
+        refreshToken: data.refreshToken ?? tokens.refreshToken,
+        refreshTokenExpiresAt: data.refreshTokenExpiresAt ?? tokens.refreshTokenExpiresAt,
+      };
+      localStorage.setItem(TOKENS_STORAGE_KEY, JSON.stringify(updated));
+      return newAccessToken as string;
+    } catch {
+      return null;
+    }
+  })();
+
+  try {
+    return await refreshPromise;
+  } finally {
+    refreshPromise = null;
   }
 }
 
@@ -85,27 +143,39 @@ type ApiFetchOptions = RequestInit & {
  * - Prepends the base URL
  * - Sets JSON headers
  * - Throws `ApiError` on non-2xx responses
+ * - Automatically refreshes expired access tokens on 401
  */
 export async function apiFetch<T>(
   path: string,
   options: ApiFetchOptions = {},
 ): Promise<T> {
   const { skipAuth = false, ...requestOptions } = options;
-  const headers = new Headers(requestOptions.headers);
-  headers.set("Content-Type", "application/json");
 
-  // Auto-attach bearer token for protected endpoints when available.
-  if (!skipAuth && !headers.has("Authorization")) {
-    const accessToken = getStoredAccessToken();
-    if (accessToken) {
-      headers.set("Authorization", `Bearer ${accessToken}`);
+  const doRequest = async (token: string | null) => {
+    const headers = new Headers(requestOptions.headers);
+    headers.set("Content-Type", "application/json");
+    if (!skipAuth && token && !headers.has("Authorization")) {
+      headers.set("Authorization", `Bearer ${token}`);
     }
+    return fetch(`${BASE_URL}${path}`, { ...requestOptions, headers });
+  };
+
+  // Proactively refresh if access token is about to expire
+  let accessToken = getStoredAccessToken();
+  if (!skipAuth && accessToken && isAccessTokenExpired()) {
+    const refreshed = await tryRefreshToken();
+    if (refreshed) accessToken = refreshed;
   }
 
-  const res = await fetch(`${BASE_URL}${path}`, {
-    ...requestOptions,
-    headers,
-  });
+  let res = await doRequest(accessToken);
+
+  // Retry once on 401 with a refreshed token
+  if (res.status === 401 && !skipAuth) {
+    const refreshed = await tryRefreshToken();
+    if (refreshed) {
+      res = await doRequest(refreshed);
+    }
+  }
 
   // Parse JSON when possible and gracefully fall back to plain text responses.
   let body: unknown;
@@ -130,3 +200,6 @@ export async function apiFetch<T>(
 
   return body as T;
 }
+
+/** Exported for use by modules that need the base URL (e.g. guidedPrograms cache). */
+export { BASE_URL };

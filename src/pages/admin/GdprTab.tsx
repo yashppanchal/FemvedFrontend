@@ -3,7 +3,7 @@ import { getGdprRequests, processGdprRequest, type GdprRequest } from "../../api
 import { ApiError } from "../../api/client";
 
 type StatusFilter = "Pending" | "Completed" | "all";
-const PAGE_SIZE = 15;
+import { PAGE_SIZE } from "../../constants";
 
 export default function GdprTab() {
   const [requests, setRequests] = useState<GdprRequest[]>([]);
