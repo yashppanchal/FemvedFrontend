@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { Spinner } from "../../components/Spinner";
 
 import { PAGE_SIZE } from "../../constants";
 import { getAdminOrders, refundOrder, type AdminOrder } from "../../api/admin";
@@ -90,7 +91,7 @@ export default function AdminOrdersTab() {
   // Reset to page 1 when search or filter changes
   useEffect(() => { setPage(1); }, [search, statusFilter]);
 
-  if (loading) return <p className="adminPanel__loading">Loading orders…</p>;
+  if (loading) return <Spinner message="Loading orders…" />;
   if (error) return <p className="adminPanel__error">{error}</p>;
 
   return (
@@ -127,15 +128,15 @@ export default function AdminOrdersTab() {
         <table className="adminTable">
           <thead>
             <tr>
-              <th>User</th>
-              <th>Program</th>
-              <th>Duration</th>
-              <th>Amount</th>
-              <th>Gateway</th>
-              <th>Coupon</th>
-              <th>Status</th>
-              <th>Date</th>
-              <th>Actions</th>
+              <th scope="col">User</th>
+              <th scope="col">Program</th>
+              <th scope="col">Duration</th>
+              <th scope="col">Amount</th>
+              <th scope="col">Gateway</th>
+              <th scope="col">Coupon</th>
+              <th scope="col">Status</th>
+              <th scope="col">Date</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -171,6 +172,7 @@ export default function AdminOrdersTab() {
                         type="button"
                         className="adminActionButton adminActionButton--danger"
                         onClick={() => openRefund(o)}
+                        aria-label={`Refund order for ${o.userEmail}`}
                       >
                         Refund
                       </button>

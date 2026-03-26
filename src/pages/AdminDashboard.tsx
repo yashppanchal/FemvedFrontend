@@ -44,6 +44,7 @@ import AnalyticsTab from "./admin/AnalyticsTab";
 import GdprTab from "./admin/GdprTab";
 import ExpertPayoutsTab from "./admin/ExpertPayoutsTab";
 import TestimonialsTab from "./admin/TestimonialsTab";
+import { isValidUrl } from "../validation";
 import "./AdminDashboard.scss";
 
 type GuidedHierarchyRows = {
@@ -1116,6 +1117,12 @@ export default function AdminDashboard() {
     const gridImageUrl = programForm.gridImageUrl.trim();
     const overview = programForm.overview.trim();
 
+    // URL validation for image fields
+    if (gridImageUrl && !isValidUrl(gridImageUrl)) {
+      setProgramCreateError("Program Card Image URL is not a valid URL.");
+      return;
+    }
+
     if (!overview) {
       setProgramCreateError("Program description is required.");
       return;
@@ -1139,6 +1146,10 @@ export default function AdminDashboard() {
       const d = programForm.durations[i];
       if (!d.label.trim()) {
         setProgramCreateError(`Duration ${i + 1}: label is required.`);
+        return;
+      }
+      if ((d.priceIN && Number(d.priceIN) < 0) || (d.priceUK && Number(d.priceUK) < 0) || (d.priceUS && Number(d.priceUS) < 0)) {
+        setProgramCreateError("Prices cannot be negative.");
         return;
       }
       if (buildPrices(d).length === 0) {

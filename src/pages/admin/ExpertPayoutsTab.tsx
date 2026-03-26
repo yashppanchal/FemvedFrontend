@@ -178,13 +178,13 @@ export default function ExpertPayoutsTab() {
         <table className="adminTable">
           <thead>
             <tr>
-              <th>Expert</th>
-              <th>Commission</th>
-              <th>Expert share owed</th>
-              <th>Total paid</th>
-              <th>Outstanding</th>
-              <th>Last payout</th>
-              <th>Actions</th>
+              <th scope="col">Expert</th>
+              <th scope="col">Commission</th>
+              <th scope="col">Expert share owed</th>
+              <th scope="col">Total paid</th>
+              <th scope="col">Outstanding</th>
+              <th scope="col">Last payout</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>

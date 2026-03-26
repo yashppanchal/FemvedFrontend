@@ -77,7 +77,7 @@ function formToRequest(f: EditForm): AdminCreateExpertProfileRequest {
 import { PAGE_SIZE } from "../../constants";
 import { useToast } from "../../useToast";
 import { getStatusBadgeClass, formatStatus } from "../../statusBadge";
-const today = () => new Date().toISOString().split("T")[0];
+import { formatDate, todayISO } from "../../dateUtils";
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
@@ -112,7 +112,7 @@ export default function ExpertsTab() {
 
   // Start date picker modal
   const [startPickerId, setStartPickerId] = useState<string | null>(null);
-  const [startDate, setStartDate] = useState(today());
+  const [startDate, setStartDate] = useState(todayISO());
   const [startingId, setStartingId] = useState<string | null>(null);
 
   useEscapeKey(() => setStartPickerId(null), !!startPickerId);
@@ -265,8 +265,8 @@ export default function ExpertsTab() {
     setStartingId(startPickerId);
     setEnrollmentActionError(null);
     try {
-      await adminStartEnrollment(startPickerId, startDate !== today() ? startDate : undefined);
-      if (startDate === today()) {
+      await adminStartEnrollment(startPickerId, startDate !== todayISO() ? startDate : undefined);
+      if (startDate === todayISO()) {
         updateEnrollmentStatus(startPickerId, "Active");
       } else {
         setExpertEnrollments((prev) =>
@@ -278,7 +278,7 @@ export default function ExpertsTab() {
     } finally {
       setStartingId(null);
       setStartPickerId(null);
-      setStartDate(today());
+      setStartDate(todayISO());
     }
   };
 
@@ -397,12 +397,12 @@ export default function ExpertsTab() {
         <table className="adminTable">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Title</th>
-              <th>Location</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th scope="col">Name</th>
+              <th scope="col">Email</th>
+              <th scope="col">Title</th>
+              <th scope="col">Location</th>
+              <th scope="col">Status</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -424,19 +424,19 @@ export default function ExpertsTab() {
                       </span>
                     </td>
                     <td className="adminTable__actions">
-                      <button type="button" className="adminActionButton" onClick={() => setProfileExpertId(profileExpertId === e.expertId ? null : e.expertId)}>
+                      <button type="button" className="adminActionButton" onClick={() => setProfileExpertId(profileExpertId === e.expertId ? null : e.expertId)} aria-label={`${profileExpertId === e.expertId ? "Hide profile for" : "View profile for"} ${e.displayName || e.userEmail}`}>
                         {profileExpertId === e.expertId ? "Hide profile" : "View profile"}
                       </button>
-                      <button type="button" className="adminActionButton" onClick={() => toggleExpand(e.expertId)}>
+                      <button type="button" className="adminActionButton" onClick={() => toggleExpand(e.expertId)} aria-label={`${expandedExpertId === e.expertId ? "Hide programs for" : "View programs for"} ${e.displayName || e.userEmail}`}>
                         {expandedExpertId === e.expertId ? "Hide details" : "View programs"}
                       </button>
-                      <button type="button" className="adminActionButton" onClick={() => openEdit(e)}>
+                      <button type="button" className="adminActionButton" onClick={() => openEdit(e)} aria-label={`Edit profile for ${e.displayName || e.userEmail}`}>
                         Edit profile
                       </button>
-                      <button type="button" className="adminActionButton" onClick={() => handleToggleActive(e)}>
+                      <button type="button" className="adminActionButton" onClick={() => handleToggleActive(e)} aria-label={`${e.isActive ? "Deactivate" : "Activate"} ${e.displayName || e.userEmail}`}>
                         {e.isActive ? "Deactivate" : "Activate"}
                       </button>
-                      <button type="button" className="adminActionButton adminActionButton--danger" onClick={() => handleDelete(e.expertId, e.displayName)}>
+                      <button type="button" className="adminActionButton adminActionButton--danger" onClick={() => handleDelete(e.expertId, e.displayName)} aria-label={`Delete ${e.displayName || e.userEmail}`}>
                         Delete
                       </button>
                     </td>
@@ -457,7 +457,7 @@ export default function ExpertsTab() {
                             <div><strong>Years Experience:</strong> {e.yearsExperience ?? "—"}</div>
                             <div><strong>Commission Rate:</strong> {e.commissionRate}%</div>
                             <div><strong>Active:</strong> {e.isActive ? "Yes" : "No"}</div>
-                            <div><strong>Created:</strong> {new Date(e.createdAt).toLocaleDateString()}</div>
+                            <div><strong>Created:</strong> {formatDate(e.createdAt)}</div>
                           </div>
                           {e.bio && (
                             <div style={{ marginTop: "0.75rem" }}><strong>Bio:</strong><p style={{ marginTop: 4, whiteSpace: "pre-wrap" }}>{e.bio}</p></div>
@@ -518,10 +518,10 @@ export default function ExpertsTab() {
                               <table className="adminTable adminTable--nested">
                                 <thead>
                                   <tr>
-                                    <th>Program</th>
-                                    <th>Total Enrolled</th>
-                                    <th>Active</th>
-                                    <th>Status</th>
+                                    <th scope="col">Program</th>
+                                    <th scope="col">Total Enrolled</th>
+                                    <th scope="col">Active</th>
+                                    <th scope="col">Status</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -551,13 +551,13 @@ export default function ExpertsTab() {
                               <table className="adminTable adminTable--nested">
                                 <thead>
                                   <tr>
-                                    <th>Client</th>
-                                    <th>Program</th>
-                                    <th>Duration</th>
-                                    <th>Status</th>
-                                    <th>Start / End Date</th>
-                                    <th>Requested Start</th>
-                                    <th>Actions</th>
+                                    <th scope="col">Client</th>
+                                    <th scope="col">Program</th>
+                                    <th scope="col">Duration</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Start / End Date</th>
+                                    <th scope="col">Requested Start</th>
+                                    <th scope="col">Actions</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -577,49 +577,49 @@ export default function ExpertsTab() {
                                       <td>
                                         {enr.startedAt ? (
                                           <>
-                                            <div>{new Date(enr.startedAt).toLocaleDateString()}</div>
-                                            {enr.endDate && <div className="adminTable__sub">Ends: {new Date(enr.endDate).toLocaleDateString()}</div>}
+                                            <div>{formatDate(enr.startedAt)}</div>
+                                            {enr.endDate && <div className="adminTable__sub">Ends: {formatDate(enr.endDate)}</div>}
                                           </>
                                         ) : enr.scheduledStartAt ? (
-                                          <div>{new Date(enr.scheduledStartAt).toLocaleDateString()}</div>
+                                          <div>{formatDate(enr.scheduledStartAt)}</div>
                                         ) : "—"}
                                       </td>
                                       <td>
                                         {enr.requestedStartDate ? (
                                           <>
-                                            <div>{new Date(enr.requestedStartDate).toLocaleDateString()}</div>
+                                            <div>{formatDate(enr.requestedStartDate)}</div>
                                             {enr.startRequestStatus && <div className="adminTable__sub">{enr.startRequestStatus}</div>}
                                           </>
                                         ) : "—"}
                                       </td>
                                       <td className="adminTable__actions">
                                         {enr.accessStatus === "NotStarted" && (
-                                          <button type="button" className="adminActionButton" onClick={() => { setStartPickerId(enr.accessId); setStartDate(today()); }}>
+                                          <button type="button" className="adminActionButton" onClick={() => { setStartPickerId(enr.accessId); setStartDate(todayISO()); }} aria-label={`${enr.scheduledStartAt ? "Reschedule" : "Start"} enrollment for ${enr.userFirstName} ${enr.userLastName}`}>
                                             {enr.scheduledStartAt ? "Reschedule" : "Start"}
                                           </button>
                                         )}
                                         {enr.startRequestStatus === "Pending" && (
                                           <>
-                                            <button type="button" className="adminActionButton" onClick={() => runEnrollmentAction(enr.accessId, () => adminApproveStartDate(enr.accessId), enr.accessStatus)}>
+                                            <button type="button" className="adminActionButton" onClick={() => runEnrollmentAction(enr.accessId, () => adminApproveStartDate(enr.accessId), enr.accessStatus)} aria-label={`Approve start date for ${enr.userFirstName} ${enr.userLastName}`}>
                                               Approve
                                             </button>
-                                            <button type="button" className="adminActionButton adminActionButton--danger" onClick={() => runEnrollmentAction(enr.accessId, () => adminDeclineStartDate(enr.accessId), enr.accessStatus)}>
+                                            <button type="button" className="adminActionButton adminActionButton--danger" onClick={() => runEnrollmentAction(enr.accessId, () => adminDeclineStartDate(enr.accessId), enr.accessStatus)} aria-label={`Decline start date for ${enr.userFirstName} ${enr.userLastName}`}>
                                               Decline
                                             </button>
                                           </>
                                         )}
                                         {enr.accessStatus === "Active" && (
-                                          <button type="button" className="adminActionButton" onClick={() => runEnrollmentAction(enr.accessId, () => adminPauseEnrollment(enr.accessId), "Paused")}>
+                                          <button type="button" className="adminActionButton" onClick={() => runEnrollmentAction(enr.accessId, () => adminPauseEnrollment(enr.accessId), "Paused")} aria-label={`Pause enrollment for ${enr.userFirstName} ${enr.userLastName}`}>
                                             Pause
                                           </button>
                                         )}
                                         {enr.accessStatus === "Paused" && (
-                                          <button type="button" className="adminActionButton" onClick={() => runEnrollmentAction(enr.accessId, () => adminResumeEnrollment(enr.accessId), "Active")}>
+                                          <button type="button" className="adminActionButton" onClick={() => runEnrollmentAction(enr.accessId, () => adminResumeEnrollment(enr.accessId), "Active")} aria-label={`Resume enrollment for ${enr.userFirstName} ${enr.userLastName}`}>
                                             Resume
                                           </button>
                                         )}
                                         {(enr.accessStatus === "Active" || enr.accessStatus === "Paused") && (
-                                          <button type="button" className="adminActionButton adminActionButton--danger" onClick={() => runEnrollmentAction(enr.accessId, () => adminEndEnrollment(enr.accessId), "Completed")}>
+                                          <button type="button" className="adminActionButton adminActionButton--danger" onClick={() => runEnrollmentAction(enr.accessId, () => adminEndEnrollment(enr.accessId), "Completed")} aria-label={`End enrollment for ${enr.userFirstName} ${enr.userLastName}`}>
                                             End
                                           </button>
                                         )}
@@ -654,18 +654,18 @@ export default function ExpertsTab() {
             <div className="adminModal__body">
               <label className="field">
                 <span className="field__label">Start date</span>
-                <input className="field__input" type="date" value={startDate} min={today()} onChange={(ev) => setStartDate(ev.target.value)} disabled={!!startingId} />
+                <input className="field__input" type="date" value={startDate} min={todayISO()} onChange={(ev) => setStartDate(ev.target.value)} disabled={!!startingId} />
               </label>
-              {startDate === today() ? (
+              {startDate === todayISO() ? (
                 <p>Program will start immediately today.</p>
               ) : (
-                <p>Scheduled for {new Date(startDate + "T00:00:00").toLocaleDateString()}. Emails sent to all parties.</p>
+                <p>Scheduled for {formatDate(startDate + "T00:00:00")}. Emails sent to all parties.</p>
               )}
             </div>
             <div className="adminModal__compose">
               <button type="button" className="adminActionButton" onClick={() => setStartPickerId(null)} disabled={!!startingId}>Cancel</button>
               <button type="button" className="button" onClick={handleStartConfirm} disabled={!!startingId}>
-                {startingId ? "Confirming…" : startDate === today() ? "Start now" : "Schedule"}
+                {startingId ? "Confirming…" : startDate === todayISO() ? "Start now" : "Schedule"}
               </button>
             </div>
           </div>

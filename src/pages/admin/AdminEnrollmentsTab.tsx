@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Spinner } from "../../components/Spinner";
 import { useEscapeKey } from "../../useEscapeKey";
 import {
   getAdminEnrollments,
@@ -16,9 +17,9 @@ import {
 import { ApiError } from "../../api/client";
 import { PAGE_SIZE } from "../../constants";
 import { getStatusBadgeClass, formatStatus } from "../../statusBadge";
+import { formatDate, formatDateTime, parseISODate, calculateEndDate, todayISO } from "../../dateUtils";
 
 const STATUS_OPTIONS = ["All", "NotStarted", "Scheduled", "Active", "Paused", "Completed", "Cancelled"];
-const today = () => new Date().toISOString().split("T")[0];
 
 interface Props {
   filterExpertId?: string | null;
@@ -52,7 +53,7 @@ export default function AdminEnrollmentsTab({ filterExpertId, filterProgramId }:
 
   // Start date picker modal
   const [startPickerId, setStartPickerId] = useState<string | null>(null);
-  const [startDate, setStartDate] = useState(today());
+  const [startDate, setStartDate] = useState(todayISO());
   const [startingId, setStartingId] = useState<string | null>(null);
 
   useEscapeKey(() => { if (commentsId) setCommentsId(null); else if (startPickerId) setStartPickerId(null); }, !!(startPickerId || commentsId));
@@ -90,8 +91,8 @@ export default function AdminEnrollmentsTab({ filterExpertId, filterProgramId }:
     setStartingId(startPickerId);
     setActionError(null);
     try {
-      await adminStartEnrollment(startPickerId, startDate !== today() ? startDate : undefined);
-      if (startDate === today()) {
+      await adminStartEnrollment(startPickerId, startDate !== todayISO() ? startDate : undefined);
+      if (startDate === todayISO()) {
         setEnrollments((prev) =>
           prev.map((e) => e.accessId === startPickerId
             ? { ...e, accessStatus: "Active", startedAt: new Date().toISOString() }
@@ -108,7 +109,7 @@ export default function AdminEnrollmentsTab({ filterExpertId, filterProgramId }:
     } finally {
       setStartingId(null);
       setStartPickerId(null);
-      setStartDate(today());
+      setStartDate(todayISO());
     }
   };
 
@@ -171,7 +172,7 @@ export default function AdminEnrollmentsTab({ filterExpertId, filterProgramId }:
     return true;
   });
 
-  if (loading) return <p className="adminPanel__loading">Loading enrollments…</p>;
+  if (loading) return <Spinner message="Loading enrollments…" />;
   if (error) return <p className="adminPanel__error">{error}</p>;
 
   return (
@@ -227,15 +228,15 @@ export default function AdminEnrollmentsTab({ filterExpertId, filterProgramId }:
         <table className="adminTable adminTable--wide">
           <thead>
             <tr>
-              <th>User</th>
-              <th>Expert</th>
-              <th>Program</th>
-              <th>Duration</th>
-              <th>Status</th>
-              <th>Start / End Date</th>
-              <th>Requested Start</th>
-              <th>Enrolled</th>
-              <th>Actions</th>
+              <th scope="col">User</th>
+              <th scope="col">Expert</th>
+              <th scope="col">Program</th>
+              <th scope="col">Duration</th>
+              <th scope="col">Status</th>
+              <th scope="col">Start / End Date</th>
+              <th scope="col">Requested Start</th>
+              <th scope="col">Enrolled</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -261,20 +262,20 @@ export default function AdminEnrollmentsTab({ filterExpertId, filterProgramId }:
                   <td>
                     {e.startedAt ? (
                       <>
-                        <div>{new Date(e.startedAt).toLocaleDateString()}</div>
+                        <div>{formatDate(e.startedAt)}</div>
                         {e.endDate
-                          ? <div className="adminTable__sub">Ends: {new Date(e.endDate).toLocaleDateString()}</div>
-                          : e.durationWeeks > 0 && <div className="adminTable__sub">Ends: {new Date(new Date(e.startedAt).getTime() + e.durationWeeks * 7 * 86400000).toLocaleDateString()}</div>
+                          ? <div className="adminTable__sub">Ends: {formatDate(e.endDate)}</div>
+                          : e.durationWeeks > 0 && <div className="adminTable__sub">Ends: {formatDate(calculateEndDate(e.startedAt, e.durationWeeks).toISOString())}</div>
                         }
                         {e.accessStatus === "Paused" && e.pausedAt && (
-                          <div className="adminTable__sub">Paused since {new Date(e.pausedAt).toLocaleDateString()}</div>
+                          <div className="adminTable__sub">Paused since {formatDate(e.pausedAt)}</div>
                         )}
                       </>
                     ) : e.scheduledStartAt ? (
                       <>
-                        <div>{new Date(e.scheduledStartAt).toLocaleDateString()}</div>
+                        <div>{formatDate(e.scheduledStartAt)}</div>
                         {e.durationWeeks > 0 && (
-                          <div className="adminTable__sub">Projected end: {new Date(new Date(e.scheduledStartAt).getTime() + e.durationWeeks * 7 * 86400000).toLocaleDateString()}</div>
+                          <div className="adminTable__sub">Projected end: {formatDate(calculateEndDate(e.scheduledStartAt, e.durationWeeks).toISOString())}</div>
                         )}
                       </>
                     ) : "—"}
@@ -282,21 +283,21 @@ export default function AdminEnrollmentsTab({ filterExpertId, filterProgramId }:
                   <td>
                     {e.requestedStartDate ? (
                       <>
-                        <div>{new Date(e.requestedStartDate).toLocaleDateString()}</div>
+                        <div>{formatDate(e.requestedStartDate)}</div>
                         {e.startRequestStatus && (
                           <div className="adminTable__sub">{e.startRequestStatus}</div>
                         )}
                       </>
                     ) : "—"}
                   </td>
-                  <td>{new Date(e.enrolledAt).toLocaleDateString()}</td>
+                  <td>{formatDate(e.enrolledAt)}</td>
                   <td>
                     <div className="adminTable__actions">
                       {e.accessStatus === "NotStarted" && (
                         <button
                           type="button"
                           className="adminActionButton"
-                          onClick={() => { setStartPickerId(e.accessId); setStartDate(e.scheduledStartAt ? e.scheduledStartAt.split("T")[0] : today()); }}
+                          onClick={() => { setStartPickerId(e.accessId); setStartDate(e.scheduledStartAt ? parseISODate(e.scheduledStartAt) : todayISO()); }}
                           disabled={actioningId === e.accessId}
                         >
                           {e.scheduledStartAt ? "Reschedule" : "Start"}
@@ -383,16 +384,16 @@ export default function AdminEnrollmentsTab({ filterExpertId, filterProgramId }:
                   className="field__input"
                   type="date"
                   value={startDate}
-                  min={today()}
+                  min={todayISO()}
                   onChange={(ev) => setStartDate(ev.target.value)}
                   disabled={!!startingId}
                 />
               </label>
-              {startDate === today() ? (
+              {startDate === todayISO() ? (
                 <p>Program will start immediately today.</p>
               ) : (
                 <p>
-                  Program will be scheduled for {new Date(startDate + "T00:00:00").toLocaleDateString()}.
+                  Program will be scheduled for {formatDate(startDate + "T00:00:00")}.
                   Emails will be sent to all parties confirming the schedule.
                 </p>
               )}
@@ -402,7 +403,7 @@ export default function AdminEnrollmentsTab({ filterExpertId, filterProgramId }:
                 Cancel
               </button>
               <button type="button" className="button" onClick={handleStartConfirm} disabled={!!startingId}>
-                {startingId ? "Confirming…" : startDate === today() ? "Start now" : "Schedule"}
+                {startingId ? "Confirming…" : startDate === todayISO() ? "Start now" : "Schedule"}
               </button>
             </div>
           </div>
@@ -419,7 +420,7 @@ export default function AdminEnrollmentsTab({ filterExpertId, filterProgramId }:
             </div>
             <div className="adminModal__body">
               {commentsLoading ? (
-                <p className="adminPanel__loading">Loading…</p>
+                <Spinner message="Loading…" size="sm" />
               ) : comments.length === 0 ? (
                 <p className="adminPanel__empty">No comments yet.</p>
               ) : (
@@ -427,7 +428,7 @@ export default function AdminEnrollmentsTab({ filterExpertId, filterProgramId }:
                   {comments.map((c) => (
                     <li key={c.commentId} className="adminComments__item">
                       <p className="adminComments__text">{c.updateNote}</p>
-                      <span className="adminComments__date">{new Date(c.createdAt).toLocaleString()}</span>
+                      <span className="adminComments__date">{formatDateTime(c.createdAt)}</span>
                     </li>
                   ))}
                 </ul>

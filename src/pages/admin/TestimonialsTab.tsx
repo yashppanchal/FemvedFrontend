@@ -258,13 +258,13 @@ export default function TestimonialsTab() {
             <table className="adminPanel__table">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>Reviewer</th>
-                  <th>Title</th>
-                  <th>Review</th>
-                  <th>Rating</th>
-                  <th>Active</th>
-                  <th>Actions</th>
+                  <th scope="col">#</th>
+                  <th scope="col">Reviewer</th>
+                  <th scope="col">Title</th>
+                  <th scope="col">Review</th>
+                  <th scope="col">Rating</th>
+                  <th scope="col">Active</th>
+                  <th scope="col">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -281,17 +281,19 @@ export default function TestimonialsTab() {
                         className={`adminPanel__badge ${t.isActive ? "adminPanel__badge--green" : "adminPanel__badge--red"}`}
                         onClick={() => handleToggleActive(t)}
                         title={t.isActive ? "Click to deactivate" : "Click to activate"}
+                        aria-label={`${t.isActive ? "Deactivate" : "Activate"} testimonial by ${t.reviewerName}`}
                       >
                         {t.isActive ? "Active" : "Inactive"}
                       </button>
                     </td>
                     <td>
-                      <button type="button" className="adminPanel__actionBtn" onClick={() => openEditModal(t)}>Edit</button>
+                      <button type="button" className="adminPanel__actionBtn" onClick={() => openEditModal(t)} aria-label={`Edit testimonial by ${t.reviewerName}`}>Edit</button>
                       <button
                         type="button"
                         className="adminPanel__actionBtn adminPanel__actionBtn--danger"
                         onClick={() => handleDelete(t.testimonialId)}
                         disabled={deletingId === t.testimonialId}
+                        aria-label={`Delete testimonial by ${t.reviewerName}`}
                       >
                         {deletingId === t.testimonialId ? "Deleting…" : "Delete"}
                       </button>

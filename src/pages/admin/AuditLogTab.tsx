@@ -52,11 +52,11 @@ export default function AuditLogTab() {
         <table className="adminTable">
           <thead>
             <tr>
-              <th>Actor</th>
-              <th>Action</th>
-              <th>Target</th>
-              <th>Details</th>
-              <th>Date</th>
+              <th scope="col">Actor</th>
+              <th scope="col">Action</th>
+              <th scope="col">Target</th>
+              <th scope="col">Details</th>
+              <th scope="col">Date</th>
             </tr>
           </thead>
           <tbody>

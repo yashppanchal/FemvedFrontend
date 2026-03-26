@@ -5,6 +5,7 @@ import {
 } from "../../api/guided";
 import { ApiError } from "../../api/client";
 import { useAuth } from "../../auth/useAuth";
+import { isValidUrl } from "../../validation";
 
 interface FlatCategory {
   id: string;
@@ -99,11 +100,21 @@ export default function ExpertCreateProgramTab() {
       return;
     }
 
+    // URL validation for image fields
+    if (form.gridImageUrl.trim() && !isValidUrl(form.gridImageUrl.trim())) {
+      setError("Program Card Image URL is not a valid URL.");
+      return;
+    }
+
     const mappedDurations = [];
     for (let i = 0; i < durations.length; i++) {
       const d = durations[i];
       if (!d.label.trim()) {
         setError(`Duration ${i + 1}: please enter a label (e.g. "4 weeks").`);
+        return;
+      }
+      if ((d.priceIN && Number(d.priceIN) < 0) || (d.priceUK && Number(d.priceUK) < 0) || (d.priceUS && Number(d.priceUS) < 0)) {
+        setError("Prices cannot be negative.");
         return;
       }
       const prices = [];
@@ -174,8 +185,8 @@ export default function ExpertCreateProgramTab() {
         <form className="form expertForm" onSubmit={handleSubmit} noValidate>
 
           {/* ── Section 1: Basic Info ─────────────────────────── */}
-          <div className="expertForm__section">
-            <h3 className="expertForm__sectionTitle">Basic Information</h3>
+          <fieldset className="expertForm__section">
+            <legend className="expertForm__sectionTitle">Basic Information</legend>
 
             <label className="field">
               <span className="field__label">Health Category <span className="field__required">*</span></span>
@@ -234,11 +245,11 @@ export default function ExpertCreateProgramTab() {
                 placeholder="https://res.cloudinary.com/..."
               />
             </label>
-          </div>
+          </fieldset>
 
           {/* ── Section 2: Descriptions ───────────────────────── */}
-          <div className="expertForm__section">
-            <h3 className="expertForm__sectionTitle">Program Description</h3>
+          <fieldset className="expertForm__section">
+            <legend className="expertForm__sectionTitle">Program Description</legend>
 
             <label className="field">
               <span className="field__label">Full Program Description <span className="field__techTerm">(overview)</span></span>
@@ -277,11 +288,11 @@ export default function ExpertCreateProgramTab() {
                 placeholder="hormones, stress, PCOS, gut-health"
               />
             </label>
-          </div>
+          </fieldset>
 
           {/* ── Section 3: What's included / Who it's for ──────── */}
-          <div className="expertForm__section">
-            <h3 className="expertForm__sectionTitle">Program Details</h3>
+          <fieldset className="expertForm__section">
+            <legend className="expertForm__sectionTitle">Program Details</legend>
 
             <label className="field">
               <span className="field__label">What's Included in This Program <span className="field__techTerm">(what you get)</span></span>
@@ -306,12 +317,12 @@ export default function ExpertCreateProgramTab() {
                 placeholder={"Women experiencing irregular or painful periods\nThose struggling with fatigue, mood swings, or weight changes\nAnyone wanting a natural approach to hormonal health"}
               />
             </label>
-          </div>
+          </fieldset>
 
           {/* ── Section 4: Durations & Pricing ───────────────── */}
-          <div className="expertForm__section">
+          <fieldset className="expertForm__section">
             <div className="expertForm__sectionHeader">
-              <h3 className="expertForm__sectionTitle">Durations &amp; Pricing</h3>
+              <legend className="expertForm__sectionTitle">Durations &amp; Pricing</legend>
               <button
                 type="button"
                 className="adminActionButton adminActionButton--sm"
@@ -406,7 +417,7 @@ export default function ExpertCreateProgramTab() {
                 </div>
               </div>
             ))}
-          </div>
+          </fieldset>
 
           <div className="expertForm__actions">
             <button type="submit" className="button expertForm__submit" disabled={submitting}>

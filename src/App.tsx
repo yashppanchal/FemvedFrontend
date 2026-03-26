@@ -87,6 +87,7 @@ export default function App() {
     <CountryProvider>
     <AuthProvider>
     <div className="layout">
+      <a href="#main-content" className="skipLink">Skip to content</a>
       <header
         className={`layout__header ${isAtTop ? "layout__header--atTop" : "layout__header--scrolled"}`}
       >
@@ -95,7 +96,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className={`layout__main ${isHome ? "layout__main--home" : ""}`}>
+      <main id="main-content" className={`layout__main ${isHome ? "layout__main--home" : ""}`}>
         {isHome ? (
           <RevealOnScroll className="layout__pageReveal">
             <PageTransition key={location.key}>

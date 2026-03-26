@@ -216,7 +216,7 @@ export default function CouponsTab() {
               Cancel
             </button>
             <button type="submit" className="button" disabled={submitting}>
-              {submitting ? "Saving…" : editId ? "Update" : "Create"}
+              {submitting ? "Saving…" : editId ? "Save Changes" : "Create Coupon"}
             </button>
           </div>
         </form>
@@ -234,13 +234,13 @@ export default function CouponsTab() {
         <table className="adminTable">
           <thead>
             <tr>
-              <th>Code</th>
-              <th>Type</th>
-              <th>Value</th>
-              <th>Used / Max</th>
-              <th>Expires</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th scope="col">Code</th>
+              <th scope="col">Type</th>
+              <th scope="col">Value</th>
+              <th scope="col">Used / Max</th>
+              <th scope="col">Expires</th>
+              <th scope="col">Status</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -262,13 +262,14 @@ export default function CouponsTab() {
                     </span>
                   </td>
                   <td className="adminTable__actions">
-                    <button type="button" className="adminActionButton" onClick={() => openEdit(c)}>
+                    <button type="button" className="adminActionButton" onClick={() => openEdit(c)} aria-label={`Edit coupon ${c.code}`}>
                       Edit
                     </button>
                     <button
                       type="button"
                       className="adminActionButton adminActionButton--danger"
                       onClick={() => handleDelete(c.couponId, c.code)}
+                      aria-label={`Delete coupon ${c.code}`}
                     >
                       Delete
                     </button>

@@ -1,9 +1,11 @@
 import { type FormEvent, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
+import { usePageTitle } from "../usePageTitle";
 import "./Login.scss";
 
 export default function Login() {
+  usePageTitle("Sign In");
   const { login } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();

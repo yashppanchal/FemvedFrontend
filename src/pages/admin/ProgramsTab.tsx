@@ -137,8 +137,8 @@ export function ProgramsTab({
         <form className="form adminForm" onSubmit={onSubmit} noValidate>
 
           {/* ── Section 1: Placement ──────────────────────────────── */}
-          <div className="expertForm__section">
-            <h4 className="expertForm__sectionTitle">Where does this program live?</h4>
+          <fieldset className="expertForm__section">
+            <legend className="expertForm__sectionTitle">Where does this program live?</legend>
 
             <div className="adminForm__row adminForm__row--two">
               <label className="field">
@@ -176,12 +176,12 @@ export function ProgramsTab({
                 </select>
               </label>
             </div>
-          </div>
+          </fieldset>
 
           {/* ── Section 1b: Expert ────────────────────────────────── */}
           {!editingProgramId && (
-            <div className="expertForm__section">
-              <h4 className="expertForm__sectionTitle">Assign Expert</h4>
+            <fieldset className="expertForm__section">
+              <legend className="expertForm__sectionTitle">Assign Expert</legend>
               <label className="field">
                 <span className="field__label">Expert <span className="field__required">*</span></span>
                 <span className="field__hint">The expert who will deliver this program.</span>
@@ -200,12 +200,12 @@ export function ProgramsTab({
                   ))}
                 </select>
               </label>
-            </div>
+            </fieldset>
           )}
 
           {/* ── Section 2: Basic Info ─────────────────────────────── */}
-          <div className="expertForm__section">
-            <h4 className="expertForm__sectionTitle">Basic Information</h4>
+          <fieldset className="expertForm__section">
+            <legend className="expertForm__sectionTitle">Basic Information</legend>
 
             <label className="field">
               <span className="field__label">Program Title <span className="field__required">*</span></span>
@@ -248,11 +248,11 @@ export function ProgramsTab({
                 />
               </label>
             </div>
-          </div>
+          </fieldset>
 
           {/* ── Section 3: Descriptions ───────────────────────────── */}
-          <div className="expertForm__section">
-            <h4 className="expertForm__sectionTitle">Program Description</h4>
+          <fieldset className="expertForm__section">
+            <legend className="expertForm__sectionTitle">Program Description</legend>
 
             <label className="field">
               <span className="field__label">Full Program Description <span className="field__techTerm">(overview)</span></span>
@@ -292,11 +292,11 @@ export function ProgramsTab({
                 disabled={isCreatingProgram || isLoadingProgramEdit}
               />
             </label>
-          </div>
+          </fieldset>
 
           {/* ── Section 4: Details ────────────────────────────────── */}
-          <div className="expertForm__section">
-            <h4 className="expertForm__sectionTitle">Program Details</h4>
+          <fieldset className="expertForm__section">
+            <legend className="expertForm__sectionTitle">Program Details</legend>
 
             <label className="field">
               <span className="field__label">What's Included <span className="field__techTerm">(what you get)</span></span>
@@ -323,12 +323,12 @@ export function ProgramsTab({
                 disabled={isCreatingProgram || isLoadingProgramEdit}
               />
             </label>
-          </div>
+          </fieldset>
 
           {/* ── Section 5: Durations + Pricing ───────────────────── */}
-          <div className="expertForm__section">
+          <fieldset className="expertForm__section">
             <div className="expertForm__sectionHeader">
-              <h4 className="expertForm__sectionTitle">Durations &amp; Pricing</h4>
+              <legend className="expertForm__sectionTitle">Durations &amp; Pricing</legend>
               <button
                 type="button"
                 className="adminActionButton"
@@ -476,11 +476,11 @@ export function ProgramsTab({
                 </div>
               </div>
             ))}
-          </div>
+          </fieldset>
 
           {/* ── Section 7: Detail Section ─────────────────────────── */}
-          <div className="expertForm__section">
-            <h4 className="expertForm__sectionTitle">Detail Page Section <span className="field__optional">optional</span></h4>
+          <fieldset className="expertForm__section">
+            <legend className="expertForm__sectionTitle">Detail Page Section <span className="field__optional">optional</span></legend>
             <p className="expertForm__sectionHint">A heading + description block shown on the program detail page, e.g. "Why This Works". You can add more after creation.</p>
 
             <label className="field">
@@ -506,7 +506,7 @@ export function ProgramsTab({
                 disabled={isCreatingProgram || isLoadingProgramEdit}
               />
             </label>
-          </div>
+          </fieldset>
 
           <div className="adminForm__actions">
             <button type="button" className="adminActionButton" onClick={onCloseModal} disabled={isCreatingProgram || isLoadingProgramEdit}>
@@ -514,7 +514,7 @@ export function ProgramsTab({
             </button>
             <button type="submit" className="button" disabled={isCreatingProgram || isLoadingProgramEdit}>
               {editingProgramId
-                ? isCreatingProgram ? "Updating…" : "Update Program"
+                ? isCreatingProgram ? "Saving…" : "Save Changes"
                 : isCreatingProgram ? "Creating…" : "Create Program"}
             </button>
           </div>
@@ -611,11 +611,11 @@ export function ProgramsTab({
         <table className="adminTable">
           <thead>
             <tr>
-              <th>Program</th>
-              <th>Expert</th>
-              <th>Category</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th scope="col">Program</th>
+              <th scope="col">Expert</th>
+              <th scope="col">Category</th>
+              <th scope="col">Status</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -638,6 +638,7 @@ export function ProgramsTab({
                         type="button"
                         className="adminActionButton"
                         onClick={() => onStartEdit(program)}
+                        aria-label={`View program ${program.name}`}
                       >
                         View Program
                       </button>
@@ -645,6 +646,7 @@ export function ProgramsTab({
                         type="button"
                         className="adminActionButton"
                         onClick={() => onStartEdit(program)}
+                        aria-label={`Edit program ${program.name}`}
                       >
                         Edit
                       </button>
@@ -655,6 +657,7 @@ export function ProgramsTab({
                           style={{ height: 32, padding: "0 12px", fontSize: 13 }}
                           onClick={() => onStatusChange(program.id, "publish")}
                           disabled={statusChangingId === program.id}
+                          aria-label={`Publish program ${program.name}`}
                         >
                           {statusChangingId === program.id ? "Publishing…" : "Publish"}
                         </button>
@@ -665,6 +668,7 @@ export function ProgramsTab({
                           className="adminActionButton adminActionButton--danger"
                           onClick={() => onStatusChange(program.id, "reject")}
                           disabled={statusChangingId === program.id}
+                          aria-label={`Decline program ${program.name}`}
                         >
                           {statusChangingId === program.id ? "Declining…" : "Decline"}
                         </button>
@@ -675,6 +679,7 @@ export function ProgramsTab({
                           className="adminActionButton adminActionButton--danger"
                           onClick={() => onDelete(program.id)}
                           disabled={deletingProgramId === program.id}
+                          aria-label={`Delete program ${program.name}`}
                         >
                           {deletingProgramId === program.id ? "Deleting…" : "Delete"}
                         </button>
@@ -710,11 +715,11 @@ export function ProgramsTab({
         <table className="adminTable">
           <thead>
             <tr>
-              <th>Program</th>
-              <th>Expert</th>
-              <th>Category</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th scope="col">Program</th>
+              <th scope="col">Expert</th>
+              <th scope="col">Category</th>
+              <th scope="col">Status</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -737,6 +742,7 @@ export function ProgramsTab({
                         type="button"
                         className="adminActionButton"
                         onClick={() => onStartEdit(program)}
+                        aria-label={`Edit program ${program.name}`}
                       >
                         Edit
                       </button>
@@ -746,6 +752,7 @@ export function ProgramsTab({
                           className="adminActionButton adminActionButton--danger"
                           onClick={() => onStatusChange(program.id, "archive")}
                           disabled={statusChangingId === program.id}
+                          aria-label={`Archive program ${program.name}`}
                         >
                           {statusChangingId === program.id ? "Archiving…" : "Archive"}
                         </button>

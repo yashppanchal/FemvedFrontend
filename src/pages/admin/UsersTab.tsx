@@ -12,10 +12,10 @@ export function UsersTab({ registeredUsers }: UsersTabProps) {
         <table className="adminTable">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Role</th>
+              <th scope="col">Name</th>
+              <th scope="col">Email</th>
+              <th scope="col">Phone</th>
+              <th scope="col">Role</th>
             </tr>
           </thead>
           <tbody>

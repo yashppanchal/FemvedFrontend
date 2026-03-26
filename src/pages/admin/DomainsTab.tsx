@@ -74,11 +74,11 @@ export function DomainsTab({
           <button type="submit" className="button" disabled={isCreatingDomain}>
             {editingDomainId
               ? isCreatingDomain
-                ? "Updating Domain..."
-                : "Update Domain"
+                ? "Saving…"
+                : "Save Changes"
               : isCreatingDomain
-                ? "Adding Domain..."
-                : "Add Domain"}
+                ? "Creating…"
+                : "Create Domain"}
           </button>
           {editingDomainId && (
             <button
@@ -109,8 +109,8 @@ export function DomainsTab({
         <table className="adminTable">
           <thead>
             <tr>
-              <th>Domain</th>
-              <th>Actions</th>
+              <th scope="col">Domain</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -124,6 +124,7 @@ export function DomainsTab({
                         type="button"
                         className="adminActionButton"
                         onClick={() => onStartEdit(domain)}
+                        aria-label={`Edit domain ${domain.name}`}
                       >
                         Edit
                       </button>
@@ -132,6 +133,7 @@ export function DomainsTab({
                         className="adminActionButton adminActionButton--danger"
                         disabled={deletingDomainId === domain.id}
                         onClick={() => onDelete(domain.id)}
+                        aria-label={`Archive domain ${domain.name}`}
                       >
                         {deletingDomainId === domain.id ? "Archiving..." : "Archive"}
                       </button>

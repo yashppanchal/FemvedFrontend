@@ -270,11 +270,11 @@ export function CategoriesTab({
             <button type="submit" className="button" disabled={isCreatingCategory}>
               {editingCategoryId
                 ? isCreatingCategory
-                  ? "Updating Category..."
-                  : "Update Category"
+                  ? "Saving…"
+                  : "Save Changes"
                 : isCreatingCategory
-                  ? "Adding Category..."
-                  : "Add Category"}
+                  ? "Creating…"
+                  : "Create Category"}
             </button>
             <button
               type="button"
@@ -296,7 +296,7 @@ export function CategoriesTab({
         <h2 className="adminPanel__title">Categories</h2>
         <p className="adminPanel__hint">Create categories under each domain.</p>
         <button type="button" className="button" onClick={onOpenAddModal}>
-          Add Category
+          Create Category
         </button>
       </div>
 
@@ -321,9 +321,9 @@ export function CategoriesTab({
         <table className="adminTable">
           <thead>
             <tr>
-              <th>Category</th>
-              <th>Domain</th>
-              <th>Actions</th>
+              <th scope="col">Category</th>
+              <th scope="col">Domain</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -338,6 +338,7 @@ export function CategoriesTab({
                         type="button"
                         className="adminActionButton"
                         onClick={() => onStartEdit(category)}
+                        aria-label={`Edit category ${category.name}`}
                       >
                         Edit
                       </button>
@@ -346,6 +347,7 @@ export function CategoriesTab({
                         className="adminActionButton adminActionButton--danger"
                         onClick={() => onDelete(category.id)}
                         disabled={deletingCategoryId === category.id}
+                        aria-label={`Archive category ${category.name}`}
                       >
                         {deletingCategoryId === category.id ? "Archiving..." : "Archive"}
                       </button>

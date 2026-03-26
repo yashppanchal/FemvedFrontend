@@ -65,6 +65,7 @@ export default function ExpertProgramsTab({ onViewEnrollments }: Props) {
                         className="expertTable__linkBtn"
                         onClick={() => onViewEnrollments(p.programId, p.name)}
                         title="View enrollments for this program"
+                        aria-label={`View enrollments for ${p.name}`}
                       >
                         {p.totalEnrollments}
                       </button>

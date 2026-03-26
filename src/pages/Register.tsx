@@ -2,9 +2,11 @@ import { type FormEvent, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth, type RegisterData } from "../auth/useAuth";
 import { useCountry, validatePhone, COUNTRY_LIST, type CountryCode } from "../country/useCountry";
+import { usePageTitle } from "../usePageTitle";
 import "./Register.scss";
 
 export default function Register() {
+  usePageTitle("Create Account");
   const { register } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();

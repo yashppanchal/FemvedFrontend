@@ -69,7 +69,7 @@ function SalesTab() {
           <h3 className="analyticsSection__heading">Revenue by currency</h3>
           <div className="adminTableWrap" style={{ marginBottom: 24 }}>
             <table className="adminTable">
-              <thead><tr><th>Currency</th><th>Orders</th><th>Total revenue</th><th>Avg. order value</th></tr></thead>
+              <thead><tr><th scope="col">Currency</th><th scope="col">Orders</th><th scope="col">Total revenue</th><th scope="col">Avg. order value</th></tr></thead>
               <tbody>
                 {data.revenueByCurrentcy.map((c) => (
                   <tr key={c.currencyCode}>
@@ -91,7 +91,7 @@ function SalesTab() {
           <h3 className="analyticsSection__heading">Revenue by gateway</h3>
           <div className="adminTableWrap" style={{ marginBottom: 24 }}>
             <table className="adminTable">
-              <thead><tr><th>Gateway</th><th>Currency</th><th>Orders</th><th>Revenue</th></tr></thead>
+              <thead><tr><th scope="col">Gateway</th><th scope="col">Currency</th><th scope="col">Orders</th><th scope="col">Revenue</th></tr></thead>
               <tbody>
                 {data.revenueByGateway.map((g, i) => (
                   <tr key={i}>
@@ -113,7 +113,7 @@ function SalesTab() {
           <h3 className="analyticsSection__heading">Revenue by country</h3>
           <div className="adminTableWrap" style={{ marginBottom: 24 }}>
             <table className="adminTable">
-              <thead><tr><th>Country</th><th>Currency</th><th>Orders</th><th>Revenue</th></tr></thead>
+              <thead><tr><th scope="col">Country</th><th scope="col">Currency</th><th scope="col">Orders</th><th scope="col">Revenue</th></tr></thead>
               <tbody>
                 {data.revenueByCountry.map((c, i) => (
                   <tr key={i}>
@@ -135,7 +135,7 @@ function SalesTab() {
           <h3 className="analyticsSection__heading">Monthly trend (last 12 months)</h3>
           <div className="adminTableWrap">
             <table className="adminTable">
-              <thead><tr><th>Month</th><th>Currency</th><th>Orders</th><th>Revenue</th></tr></thead>
+              <thead><tr><th scope="col">Month</th><th scope="col">Currency</th><th scope="col">Orders</th><th scope="col">Revenue</th></tr></thead>
               <tbody>
                 {data.revenueByMonth.map((m, i) => (
                   <tr key={i}>
@@ -191,7 +191,7 @@ function UsersTab() {
           <h3 className="analyticsSection__heading">New users by month</h3>
           <div className="adminTableWrap" style={{ marginBottom: 24 }}>
             <table className="adminTable">
-              <thead><tr><th>Month</th><th>New users</th><th>New buyers</th></tr></thead>
+              <thead><tr><th scope="col">Month</th><th scope="col">New users</th><th scope="col">New buyers</th></tr></thead>
               <tbody>
                 {data.newUsersByMonth.map((m, i) => (
                   <tr key={i}>
@@ -213,12 +213,12 @@ function UsersTab() {
             <table className="adminTable adminTable--wide">
               <thead>
                 <tr>
-                  <th>Cohort</th>
-                  <th>Registered</th>
-                  <th>Bought ≤30d</th>
-                  <th>Bought ≤60d</th>
-                  <th>Bought ≤90d</th>
-                  <th>30d rate</th>
+                  <th scope="col">Cohort</th>
+                  <th scope="col">Registered</th>
+                  <th scope="col">Bought ≤30d</th>
+                  <th scope="col">Bought ≤60d</th>
+                  <th scope="col">Bought ≤90d</th>
+                  <th scope="col">30d rate</th>
                 </tr>
               </thead>
               <tbody>

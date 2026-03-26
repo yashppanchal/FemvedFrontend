@@ -1,5 +1,32 @@
 @use "./styles/variables" as *;
 
+/* ── Skip-to-content link ──────────────────────────────────────────── */
+.skipLink {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  z-index: 9999;
+}
+.skipLink:focus {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  width: auto;
+  height: auto;
+  padding: 8px 16px;
+  background: var(--white, #fff);
+  color: var(--black, #1a1a1a);
+  border: 2px solid var(--primary, #56131b);
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 9999;
+  text-decoration: none;
+}
+
 .layout {
   min-height: 100vh;
   display: flex;

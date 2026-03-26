@@ -5,6 +5,7 @@ import ExpertProgramsTab from "./expert/ExpertProgramsTab";
 import ExpertEnrollmentsTab from "./expert/ExpertEnrollmentsTab";
 import ExpertEarningsTab from "./expert/ExpertEarningsTab";
 import ExpertCreateProgramTab from "./expert/ExpertCreateProgramTab";
+import { usePageTitle } from "../usePageTitle";
 import "./ExpertDashboard.scss";
 
 const ENABLE_CREATE_PROGRAM = import.meta.env.VITE_ENABLE_CREATE_PROGRAM !== "false";
@@ -22,6 +23,7 @@ const ALL_TABS: { id: ExpertTab; label: string; hidden?: boolean }[] = [
 const TABS = ALL_TABS.filter((t) => !t.hidden);
 
 export default function ExpertDashboard() {
+  usePageTitle("Expert Dashboard");
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<ExpertTab>("profile");
   const [filterProgramId, setFilterProgramId] = useState<string | null>(null);

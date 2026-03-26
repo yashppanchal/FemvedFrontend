@@ -328,7 +328,7 @@ export default function AdminUsersTab() {
               Cancel
             </button>
             <button type="submit" className="button" disabled={promoting}>
-              {promoting ? "Promoting…" : isExpertFormEmpty(expertForm) ? "Promote (profile later)" : "Promote & save profile"}
+              {promoting ? "Promoting…" : isExpertFormEmpty(expertForm) ? "Promote" : "Promote & Save Changes"}
             </button>
           </div>
         </form>
@@ -362,7 +362,7 @@ export default function AdminUsersTab() {
           <div className="adminForm__actions">
             <button type="button" className="adminActionButton" onClick={closeEmailEdit} disabled={savingEmail}>Cancel</button>
             <button type="submit" className="button" disabled={savingEmail || !emailInput.trim()}>
-              {savingEmail ? "Saving…" : "Save email"}
+              {savingEmail ? "Saving…" : "Save Changes"}
             </button>
           </div>
         </form>
@@ -373,12 +373,12 @@ export default function AdminUsersTab() {
         <table className="adminTable">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Status</th>
-              <th>Joined</th>
-              <th>Actions</th>
+              <th scope="col">Name</th>
+              <th scope="col">Email</th>
+              <th scope="col">Role</th>
+              <th scope="col">Status</th>
+              <th scope="col">Joined</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -429,6 +429,7 @@ export default function AdminUsersTab() {
                           className="adminActionButton"
                           onClick={() => openEmailEdit(u)}
                           disabled={promoting}
+                          aria-label={`Edit email for ${u.firstName} ${u.lastName}`}
                         >
                           Edit email
                         </button>
@@ -437,6 +438,7 @@ export default function AdminUsersTab() {
                           className="adminActionButton"
                           onClick={() => handleToggleActive(u)}
                           disabled={promoting}
+                          aria-label={`${u.isActive ? "Deactivate" : "Activate"} ${u.firstName} ${u.lastName}`}
                         >
                           {u.isActive ? "Deactivate" : "Activate"}
                         </button>
@@ -445,6 +447,7 @@ export default function AdminUsersTab() {
                           className="adminActionButton adminActionButton--danger"
                           onClick={() => handleDelete(u.userId, u.email)}
                           disabled={promoting}
+                          aria-label={`Archive user ${u.firstName} ${u.lastName}`}
                         >
                           Archive
                         </button>

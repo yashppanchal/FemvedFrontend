@@ -15,6 +15,7 @@ import {
 } from "../../api/experts";
 import { ApiError } from "../../api/client";
 import { getStatusBadgeClass, formatStatus } from "../../statusBadge";
+import { formatDate, formatDateTime, parseISODate, calculateEndDate, todayISO } from "../../dateUtils";
 
 interface Props {
   filterProgramId?: string | null;
@@ -25,7 +26,6 @@ interface Props {
 const STATUS_OPTIONS = ["All", "NotStarted", "Scheduled", "Active", "Paused", "Completed", "Cancelled"];
 import { PAGE_SIZE } from "../../constants";
 
-const today = () => new Date().toISOString().split("T")[0];
 
 export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramName, onClearFilter }: Props) {
   const [enrollments, setEnrollments] = useState<ExpertEnrollment[]>([]);
@@ -54,7 +54,7 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
 
   // Start date picker modal
   const [startPickerId, setStartPickerId] = useState<string | null>(null);
-  const [startDate, setStartDate] = useState(today());
+  const [startDate, setStartDate] = useState(todayISO());
   const [startingId, setStartingId] = useState<string | null>(null);
 
   useEscapeKey(() => { if (commentsEnrollmentId) setCommentsEnrollmentId(null); else if (startPickerId) setStartPickerId(null); }, !!(startPickerId || commentsEnrollmentId));
@@ -92,8 +92,8 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
     setStartingId(startPickerId);
     setActionError(null);
     try {
-      await startEnrollment(startPickerId, startDate !== today() ? startDate : undefined);
-      if (startDate === today()) {
+      await startEnrollment(startPickerId, startDate !== todayISO() ? startDate : undefined);
+      if (startDate === todayISO()) {
         updateStatus(startPickerId, "Active", { startedAt: new Date().toISOString() });
       } else {
         updateStatus(startPickerId, "NotStarted", { scheduledStartAt: startDate });
@@ -104,7 +104,7 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
     } finally {
       setStartingId(null);
       setStartPickerId(null);
-      setStartDate(today());
+      setStartDate(todayISO());
     }
   };
 
@@ -261,20 +261,20 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
                   <td>
                     {e.startedAt ? (
                       <>
-                        <div>Started: {new Date(e.startedAt).toLocaleDateString()}</div>
+                        <div>Started: {formatDate(e.startedAt)}</div>
                         {e.endDate
-                          ? <div className="expertTable__sub">Ends: {new Date(e.endDate).toLocaleDateString()}</div>
-                          : e.durationWeeks > 0 && <div className="expertTable__sub">Ends: {new Date(new Date(e.startedAt).getTime() + e.durationWeeks * 7 * 86400000).toLocaleDateString()}</div>
+                          ? <div className="expertTable__sub">Ends: {formatDate(e.endDate)}</div>
+                          : e.durationWeeks > 0 && <div className="expertTable__sub">Ends: {formatDate(calculateEndDate(e.startedAt, e.durationWeeks).toISOString())}</div>
                         }
                         {e.accessStatus === "Paused" && e.pausedAt && (
-                          <div className="expertTable__sub">Paused since {new Date(e.pausedAt).toLocaleDateString()}</div>
+                          <div className="expertTable__sub">Paused since {formatDate(e.pausedAt)}</div>
                         )}
                       </>
                     ) : e.scheduledStartAt ? (
                       <>
-                        <div>{new Date(e.scheduledStartAt).toLocaleDateString()}</div>
+                        <div>{formatDate(e.scheduledStartAt)}</div>
                         {e.durationWeeks > 0 && (
-                          <div className="expertTable__sub">Projected end: {new Date(new Date(e.scheduledStartAt).getTime() + e.durationWeeks * 7 * 86400000).toLocaleDateString()}</div>
+                          <div className="expertTable__sub">Projected end: {formatDate(calculateEndDate(e.scheduledStartAt, e.durationWeeks).toISOString())}</div>
                         )}
                       </>
                     ) : "—"}
@@ -282,21 +282,21 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
                   <td>
                     {e.requestedStartDate ? (
                       <>
-                        <div>{new Date(e.requestedStartDate).toLocaleDateString()}</div>
+                        <div>{formatDate(e.requestedStartDate)}</div>
                         {e.startRequestStatus && (
                           <div className="expertTable__sub">{e.startRequestStatus}</div>
                         )}
                       </>
                     ) : "—"}
                   </td>
-                  <td>{new Date(e.enrolledAt).toLocaleDateString()}</td>
+                  <td>{formatDate(e.enrolledAt)}</td>
                   <td className="expertTable__actionsCell">
                     <div className="expertTable__actions">
                       {e.accessStatus === "NotStarted" && (
                         <button
                           type="button"
                           className="expertTable__btn"
-                          onClick={() => { setStartPickerId(e.accessId); setStartDate(e.scheduledStartAt ? e.scheduledStartAt.split("T")[0] : today()); }}
+                          onClick={() => { setStartPickerId(e.accessId); setStartDate(e.scheduledStartAt ? parseISODate(e.scheduledStartAt) : todayISO()); }}
                           disabled={actioningId === e.accessId}
                         >
                           {e.scheduledStartAt ? "Reschedule" : "Start"}
@@ -383,16 +383,16 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
                   className="field__input"
                   type="date"
                   value={startDate}
-                  min={today()}
+                  min={todayISO()}
                   onChange={(ev) => setStartDate(ev.target.value)}
                   disabled={!!startingId}
                 />
               </label>
-              {startDate === today() ? (
+              {startDate === todayISO() ? (
                 <p className="expertModal__hint">Program will start immediately today.</p>
               ) : (
                 <p className="expertModal__hint">
-                  Program will be scheduled for {new Date(startDate + "T00:00:00").toLocaleDateString()}.
+                  Program will be scheduled for {formatDate(startDate + "T00:00:00")}.
                   An email will be sent now confirming the schedule, and again 24 hours before the start date.
                 </p>
               )}
@@ -402,7 +402,7 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
                 Cancel
               </button>
               <button type="button" className="button" onClick={handleStartConfirm} disabled={!!startingId}>
-                {startingId ? "Confirming…" : startDate === today() ? "Start now" : "Schedule"}
+                {startingId ? "Confirming…" : startDate === todayISO() ? "Start now" : "Schedule"}
               </button>
             </div>
           </div>
@@ -434,7 +434,7 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
                   <li key={c.commentId} className="expertComments__item">
                     <p className="expertComments__text">{c.updateNote}</p>
                     <span className="expertComments__date">
-                      {new Date(c.createdAt).toLocaleString()}
+                      {formatDateTime(c.createdAt)}
                     </span>
                   </li>
                 ))}

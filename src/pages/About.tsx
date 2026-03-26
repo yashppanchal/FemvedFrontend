@@ -1,7 +1,9 @@
 import "./About.scss";
 import RevealOnScroll from "../components/RevealOnScroll";
+import { usePageTitle } from "../usePageTitle";
 
 export default function About() {
+  usePageTitle("About");
   return (
     <section className="page about">
       {/* ── Hero ── */}

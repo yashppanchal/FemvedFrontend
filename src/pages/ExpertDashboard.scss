@@ -348,6 +348,12 @@
 
 /* ── Form extras ─────────────────────────────────────────────────── */
 
+fieldset.expertForm__section {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
 .expertForm__section {
   display: grid;
   gap: 16px;

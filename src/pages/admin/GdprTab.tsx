@@ -75,12 +75,12 @@ export default function GdprTab() {
         <table className="adminTable">
           <thead>
             <tr>
-              <th>User</th>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Requested</th>
-              <th>Resolved</th>
-              <th>Actions</th>
+              <th scope="col">User</th>
+              <th scope="col">Type</th>
+              <th scope="col">Status</th>
+              <th scope="col">Requested</th>
+              <th scope="col">Resolved</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
