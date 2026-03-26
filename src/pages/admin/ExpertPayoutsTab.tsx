@@ -29,7 +29,7 @@ export default function ExpertPayoutsTab() {
   const [balances, setBalances] = useState<ExpertPayoutBalance[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { toast, showSuccess, showError } = useToast();
+  const { toast, showSuccess } = useToast();
 
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);

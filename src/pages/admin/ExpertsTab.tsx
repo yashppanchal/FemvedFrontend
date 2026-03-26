@@ -87,7 +87,7 @@ export default function ExpertsTab() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const { toast, showSuccess, showError } = useToast();
+  const { toast, showError } = useToast();
 
   // Reset page on search change
   useEffect(() => { setPage(1); }, [search]);

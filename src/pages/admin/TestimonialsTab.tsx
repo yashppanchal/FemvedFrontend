@@ -161,7 +161,7 @@ export default function TestimonialsTab() {
         );
         setActionSuccess("Testimonial updated.");
       } else {
-        const result = await addTestimonial(selectedProgramId, {
+        await addTestimonial(selectedProgramId, {
           reviewerName: trimmedName,
           reviewerTitle: form.reviewerTitle.trim() || undefined,
           reviewText: trimmedText,
@@ -226,7 +226,7 @@ export default function TestimonialsTab() {
             {programs.length === 0 && <option value="">No programs</option>}
             {programs.map((p) => (
               <option key={p.programId} value={p.programId}>
-                {p.programName} ({p.status})
+                {p.name ?? "Untitled"} ({p.status})
               </option>
             ))}
           </select>
@@ -242,7 +242,7 @@ export default function TestimonialsTab() {
       {selectedProgram && (
         <div className="adminPanel__infoBox">
           <p className="adminPanel__infoTitle">
-            Testimonials for: <strong>{selectedProgram.programName}</strong>
+            Testimonials for: <strong>{selectedProgram.name ?? "Untitled"}</strong>
             {" "}— {testimonials.length} total
           </p>
         </div>
