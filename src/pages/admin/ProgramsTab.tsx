@@ -55,6 +55,7 @@ export function ProgramsTab({
   const [domainFilter, setDomainFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [expertFilter, setExpertFilter] = useState<string>("all");
   const [page, setPage] = useState(1);
 
   const set = (key: keyof ProgramForm) =>
@@ -72,17 +73,26 @@ export function ProgramsTab({
     return categories.filter((category) => category.domainId === domainFilter);
   }, [categories, domainFilter]);
 
+  const uniqueExperts = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const p of programs) {
+      if (p.expertId && p.expertName) map.set(p.expertId, p.expertName);
+    }
+    return Array.from(map.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+  }, [programs]);
+
   const filteredPrograms = useMemo(() => {
     return programs.filter((program) => {
       const matchesDomain = domainFilter === "all" || program.domainId === domainFilter;
       const matchesCategory = categoryFilter === "all" || program.categoryId === categoryFilter;
       const matchesStatus = statusFilter === "all" || (program.status ?? "").toLowerCase() === statusFilter.toLowerCase();
-      return matchesDomain && matchesCategory && matchesStatus;
+      const matchesExpert = expertFilter === "all" || program.expertId === expertFilter;
+      return matchesDomain && matchesCategory && matchesStatus && matchesExpert;
     });
-  }, [programs, domainFilter, categoryFilter, statusFilter]);
+  }, [programs, domainFilter, categoryFilter, statusFilter, expertFilter]);
 
   // Reset page when filters change
-  useEffect(() => { setPage(1); }, [domainFilter, categoryFilter, statusFilter]);
+  useEffect(() => { setPage(1); }, [domainFilter, categoryFilter, statusFilter, expertFilter]);
 
   const programModal = isProgramModalOpen ? (
     <div className="adminModalBackdrop" role="presentation">
@@ -562,12 +572,26 @@ export function ProgramsTab({
             ))}
           </select>
         </label>
+
+        <label className="field" style={{ flex: "1 1 200px" }}>
+          <span className="field__label">Filter by Expert</span>
+          <select
+            className="field__input"
+            value={expertFilter}
+            onChange={(e) => setExpertFilter(e.target.value)}
+          >
+            <option value="all">All experts</option>
+            {uniqueExperts.map(([id, name]) => (
+              <option key={id} value={id}>{name}</option>
+            ))}
+          </select>
+        </label>
       </div>
 
       {Math.ceil(filteredPrograms.length / PAGE_SIZE) > 1 && (
         <div className="adminPanel__pagination">
           <button type="button" className="adminActionButton" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
-          <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(filteredPrograms.length / PAGE_SIZE)}</span>
+          <span style={{ fontSize: 13, color: "var(--muted)" }}>{Math.min(page * PAGE_SIZE, filteredPrograms.length)} of {filteredPrograms.length}</span>
           <button type="button" className="adminActionButton" disabled={page >= Math.ceil(filteredPrograms.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
         </div>
       )}

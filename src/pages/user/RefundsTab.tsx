@@ -38,7 +38,7 @@ export default function RefundsTab() {
           {Math.ceil(refunds.length / PAGE_SIZE) > 1 && (
             <div className="dashPanel__pagination" style={{ marginBottom: 12 }}>
               <button type="button" className="dashTable__btn" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
-              <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(refunds.length / PAGE_SIZE)}</span>
+              <span style={{ fontSize: 13, color: "var(--muted)" }}>{Math.min(page * PAGE_SIZE, refunds.length)} of {refunds.length}</span>
               <button type="button" className="dashTable__btn" disabled={page >= Math.ceil(refunds.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
             </div>
           )}

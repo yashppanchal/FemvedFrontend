@@ -38,7 +38,7 @@ export default function ExpertProgramsTab({ onViewEnrollments }: Props) {
           {Math.ceil(programs.length / PAGE_SIZE) > 1 && (
             <div className="adminPanel__pagination" style={{ marginBottom: 12 }}>
               <button type="button" className="expertTable__btn" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
-              <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(programs.length / PAGE_SIZE)}</span>
+              <span style={{ fontSize: 13, color: "var(--muted)" }}>{Math.min(page * PAGE_SIZE, programs.length)} of {programs.length}</span>
               <button type="button" className="expertTable__btn" disabled={page >= Math.ceil(programs.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
             </div>
           )}

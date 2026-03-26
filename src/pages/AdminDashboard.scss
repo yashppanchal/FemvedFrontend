@@ -157,6 +157,38 @@
   font-weight: 500;
 }
 
+.adminPanel__infoBox {
+  margin: 0;
+  padding: 16px 20px;
+  border-radius: 10px;
+  background: rgba(86, 19, 27, 0.03);
+  border: 1px solid rgba(86, 19, 27, 0.1);
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.adminPanel__infoTitle {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.adminPanel__infoList {
+  margin: 0 0 8px;
+  padding-left: 18px;
+}
+
+.adminPanel__infoList li {
+  margin-bottom: 4px;
+}
+
+.adminPanel__infoNote {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
 /* ── Form ─────────────────────────────────────────────────────────── */
 
 .adminForm {

@@ -215,7 +215,7 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
         {Math.ceil(filtered.length / PAGE_SIZE) > 1 && (
           <div className="expertPanel__pagination">
             <button type="button" className="expertTable__btn" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
-            <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(filtered.length / PAGE_SIZE)}</span>
+            <span style={{ fontSize: 13, color: "var(--muted)" }}>{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}</span>
             <button type="button" className="expertTable__btn" disabled={page >= Math.ceil(filtered.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
           </div>
         )}

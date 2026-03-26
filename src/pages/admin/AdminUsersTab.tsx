@@ -198,14 +198,21 @@ export default function AdminUsersTab() {
   const setF = (key: keyof ExpertForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setExpertForm((prev) => ({ ...prev, [key]: e.target.value }));
 
-  const filtered = users.filter(
-    (u) =>
-      (u.email ?? "").toLowerCase().includes(search.toLowerCase()) ||
-      `${u.firstName ?? ""} ${u.lastName ?? ""}`.toLowerCase().includes(search.toLowerCase()),
-  );
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive" | "deleted">("all");
 
-  // Reset to page 1 whenever search changes
-  useEffect(() => { setPage(1); }, [search]);
+  const filtered = users.filter((u) => {
+    const matchesSearch =
+      (u.email ?? "").toLowerCase().includes(search.toLowerCase()) ||
+      `${u.firstName ?? ""} ${u.lastName ?? ""}`.toLowerCase().includes(search.toLowerCase());
+    if (!matchesSearch) return false;
+    if (statusFilter === "active") return u.isActive && !u.isDeleted;
+    if (statusFilter === "inactive") return !u.isActive && !u.isDeleted;
+    if (statusFilter === "deleted") return u.isDeleted;
+    return true;
+  });
+
+  // Reset to page 1 whenever search/filter changes
+  useEffect(() => { setPage(1); }, [search, statusFilter]);
 
   if (loading) return <p className="adminPanel__loading">Loading users…</p>;
   if (error) return <p className="adminPanel__error">{error}</p>;
@@ -220,11 +227,22 @@ export default function AdminUsersTab() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
+        <select
+          className="field__input"
+          style={{ width: "auto", minWidth: 140 }}
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value as "all" | "active" | "inactive" | "deleted")}
+        >
+          <option value="all">All users</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+          <option value="deleted">Deleted</option>
+        </select>
         <span className="adminPanel__count">{filtered.length} users</span>
         {Math.ceil(filtered.length / PAGE_SIZE) > 1 && (
           <div className="adminPanel__pagination">
             <button type="button" className="adminActionButton" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
-            <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(filtered.length / PAGE_SIZE)}</span>
+            <span style={{ fontSize: 13, color: "var(--muted)" }}>{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}</span>
             <button type="button" className="adminActionButton" disabled={page >= Math.ceil(filtered.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
           </div>
         )}
@@ -386,46 +404,52 @@ export default function AdminUsersTab() {
                     </span>
                   </td>
                   <td>
-                    <span className={`statusBadge statusBadge--${u.isActive ? "active" : "ended"}`}>
-                      {u.isActive ? "Active" : "Inactive"}
+                    <span className={`statusBadge statusBadge--${u.isDeleted ? "cancelled" : u.isActive ? "active" : "ended"}`}>
+                      {u.isDeleted ? "Deleted" : u.isActive ? "Active" : "Inactive"}
                     </span>
                   </td>
                   <td>{new Date(u.createdAt).toLocaleDateString()}</td>
                   <td className="adminTable__actions">
-                    <select
-                      className="field__input adminTable__roleSelect"
-                      value={String(u.roleId)}
-                      onChange={(ev) => handleRoleSelectChange(u, Number(ev.target.value))}
-                      disabled={promoting}
-                    >
-                      <option value="3">User</option>
-                      <option value="2">Expert</option>
-                      <option value="1">Admin</option>
-                    </select>
-                    <button
-                      type="button"
-                      className="adminActionButton"
-                      onClick={() => openEmailEdit(u)}
-                      disabled={promoting}
-                    >
-                      Edit email
-                    </button>
-                    <button
-                      type="button"
-                      className="adminActionButton"
-                      onClick={() => handleToggleActive(u)}
-                      disabled={promoting}
-                    >
-                      {u.isActive ? "Deactivate" : "Activate"}
-                    </button>
-                    <button
-                      type="button"
-                      className="adminActionButton adminActionButton--danger"
-                      onClick={() => handleDelete(u.userId, u.email)}
-                      disabled={promoting}
-                    >
-                      Archive
-                    </button>
+                    {u.isDeleted ? (
+                      <span style={{ fontSize: 13, color: "var(--muted)" }}>No actions</span>
+                    ) : (
+                      <>
+                        <select
+                          className="field__input adminTable__roleSelect"
+                          value={String(u.roleId)}
+                          onChange={(ev) => handleRoleSelectChange(u, Number(ev.target.value))}
+                          disabled={promoting}
+                        >
+                          <option value="3">User</option>
+                          <option value="2">Expert</option>
+                          <option value="1">Admin</option>
+                        </select>
+                        <button
+                          type="button"
+                          className="adminActionButton"
+                          onClick={() => openEmailEdit(u)}
+                          disabled={promoting}
+                        >
+                          Edit email
+                        </button>
+                        <button
+                          type="button"
+                          className="adminActionButton"
+                          onClick={() => handleToggleActive(u)}
+                          disabled={promoting}
+                        >
+                          {u.isActive ? "Deactivate" : "Activate"}
+                        </button>
+                        <button
+                          type="button"
+                          className="adminActionButton adminActionButton--danger"
+                          onClick={() => handleDelete(u.userId, u.email)}
+                          disabled={promoting}
+                        >
+                          Archive
+                        </button>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))

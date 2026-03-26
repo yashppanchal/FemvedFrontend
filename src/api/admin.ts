@@ -16,6 +16,7 @@ export interface AdminUser {
   roleId: number;
   roleName: string;
   isActive: boolean;
+  isDeleted: boolean;
   createdAt: string;
 }
 
@@ -589,5 +590,51 @@ export function addProgramDuration(
   return apiFetch<string>(
     `/guided/programs/${encodeURIComponent(programId)}/durations`,
     { method: "POST", body: JSON.stringify(data) },
+  );
+}
+
+// ── Testimonials ────────────────────────────────────────────────────────────
+
+export interface Testimonial {
+  testimonialId: string;
+  programId: string;
+  reviewerName: string;
+  reviewerTitle: string | null;
+  reviewText: string;
+  rating: number | null;
+  isActive: boolean;
+  sortOrder: number;
+  createdAt: string;
+}
+
+export function getProgramTestimonials(programId: string): Promise<Testimonial[]> {
+  return apiFetch<Testimonial[]>(`/guided/programs/${encodeURIComponent(programId)}/testimonials`);
+}
+
+export function addTestimonial(
+  programId: string,
+  data: { reviewerName: string; reviewerTitle?: string; reviewText: string; rating?: number; sortOrder?: number },
+): Promise<{ testimonialId: string }> {
+  return apiFetch<{ testimonialId: string }>(
+    `/guided/programs/${encodeURIComponent(programId)}/testimonials`,
+    { method: "POST", body: JSON.stringify(data) },
+  );
+}
+
+export function updateTestimonial(
+  programId: string,
+  testimonialId: string,
+  data: { reviewerName?: string; reviewerTitle?: string; reviewText?: string; rating?: number | null; sortOrder?: number; isActive?: boolean },
+): Promise<void> {
+  return apiFetch<void>(
+    `/guided/programs/${encodeURIComponent(programId)}/testimonials/${encodeURIComponent(testimonialId)}`,
+    { method: "PUT", body: JSON.stringify(data) },
+  );
+}
+
+export function deleteTestimonial(programId: string, testimonialId: string): Promise<void> {
+  return apiFetch<void>(
+    `/guided/programs/${encodeURIComponent(programId)}/testimonials/${encodeURIComponent(testimonialId)}`,
+    { method: "DELETE" },
   );
 }

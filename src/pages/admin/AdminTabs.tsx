@@ -19,6 +19,7 @@ const TABS: { id: AdminTab; label: string }[] = [
   { id: "analytics", label: "Analytics" },
   { id: "gdpr", label: "Data Requests" },
   { id: "payouts", label: "Payouts" },
+  { id: "testimonials", label: "Testimonials" },
 ];
 
 export function AdminTabs({ activeTab, onTabChange, userName }: AdminTabsProps) {

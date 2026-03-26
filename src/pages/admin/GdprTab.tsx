@@ -63,7 +63,7 @@ export default function GdprTab() {
         {totalPages > 1 && (
           <div className="adminPanel__pagination">
             <button type="button" className="adminActionButton" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
-            <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {totalPages}</span>
+            <span style={{ fontSize: 13, color: "var(--muted)" }}>{Math.min(page * PAGE_SIZE, requests.length)} of {requests.length}</span>
             <button type="button" className="adminActionButton" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>Next →</button>
           </div>
         )}

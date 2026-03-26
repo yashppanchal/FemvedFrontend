@@ -43,6 +43,7 @@ import AdminEnrollmentsTab from "./admin/AdminEnrollmentsTab";
 import AnalyticsTab from "./admin/AnalyticsTab";
 import GdprTab from "./admin/GdprTab";
 import ExpertPayoutsTab from "./admin/ExpertPayoutsTab";
+import TestimonialsTab from "./admin/TestimonialsTab";
 import "./AdminDashboard.scss";
 
 type GuidedHierarchyRows = {
@@ -1452,6 +1453,8 @@ export default function AdminDashboard() {
         {activeTab === "gdpr" && <GdprTab />}
 
         {activeTab === "payouts" && <ExpertPayoutsTab />}
+
+        {activeTab === "testimonials" && <TestimonialsTab />}
 
         {activeTab === "domains" && (
           <DomainsTab

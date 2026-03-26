@@ -90,7 +90,7 @@ export default function ExpertPayoutsTab() {
         {Math.ceil(balances.length / PAGE_SIZE) > 1 && (
           <div className="adminPanel__pagination">
             <button type="button" className="adminActionButton" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
-            <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(balances.length / PAGE_SIZE)}</span>
+            <span style={{ fontSize: 13, color: "var(--muted)" }}>{Math.min(page * PAGE_SIZE, balances.length)} of {balances.length}</span>
             <button type="button" className="adminActionButton" disabled={page >= Math.ceil(balances.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
           </div>
         )}

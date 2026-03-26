@@ -7,7 +7,7 @@ import ExpertEarningsTab from "./expert/ExpertEarningsTab";
 import ExpertCreateProgramTab from "./expert/ExpertCreateProgramTab";
 import "./ExpertDashboard.scss";
 
-const ENABLE_CREATE_PROGRAM = import.meta.env.VITE_ENABLE_CREATE_PROGRAM === "true";
+const ENABLE_CREATE_PROGRAM = import.meta.env.VITE_ENABLE_CREATE_PROGRAM !== "false";
 
 type ExpertTab = "profile" | "programs" | "enrollments" | "earnings" | "create";
 

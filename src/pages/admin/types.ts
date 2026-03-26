@@ -10,7 +10,8 @@ export type AdminTab =
   | "enrollments"
   | "analytics"
   | "gdpr"
-  | "payouts";
+  | "payouts"
+  | "testimonials";
 
 export type UserRow = {
   id: string;

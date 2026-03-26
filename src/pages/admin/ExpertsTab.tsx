@@ -296,7 +296,7 @@ export default function ExpertsTab() {
         {Math.ceil(filtered.length / PAGE_SIZE) > 1 && (
           <div className="adminPanel__pagination">
             <button type="button" className="adminActionButton" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
-            <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(filtered.length / PAGE_SIZE)}</span>
+            <span style={{ fontSize: 13, color: "var(--muted)" }}>{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}</span>
             <button type="button" className="adminActionButton" disabled={page >= Math.ceil(filtered.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
           </div>
         )}
@@ -521,8 +521,8 @@ export default function ExpertsTab() {
                                       <td>{p.totalEnrollments}</td>
                                       <td>{p.activeEnrollments}</td>
                                       <td>
-                                        <span className={`statusBadge statusBadge--${(p.status || "").toLowerCase() === "active" ? "active" : "ended"}`}>
-                                          {p.status}
+                                        <span className={`statusBadge statusBadge--${(p.status || "").toLowerCase() === "published" ? "active" : (p.status || "").toLowerCase() === "draft" ? "notstarted" : (p.status || "").toLowerCase() === "pendingreview" ? "scheduled" : "ended"}`}>
+                                          {p.status === "PendingReview" ? "Pending Review" : p.status}
                                         </span>
                                       </td>
                                     </tr>

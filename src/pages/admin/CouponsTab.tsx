@@ -108,6 +108,18 @@ export default function CouponsTab() {
         </button>
       </div>
 
+      <div className="adminPanel__infoBox">
+        <h4 className="adminPanel__infoTitle">How Coupons Work</h4>
+        <ul className="adminPanel__infoList">
+          <li><strong>Percentage</strong> — Discounts by a % of the program price (e.g. 20 = 20% off). Max 100%.</li>
+          <li><strong>Flat</strong> — Discounts by a fixed amount in the buyer's currency (e.g. 500 = ₹500 off / £500 off). The final price is never reduced below 1 unit of currency.</li>
+          <li><strong>Max Uses</strong> — Leave blank for unlimited redemptions. Set a number to cap total uses across all users.</li>
+          <li><strong>Expires At</strong> — After this date the coupon auto-deactivates. Leave blank for no expiry.</li>
+          <li><strong>Status</strong> — Only <em>Active</em> coupons can be redeemed. Toggle via Edit.</li>
+        </ul>
+        <p className="adminPanel__infoNote">Users apply coupons at checkout. The discount is calculated and shown before payment. Each use increments the "Used" counter.</p>
+      </div>
+
       {showForm && (
         <form className="adminForm" onSubmit={handleSubmit} noValidate>
           <h3 className="adminForm__title">{editId ? "Edit coupon" : "Create coupon"}</h3>
@@ -115,35 +127,41 @@ export default function CouponsTab() {
 
           <div className="adminForm__row">
             <label className="field">
-              <span className="field__label">Code *</span>
+              <span className="field__label">Coupon Code *</span>
+              <span className="field__hint">The code users will enter at checkout, e.g. WELCOME20, DIWALI50</span>
               <input
                 className="field__input"
                 type="text"
                 value={form.code}
                 onChange={(e) => setForm((p) => ({ ...p, code: e.target.value.toUpperCase() }))}
+                placeholder="e.g. WELCOME20"
                 disabled={submitting}
               />
             </label>
             <label className="field">
-              <span className="field__label">Discount type</span>
+              <span className="field__label">Discount Type</span>
+              <span className="field__hint">Percentage = % off, Flat = fixed amount off in buyer's currency</span>
               <select
                 className="field__input"
                 value={form.discountType}
                 onChange={(e) => setForm((p) => ({ ...p, discountType: e.target.value as "Percentage" | "Flat" }))}
                 disabled={submitting}
               >
-                <option value="Percentage">Percentage</option>
-                <option value="Flat">Flat</option>
+                <option value="Percentage">Percentage (%)</option>
+                <option value="Flat">Flat Amount</option>
               </select>
             </label>
             <label className="field">
-              <span className="field__label">Value</span>
+              <span className="field__label">{form.discountType === "Percentage" ? "Discount (%)" : "Discount Amount"}</span>
+              <span className="field__hint">{form.discountType === "Percentage" ? "e.g. 20 = 20% off the program price" : "e.g. 500 = ₹500 / £500 / $500 off"}</span>
               <input
                 className="field__input"
                 type="number"
                 min="0"
+                max={form.discountType === "Percentage" ? 100 : undefined}
                 value={form.discountValue}
                 onChange={(e) => setForm((p) => ({ ...p, discountValue: Number(e.target.value) }))}
+                placeholder={form.discountType === "Percentage" ? "e.g. 20" : "e.g. 500"}
                 disabled={submitting}
               />
             </label>
@@ -151,7 +169,8 @@ export default function CouponsTab() {
 
           <div className="adminForm__row">
             <label className="field">
-              <span className="field__label">Max uses (blank = unlimited)</span>
+              <span className="field__label">Max Uses</span>
+              <span className="field__hint">Total redemptions allowed across all users. Leave blank for unlimited.</span>
               <input
                 className="field__input"
                 type="number"
@@ -160,11 +179,13 @@ export default function CouponsTab() {
                 onChange={(e) =>
                   setForm((p) => ({ ...p, maxUses: e.target.value ? Number(e.target.value) : undefined }))
                 }
+                placeholder="Unlimited"
                 disabled={submitting}
               />
             </label>
             <label className="field">
-              <span className="field__label">Expires at</span>
+              <span className="field__label">Expires At</span>
+              <span className="field__hint">Coupon cannot be used after this date. Leave blank for no expiry.</span>
               <input
                 className="field__input"
                 type="datetime-local"
@@ -194,7 +215,7 @@ export default function CouponsTab() {
       {Math.ceil(coupons.length / PAGE_SIZE) > 1 && (
         <div className="adminPanel__pagination">
           <button type="button" className="adminActionButton" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
-          <span style={{ fontSize: 13, color: "var(--muted)" }}>Page {page} of {Math.ceil(coupons.length / PAGE_SIZE)}</span>
+          <span style={{ fontSize: 13, color: "var(--muted)" }}>{Math.min(page * PAGE_SIZE, coupons.length)} of {coupons.length}</span>
           <button type="button" className="adminActionButton" disabled={page >= Math.ceil(coupons.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
         </div>
       )}
