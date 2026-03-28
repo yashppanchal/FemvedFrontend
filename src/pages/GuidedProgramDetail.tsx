@@ -1,6 +1,7 @@
 import "./GuidedProgramDetail.scss";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import dividerImage from "../assets/bg/11.png";
 import { TestimonialsCarousel } from "../components/TestimonialsCarousel";
 import { HeroSection } from "../components/guided-care-components/HeroSection";
 import { MoreSection } from "../components/guided-care-components/MoreSection";
@@ -161,6 +162,17 @@ export default function GuidedProgramDetail() {
       <CtaBanner />
 
       <ZigzagSection />
+
+      <div className="guidedProgramDetail__sectionDivider" role="presentation">
+        <img
+          src={dividerImage}
+          alt=""
+          className="guidedProgramDetail__sectionDividerImg"
+          width={1366}
+          height={220}
+          decoding="async"
+        />
+      </div>
 
       <TestimonialsCarousel />
     </section>

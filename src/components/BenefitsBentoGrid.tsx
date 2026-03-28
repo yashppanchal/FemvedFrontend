@@ -59,7 +59,7 @@ export function BenefitsBentoGrid() {
   return (
     <section id="benefits-bento-grid" className="benefitsBentoGrid">
       <h2 className="benefitsBentoGrid__heading">
-        Built by experts. Backed by technology. Always genuine.
+        Built by experts. Backed by technology. Always <em>genuine</em>.
       </h2>
 
       <div className="benefitsBentoGrid__inner">
