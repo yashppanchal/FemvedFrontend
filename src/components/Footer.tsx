@@ -95,6 +95,11 @@ export function Footer() {
                     Terms
                   </Link>
                 </li>
+                <li className="footer__item">
+                  <Link className="footer__link" to="/privacy-policy">
+                    Privacy policy
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
