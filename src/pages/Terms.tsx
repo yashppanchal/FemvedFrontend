@@ -7,7 +7,7 @@ export default function Terms() {
       <div className="terms__hero">
         <p className="terms__heroLabel">Legal</p>
         <h1 className="terms__heroTitle">Terms &amp; Conditions</h1>
-        <p className="terms__revised">Last revised: August 2024</p>
+        <p className="terms__revised">Last revised: March 2026</p>
       </div>
 
       {/* ── Intro ── */}
@@ -19,7 +19,9 @@ export default function Terms() {
         </p>
 
         {/* ── General ── */}
-        <h2 className="terms__heading">User Terms &amp; Conditions — General</h2>
+        <h2 className="terms__heading">
+          User Terms &amp; Conditions — General
+        </h2>
 
         <p>
           The Website and Application Femved (hereinafter referred to as
@@ -118,8 +120,8 @@ export default function Terms() {
           Patients Practitioners best suited to your needs, based on the Content
           provided to us / updated on the Website / updated on the Website and
           Application, or Website and Applications built on it, by Practitioners
-          and End Users, including without limitation Content relating to area of
-          Practitioner area of specialization, expertise, experience,
+          and End Users, including without limitation Content relating to area
+          of Practitioner area of specialization, expertise, experience,
           availability, and geographic location.
         </p>
 
@@ -465,8 +467,8 @@ export default function Terms() {
 
         <ol className="terms__list">
           <li>
-            You hereby certify that you are a woman of at least 18 years of
-            age. Suitable legal course will be followed if these conditions are
+            You hereby certify that you are a woman of at least 18 years of age.
+            Suitable legal course will be followed if these conditions are
             violated.
           </li>
           <li>
@@ -505,7 +507,6 @@ export default function Terms() {
             diagnosis and hence is not responsible for any interactions between
             User and the Practitioner. User understands and agrees that Femved
             Wellness will not be liable for:
-
             <ol className="terms__list terms__list--alpha">
               <li>
                 User interactions and associated issues User has with the
@@ -531,9 +532,9 @@ export default function Terms() {
               </li>
               <li>
                 cancellation or no show by the Practitioner or rescheduling of
-                booked appointment or any variation in the fees charged, provided
-                these have been addressed to under, Femved Wellness Guarantee
-                Program.
+                booked appointment or any variation in the fees charged,
+                provided these have been addressed to under, Femved Wellness
+                Guarantee Program.
               </li>
             </ol>
           </li>
@@ -665,8 +666,8 @@ export default function Terms() {
         <p>
           <strong>b.</strong> In exceptional cases, User may submit a claim for
           a refund for a purchase by emailing{" "}
-          <a href="mailto:wecare@FemvedWellness.com" className="terms__link">
-            wecare@FemvedWellness.com
+          <a href="mailto:femvedwellness@gmail.com" className="terms__link">
+            femvedwellness@gmail.com
           </a>{" "}
           and providing a clear and specific reason for the refund request and
           the exact terms that have been violated. Whether a refund will be
@@ -816,13 +817,11 @@ export default function Terms() {
             privacy policy.
           </li>
           <li>
-            "You", "Your", "Yourself" and "User" shall mean and refer to
-            natural and legal individuals who use the Website and Application,
-            including End-Users, Patients, general Users and Practitioners.
+            "You", "Your", "Yourself" and "User" shall mean and refer to natural
+            and legal individuals who use the Website and Application, including
+            End-Users, Patients, general Users and Practitioners.
           </li>
-          <li>
-            "Website and Application" shall mean and refer to Femved.
-          </li>
+          <li>"Website and Application" shall mean and refer to Femved.</li>
           <li>
             "Personal Information" shall mean and refer to any personally
             identifiable information that We may collect from You.
@@ -966,9 +965,7 @@ export default function Terms() {
         <ul className="terms__list terms__list--bullet">
           <li>When You register on Our Website or Website and Application.</li>
           <li>When You provide Your Personal Information to Us.</li>
-          <li>
-            During the course of Services provided to You by Us.
-          </li>
+          <li>During the course of Services provided to You by Us.</li>
           <li>
             When You use the features on Our Website or Website and Application.
           </li>
@@ -1113,9 +1110,7 @@ export default function Terms() {
         </p>
 
         {/* ── Provider's Terms ── */}
-        <h2 className="terms__heading">
-          Provider's Terms &amp; Conditions
-        </h2>
+        <h2 className="terms__heading">Provider's Terms &amp; Conditions</h2>
 
         <p>
           Femved Wellness aspires to build a trusted network of providers who
@@ -1131,9 +1126,7 @@ export default function Terms() {
           other medical professionals.
         </p>
 
-        <h3 className="terms__subheading">
-          Guidelines for Provider Protocol
-        </h3>
+        <h3 className="terms__subheading">Guidelines for Provider Protocol</h3>
 
         <ul className="terms__list terms__list--bullet terms__list--protocol">
           <li>
@@ -1292,11 +1285,8 @@ export default function Terms() {
             if any. In case of there being any technical failure, at the time of
             transaction and there is a problem in making payment, you could
             contact Femved Wellness through email at:{" "}
-            <a
-              href="mailto:wecare@FemvedWellness.com"
-              className="terms__link"
-            >
-              wecare@FemvedWellness.com
+            <a href="mailto:femvedwellness@gmail.com" className="terms__link">
+              femvedwellness@gmail.com
             </a>
           </li>
           <li>
@@ -1315,10 +1305,9 @@ export default function Terms() {
           <li>
             The Provider understands that Femved Wellness makes no promise or
             guarantee for any uninterrupted communication and the Provider shall
-            not hold Femved Wellness liable, if for any reason the
-            communication is not delivered to the Patient(s), or are delivered
-            late or not accessed, despite the efforts undertaken by Femved
-            Wellness.
+            not hold Femved Wellness liable, if for any reason the communication
+            is not delivered to the Patient(s), or are delivered late or not
+            accessed, despite the efforts undertaken by Femved Wellness.
           </li>
           <li>
             It shall be the responsibility of the Provider to ensure that the
@@ -1347,11 +1336,8 @@ export default function Terms() {
             misconduct and assault (especially in minors), or User self-harm
             (suicide: planned, attempted or completed), the Practitioner agrees
             to report such events to Femved Wellness via the email:{" "}
-            <a
-              href="mailto:wecare@FemvedWellness.com"
-              className="terms__link"
-            >
-              wecare@FemvedWellness.com
+            <a href="mailto:femvedwellness@gmail.com" className="terms__link">
+              femvedwellness@gmail.com
             </a>{" "}
             immediately.
           </li>
@@ -1406,9 +1392,9 @@ export default function Terms() {
           Femved Wellness's existing and potential clients; (d) provide video
           logs, testimonials, e-mailers, banners, interviews to the news media
           and provide quotes for press releases; (e) make presentations at
-          conferences; and/or (f) use the Practitioner's name and/or logo,
-          brand images, tag lines etc., within product literature, e-mailers,
-          press releases, social media and other advertising, marketing and
+          conferences; and/or (f) use the Practitioner's name and/or logo, brand
+          images, tag lines etc., within product literature, e-mailers, press
+          releases, social media and other advertising, marketing and
           promotional materials.
         </p>
 
@@ -1432,14 +1418,14 @@ export default function Terms() {
           Providers hereby agree to indemnify, defend, and hold harmless Femved
           Wellness and other users, and our and their respective affiliates,
           officers, directors, employees and agents, from and against any claim,
-          cost or liability, including reasonable attorneys' fees, arising out of
-          or relating to: (a) the use of the Services by you or your Workforce;
-          (b) any breach by you or your Workforce of any representations,
-          warranties or agreements contained in this Agreement; (c) the actions
-          of any person gaining access to the Services under Credentials
-          assigned to you or a member of your Workforce; (d) the actions of
-          anyone using Credentials assigned to you or any member of your
-          Workforce that adversely affects the Services or any information
+          cost or liability, including reasonable attorneys' fees, arising out
+          of or relating to: (a) the use of the Services by you or your
+          Workforce; (b) any breach by you or your Workforce of any
+          representations, warranties or agreements contained in this Agreement;
+          (c) the actions of any person gaining access to the Services under
+          Credentials assigned to you or a member of your Workforce; (d) the
+          actions of anyone using Credentials assigned to you or any member of
+          your Workforce that adversely affects the Services or any information
           accessed through the Services; and (e) your negligent or wilful
           misconduct, or that of any member of your Workforce. Your
           indemnifications obligations in this Agreement are cumulative, and are

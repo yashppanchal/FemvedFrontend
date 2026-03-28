@@ -34,8 +34,7 @@ export function HeroCarousel() {
         type: "split",
         imageUrl: firstscroll,
         imageAlt: "Femved \u2014 holistic wellness",
-        title:
-          "Your health doesn\u2019t need another influencer. You deserve the right guidance.",
+        title: "Your symptoms are real. Your concerns matter.",
         body: "Create your own wellness plan with globally accredited women practitioners, because wellness isn’t a trend or a hack, it’s personal. Stop borrowing wellness from someone’s reel.",
         ctaLabel: "Support your hormones, your way",
         ctaTo: "/guided/hormonal-health-support",
