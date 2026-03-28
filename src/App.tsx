@@ -3,7 +3,6 @@ import { AuthProvider } from "./auth/useAuth";
 import { CountryProvider } from "./country/useCountry";
 import { Footer } from "./components/Footer";
 import { NavBar } from "./components/NavBar";
-import { PrimaryButton } from "./components/PrimaryButton";
 import RevealOnScroll from "./components/RevealOnScroll";
 import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useState } from "react";
@@ -39,8 +38,6 @@ export default function App() {
   const location = useLocation();
   const [isAtTop, setIsAtTop] = useState(true);
   const isHome = location.pathname === "/";
-  const isLearnPage =
-    location.pathname.startsWith("/learn/") || location.pathname === "/about";
 
   useEffect(() => {
     let raf = 0;
@@ -110,25 +107,6 @@ export default function App() {
                 <Outlet />
               </PageTransition>
             </RevealOnScroll>
-            {isLearnPage ? (
-              <section className="learnCta" aria-label="Learn page call to action">
-                <h2 className="learnCta__title">Choose where to start</h2>
-                <div className="learnCta__buttons">
-                  <PrimaryButton
-                    label="Support your hormones, your way"
-                    to="/guided/hormonal-health-support"
-                  />
-                  <PrimaryButton
-                    label="Begin where you are"
-                    to="/all-guided-programs"
-                  />
-                  <PrimaryButton
-                    label="Why join us"
-                    to="/#benefits-bento-grid"
-                  />
-                </div>
-              </section>
-            ) : null}
           </div>
         )}
       </main>
