@@ -16,7 +16,7 @@ const WHATSAPP_COMMUNITY_URL =
   "https://chat.whatsapp.com/ESpk7Ruh6wWFlFuFfx423s";
 
 const community1 =
-  "https://res.cloudinary.com/dh8aj0hzw/image/upload/v1772965685/6_hd1noa.png";
+  "https://res.cloudinary.com/dh8aj0hzw/image/upload/v1772965686/1_zjy3rp.png";
 const community2 =
   "https://res.cloudinary.com/dh8aj0hzw/image/upload/v1772965688/2_kkkilf.png";
 const community3 =
@@ -26,7 +26,7 @@ const community4 =
 const community5 =
   "https://res.cloudinary.com/dh8aj0hzw/image/upload/v1772965683/5_gi6fxj.png";
 const community6 =
-  "https://res.cloudinary.com/dh8aj0hzw/image/upload/v1772965686/1_zjy3rp.png";
+  "https://res.cloudinary.com/dh8aj0hzw/image/upload/v1772965685/6_hd1noa.png";
 
 const collageImages = [
   { id: "img6", src: community1, alt: "Community member story" },

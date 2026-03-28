@@ -28,6 +28,7 @@
 .heroCarousel__slide {
   flex: 0 0 100%;
   height: 100%;
+  min-width: 0;
 }
 
 .heroCarousel__slide--split {
@@ -89,7 +90,7 @@
 .heroCarousel__controls {
   position: absolute;
   left: 50%;
-  bottom: 18px;
+  bottom: max(18px, env(safe-area-inset-bottom, 0px));
   transform: translateX(-50%);
   display: flex;
   align-items: center;
@@ -99,6 +100,7 @@
   background: rgba(255, 255, 255, 0.65);
   border: 1px solid rgba(15, 15, 16, 0.12);
   backdrop-filter: blur(10px);
+  max-width: calc(100% - 32px);
 }
 
 .heroCarousel__dot {
@@ -234,18 +236,78 @@
 }
 
 @media (max-width: 820px) {
+  .heroCarousel {
+    height: auto;
+    min-height: min(100dvh, 920px);
+    overflow-x: clip;
+    overflow-y: visible;
+    padding-bottom: max(72px, calc(env(safe-area-inset-bottom, 0px) + 56px));
+  }
+
+  .heroCarousel__viewport {
+    height: auto;
+    min-height: min(92dvh, 880px);
+    overflow: hidden;
+  }
+
+  .heroCarousel__track {
+    height: auto;
+    min-height: min(92dvh, 880px);
+    align-items: stretch;
+  }
+
+  .heroCarousel__slide {
+    height: auto;
+    min-height: min(92dvh, 880px);
+    align-self: stretch;
+  }
+
   .heroCarousel__slide--split {
     grid-template-columns: 1fr;
+    grid-template-rows: minmax(200px, min(42vh, 360px)) auto;
+    align-items: stretch;
   }
 
   .heroCarousel__content {
     order: 2;
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.96);
+    padding: clamp(20px, 5vw, 40px);
+    padding-bottom: clamp(28px, 6vw, 44px);
+    gap: clamp(16px, 4vw, 22px);
+    justify-content: flex-start;
+  }
+
+  .heroCarousel__title {
+    max-width: none;
+    font-size: clamp(28px, 7vw, 40px);
+    line-height: 1.08;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .heroCarousel__body {
+    max-width: none;
+    font-size: clamp(15px, 3.8vw, 17px);
+  }
+
+  .heroCarousel__content .primaryButton {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
   }
 
   .heroCarousel__media {
     order: 1;
     background: rgba(255, 255, 255, 0.3);
+    min-height: 200px;
+    max-height: min(42vh, 360px);
+  }
+
+  .heroCarousel__media .heroCarousel__image {
+    max-height: min(42vh, 360px);
+    object-fit: cover;
+    object-position: center;
   }
 
   .heroCarousel__image {
@@ -254,18 +316,64 @@
 
   .heroCarousel__slide--healthcare {
     grid-template-columns: 1fr;
+    grid-template-rows: minmax(200px, min(42vh, 360px)) auto;
+    align-items: stretch;
+    min-height: min(92dvh, 880px);
   }
 
   .hc__right {
-    display: none;
+    order: 1;
+    min-height: 200px;
+    max-height: min(42vh, 360px);
+    justify-content: center;
+  }
+
+  .hc__right .hc__illustration {
+    max-height: min(42vh, 360px);
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .hc__left {
+    order: 2;
+    padding: clamp(20px, 5vw, 40px);
+    padding-bottom: clamp(28px, 6vw, 44px);
+    min-height: 0;
+    justify-content: flex-start;
+    background: rgba(255, 255, 255, 0.96);
+    box-sizing: border-box;
+  }
+
+  .hc__headline {
+    font-size: clamp(28px, 7vw, 44px);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .hc__subheader {
+    max-width: none;
   }
 
   .hc__buttons {
     flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 12px;
   }
 
+  .hc__buttons .primaryButton {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 380px) {
+  .heroCarousel__content,
   .hc__left {
-    padding: clamp(24px, 5vw, 48px);
+    padding-left: 16px;
+    padding-right: 16px;
   }
 }
 

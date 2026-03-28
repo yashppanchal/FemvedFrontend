@@ -100,7 +100,7 @@ export function HeroCarousel() {
                         s.imageUrl,
                         [640, 960, 1200, 1600],
                       )}
-                      sizes="(max-width: 980px) 100vw, 50vw"
+                      sizes="(max-width: 820px) 100vw, 50vw"
                       alt={s.imageAlt}
                       loading="eager"
                       decoding="async"
@@ -153,7 +153,7 @@ export function HeroCarousel() {
                         s.imageUrl,
                         [480, 720, 900, 1200],
                       )}
-                      sizes="(max-width: 980px) 100vw, 50vw"
+                      sizes="(max-width: 820px) 100vw, 50vw"
                       alt={s.imageAlt}
                       loading="lazy"
                       decoding="async"
