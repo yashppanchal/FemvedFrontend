@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaRegUser } from "react-icons/fa";
 import { IoChevronDown, IoMenu, IoClose } from "react-icons/io5";
 import {
+  HOLISTIC_TREATMENTS_NAV_SECTION,
   LEARN_NAV_SECTION,
   NAV_SECTIONS,
   STATIC_NAV_ITEM_LABEL_BY_PATH,
@@ -191,7 +192,11 @@ export function NavBar() {
     treeNavPayload &&
     treeNavPayload.country === country &&
     treeNavPayload.sections.length > 0
-      ? [...treeNavPayload.sections, LEARN_NAV_SECTION]
+      ? [
+          ...treeNavPayload.sections,
+          HOLISTIC_TREATMENTS_NAV_SECTION,
+          LEARN_NAV_SECTION,
+        ]
       : NAV_SECTIONS;
 
   const isAdmin = user?.role.id === ROLE_ADMIN.id;

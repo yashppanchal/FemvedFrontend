@@ -70,7 +70,18 @@ export const NAV_SECTIONS: NavSection[] = [
   {
     id: "treatments",
     label: "Holistic Treatments",
-    items: [],
+    items: [
+      {
+        type: "internal",
+        label: "Retreats",
+        path: "/holistic-treatments/retreats",
+      },
+      {
+        type: "internal",
+        label: "Events",
+        path: "/holistic-treatments/events",
+      },
+    ],
   },
   {
     id: "learn",
@@ -100,6 +111,10 @@ export const NAV_SECTIONS: NavSection[] = [
 /** Learn is not backed by a guided-tree domain; appended in the nav after API-driven domain sections. */
 export const LEARN_NAV_SECTION: NavSection =
   NAV_SECTIONS.find((s) => s.id === "learn")!;
+
+/** Static dropdown (Retreats, Events); inserted before Learn when the guided tree drives other sections. */
+export const HOLISTIC_TREATMENTS_NAV_SECTION: NavSection =
+  NAV_SECTIONS.find((s) => s.id === "treatments")!;
 
 /** Fallback labels for category paths when `categoryType` is missing from the tree. */
 export const STATIC_NAV_ITEM_LABEL_BY_PATH: ReadonlyMap<string, string> =

@@ -31,7 +31,6 @@ import Podcast from "../pages/Podcast";
 import PrivacyPolicy from "../pages/PrivacyPolicy";
 import RefundPolicy from "../pages/RefundPolicy";
 import Terms from "../pages/Terms";
-import { WellnessLibrary } from "../components/WellnessLibrary";
 import AdminRoute from "./AdminRoute";
 import AuthenticatedRoute from "./AuthenticatedRoute";
 import ExpertRoute from "./ExpertRoute";
@@ -86,7 +85,7 @@ export const router = createBrowserRouter([
       { path: "/learn/founders-story", element: <FoundersStory /> },
       { path: "/learn/know-your-experts", element: <KnowYourExperts /> },
       { path: "/learn/podcast", element: <Podcast /> },
-      { path: "/wellness-library", element: <WellnessLibrary /> },
+      { path: "/wellness-library", element: placeholderForRouteTitle("Wellness Library") },
       { path: "/guided/:categorySlug/programs", element: <CategoryProgramsPage /> },
       { path: "/guided/:programSlug", element: <GuidedProgramDetail /> },
       { path: "/guided/:programSlug/:programId", element: <ProgramDetailPage /> },
