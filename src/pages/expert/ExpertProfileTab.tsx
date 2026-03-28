@@ -1,5 +1,6 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { useAuth } from "../../auth/useAuth";
+import { CloudinaryImageUrlField } from "../../components/CloudinaryImageUrlField";
 import {
   fetchCurrentExpertProfile,
   updateExpertProfile,
@@ -266,16 +267,14 @@ export default function ExpertProfileTab() {
             />
           </label>
 
-          <label className="field">
-            <span className="field__label">Profile image URL</span>
-            <input
-              className="field__input"
-              type="url"
-              value={form.profileImageUrl}
-              onChange={set("profileImageUrl")}
-              disabled={saving}
-            />
-          </label>
+          <CloudinaryImageUrlField
+            label="Profile image URL"
+            hint="Upload an image or paste a URL. Used for your public profile photo."
+            value={form.profileImageUrl}
+            onUrlChange={(url) => setForm((prev) => ({ ...prev, profileImageUrl: url }))}
+            disabled={saving}
+            uploadFolder="expert-image"
+          />
 
           <label className="field">
             <span className="field__label">Grid image URL</span>

@@ -1,5 +1,6 @@
 import { type FormEvent, useEffect, useState } from "react";
 
+import { CloudinaryImageUrlField } from "../../components/CloudinaryImageUrlField";
 import { PAGE_SIZE } from "../../constants";
 import {
   getAdminUsers,
@@ -313,10 +314,16 @@ export default function AdminUsersTab() {
           </label>
 
           <div className="adminForm__row adminForm__row--two">
-            <label className="field">
-              <span className="field__label">Profile image URL</span>
-              <input className="field__input" type="url" value={expertForm.profileImageUrl} onChange={setF("profileImageUrl")} disabled={promoting} placeholder="https://res.cloudinary.com/…" />
-            </label>
+            <CloudinaryImageUrlField
+              label="Profile image URL"
+              hint="Upload an image or paste a URL. Used for the expert’s profile photo."
+              value={expertForm.profileImageUrl}
+              onUrlChange={(url) =>
+                setExpertForm((prev) => ({ ...prev, profileImageUrl: url }))
+              }
+              disabled={promoting}
+              uploadFolder="expert-image"
+            />
             <label className="field">
               <span className="field__label">Grid / card image URL</span>
               <input className="field__input" type="url" value={expertForm.gridImageUrl} onChange={setF("gridImageUrl")} disabled={promoting} placeholder="https://res.cloudinary.com/…" />
