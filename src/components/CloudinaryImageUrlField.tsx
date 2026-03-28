@@ -12,6 +12,8 @@ type CloudinaryImageUrlFieldProps = {
   onUrlChange: (url: string) => void;
   disabled?: boolean;
   placeholder?: string;
+  /** Cloudinary folder for this upload (same preset can target different folders per usage). */
+  uploadFolder?: string;
 };
 
 export function CloudinaryImageUrlField({
@@ -21,6 +23,7 @@ export function CloudinaryImageUrlField({
   onUrlChange,
   disabled = false,
   placeholder = "https://res.cloudinary.com/...",
+  uploadFolder,
 }: CloudinaryImageUrlFieldProps) {
   const baseId = useId();
   const urlInputId = `${baseId}-url`;
@@ -46,7 +49,7 @@ export function CloudinaryImageUrlField({
 
     setUploading(true);
     try {
-      const url = await uploadImageToCloudinary(file);
+      const url = await uploadImageToCloudinary(file, uploadFolder ? { folder: uploadFolder } : undefined);
       onUrlChange(url);
     } catch (e) {
       setUploadError(e instanceof Error ? e.message : "Upload failed.");

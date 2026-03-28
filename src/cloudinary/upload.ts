@@ -9,7 +9,19 @@ export function isCloudinaryUploadConfigured(): boolean {
   return Boolean(name && preset);
 }
 
-export async function uploadImageToCloudinary(file: File): Promise<string> {
+export type CloudinaryUploadOptions = {
+  /** Destination folder in your Cloudinary media library (e.g. `femved/programs`). Leading/trailing slashes are stripped. */
+  folder?: string;
+};
+
+function normalizeFolderPath(folder: string): string {
+  return folder.trim().replace(/^\/+|\/+$/g, "");
+}
+
+export async function uploadImageToCloudinary(
+  file: File,
+  options?: CloudinaryUploadOptions,
+): Promise<string> {
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME?.trim();
   const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET?.trim();
   if (!cloudName || !uploadPreset) {
@@ -19,6 +31,11 @@ export async function uploadImageToCloudinary(file: File): Promise<string> {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("upload_preset", uploadPreset);
+
+  const folder = options?.folder?.trim();
+  if (folder) {
+    formData.append("folder", normalizeFolderPath(folder));
+  }
 
   const res = await fetch(
     `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
