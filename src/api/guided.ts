@@ -405,8 +405,14 @@ export async function archiveProgram(programId: string): Promise<void> {
   bumpGuidedProgramsCacheVersion();
 }
 
-export function fetchGuidedTree(): Promise<GuidedTreeResponse> {
-  return apiFetch<GuidedTreeResponse>("/guided/tree", {
+export function fetchGuidedTree(
+  countryCode?: string,
+): Promise<GuidedTreeResponse> {
+  const query =
+    countryCode != null && countryCode !== ""
+      ? `?${new URLSearchParams({ countryCode }).toString()}`
+      : "";
+  return apiFetch<GuidedTreeResponse>(`/guided/tree${query}`, {
     cache: "no-store",
     skipAuth: true,
   });

@@ -29,6 +29,7 @@ import PaymentSuccess from "../pages/PaymentSuccess";
 import Placeholder from "../pages/Placeholder";
 import Podcast from "../pages/Podcast";
 import Terms from "../pages/Terms";
+import { WellnessLibrary } from "../components/WellnessLibrary";
 import AdminRoute from "./AdminRoute";
 import AuthenticatedRoute from "./AuthenticatedRoute";
 import ExpertRoute from "./ExpertRoute";
@@ -81,6 +82,7 @@ export const router = createBrowserRouter([
       { path: "/learn/founders-story", element: <FoundersStory /> },
       { path: "/learn/know-your-experts", element: <KnowYourExperts /> },
       { path: "/learn/podcast", element: <Podcast /> },
+      { path: "/wellness-library", element: <WellnessLibrary /> },
       { path: "/guided/:categorySlug/programs", element: <CategoryProgramsPage /> },
       { path: "/guided/:programSlug", element: <GuidedProgramDetail /> },
       { path: "/guided/:programSlug/:programId", element: <ProgramDetailPage /> },

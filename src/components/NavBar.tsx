@@ -3,25 +3,112 @@ import { createPortal } from "react-dom";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaRegUser } from "react-icons/fa";
 import { IoChevronDown, IoMenu, IoClose } from "react-icons/io5";
-import { NAV_SECTIONS } from "../nav/menu";
-import { hasValidAccessToken, ROLE_ADMIN, ROLE_EXPERT, useAuth } from "../auth/useAuth";
 import {
-  loadGuidedPrograms,
-  getGuidedProgramsSnapshot,
-  normalizeSlug,
-  type GuidedProgramInfo,
-} from "../data/guidedPrograms";
+  LEARN_NAV_SECTION,
+  NAV_SECTIONS,
+  STATIC_NAV_ITEM_LABEL_BY_PATH,
+  WELLNESS_LIBRARY_NAV_PATH,
+  type NavItem,
+  type NavSection,
+} from "../nav/menu";
+import { hasValidAccessToken, ROLE_ADMIN, ROLE_EXPERT, useAuth } from "../auth/useAuth";
+import { useCountry, type CountryCode } from "../country/useCountry";
+import {
+  fetchGuidedTree,
+  type GuidedTreeCategory,
+  type GuidedTreeResponse,
+} from "../api/guided";
+import { normalizeSlug } from "../data/guidedPrograms";
 import logoUrl from "../assets/femvedlogo.png";
 import "./NavBar.scss";
+
+function isEntityActive(entity: {
+  isActive?: boolean;
+  is_active?: boolean;
+}): boolean {
+  if (typeof entity.isActive === "boolean") return entity.isActive;
+  if (typeof entity.is_active === "boolean") return entity.is_active;
+  return true;
+}
+
+function titleCaseFromSlug(value: string | undefined): string {
+  return (value ?? "")
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function categoryToNavItem(category: GuidedTreeCategory): NavItem | null {
+  if (!isEntityActive(category)) return null;
+  const page = category.categoryPageData ?? {};
+  const cta = page.categoryCtaTo?.trim();
+  const slug = normalizeSlug(category.categoryName);
+  const path =
+    cta || (slug ? `/guided/${slug}` : "");
+  if (!path) return null;
+
+  const label =
+    page.categoryType?.trim() ||
+    STATIC_NAV_ITEM_LABEL_BY_PATH.get(path) ||
+    titleCaseFromSlug(category.categoryName);
+
+  return { type: "internal", label, path };
+}
+
+function isWellnessLibraryDomainName(name: string): boolean {
+  return name.trim().toLowerCase() === "wellness library";
+}
+
+function isHolisticTreatmentsDomainName(name: string): boolean {
+  return name.trim().toLowerCase() === "holistic treatments";
+}
+
+function navSectionsFromTree(response: GuidedTreeResponse): NavSection[] {
+  return (response.domains ?? [])
+    .filter((d) => isEntityActive(d))
+    .map((domain, index) => {
+      const domainId =
+        domain.domainId ?? domain.id ?? domain._id ?? `domain-${index}`;
+      const label = (domain.domainName ?? domain.name ?? "").trim();
+      if (!label) return null;
+
+      if (isWellnessLibraryDomainName(label)) {
+        const section: NavSection = {
+          id: domainId,
+          label,
+          items: [],
+          linkPath: WELLNESS_LIBRARY_NAV_PATH,
+        };
+        return section;
+      }
+
+      if (isHolisticTreatmentsDomainName(label)) {
+        return {
+          id: domainId,
+          label,
+          items: [],
+          comingSoon: true,
+        };
+      }
+
+      const items = (domain.categories ?? [])
+        .map((c) => categoryToNavItem(c))
+        .filter((item): item is NavItem => item !== null);
+
+      return { id: domainId, label, items };
+    })
+    .filter((s): s is NavSection => s !== null);
+}
 
 export function NavBar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { country } = useCountry();
   const { user, tokens, logout } = useAuth();
   const [openSectionId, setOpenSectionId] = useState<string | null>(null);
-  const [guidedCategories, setGuidedCategories] = useState<GuidedProgramInfo[]>(
-    () => getGuidedProgramsSnapshot("US") ?? [],
-  );
+  const [treeNavPayload, setTreeNavPayload] = useState<{
+    country: CountryCode;
+    sections: NavSection[];
+  } | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAccessTokenValid, setIsAccessTokenValid] = useState(() =>
@@ -89,38 +176,36 @@ export function NavBar() {
   }, [isAccessTokenValid]);
 
   useEffect(() => {
-    loadGuidedPrograms("US")
-      .then(setGuidedCategories)
-      .catch(() => {});
-  }, []);
+    let cancelled = false;
+    const apiCountryCode = country === "UK" ? "GB" : country;
+
+    fetchGuidedTree(apiCountryCode)
+      .then((tree) => {
+        if (cancelled) return;
+        const built = navSectionsFromTree(tree);
+        if (built.length > 0) {
+          setTreeNavPayload({ country, sections: built });
+        } else {
+          setTreeNavPayload(null);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setTreeNavPayload(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [country]);
 
   const isAuthenticated = Boolean(user) && isAccessTokenValid;
 
-  // Build nav sections — replace the hardcoded "guided" items with live API data.
-  // For known categories, keep the static display name; for new ones, title-case the slug.
-  const staticGuidedItems =
-    NAV_SECTIONS.find((s) => s.id === "guided")?.items ?? [];
-  const dynamicGuidedItems =
-    guidedCategories.length > 0
-      ? guidedCategories.map((cat) => {
-          const slug = normalizeSlug(cat.slug);
-          const path = `/guided/${slug}`;
-          const staticMatch = staticGuidedItems.find(
-            (item) => item.type === "internal" && item.path === path,
-          );
-          const label =
-            staticMatch?.label ??
-            (cat.slug ?? "")
-              .replace(/-/g, " ")
-              .replace(/\b\w/g, (c) => c.toUpperCase());
-          return { type: "internal" as const, label, path };
-        })
-      : null;
-  const navSections = NAV_SECTIONS.map((section) =>
-    section.id === "guided" && dynamicGuidedItems
-      ? { ...section, items: dynamicGuidedItems }
-      : section,
-  );
+  const navSections =
+    treeNavPayload &&
+    treeNavPayload.country === country &&
+    treeNavPayload.sections.length > 0
+      ? [...treeNavPayload.sections, LEARN_NAV_SECTION]
+      : NAV_SECTIONS;
 
   const isAdmin = user?.role.id === ROLE_ADMIN.id;
   const canViewExpertDashboard =
@@ -163,6 +248,42 @@ export function NavBar() {
       {/* ---- Desktop menu ---- */}
       <div className="menu" aria-label="Primary navigation">
         {navSections.map((section) => {
+          if (section.linkPath) {
+            const isLinkActive =
+              pathname === section.linkPath ||
+              pathname.startsWith(`${section.linkPath}/`);
+            return (
+              <div key={section.id} className="menu__section">
+                <Link
+                  className={`menu__button menu__link ${isLinkActive ? "menu__button--active" : ""}`}
+                  to={section.linkPath}
+                  onClick={() => setOpenSectionId(null)}
+                >
+                  {section.label}
+                </Link>
+              </div>
+            );
+          }
+
+          if (section.comingSoon) {
+            return (
+              <div key={section.id} className="menu__section">
+                <span
+                  className="menu__comingSoon"
+                  role="status"
+                  aria-label={`${section.label}, coming soon`}
+                >
+                  <span className="menu__comingSoonLabel" aria-hidden="true">
+                    {section.label}
+                  </span>
+                  <span className="menu__comingSoonBadge" aria-hidden="true">
+                    Coming soon
+                  </span>
+                </span>
+              </div>
+            );
+          }
+
           const isOpen = openSectionId === section.id;
           const isActive = section.items.some(
             (i) => i.type === "internal" && pathname.startsWith(i.path),
@@ -346,6 +467,48 @@ export function NavBar() {
 
             <div className="mobileDrawer__body">
               {navSections.map((section) => {
+                if (section.linkPath) {
+                  const isLinkActive =
+                    pathname === section.linkPath ||
+                    pathname.startsWith(`${section.linkPath}/`);
+                  return (
+                    <div key={section.id} className="mobileDrawer__section">
+                      <Link
+                        className={`mobileDrawer__sectionLink ${isLinkActive ? "mobileDrawer__sectionLink--active" : ""}`}
+                        to={section.linkPath}
+                        onClick={closeMobileMenu}
+                      >
+                        {section.label}
+                      </Link>
+                    </div>
+                  );
+                }
+
+                if (section.comingSoon) {
+                  return (
+                    <div key={section.id} className="mobileDrawer__section">
+                      <div
+                        className="mobileDrawer__comingSoon"
+                        role="status"
+                        aria-label={`${section.label}, coming soon`}
+                      >
+                        <span
+                          className="mobileDrawer__comingSoonLabel"
+                          aria-hidden="true"
+                        >
+                          {section.label}
+                        </span>
+                        <span
+                          className="mobileDrawer__comingSoonBadge"
+                          aria-hidden="true"
+                        >
+                          Coming soon
+                        </span>
+                      </div>
+                    </div>
+                  );
+                }
+
                 const isSectionOpen = openMobileSections.has(section.id);
                 return (
                   <div
