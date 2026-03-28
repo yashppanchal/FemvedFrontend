@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { FaPlay } from "react-icons/fa";
+import halfMoonBg from "../assets/bg/half moon.png";
 import "./PodcastSection.scss";
 import RevealOnScroll from "./RevealOnScroll";
 
@@ -65,7 +66,14 @@ export function PodcastSection() {
   }, []);
 
   return (
-    <section className="podcastSection">
+    <section
+      className="podcastSection"
+      style={
+        {
+          "--podcast-bg-url": `url(${halfMoonBg})`,
+        } as React.CSSProperties
+      }
+    >
       <div className="podcastSection__inner">
         {/* ─── Left: Featured episode ─── */}
         <RevealOnScroll className="podcastSection__featured">

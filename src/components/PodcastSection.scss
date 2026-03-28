@@ -1,11 +1,29 @@
 /* ─── Podcast Section ─── */
 
 .podcastSection {
+  position: relative;
+  isolation: isolate;
   background: #ffffff;
   padding: clamp(56px, 7vw, 100px) 0;
 }
 
+.podcastSection::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: var(--podcast-bg-url);
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: contain;
+  opacity: 0.1;
+  pointer-events: none;
+  margin-left: -90px;
+}
+
 .podcastSection__inner {
+  position: relative;
+  z-index: 1;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 clamp(24px, 5vw, 80px);
