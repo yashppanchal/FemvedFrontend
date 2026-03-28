@@ -59,7 +59,7 @@ export function BenefitsBentoGrid() {
   return (
     <section id="benefits-bento-grid" className="benefitsBentoGrid">
       <h2 className="benefitsBentoGrid__heading">
-        Women's wellness cannot be reduced to trending protocols
+        Built by experts. Backed by technology. Always genuine.
       </h2>
 
       <div className="benefitsBentoGrid__inner">
@@ -75,7 +75,10 @@ export function BenefitsBentoGrid() {
                 src={optimizeCloudinaryImageUrl(card.imageUrl, {
                   width: 700,
                 })}
-                srcSet={buildCloudinarySrcSet(card.imageUrl, [320, 480, 640, 800])}
+                srcSet={buildCloudinarySrcSet(
+                  card.imageUrl,
+                  [320, 480, 640, 800],
+                )}
                 sizes="(max-width: 720px) 100vw, 33vw"
                 alt={card.alt}
                 loading="lazy"
@@ -97,7 +100,10 @@ export function BenefitsBentoGrid() {
                 src={optimizeCloudinaryImageUrl(card.imageUrl, {
                   width: 900,
                 })}
-                srcSet={buildCloudinarySrcSet(card.imageUrl, [400, 640, 800, 1000])}
+                srcSet={buildCloudinarySrcSet(
+                  card.imageUrl,
+                  [400, 640, 800, 1000],
+                )}
                 sizes="(max-width: 720px) 100vw, 50vw"
                 alt={card.alt}
                 loading="lazy"

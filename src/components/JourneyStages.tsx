@@ -49,12 +49,11 @@ export function JourneyStages() {
         {/* Left — copy */}
         <div className="journeyStages__copy">
           <h2 className="journeyStages__heading">
-            Holistic wellness plans are not meant to be curated by generic{" "}
-            <em>algorithms.</em>
+            Your wellness should <em>evolve</em> with every season of your life.
           </h2>
           <p className="journeyStages__sub">
-            It should evolve with every season of your life. Where are you right
-            now, and what deserves your focus first?
+            Holistic wellness should not be restricted to generic algorithms.
+            Choose your lifestage and decide the right solution.
           </p>
         </div>
 

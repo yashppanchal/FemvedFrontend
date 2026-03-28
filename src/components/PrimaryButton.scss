@@ -5,6 +5,9 @@
   border-radius: 8px;
   background: var(--primary);
   color: var(--white);
+  /* Match <a> / body text: native <button> UA styles use a smaller control font */
+  font-family: var(--fontBody);
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;

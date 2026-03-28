@@ -35,7 +35,7 @@ export function HeroCarousel() {
         imageUrl: firstscroll,
         imageAlt: "Femved \u2014 holistic wellness",
         title: "Your symptoms are real. Your concerns matter.",
-        body: "Create your own wellness plan with globally accredited women practitioners, because wellness isn’t a trend or a hack, it’s personal. Stop borrowing wellness from someone’s reel.",
+        body: "Create your own wellness plan with globally accredited women practitioners, because wellness isn’t a trend or a hack, it’s personal.",
         ctaLabel: "Support your hormones, your way",
         ctaTo: "/guided/hormonal-health-support",
       },
