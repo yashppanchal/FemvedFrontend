@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { FaPause, FaPlay } from "react-icons/fa";
 import { PrimaryButton } from "./PrimaryButton";
 import RevealOnScroll from "./RevealOnScroll";
@@ -14,7 +14,7 @@ type Slide = {
   type: "split" | "image" | "healthcare";
   imageUrl: string;
   imageAlt: string;
-  title?: string;
+  title?: ReactNode;
   body?: string;
   ctaLabel?: string;
   ctaTo?: string;
@@ -34,7 +34,11 @@ export function HeroCarousel() {
         type: "split",
         imageUrl: firstscroll,
         imageAlt: "Femved \u2014 holistic wellness",
-        title: "Your symptoms are real. Your concerns matter.",
+        title: (
+          <>
+            Your symptoms are <em>real</em>. Your concerns <em>matter</em>.
+          </>
+        ),
         body: "Create your own wellness plan with globally accredited women practitioners, because wellness isn’t a trend or a hack, it’s personal.",
         ctaLabel: "Support your hormones, your way",
         ctaTo: "/guided/hormonal-health-support",

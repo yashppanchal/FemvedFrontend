@@ -49,7 +49,8 @@ export function JourneyStages() {
         {/* Left — copy */}
         <div className="journeyStages__copy">
           <h2 className="journeyStages__heading">
-            Your wellness should <em>evolve</em> with every season of your life.
+            Your wellness should <em>evolve</em> <br />
+            with every season of your life.
           </h2>
           <p className="journeyStages__sub">
             Holistic wellness should not be restricted to generic algorithms.
