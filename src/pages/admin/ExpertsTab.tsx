@@ -74,6 +74,7 @@ function formToRequest(f: EditForm): AdminCreateExpertProfileRequest {
   return req;
 }
 
+import { CloudinaryImageUrlField } from "../../components/CloudinaryImageUrlField";
 import { PAGE_SIZE } from "../../constants";
 import { useToast } from "../../useToast";
 import { getStatusBadgeClass, formatStatus } from "../../statusBadge";
@@ -370,10 +371,16 @@ export default function ExpertsTab() {
           </label>
 
           <div className="adminForm__row adminForm__row--two">
-            <label className="field">
-              <span className="field__label">Profile image URL</span>
-              <input className="field__input" type="url" value={editForm.profileImageUrl} onChange={setF("profileImageUrl")} disabled={saving} />
-            </label>
+            <CloudinaryImageUrlField
+              label="Profile image URL"
+              hint="Upload an image or paste a URL. Used for the expert’s profile photo."
+              value={editForm.profileImageUrl}
+              onUrlChange={(url) =>
+                setEditForm((prev) => (prev ? { ...prev, profileImageUrl: url } : prev))
+              }
+              disabled={saving}
+              uploadFolder="expert-image"
+            />
             <label className="field">
               <span className="field__label">Grid / card image URL</span>
               <input className="field__input" type="url" value={editForm.gridImageUrl} onChange={setF("gridImageUrl")} disabled={saving} />

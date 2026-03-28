@@ -1,8 +1,15 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { createPortal } from "react-dom";
 import type { AdminExpert } from "../../api/admin";
-import type { CategoryRow, DomainRow, DurationEntry, ProgramForm, ProgramRow } from "./types";
+import type {
+  CategoryRow,
+  DomainRow,
+  DurationEntry,
+  ProgramForm,
+  ProgramRow,
+} from "./types";
 
+import { CloudinaryImageUrlField } from "../../components/CloudinaryImageUrlField";
 import { PAGE_SIZE } from "../../constants";
 import { useEscapeKey } from "../../useEscapeKey";
 
@@ -12,7 +19,9 @@ type ProgramsTabProps = {
   onOpenAddModal: () => void;
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   programForm: ProgramForm;
-  onProgramFormChange: (form: ProgramForm | ((prev: ProgramForm) => ProgramForm)) => void;
+  onProgramFormChange: (
+    form: ProgramForm | ((prev: ProgramForm) => ProgramForm),
+  ) => void;
   domains: DomainRow[];
   categoriesForProgramDomain: CategoryRow[];
   isProgramModalOpen: boolean;
@@ -26,7 +35,10 @@ type ProgramsTabProps = {
   onDelete: (programId: string) => void;
   deletingProgramId: string | null;
   expertsList: AdminExpert[];
-  onStatusChange?: (programId: string, action: "submit" | "publish" | "reject" | "archive") => void;
+  onStatusChange?: (
+    programId: string,
+    action: "submit" | "publish" | "reject" | "archive",
+  ) => void;
   statusChangingId?: string | null;
 };
 
@@ -61,13 +73,21 @@ export function ProgramsTab({
 
   useEscapeKey(onCloseModal, isProgramModalOpen && !isCreatingProgram);
 
-  const set = (key: keyof ProgramForm) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
+  const set =
+    (key: keyof ProgramForm) =>
+    (
+      e: React.ChangeEvent<
+        HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+      >,
+    ) =>
       onProgramFormChange((prev) => ({ ...prev, [key]: e.target.value }));
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
-    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const slug = name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
     onProgramFormChange((prev) => ({ ...prev, name, slug: slug as never }));
   };
 
@@ -86,26 +106,39 @@ export function ProgramsTab({
 
   const filteredPrograms = useMemo(() => {
     return programs.filter((program) => {
-      const matchesDomain = domainFilter === "all" || program.domainId === domainFilter;
-      const matchesCategory = categoryFilter === "all" || program.categoryId === categoryFilter;
-      const matchesStatus = statusFilter === "all" || (program.status ?? "").toLowerCase() === statusFilter.toLowerCase();
-      const matchesExpert = expertFilter === "all" || program.expertId === expertFilter;
+      const matchesDomain =
+        domainFilter === "all" || program.domainId === domainFilter;
+      const matchesCategory =
+        categoryFilter === "all" || program.categoryId === categoryFilter;
+      const matchesStatus =
+        statusFilter === "all" ||
+        (program.status ?? "").toLowerCase() === statusFilter.toLowerCase();
+      const matchesExpert =
+        expertFilter === "all" || program.expertId === expertFilter;
       return matchesDomain && matchesCategory && matchesStatus && matchesExpert;
     });
   }, [programs, domainFilter, categoryFilter, statusFilter, expertFilter]);
 
   const pendingPrograms = useMemo(
-    () => filteredPrograms.filter((p) => p.status === "PendingReview" || p.status === "Draft"),
+    () =>
+      filteredPrograms.filter(
+        (p) => p.status === "PendingReview" || p.status === "Draft",
+      ),
     [filteredPrograms],
   );
 
   const publishedPrograms = useMemo(
-    () => filteredPrograms.filter((p) => p.status !== "PendingReview" && p.status !== "Draft"),
+    () =>
+      filteredPrograms.filter(
+        (p) => p.status !== "PendingReview" && p.status !== "Draft",
+      ),
     [filteredPrograms],
   );
 
   // Reset page when filters change
-  useEffect(() => { setPage(1); }, [domainFilter, categoryFilter, statusFilter, expertFilter]);
+  useEffect(() => {
+    setPage(1);
+  }, [domainFilter, categoryFilter, statusFilter, expertFilter]);
 
   const programModal = isProgramModalOpen ? (
     <div className="adminModalBackdrop" role="presentation">
@@ -129,49 +162,80 @@ export function ProgramsTab({
           </button>
         </div>
 
-        {programCreateError && <p className="adminPanel__error">{programCreateError}</p>}
+        {programCreateError && (
+          <p className="adminPanel__error">{programCreateError}</p>
+        )}
         {isLoadingProgramEdit && (
-          <p className="adminPanel__hint" style={{ marginBottom: "12px" }}>Loading program details…</p>
+          <p className="adminPanel__hint" style={{ marginBottom: "12px" }}>
+            Loading program details…
+          </p>
         )}
 
         <form className="form adminForm" onSubmit={onSubmit} noValidate>
-
           {/* ── Section 1: Placement ──────────────────────────────── */}
           <fieldset className="expertForm__section">
-            <legend className="expertForm__sectionTitle">Where does this program live?</legend>
+            <legend className="expertForm__sectionTitle">
+              Where does this program live?
+            </legend>
 
             <div className="adminForm__row adminForm__row--two">
               <label className="field">
-                <span className="field__label">Domain <span className="field__required">*</span></span>
-                <span className="field__hint">The top-level health domain, e.g. "Guided 1:1 Care".</span>
+                <span className="field__label">
+                  Domain <span className="field__required">*</span>
+                </span>
+                <span className="field__hint">
+                  The top-level health domain, e.g. "Guided 1:1 Care".
+                </span>
                 <select
                   className="field__input"
                   value={programForm.domainId}
                   onChange={(e) =>
-                    onProgramFormChange((prev) => ({ ...prev, domainId: e.target.value, categoryId: "" }))
+                    onProgramFormChange((prev) => ({
+                      ...prev,
+                      domainId: e.target.value,
+                      categoryId: "",
+                    }))
                   }
                   required
                 >
                   <option value="">— Select domain —</option>
                   {domains.map((domain) => (
-                    <option key={domain.id} value={domain.id}>{domain.name}</option>
+                    <option key={domain.id} value={domain.id}>
+                      {domain.name}
+                    </option>
                   ))}
                 </select>
               </label>
 
               <label className="field">
-                <span className="field__label">Health Category <span className="field__required">*</span></span>
-                <span className="field__hint">The specific area this program belongs to, e.g. Hormonal Health.</span>
+                <span className="field__label">
+                  Health Category <span className="field__required">*</span>
+                </span>
+                <span className="field__hint">
+                  The specific area this program belongs to, e.g. Hormonal
+                  Health.
+                </span>
                 <select
                   className="field__input"
                   value={programForm.categoryId}
-                  onChange={(e) => onProgramFormChange((prev) => ({ ...prev, categoryId: e.target.value }))}
+                  onChange={(e) =>
+                    onProgramFormChange((prev) => ({
+                      ...prev,
+                      categoryId: e.target.value,
+                    }))
+                  }
                   required
                   disabled={!programForm.domainId}
                 >
-                  <option value="">{programForm.domainId ? "— Select category —" : "Select domain first"}</option>
+                  <option value="">
+                    {programForm.domainId
+                      ? "— Select category —"
+                      : "Select domain first"}
+                  </option>
                   {categoriesForProgramDomain.map((category) => (
-                    <option key={category.id} value={category.id}>{category.name}</option>
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
                   ))}
                 </select>
               </label>
@@ -181,23 +245,37 @@ export function ProgramsTab({
           {/* ── Section 1b: Expert ────────────────────────────────── */}
           {!editingProgramId && (
             <fieldset className="expertForm__section">
-              <legend className="expertForm__sectionTitle">Assign Expert</legend>
+              <legend className="expertForm__sectionTitle">
+                Assign Expert
+              </legend>
               <label className="field">
-                <span className="field__label">Expert <span className="field__required">*</span></span>
-                <span className="field__hint">The expert who will deliver this program.</span>
+                <span className="field__label">
+                  Expert <span className="field__required">*</span>
+                </span>
+                <span className="field__hint">
+                  The expert who will deliver this program.
+                </span>
                 <select
                   className="field__input"
                   value={programForm.expertId}
-                  onChange={(e) => onProgramFormChange((prev) => ({ ...prev, expertId: e.target.value }))}
+                  onChange={(e) =>
+                    onProgramFormChange((prev) => ({
+                      ...prev,
+                      expertId: e.target.value,
+                    }))
+                  }
                   required
                   disabled={isCreatingProgram || isLoadingProgramEdit}
                 >
                   <option value="">— Select expert —</option>
-                  {expertsList.filter((e) => e.isActive).map((expert) => (
-                    <option key={expert.expertId} value={expert.expertId}>
-                      {expert.displayName || expert.userEmail} {expert.title ? `(${expert.title})` : ""}
-                    </option>
-                  ))}
+                  {expertsList
+                    .filter((e) => e.isActive)
+                    .map((expert) => (
+                      <option key={expert.expertId} value={expert.expertId}>
+                        {expert.displayName || expert.userEmail}{" "}
+                        {expert.title ? `(${expert.title})` : ""}
+                      </option>
+                    ))}
                 </select>
               </label>
             </fieldset>
@@ -205,11 +283,18 @@ export function ProgramsTab({
 
           {/* ── Section 2: Basic Info ─────────────────────────────── */}
           <fieldset className="expertForm__section">
-            <legend className="expertForm__sectionTitle">Basic Information</legend>
+            <legend className="expertForm__sectionTitle">
+              Basic Information
+            </legend>
 
             <label className="field">
-              <span className="field__label">Program Title <span className="field__required">*</span></span>
-              <span className="field__hint">The full name as clients will see it, e.g. "Break the Stress–Hormone Triangle".</span>
+              <span className="field__label">
+                Program Title <span className="field__required">*</span>
+              </span>
+              <span className="field__hint">
+                The full name as clients will see it, e.g. "Break the
+                Stress–Hormone Triangle".
+              </span>
               <input
                 className="field__input"
                 type="text"
@@ -222,22 +307,34 @@ export function ProgramsTab({
             </label>
 
             <div className="adminForm__row adminForm__row--two">
-              <label className="field">
-                <span className="field__label">Program Card Image URL <span className="field__optional">optional</span></span>
-                <span className="field__hint">Shown on browse cards. Leave blank for a placeholder.</span>
-                <input
-                  className="field__input"
-                  type="url"
-                  value={programForm.gridImageUrl}
-                  onChange={set("gridImageUrl")}
-                  placeholder="https://res.cloudinary.com/..."
-                  disabled={isCreatingProgram || isLoadingProgramEdit}
-                />
-              </label>
+              <CloudinaryImageUrlField
+                label={
+                  <>
+                    Program Card Image URL{" "}
+                    <span className="field__optional">optional</span>
+                  </>
+                }
+                hint="Shown on browse cards. Upload an image or paste a URL. Leave blank for a placeholder."
+                value={programForm.gridImageUrl}
+                onUrlChange={(url) =>
+                  onProgramFormChange((prev) => ({
+                    ...prev,
+                    gridImageUrl: url,
+                  }))
+                }
+                disabled={isCreatingProgram || isLoadingProgramEdit}
+                uploadFolder="program-image"
+              />
 
               <label className="field">
-                <span className="field__label">Display Order <span className="field__techTerm">(sort order)</span> <span className="field__optional">optional</span></span>
-                <span className="field__hint">Lower numbers appear first. 0 = default.</span>
+                <span className="field__label">
+                  Display Order{" "}
+                  <span className="field__techTerm">(sort order)</span>{" "}
+                  <span className="field__optional">optional</span>
+                </span>
+                <span className="field__hint">
+                  Lower numbers appear first. 0 = default.
+                </span>
                 <input
                   className="field__input"
                   type="number"
@@ -252,11 +349,19 @@ export function ProgramsTab({
 
           {/* ── Section 3: Descriptions ───────────────────────────── */}
           <fieldset className="expertForm__section">
-            <legend className="expertForm__sectionTitle">Program Description</legend>
+            <legend className="expertForm__sectionTitle">
+              Program Description
+            </legend>
 
             <label className="field">
-              <span className="field__label">Full Program Description <span className="field__techTerm">(overview)</span></span>
-              <span className="field__hint">Appears on the program's dedicated page. Explain the approach and what clients can expect.</span>
+              <span className="field__label">
+                Full Program Description{" "}
+                <span className="field__techTerm">(overview)</span>
+              </span>
+              <span className="field__hint">
+                Appears on the program's dedicated page. Explain the approach
+                and what clients can expect.
+              </span>
               <textarea
                 className="field__input expertForm__textarea"
                 value={programForm.overview}
@@ -268,8 +373,15 @@ export function ProgramsTab({
             </label>
 
             <label className="field">
-              <span className="field__label">Short Summary <span className="field__techTerm">(grid description)</span> <span className="field__optional">optional</span></span>
-              <span className="field__hint">1–2 sentence teaser shown on browse cards. Defaults to overview if blank.</span>
+              <span className="field__label">
+                Short Summary{" "}
+                <span className="field__techTerm">(grid description)</span>{" "}
+                <span className="field__optional">optional</span>
+              </span>
+              <span className="field__hint">
+                1–2 sentence teaser shown on browse cards. Defaults to overview
+                if blank.
+              </span>
               <textarea
                 className="field__input expertForm__textarea expertForm__textarea--sm"
                 value={programForm.gridDescription}
@@ -281,8 +393,13 @@ export function ProgramsTab({
             </label>
 
             <label className="field">
-              <span className="field__label">Search Tags <span className="field__optional">optional</span></span>
-              <span className="field__hint">Comma-separated keywords. e.g. hormones, PCOS, stress, gut-health</span>
+              <span className="field__label">
+                Search Tags <span className="field__optional">optional</span>
+              </span>
+              <span className="field__hint">
+                Comma-separated keywords. e.g. hormones, PCOS, stress,
+                gut-health
+              </span>
               <input
                 className="field__input"
                 type="text"
@@ -296,30 +413,46 @@ export function ProgramsTab({
 
           {/* ── Section 4: Details ────────────────────────────────── */}
           <fieldset className="expertForm__section">
-            <legend className="expertForm__sectionTitle">Program Details</legend>
+            <legend className="expertForm__sectionTitle">
+              Program Details
+            </legend>
 
             <label className="field">
-              <span className="field__label">What's Included <span className="field__techTerm">(what you get)</span></span>
-              <span className="field__hint">One bullet point per line. Shown on the program page.</span>
+              <span className="field__label">
+                What's Included{" "}
+                <span className="field__techTerm">(what you get)</span>
+              </span>
+              <span className="field__hint">
+                One bullet point per line. Shown on the program page.
+              </span>
               <textarea
                 className="field__input expertForm__textarea"
                 value={programForm.whatYouGet}
                 onChange={set("whatYouGet")}
                 rows={4}
-                placeholder={"Weekly 1:1 video consultation (60 min)\nPersonalised nutrition plan\nWhatsApp support between sessions"}
+                placeholder={
+                  "Weekly 1:1 video consultation (60 min)\nPersonalised nutrition plan\nWhatsApp support between sessions"
+                }
                 disabled={isCreatingProgram || isLoadingProgramEdit}
               />
             </label>
 
             <label className="field">
-              <span className="field__label">Who Is This For? <span className="field__techTerm">(who is this for)</span></span>
-              <span className="field__hint">One description per line. Helps clients self-identify.</span>
+              <span className="field__label">
+                Who Is This For?{" "}
+                <span className="field__techTerm">(who is this for)</span>
+              </span>
+              <span className="field__hint">
+                One description per line. Helps clients self-identify.
+              </span>
               <textarea
                 className="field__input expertForm__textarea expertForm__textarea--sm"
                 value={programForm.whoIsThisFor}
                 onChange={set("whoIsThisFor")}
                 rows={3}
-                placeholder={"Women experiencing irregular or painful periods\nThose struggling with fatigue or mood swings"}
+                placeholder={
+                  "Women experiencing irregular or painful periods\nThose struggling with fatigue or mood swings"
+                }
                 disabled={isCreatingProgram || isLoadingProgramEdit}
               />
             </label>
@@ -328,7 +461,9 @@ export function ProgramsTab({
           {/* ── Section 5: Durations + Pricing ───────────────────── */}
           <fieldset className="expertForm__section">
             <div className="expertForm__sectionHeader">
-              <legend className="expertForm__sectionTitle">Durations &amp; Pricing</legend>
+              <legend className="expertForm__sectionTitle">
+                Durations &amp; Pricing
+              </legend>
               <button
                 type="button"
                 className="adminActionButton"
@@ -338,7 +473,13 @@ export function ProgramsTab({
                     ...prev,
                     durations: [
                       ...prev.durations,
-                      { label: "", weeks: "4", priceIN: "", priceUK: "", priceUS: "" } satisfies DurationEntry,
+                      {
+                        label: "",
+                        weeks: "4",
+                        priceIN: "",
+                        priceUK: "",
+                        priceUS: "",
+                      } satisfies DurationEntry,
                     ],
                   }))
                 }
@@ -347,14 +488,17 @@ export function ProgramsTab({
               </button>
             </div>
             <p className="expertForm__sectionHint">
-              Add one or more duration options (e.g. 4 weeks, 8 weeks). Each can have its own price per region.
-              Leave a region price blank to hide that duration from clients in that country.
+              Add one or more duration options (e.g. 4 weeks, 8 weeks). Each can
+              have its own price per region. Leave a region price blank to hide
+              that duration from clients in that country.
             </p>
 
             {programForm.durations.map((dur, idx) => (
               <div key={idx} className="durationBlock">
                 <div className="durationBlock__header">
-                  <span className="durationBlock__label">Duration {idx + 1}</span>
+                  <span className="durationBlock__label">
+                    Duration {idx + 1}
+                  </span>
                   {programForm.durations.length > 1 && (
                     <button
                       type="button"
@@ -374,8 +518,12 @@ export function ProgramsTab({
 
                 <div className="adminForm__row adminForm__row--two">
                   <label className="field">
-                    <span className="field__label">Duration Label <span className="field__required">*</span></span>
-                    <span className="field__hint">Shown to clients, e.g. "6 weeks" or "3 months".</span>
+                    <span className="field__label">
+                      Duration Label <span className="field__required">*</span>
+                    </span>
+                    <span className="field__hint">
+                      Shown to clients, e.g. "6 weeks" or "3 months".
+                    </span>
                     <input
                       className="field__input"
                       type="text"
@@ -396,7 +544,9 @@ export function ProgramsTab({
 
                   <label className="field">
                     <span className="field__label">Total Weeks</span>
-                    <span className="field__hint">Used internally for scheduling.</span>
+                    <span className="field__hint">
+                      Used internally for scheduling.
+                    </span>
                     <input
                       className="field__input"
                       type="number"
@@ -417,7 +567,9 @@ export function ProgramsTab({
 
                 <div className="expertForm__row expertForm__row--3">
                   <label className="field">
-                    <span className="field__label">India <span className="field__currency">₹ INR</span></span>
+                    <span className="field__label">
+                      India <span className="field__currency">₹ INR</span>
+                    </span>
                     <input
                       className="field__input"
                       type="number"
@@ -436,7 +588,10 @@ export function ProgramsTab({
                     />
                   </label>
                   <label className="field">
-                    <span className="field__label">United Kingdom <span className="field__currency">£ GBP</span></span>
+                    <span className="field__label">
+                      United Kingdom{" "}
+                      <span className="field__currency">£ GBP</span>
+                    </span>
                     <input
                       className="field__input"
                       type="number"
@@ -455,7 +610,10 @@ export function ProgramsTab({
                     />
                   </label>
                   <label className="field">
-                    <span className="field__label">United States <span className="field__currency">$ USD</span></span>
+                    <span className="field__label">
+                      United States{" "}
+                      <span className="field__currency">$ USD</span>
+                    </span>
                     <input
                       className="field__input"
                       type="number"
@@ -480,8 +638,14 @@ export function ProgramsTab({
 
           {/* ── Section 7: Detail Section ─────────────────────────── */}
           <fieldset className="expertForm__section">
-            <legend className="expertForm__sectionTitle">Detail Page Section <span className="field__optional">optional</span></legend>
-            <p className="expertForm__sectionHint">A heading + description block shown on the program detail page, e.g. "Why This Works". You can add more after creation.</p>
+            <legend className="expertForm__sectionTitle">
+              Detail Page Section{" "}
+              <span className="field__optional">optional</span>
+            </legend>
+            <p className="expertForm__sectionHint">
+              A heading + description block shown on the program detail page,
+              e.g. "Why This Works". You can add more after creation.
+            </p>
 
             <label className="field">
               <span className="field__label">Section Heading</span>
@@ -509,13 +673,26 @@ export function ProgramsTab({
           </fieldset>
 
           <div className="adminForm__actions">
-            <button type="button" className="adminActionButton" onClick={onCloseModal} disabled={isCreatingProgram || isLoadingProgramEdit}>
+            <button
+              type="button"
+              className="adminActionButton"
+              onClick={onCloseModal}
+              disabled={isCreatingProgram || isLoadingProgramEdit}
+            >
               Cancel
             </button>
-            <button type="submit" className="button" disabled={isCreatingProgram || isLoadingProgramEdit}>
+            <button
+              type="submit"
+              className="button"
+              disabled={isCreatingProgram || isLoadingProgramEdit}
+            >
               {editingProgramId
-                ? isCreatingProgram ? "Saving…" : "Save Changes"
-                : isCreatingProgram ? "Creating…" : "Create Program"}
+                ? isCreatingProgram
+                  ? "Saving…"
+                  : "Save Changes"
+                : isCreatingProgram
+                  ? "Creating…"
+                  : "Create Program"}
             </button>
           </div>
         </form>
@@ -532,12 +709,21 @@ export function ProgramsTab({
         </button>
       </div>
 
-      {programCreateSuccess && <p className="adminPanel__success">{programCreateSuccess}</p>}
+      {programCreateSuccess && (
+        <p className="adminPanel__success">{programCreateSuccess}</p>
+      )}
 
-      <div className="adminPanel__toolbar" style={{ gap: "1rem", flexWrap: "wrap" }}>
+      <div
+        className="adminPanel__toolbar"
+        style={{ gap: "1rem", flexWrap: "wrap" }}
+      >
         <label className="field" style={{ flex: "1 1 200px" }}>
           <span className="field__label">Filter by Status</span>
-          <select className="field__input" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+          <select
+            className="field__input"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
             <option value="all">All statuses</option>
             <option value="Draft">Draft</option>
             <option value="PendingReview">Pending Review</option>
@@ -558,7 +744,9 @@ export function ProgramsTab({
                 if (prev === "all") return prev;
                 if (nextDomainFilter === "all") return prev;
                 return categories.some(
-                  (category) => category.id === prev && category.domainId === nextDomainFilter,
+                  (category) =>
+                    category.id === prev &&
+                    category.domainId === nextDomainFilter,
                 )
                   ? prev
                   : "all";
@@ -567,7 +755,9 @@ export function ProgramsTab({
           >
             <option value="all">All domains</option>
             {domains.map((domain) => (
-              <option key={domain.id} value={domain.id}>{domain.name}</option>
+              <option key={domain.id} value={domain.id}>
+                {domain.name}
+              </option>
             ))}
           </select>
         </label>
@@ -581,7 +771,9 @@ export function ProgramsTab({
           >
             <option value="all">All categories</option>
             {categoriesForFilter.map((category) => (
-              <option key={category.id} value={category.id}>{category.name}</option>
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
             ))}
           </select>
         </label>
@@ -595,16 +787,23 @@ export function ProgramsTab({
           >
             <option value="all">All experts</option>
             {uniqueExperts.map(([id, name]) => (
-              <option key={id} value={id}>{name}</option>
+              <option key={id} value={id}>
+                {name}
+              </option>
             ))}
           </select>
         </label>
       </div>
 
       {/* ── Pending / New Programs Section ─────────────────── */}
-      <h3 className="adminPanel__sectionTitle" style={{ marginTop: 16, marginBottom: 8 }}>
+      <h3
+        className="adminPanel__sectionTitle"
+        style={{ marginTop: 16, marginBottom: 8 }}
+      >
         Pending &amp; New Programs
-        <span className="adminPanel__count" style={{ marginLeft: 8 }}>{pendingPrograms.length}</span>
+        <span className="adminPanel__count" style={{ marginLeft: 8 }}>
+          {pendingPrograms.length}
+        </span>
       </h3>
 
       <div className="adminTableWrap">
@@ -624,11 +823,19 @@ export function ProgramsTab({
                 <tr key={program.id}>
                   <td>{program.name}</td>
                   <td>{program.expertName ?? "—"}</td>
-                  <td>{categories.find((category) => category.id === program.categoryId)?.name ?? "—"}</td>
+                  <td>
+                    {categories.find(
+                      (category) => category.id === program.categoryId,
+                    )?.name ?? "—"}
+                  </td>
                   <td>
                     {program.status && (
-                      <span className={`statusBadge statusBadge--${program.status.toLowerCase()}`}>
-                        {program.status === "PendingReview" ? "Pending Review" : program.status}
+                      <span
+                        className={`statusBadge statusBadge--${program.status.toLowerCase()}`}
+                      >
+                        {program.status === "PendingReview"
+                          ? "Pending Review"
+                          : program.status}
                       </span>
                     )}
                   </td>
@@ -654,12 +861,18 @@ export function ProgramsTab({
                         <button
                           type="button"
                           className="button"
-                          style={{ height: 32, padding: "0 12px", fontSize: 13 }}
+                          style={{
+                            height: 32,
+                            padding: "0 12px",
+                            fontSize: 13,
+                          }}
                           onClick={() => onStatusChange(program.id, "publish")}
                           disabled={statusChangingId === program.id}
                           aria-label={`Publish program ${program.name}`}
                         >
-                          {statusChangingId === program.id ? "Publishing…" : "Publish"}
+                          {statusChangingId === program.id
+                            ? "Publishing…"
+                            : "Publish"}
                         </button>
                       )}
                       {program.status === "PendingReview" && onStatusChange && (
@@ -670,7 +883,9 @@ export function ProgramsTab({
                           disabled={statusChangingId === program.id}
                           aria-label={`Decline program ${program.name}`}
                         >
-                          {statusChangingId === program.id ? "Declining…" : "Decline"}
+                          {statusChangingId === program.id
+                            ? "Declining…"
+                            : "Decline"}
                         </button>
                       )}
                       {(!program.status || program.status === "Draft") && (
@@ -681,7 +896,9 @@ export function ProgramsTab({
                           disabled={deletingProgramId === program.id}
                           aria-label={`Delete program ${program.name}`}
                         >
-                          {deletingProgramId === program.id ? "Deleting…" : "Delete"}
+                          {deletingProgramId === program.id
+                            ? "Deleting…"
+                            : "Delete"}
                         </button>
                       )}
                     </div>
@@ -690,7 +907,9 @@ export function ProgramsTab({
               ))
             ) : (
               <tr>
-                <td colSpan={5} className="adminTable__empty">No pending programs.</td>
+                <td colSpan={5} className="adminTable__empty">
+                  No pending programs.
+                </td>
               </tr>
             )}
           </tbody>
@@ -698,16 +917,38 @@ export function ProgramsTab({
       </div>
 
       {/* ── Published Programs Section ─────────────────────── */}
-      <h3 className="adminPanel__sectionTitle" style={{ marginTop: 24, marginBottom: 8 }}>
+      <h3
+        className="adminPanel__sectionTitle"
+        style={{ marginTop: 24, marginBottom: 8 }}
+      >
         Published Programs
-        <span className="adminPanel__count" style={{ marginLeft: 8 }}>{publishedPrograms.length}</span>
+        <span className="adminPanel__count" style={{ marginLeft: 8 }}>
+          {publishedPrograms.length}
+        </span>
       </h3>
 
       {Math.ceil(publishedPrograms.length / PAGE_SIZE) > 1 && (
         <div className="adminPanel__pagination">
-          <button type="button" className="adminActionButton" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>← Prev</button>
-          <span style={{ fontSize: 13, color: "var(--muted)" }}>{Math.min(page * PAGE_SIZE, publishedPrograms.length)} of {publishedPrograms.length}</span>
-          <button type="button" className="adminActionButton" disabled={page >= Math.ceil(publishedPrograms.length / PAGE_SIZE)} onClick={() => setPage((p) => p + 1)}>Next →</button>
+          <button
+            type="button"
+            className="adminActionButton"
+            disabled={page === 1}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            ← Prev
+          </button>
+          <span style={{ fontSize: 13, color: "var(--muted)" }}>
+            {Math.min(page * PAGE_SIZE, publishedPrograms.length)} of{" "}
+            {publishedPrograms.length}
+          </span>
+          <button
+            type="button"
+            className="adminActionButton"
+            disabled={page >= Math.ceil(publishedPrograms.length / PAGE_SIZE)}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next →
+          </button>
         </div>
       )}
 
@@ -724,46 +965,60 @@ export function ProgramsTab({
           </thead>
           <tbody>
             {publishedPrograms.length > 0 ? (
-              publishedPrograms.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((program) => (
-                <tr key={program.id}>
-                  <td>{program.name}</td>
-                  <td>{program.expertName ?? "—"}</td>
-                  <td>{categories.find((category) => category.id === program.categoryId)?.name ?? "—"}</td>
-                  <td>
-                    {program.status && (
-                      <span className={`statusBadge statusBadge--${program.status.toLowerCase()}`}>
-                        {program.status}
-                      </span>
-                    )}
-                  </td>
-                  <td>
-                    <div className="adminActionGroup">
-                      <button
-                        type="button"
-                        className="adminActionButton"
-                        onClick={() => onStartEdit(program)}
-                        aria-label={`Edit program ${program.name}`}
-                      >
-                        Edit
-                      </button>
-                      {program.status === "Published" && onStatusChange && (
+              publishedPrograms
+                .slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+                .map((program) => (
+                  <tr key={program.id}>
+                    <td>{program.name}</td>
+                    <td>{program.expertName ?? "—"}</td>
+                    <td>
+                      {categories.find(
+                        (category) => category.id === program.categoryId,
+                      )?.name ?? "—"}
+                    </td>
+                    <td>
+                      {program.status && (
+                        <span
+                          className={`statusBadge statusBadge--${program.status.toLowerCase()}`}
+                        >
+                          {program.status}
+                        </span>
+                      )}
+                    </td>
+                    <td>
+                      <div className="adminActionGroup">
                         <button
                           type="button"
-                          className="adminActionButton adminActionButton--danger"
-                          onClick={() => onStatusChange(program.id, "archive")}
-                          disabled={statusChangingId === program.id}
-                          aria-label={`Archive program ${program.name}`}
+                          className="adminActionButton"
+                          onClick={() => onStartEdit(program)}
+                          aria-label={`Edit program ${program.name}`}
                         >
-                          {statusChangingId === program.id ? "Archiving…" : "Archive"}
+                          Edit
                         </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))
+                        {program.status === "Published" && onStatusChange && (
+                          <button
+                            type="button"
+                            className="adminActionButton adminActionButton--danger"
+                            onClick={() =>
+                              onStatusChange(program.id, "archive")
+                            }
+                            disabled={statusChangingId === program.id}
+                            aria-label={`Archive program ${program.name}`}
+                          >
+                            {statusChangingId === program.id
+                              ? "Archiving…"
+                              : "Archive"}
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
             ) : (
               <tr>
-                <td colSpan={5} className="adminTable__empty">No published programs match the selected filters.</td>
+                <td colSpan={5} className="adminTable__empty">
+                  No published programs match the selected filters.
+                </td>
               </tr>
             )}
           </tbody>
