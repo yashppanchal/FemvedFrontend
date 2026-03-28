@@ -1,6 +1,8 @@
 .footer {
   padding: 34px 0 18px;
   color: rgba(15, 15, 16, 0.78);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .footer__top {
@@ -244,33 +246,81 @@
   border: 0;
 }
 
+/* ── Tablet & Mobile (≤ 980px) ─────────────────────────── */
 @media (max-width: 980px) {
+  /* Stack promo below the links + logo */
   .footer__top {
     flex-direction: column;
+    gap: 24px;
   }
 
+  /* Promo card goes full-width */
   .footer__promo {
     min-height: 220px;
     width: 100%;
   }
 
+  /* Keep 3 link columns — tighten the gap slightly */
+  .footer__columns {
+    gap: 20px;
+  }
+
+  /* Bottom bar: copyright left, country right on one row */
   .footer__below {
-    grid-template-columns: 1fr;
-    justify-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .footer__belowSpacer {
+    display: none;
+  }
+
+  .footer__meta--center {
+    text-align: left;
   }
 
   .footer__country--bottom {
-    justify-self: center;
+    justify-self: auto;
   }
 }
 
-@media (max-width: 720px) {
+/* ── Small mobile (≤ 500px) ───────────────────────────── */
+@media (max-width: 500px) {
+  /* Tighten column gap on very small screens */
   .footer__columns {
-    grid-template-columns: 1fr;
-    gap: 22px;
+    gap: 14px;
+  }
+
+  .footer__heading {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+
+  .footer__list {
+    gap: 10px;
+  }
+
+  .footer__link {
+    font-size: 13px;
   }
 
   .footer__logo {
-    height: 92px;
+    height: 80px;
+  }
+
+  .footer__promo {
+    min-height: 180px;
+    border-radius: 14px;
+  }
+
+  .footer__promoContent {
+    padding: 16px;
+  }
+
+  .footer__promoTitle {
+    font-size: 17px;
   }
 }

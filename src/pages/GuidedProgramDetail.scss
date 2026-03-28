@@ -323,7 +323,7 @@
   max-width: 1180px;
   margin: 0 auto;
   display: grid;
-  gap: clamp(26px, 4vw, 62px);
+  gap: 0;
 }
 
 .guidedProgramDetail__zigzagRow {
@@ -333,6 +333,11 @@
   align-items: center;
   grid-template-areas: "media content";
   min-height: 40vh;
+  margin-bottom: clamp(72px, 10vw, 144px);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .guidedProgramDetail__zigzagRow--reverse {
