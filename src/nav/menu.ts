@@ -71,7 +71,6 @@ export const NAV_SECTIONS: NavSection[] = [
     id: "treatments",
     label: "Holistic Treatments",
     items: [],
-    comingSoon: true,
   },
   {
     id: "learn",
@@ -79,12 +78,6 @@ export const NAV_SECTIONS: NavSection[] = [
     items: [
       { type: "internal", label: "Podcast", path: "/learn/podcast" },
       { type: "internal", label: "Articles", path: "/learn/articles" },
-      {
-        // Replace this with your WhatsApp community link when ready (e.g. wa.me/...).
-        type: "internal",
-        label: "Join Our Community",
-        path: "/learn/join-our-community",
-      },
       {
         type: "internal",
         label: "About",

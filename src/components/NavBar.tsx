@@ -58,10 +58,6 @@ function isWellnessLibraryDomainName(name: string): boolean {
   return name.trim().toLowerCase() === "wellness library";
 }
 
-function isHolisticTreatmentsDomainName(name: string): boolean {
-  return name.trim().toLowerCase() === "holistic treatments";
-}
-
 function navSectionsFromTree(response: GuidedTreeResponse): NavSection[] {
   return (response.domains ?? [])
     .filter((d) => isEntityActive(d))
@@ -79,15 +75,6 @@ function navSectionsFromTree(response: GuidedTreeResponse): NavSection[] {
           linkPath: WELLNESS_LIBRARY_NAV_PATH,
         };
         return section;
-      }
-
-      if (isHolisticTreatmentsDomainName(label)) {
-        return {
-          id: domainId,
-          label,
-          items: [],
-          comingSoon: true,
-        };
       }
 
       const items = (domain.categories ?? [])
