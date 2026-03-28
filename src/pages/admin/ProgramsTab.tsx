@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import type { AdminExpert } from "../../api/admin";
 import type { CategoryRow, DomainRow, DurationEntry, ProgramForm, ProgramRow } from "./types";
 
+import { CloudinaryImageUrlField } from "../../components/CloudinaryImageUrlField";
 import { PAGE_SIZE } from "../../constants";
 import { useEscapeKey } from "../../useEscapeKey";
 
@@ -222,18 +223,19 @@ export function ProgramsTab({
             </label>
 
             <div className="adminForm__row adminForm__row--two">
-              <label className="field">
-                <span className="field__label">Program Card Image URL <span className="field__optional">optional</span></span>
-                <span className="field__hint">Shown on browse cards. Leave blank for a placeholder.</span>
-                <input
-                  className="field__input"
-                  type="url"
-                  value={programForm.gridImageUrl}
-                  onChange={set("gridImageUrl")}
-                  placeholder="https://res.cloudinary.com/..."
-                  disabled={isCreatingProgram || isLoadingProgramEdit}
-                />
-              </label>
+              <CloudinaryImageUrlField
+                label={
+                  <>
+                    Program Card Image URL <span className="field__optional">optional</span>
+                  </>
+                }
+                hint="Shown on browse cards. Upload an image or paste a URL. Leave blank for a placeholder."
+                value={programForm.gridImageUrl}
+                onUrlChange={(url) =>
+                  onProgramFormChange((prev) => ({ ...prev, gridImageUrl: url }))
+                }
+                disabled={isCreatingProgram || isLoadingProgramEdit}
+              />
 
               <label className="field">
                 <span className="field__label">Display Order <span className="field__techTerm">(sort order)</span> <span className="field__optional">optional</span></span>
