@@ -153,49 +153,37 @@ export default function CategoryProgramsPage() {
 
   return (
     <section className="page categoryProgramsPage" ref={pageRef}>
+      {/* <div className="categoryProgramsPage__pageTop">
+        <Link
+          className="categoryProgramsPage__backLink"
+          to={`/guided/${categorySlug}`}
+        >
+          ← Back to {category.programType}
+        </Link>
+      </div> */}
       {/* ── Two-panel layout ─────────────────────────────────────────────── */}
       <div className="categoryProgramsPage__layout">
         {/* ── Left sticky sidebar ───────────────────────────────────────── */}
         <aside className="categoryProgramsPage__sidebar">
-          <div className="categoryProgramsPage__sidebarInner" ref={sidebarInnerRef}>
-            {/* Breadcrumb lives inside the sidebar — visually anchored to the warm panel */}
-            <nav
-              className="categoryProgramsPage__breadcrumb"
-              aria-label="Breadcrumb"
+          <div className="categoryProgramsPage__pageTop">
+            <Link
+              className="categoryProgramsPage__backLink"
+              to={`/guided/${categorySlug}`}
             >
-              <Link className="categoryProgramsPage__breadcrumbLink" to="/">
-                Home
-              </Link>
-              <span
-                className="categoryProgramsPage__breadcrumbSep"
-                aria-hidden="true"
-              >
-                ›
-              </span>
-              <Link
-                className="categoryProgramsPage__breadcrumbLink"
-                to={`/guided/${categorySlug}`}
-              >
-                {category.programType || categorySlug}
-              </Link>
-              <span
-                className="categoryProgramsPage__breadcrumbSep"
-                aria-hidden="true"
-              >
-                ›
-              </span>
-              <span className="categoryProgramsPage__breadcrumbCurrent">
-                Programs
-              </span>
-            </nav>
-
+              ← Back to {category.programType}
+            </Link>
+          </div>
+          <div
+            className="categoryProgramsPage__sidebarInner"
+            ref={sidebarInnerRef}
+          >
             <div className="categoryProgramsPage__sidebarHead">
               <p className="categoryProgramsPage__eyebrow">Guided 1:1 Care</p>
               <h1 className="categoryProgramsPage__title">
                 {category.programType}
               </h1>
               {category.heroSubtext && (
-                <p className="categoryProgramsPage__subtext">
+                <p className="page__lead categoryProgramsPage__subtext">
                   {category.heroSubtext}
                 </p>
               )}
@@ -354,12 +342,6 @@ export default function CategoryProgramsPage() {
           )}
 
           <div className="categoryProgramsPage__footer" ref={footerRef}>
-            <Link
-              className="categoryProgramsPage__backLink"
-              to={`/guided/${categorySlug}`}
-            >
-              ← Back to {category.programType}
-            </Link>
             <Link
               className="categoryProgramsPage__allLink"
               to="/all-guided-programs"
