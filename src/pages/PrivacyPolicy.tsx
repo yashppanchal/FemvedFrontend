@@ -26,7 +26,7 @@ export default function PrivacyPolicy() {
       <div className="terms__hero">
         <p className="terms__heroLabel">Legal</p>
         <h1 className="terms__heroTitle">Privacy Policy</h1>
-        <p className="terms__revised">Last revised: August 2024</p>
+        <p className="terms__revised">Last revised: March 2026</p>
       </div>
 
       <div className="terms__body">
@@ -75,17 +75,17 @@ export default function PrivacyPolicy() {
           1. What types and categories of data we collect, process and use?
         </h2>
 
-        <p>
-          We collect, process and use personal and non-personal data.
-        </p>
+        <p>We collect, process and use personal and non-personal data.</p>
 
-        <h3 className="terms__subheading">1.1 Personal and non-personal data</h3>
+        <h3 className="terms__subheading">
+          1.1 Personal and non-personal data
+        </h3>
 
         <p>
           The term &quot;personal data&quot; is defined by the Federal Data
           Protection Act (BDSG) and the European General Data Protection
-          Regulation (GDPR). You can think of your personal data as any data that
-          allow you to be identified or that can be correlated to you.
+          Regulation (GDPR). You can think of your personal data as any data
+          that allow you to be identified or that can be correlated to you.
         </p>
 
         <p>
@@ -95,7 +95,9 @@ export default function PrivacyPolicy() {
           &quot;non-personal data.&quot;
         </p>
 
-        <h3 className="terms__subheading">1.2 Data we collect, process and use</h3>
+        <h3 className="terms__subheading">
+          1.2 Data we collect, process and use
+        </h3>
 
         <p>We collect, process and use three types of data:</p>
 
@@ -133,7 +135,8 @@ export default function PrivacyPolicy() {
           </li>
           <li>
             any pages of our website on which you click during your visit, and
-            any links on our website on which you click, including date and time;
+            any links on our website on which you click, including date and
+            time;
           </li>
           <li>
             the entire Uniform Resource Locator (URL) clickstream regarding,
@@ -149,7 +152,9 @@ export default function PrivacyPolicy() {
             information collected by cookies or similar technologies (as
             explained below);
           </li>
-          <li>your survey answers, critiques, evaluations, or other responses;</li>
+          <li>
+            your survey answers, critiques, evaluations, or other responses;
+          </li>
           <li>
             the content of all messages sent through the website or an Femved
             Wellness application, including information uploaded to social
@@ -178,8 +183,8 @@ export default function PrivacyPolicy() {
         <h2 className="terms__heading">2. How is data collected?</h2>
 
         <p>
-          Personal data is collected by us only if you provide such data to us on
-          your own initiative by choosing to use our Services. To be able to
+          Personal data is collected by us only if you provide such data to us
+          on your own initiative by choosing to use our Services. To be able to
           use our Services, you must register your account with us.
         </p>
 
@@ -210,13 +215,13 @@ export default function PrivacyPolicy() {
 
         <p>
           Femved Wellness application(s) also enable you to provide us with
-          additional information, such as your gender, fitness level, and workout
-          goals. After registering, you can add more information to your profile
-          (e.g., a profile photo). If you do so, you will once again provide us
-          with personal data. We will also receive data (including personal
-          data) from you when you communicate with us or other users through a
-          Femved Wellness application. If you create a Femved regime, we will
-          receive information about which and how many regimes you have
+          additional information, such as your gender, fitness level, and
+          workout goals. After registering, you can add more information to your
+          profile (e.g., a profile photo). If you do so, you will once again
+          provide us with personal data. We will also receive data (including
+          personal data) from you when you communicate with us or other users
+          through a Femved Wellness application. If you create a Femved regime,
+          we will receive information about which and how many regimes you have
           completed. We will also receive information about how you use Femved
           Wellness application(s). In that case, too, you will provide us with
           personal data.
@@ -244,22 +249,24 @@ export default function PrivacyPolicy() {
         <p>
           You can register for our newsletter. That way, you will receive
           regular updates about the Femved Wellness Services. All you need to
-          receive our newsletter is to provide us with a valid e-mail address. If
-          you are no longer interested in receiving the newsletter, you may
+          receive our newsletter is to provide us with a valid e-mail address.
+          If you are no longer interested in receiving the newsletter, you may
           unsubscribe at any time using the link that is included in each
           newsletter.
         </p>
 
-        <h3 className="terms__subheading">2.5 Linking your account to Facebook</h3>
+        <h3 className="terms__subheading">
+          2.5 Linking your account to Facebook
+        </h3>
 
         <p>
           You can also link your Femved Wellness user account to your Facebook
           profile. To do so, simply choose &quot;Login with Facebook&quot;
           during the registration process; you will then be transferred to
           Facebook. There, you will be shown to which Facebook data we will
-          receive access. We will store your Facebook e-mail address. This is the
-          e-mail address we will use to contact you, if necessary. We will also
-          record the fact that you have registered through Facebook.
+          receive access. We will store your Facebook e-mail address. This is
+          the e-mail address we will use to contact you, if necessary. We will
+          also record the fact that you have registered through Facebook.
         </p>
 
         <h3 className="terms__subheading">2.6 Website</h3>
@@ -271,9 +278,9 @@ export default function PrivacyPolicy() {
           smartphone, tablet, etc.) you are using, which browser (Internet
           Explorer, Safari, Firefox, etc.) you are using, the time at which you
           access the website, the so-called referrer, and the data volume
-          transferred. Such data cannot be used by us to identify the user.
-          This data is processed for statistical purposes only. Such analyses help
-          us make our Services more attractive and, if necessary, to improve our
+          transferred. Such data cannot be used by us to identify the user. This
+          data is processed for statistical purposes only. Such analyses help us
+          make our Services more attractive and, if necessary, to improve our
           Services.
         </p>
 
@@ -287,14 +294,16 @@ export default function PrivacyPolicy() {
           databases a log file tracks changes to the database of correctly
           executed transactions. In the event of an error (e.g., a system
           crash), this allows the current dataset to be restored. Log files are
-          also created by web servers. Inter alia, the following data are logged:
-          the address of the accessing computer, authentication fields, date
-          and time of access, access method, content of HTML access, status code
-          of the web server, and information about the browser and operating
-          system used by the client.
+          also created by web servers. Inter alia, the following data are
+          logged: the address of the accessing computer, authentication fields,
+          date and time of access, access method, content of HTML access, status
+          code of the web server, and information about the browser and
+          operating system used by the client.
         </p>
 
-        <h3 className="terms__subheading">2.8 Other possible instances of data collection</h3>
+        <h3 className="terms__subheading">
+          2.8 Other possible instances of data collection
+        </h3>
 
         <p>
           Collection of data also happens, for example, when you contact us or
@@ -310,11 +319,12 @@ export default function PrivacyPolicy() {
 
         <p>
           We will collect, process, and use your personal data and other data to
-          support the delivery of Femved Wellness Services in accordance with our
-          General Terms and Conditions. In this section we provide information on
-          the legal basis for our processing of your Personal Data as required by
-          Art. 13 and 14 of the GDPR, as well as provide detailed information
-          about the purposes of collection, processing and use of your data.
+          support the delivery of Femved Wellness Services in accordance with
+          our General Terms and Conditions. In this section we provide
+          information on the legal basis for our processing of your Personal
+          Data as required by Art. 13 and 14 of the GDPR, as well as provide
+          detailed information about the purposes of collection, processing and
+          use of your data.
         </p>
 
         <p>
@@ -337,8 +347,8 @@ export default function PrivacyPolicy() {
         <p>
           We may also process the data if it is necessary to protect vital
           interests of our users and/or other people, or for the performance of
-          an obligation to carry out in the public interest pursuant to Art. 6(1)
-          (d) and (e).
+          an obligation to carry out in the public interest pursuant to Art.
+          6(1) (d) and (e).
         </p>
 
         {/* ── 4 ── */}
@@ -354,12 +364,12 @@ export default function PrivacyPolicy() {
         </p>
 
         <p>
-          We process and use data (including personal data) you make available to
-          us voluntarily on the website or through the Femved application in
-          various situations (e.g., when you send us an e-mail). We also use data
-          that are collected automatically on our website or through the Femved
-          Wellness application. Finally, we may also receive data about you from
-          third parties, for example when another user provides us with
+          We process and use data (including personal data) you make available
+          to us voluntarily on the website or through the Femved application in
+          various situations (e.g., when you send us an e-mail). We also use
+          data that are collected automatically on our website or through the
+          Femved Wellness application. Finally, we may also receive data about
+          you from third parties, for example when another user provides us with
           information about you.
         </p>
 
@@ -419,12 +429,14 @@ export default function PrivacyPolicy() {
         <p>
           We will also notify you if we want to use your personal data for a new
           or different purpose. We will use your personal data for such other
-          purposes only if and to the extent necessary or permitted by applicable
-          law or with your consent.
+          purposes only if and to the extent necessary or permitted by
+          applicable law or with your consent.
         </p>
 
         {/* ── 5 ── */}
-        <h2 className="terms__heading">5. How long and where are data stored?</h2>
+        <h2 className="terms__heading">
+          5. How long and where are data stored?
+        </h2>
 
         <p>
           Your personal data will be stored for as long as this is necessary for
@@ -438,10 +450,10 @@ export default function PrivacyPolicy() {
         <h2 className="terms__heading">6. Cookies and tracking pixels</h2>
 
         <p>
-          We collect information about visitors to our website and about users of
-          our Femved Wellness application(s) in order to improve our Services. For
-          this purpose we use different kinds of so-called cookies and tracking
-          pixels (a.k.a. web beacons).
+          We collect information about visitors to our website and about users
+          of our Femved Wellness application(s) in order to improve our
+          Services. For this purpose we use different kinds of so-called cookies
+          and tracking pixels (a.k.a. web beacons).
         </p>
 
         <p>
@@ -450,9 +462,9 @@ export default function PrivacyPolicy() {
           to automatically recognize you the next time you visit our websites or
           use a Femved Wellness application. The cookie is sent either by the
           web server to your browser or is generated by client-side scripting
-          (e.g., JavaScript). Cookie data will be stored locally on your terminal
-          device and in most cases will be effective only for a limited time
-          period.
+          (e.g., JavaScript). Cookie data will be stored locally on your
+          terminal device and in most cases will be effective only for a limited
+          time period.
         </p>
 
         <p>
@@ -462,16 +474,16 @@ export default function PrivacyPolicy() {
           browser, but rather by the flash player plug-in. Flash cookies are
           subject to the same rules as conventional cookies. Flash cookies, too,
           can only be read by the website that caused those flash cookies to be
-          placed. However, flash cookies can store a substantially greater volume
-          of data.
+          placed. However, flash cookies can store a substantially greater
+          volume of data.
         </p>
 
         <p>
           Your browser offers extensive setting options to manage cookies. For
-          example, you can deactivate cookies in your browser or limit cookies to
-          certain websites. You can also program your browser to first notify you
-          before a cookie is placed. You can also choose these settings on your
-          mobile terminal devices. You can at any time manage cookies by
+          example, you can deactivate cookies in your browser or limit cookies
+          to certain websites. You can also program your browser to first notify
+          you before a cookie is placed. You can also choose these settings on
+          your mobile terminal devices. You can at any time manage cookies by
           changing the settings of your devices, delete cookies, or block
           cookies altogether.
         </p>
@@ -481,14 +493,14 @@ export default function PrivacyPolicy() {
           terminal device. If you block cookies, the display of our website may
           however be impaired and not all functions may be available to you. You
           can also use Femved Wellness application(s) without cookies. In that
-          case, you may however no longer be able to use all functions of such an
-          application as conveniently.
+          case, you may however no longer be able to use all functions of such
+          an application as conveniently.
         </p>
 
         <p>
-          Tracking pixels are small graphics in HTML e-mails or on websites. When
-          you access such a website, your access to the tracking pixel will be
-          recorded in a log file. This allows statistical analysis, which, in
+          Tracking pixels are small graphics in HTML e-mails or on websites.
+          When you access such a website, your access to the tracking pixel will
+          be recorded in a log file. This allows statistical analysis, which, in
           turn, can be used to improve our Services. You can set your e-mail
           program or your browser so that HTML e-mails will be displayed as text
           only, thereby preventing the use of some tracking pixels.
@@ -499,16 +511,16 @@ export default function PrivacyPolicy() {
 
         <p>
           Your personal data will be transferred to third parties only if we
-          have a legal obligation to do so, if the data transfer is necessary for
-          performance of the contract, or if you have consented to the transfer
-          of your data. Third-party service providers and partner companies will
-          receive your data only if and to the extent necessary for performance
-          of the contract or with your consent. In such cases, the extent to
-          which data are transferred will however be kept to the absolute
-          minimum. To the extent that our service providers come into contact
-          with your personal data, we will make sure that they too will comply
-          with all applicable data protection laws. Please also read the data
-          privacy policies of such third-party providers.
+          have a legal obligation to do so, if the data transfer is necessary
+          for performance of the contract, or if you have consented to the
+          transfer of your data. Third-party service providers and partner
+          companies will receive your data only if and to the extent necessary
+          for performance of the contract or with your consent. In such cases,
+          the extent to which data are transferred will however be kept to the
+          absolute minimum. To the extent that our service providers come into
+          contact with your personal data, we will make sure that they too will
+          comply with all applicable data protection laws. Please also read the
+          data privacy policies of such third-party providers.
         </p>
 
         {/* ── 8 ── */}
@@ -544,8 +556,8 @@ export default function PrivacyPolicy() {
 
         <p>
           Below (in 8.1.1-8.1.6) we will explain the different services and the
-          ways in which you can conveniently revoke your consent, and we
-          provide you with additional important information.
+          ways in which you can conveniently revoke your consent, and we provide
+          you with additional important information.
         </p>
 
         <p>
@@ -575,17 +587,18 @@ export default function PrivacyPolicy() {
         <h3 className="terms__subheading">8.1.1 Google Analytics</h3>
 
         <p>
-          Our application(s) and our website use Google Analytics, a web analysis
-          program of Google. Google Analytics uses cookies that are stored on
-          your terminal device and allows an analysis of your use. We activate IP
-          address anonymization so that IP addresses will first be truncated by
-          Google within the European Union. On our behalf Google uses such
-          information to analyze your use of our Services as well as the use of
-          our Services by other users, and provides us with reports and other
-          services. The IP address transmitted from your terminal device to Google
-          Analytics will not be merged with any other data of Google. Google
-          will transfer your data to third parties only if permitted by applicable
-          law or in accordance with outsourced data processing agreements.
+          Our application(s) and our website use Google Analytics, a web
+          analysis program of Google. Google Analytics uses cookies that are
+          stored on your terminal device and allows an analysis of your use. We
+          activate IP address anonymization so that IP addresses will first be
+          truncated by Google within the European Union. On our behalf Google
+          uses such information to analyze your use of our Services as well as
+          the use of our Services by other users, and provides us with reports
+          and other services. The IP address transmitted from your terminal
+          device to Google Analytics will not be merged with any other data of
+          Google. Google will transfer your data to third parties only if
+          permitted by applicable law or in accordance with outsourced data
+          processing agreements.
         </p>
 
         <p>
@@ -608,8 +621,8 @@ export default function PrivacyPolicy() {
           you to monitor which ads have been shown in your browser and which ads
           have been clicked. Such cookies contain no personal information.
           DoubleClick cookies allow Google and its partner websites to show ads
-          on the basis of previous visits to our website or other websites on the
-          Internet. Information generated by such cookies is transferred by
+          on the basis of previous visits to our website or other websites on
+          the Internet. Information generated by such cookies is transferred by
           Google to a server in the United States for analysis, where it is
           stored. Google never merges your data with any other data of Google.
           Data is transferred to third parties by Google only if permitted by
@@ -618,8 +631,8 @@ export default function PrivacyPolicy() {
         </p>
 
         <p>
-          If you do not wish to receive personalized ads, you can place an opt-out
-          cookie:{" "}
+          If you do not wish to receive personalized ads, you can place an
+          opt-out cookie:{" "}
           <ExternalLink href="https://www.google.de/settings/ads/onweb#display_optout">
             https://www.google.de/settings/ads/onweb#display_optout
           </ExternalLink>
@@ -637,13 +650,13 @@ export default function PrivacyPolicy() {
 
         <p>
           We use Google AdWords to advertise our offers. Following a search on
-          Google, our ads will be shown in the areas designated for this purpose.
-          Our website registers with the help of cookies how many users have
-          found our Services through such ads. We use such data to optimize our
-          ads. A cookie is stored by Google when an ad is clicked. You can block
-          the cookie by selecting the appropriate settings in your browser. In
-          that case, your visit to our website will not be included in anonymous
-          user statistics.
+          Google, our ads will be shown in the areas designated for this
+          purpose. Our website registers with the help of cookies how many users
+          have found our Services through such ads. We use such data to optimize
+          our ads. A cookie is stored by Google when an ad is clicked. You can
+          block the cookie by selecting the appropriate settings in your
+          browser. In that case, your visit to our website will not be included
+          in anonymous user statistics.
         </p>
 
         <p>
@@ -666,13 +679,13 @@ export default function PrivacyPolicy() {
 
         <p>
           We use Google Dynamic Remarketing functions on our website. This
-          technology allows us to show automatically generated, target group-based
-          ads following your visit to our website. The ads shown are based on
-          products and services on which you clicked or which you viewed during
-          your last visit to our website. Google uses cookies to generate
-          interest-based ads. If you do not wish to receive user-based ads from
-          Google, you can deactivate ads by selecting the appropriate settings of
-          Google.
+          technology allows us to show automatically generated, target
+          group-based ads following your visit to our website. The ads shown are
+          based on products and services on which you clicked or which you
+          viewed during your last visit to our website. Google uses cookies to
+          generate interest-based ads. If you do not wish to receive user-based
+          ads from Google, you can deactivate ads by selecting the appropriate
+          settings of Google.
         </p>
 
         <p>
@@ -702,10 +715,10 @@ export default function PrivacyPolicy() {
         <h3 className="terms__subheading">8.1.5 Bubble</h3>
 
         <p>
-          Bubble is a website making tool and a PaaS developed by Bubble Group. It
-          can be used by people with limited or no programming experience to make
-          web pages. It is a no-code development platform that allows users to
-          build a web application; we use Bubble services for hosting and
+          Bubble is a website making tool and a PaaS developed by Bubble Group.
+          It can be used by people with limited or no programming experience to
+          make web pages. It is a no-code development platform that allows users
+          to build a web application; we use Bubble services for hosting and
           maintaining our Web Application. Please check the privacy policies of
           Bubble:{" "}
           <ExternalLink href="https://bubble.io/privacy">
@@ -717,9 +730,9 @@ export default function PrivacyPolicy() {
 
         <p>
           Wix is a website building platform. This technology and powerful
-          built-in features give users the freedom to design professional websites
-          with ease that look amazing on any device. We use this platform for
-          hosting, maintaining and operations of our website:{" "}
+          built-in features give users the freedom to design professional
+          websites with ease that look amazing on any device. We use this
+          platform for hosting, maintaining and operations of our website:{" "}
           <ExternalLink href="https://www.wix.com/about/privacy">
             https://www.wix.com/about/privacy
           </ExternalLink>
@@ -750,27 +763,29 @@ export default function PrivacyPolicy() {
           <strong>Security measures:</strong> These third-party platforms employ
           industry-standard encryption and security protocols to protect your
           financial data during transmission and processing. While we take every
-          precaution to ensure your data is handled securely, we cannot guarantee
-          the security of data transmitted to or from these third-party
-          platforms.
+          precaution to ensure your data is handled securely, we cannot
+          guarantee the security of data transmitted to or from these
+          third-party platforms.
         </p>
 
         <p>
           <strong>Liability:</strong> Femved Wellness is not responsible for any
           issues, including but not limited to unauthorized transactions, data
-          breaches, or errors that may occur on the third-party payment platform.
-          Any disputes or concerns regarding payments should be directed to the
-          respective platform.
+          breaches, or errors that may occur on the third-party payment
+          platform. Any disputes or concerns regarding payments should be
+          directed to the respective platform.
         </p>
 
         <p>
-          <strong>2. Service providers for order fulfillment and shipping</strong>
+          <strong>
+            2. Service providers for order fulfillment and shipping
+          </strong>
         </p>
 
         <p>
-          Femved Wellness partners with third-party service providers to ensure the
-          efficient fulfillment of your orders and the timely delivery of your
-          products.
+          Femved Wellness partners with third-party service providers to ensure
+          the efficient fulfillment of your orders and the timely delivery of
+          your products.
         </p>
 
         <p>
@@ -789,11 +804,11 @@ export default function PrivacyPolicy() {
         </p>
 
         <p>
-          <strong>Liability:</strong> Femved Wellness is not liable for any issues
-          that may arise during the order fulfillment and shipping process,
-          including delays, lost packages, or data breaches at the third-party
-          service provider. Any concerns regarding shipping should be addressed
-          directly with the service provider.
+          <strong>Liability:</strong> Femved Wellness is not liable for any
+          issues that may arise during the order fulfillment and shipping
+          process, including delays, lost packages, or data breaches at the
+          third-party service provider. Any concerns regarding shipping should
+          be addressed directly with the service provider.
         </p>
 
         <p>You can check their privacy policies here:</p>
@@ -825,8 +840,8 @@ export default function PrivacyPolicy() {
 
         <ul className="terms__list terms__list--bullet">
           <li>
-            Facebook (operator: Facebook Inc., 1601 S. California Ave, Palo Alto,
-            CA 94304, U.S.A.)
+            Facebook (operator: Facebook Inc., 1601 S. California Ave, Palo
+            Alto, CA 94304, U.S.A.)
           </li>
           <li>
             Twitter (operator: Twitter Inc., 795 Folsom St., Suite 600, San
@@ -839,26 +854,26 @@ export default function PrivacyPolicy() {
         </ul>
 
         <p>
-          These plug-ins routinely collect data from you and transfer such data to
-          servers of the provider.
+          These plug-ins routinely collect data from you and transfer such data
+          to servers of the provider.
         </p>
 
         <p>
           Once activated, such plug-ins will also record your IP address. In
-          addition, activated social plug-ins will place a cookie with a clear ID
-          when the relevant website is accessed. This also allows providers to
-          create profiles of your user behavior. Such a cookie is placed whether
-          or not you are a member of the social network. If you are a member of a
-          social network and are logged in when you visit our website or when you
-          use the Femved Wellness application(s), data and information about your
-          visit to our website or your use of an Femved Wellness application may
-          be linked to your profile on the social network. Please note that we
-          have no control over the exact extent to which your data will be
-          collected by social network providers. For more information about the
-          extent, type, and purpose of data processing and about rights and
-          settings to protect your privacy, please refer to the data privacy
-          policy of the relevant social network provider. These are available at
-          the following addresses:
+          addition, activated social plug-ins will place a cookie with a clear
+          ID when the relevant website is accessed. This also allows providers
+          to create profiles of your user behavior. Such a cookie is placed
+          whether or not you are a member of the social network. If you are a
+          member of a social network and are logged in when you visit our
+          website or when you use the Femved Wellness application(s), data and
+          information about your visit to our website or your use of an Femved
+          Wellness application may be linked to your profile on the social
+          network. Please note that we have no control over the exact extent to
+          which your data will be collected by social network providers. For
+          more information about the extent, type, and purpose of data
+          processing and about rights and settings to protect your privacy,
+          please refer to the data privacy policy of the relevant social network
+          provider. These are available at the following addresses:
         </p>
 
         <ul className="terms__list terms__list--bullet">
@@ -892,7 +907,9 @@ export default function PrivacyPolicy() {
           </li>
         </ul>
 
-        <h3 className="terms__subheading">8.2.1 Facebook and Instagram Connect</h3>
+        <h3 className="terms__subheading">
+          8.2.1 Facebook and Instagram Connect
+        </h3>
 
         <p>
           We use the &quot;Facebook Connect&quot; function, so that you can
@@ -900,12 +917,12 @@ export default function PrivacyPolicy() {
         </p>
 
         <p>
-          If you use Facebook Connect, Facebook/Instagram profile data and public
-          data from your Facebook profile will be transferred to us. Conversely,
-          data may be transferred from us to your Facebook/Instagram profile. Such
-          data are used by us to register you on our website or for Femved
-          Wellness application(s) or to allow you to log in. For this purpose we
-          also store and process such data.
+          If you use Facebook Connect, Facebook/Instagram profile data and
+          public data from your Facebook profile will be transferred to us.
+          Conversely, data may be transferred from us to your Facebook/Instagram
+          profile. Such data are used by us to register you on our website or
+          for Femved Wellness application(s) or to allow you to log in. For this
+          purpose we also store and process such data.
         </p>
 
         <p>
@@ -935,18 +952,18 @@ export default function PrivacyPolicy() {
         <h3 className="terms__subheading">8.3 Pinterest</h3>
 
         <p>
-          On our website we use the &quot;Pin it&quot; button plug-in of Pinterest
-          (Pinterest Inc., 635 High Street, Palo Alto, CA, 94301, U.S.A.). When
-          you visit our website this plug-in establishes a direct connection
-          between your browser and the Pinterest server. This tells Pinterest that
-          you have visited our website with your IP address. If you are logged
-          into Pinterest during your visit, you can share content on Pinterest by
-          clicking on the &quot;Pin it&quot; button. This way, Pinterest can also
-          correlate your visit to our website to your Pinterest user account.
-          Again, please note that as a website provider, we do not know the
-          content of transferred data or how such data are used by Pinterest, nor
-          do we have any control over this process. You will find the data
-          privacy policy of Pinterest here:{" "}
+          On our website we use the &quot;Pin it&quot; button plug-in of
+          Pinterest (Pinterest Inc., 635 High Street, Palo Alto, CA, 94301,
+          U.S.A.). When you visit our website this plug-in establishes a direct
+          connection between your browser and the Pinterest server. This tells
+          Pinterest that you have visited our website with your IP address. If
+          you are logged into Pinterest during your visit, you can share content
+          on Pinterest by clicking on the &quot;Pin it&quot; button. This way,
+          Pinterest can also correlate your visit to our website to your
+          Pinterest user account. Again, please note that as a website provider,
+          we do not know the content of transferred data or how such data are
+          used by Pinterest, nor do we have any control over this process. You
+          will find the data privacy policy of Pinterest here:{" "}
           <ExternalLink href="https://de.about.pinterest.com/privacy/">
             https://de.about.pinterest.com/privacy/
           </ExternalLink>
@@ -968,16 +985,17 @@ export default function PrivacyPolicy() {
           Facebook Inc. (1601 Willow Road, Menlo Park, California 94025,
           U.S.A.). This function allows us to show visitors of our website and
           users of Femved Wellness application(s) interest-based ads when they
-          visit Facebook (&quot;Facebook ads&quot;), and to analyze such Facebook
-          ads for statistical and market research purposes, which helps us
-          optimize future advertising. For this purpose we use the so-called
-          Facebook pixel (website) and Facebook SDK (Femved Wellness application).
+          visit Facebook (&quot;Facebook ads&quot;), and to analyze such
+          Facebook ads for statistical and market research purposes, which helps
+          us optimize future advertising. For this purpose we use the so-called
+          Facebook pixel (website) and Facebook SDK (Femved Wellness
+          application).
         </p>
 
         <p>
           Collected data are anonymous for us and allow no inferences as to your
-          identity. Aside from us, Facebook however also stores and processes such
-          data. Facebook may correlate such data to your user profile, and
+          identity. Aside from us, Facebook however also stores and processes
+          such data. Facebook may correlate such data to your user profile, and
           Facebook may also use such data for its own advertising purposes in
           accordance with the Facebook data privacy policy (
           <ExternalLink href="https://www.facebook.com/about/privacy/">
@@ -992,22 +1010,23 @@ export default function PrivacyPolicy() {
         </p>
 
         <p>
-          Facebook generally also stores such data on servers in the United States.
-          Facebook is EU-US Privacy Shield certified.
+          Facebook generally also stores such data on servers in the United
+          States. Facebook is EU-US Privacy Shield certified.
         </p>
 
         <p>
           You can generally block the placement of cookies on your computer by
-          selecting the appropriate settings in your browser, so that cookies will
-          no longer be placed on your computer in the future and/or so that
-          cookies that have already been placed will be deleted. If you do so, you
-          may no longer be able to correctly use some functions on our website.
+          selecting the appropriate settings in your browser, so that cookies
+          will no longer be placed on your computer in the future and/or so that
+          cookies that have already been placed will be deleted. If you do so,
+          you may no longer be able to correctly use some functions on our
+          website.
         </p>
 
         <p>
-          With the help of an appropriate opt-out cookie from Digital Advertising
-          Alliance you can also completely deactivate advertising by third-party
-          providers such as Facebook:{" "}
+          With the help of an appropriate opt-out cookie from Digital
+          Advertising Alliance you can also completely deactivate advertising by
+          third-party providers such as Facebook:{" "}
           <ExternalLink href="https://www.aboutads.info/choices/">
             https://www.aboutads.info/choices/
           </ExternalLink>
@@ -1027,13 +1046,14 @@ export default function PrivacyPolicy() {
         <h2 className="terms__heading">9. Data security</h2>
 
         <p>
-          Data transfers are generally subject to security gaps. It is technically
-          impossible to protect your data 100% from access by third parties.
-          However, we strive to minimize this risk as much as possible. We
-          therefore maintain state-of-the-art measures to guarantee data security
-          and to protect your data from access by third parties. In addition, we
-          use strong SSL or TLS encryption for all data transfers. However,
-          please make sure not to provide your login data to any third parties.
+          Data transfers are generally subject to security gaps. It is
+          technically impossible to protect your data 100% from access by third
+          parties. However, we strive to minimize this risk as much as possible.
+          We therefore maintain state-of-the-art measures to guarantee data
+          security and to protect your data from access by third parties. In
+          addition, we use strong SSL or TLS encryption for all data transfers.
+          However, please make sure not to provide your login data to any third
+          parties.
         </p>
 
         {/* ── 10 ── */}
@@ -1041,8 +1061,8 @@ export default function PrivacyPolicy() {
 
         <p>
           We occasionally place links to websites of third parties. Although we
-          carefully select such third parties, we make no guarantee and assume no
-          liability for the correctness or completeness of content or data
+          carefully select such third parties, we make no guarantee and assume
+          no liability for the correctness or completeness of content or data
           security of any third-party websites. Nor does this Privacy Policy
           apply to linked third-party websites. We assume no responsibility for
           data privacy policies or content of any other websites.
@@ -1054,8 +1074,8 @@ export default function PrivacyPolicy() {
         <p>
           We may need to make changes to this Privacy Policy, for example if we
           add new functions or services to the application. We will however
-          notify you of any changes and ask that you read and accept such changes
-          before they are implemented by us.
+          notify you of any changes and ask that you read and accept such
+          changes before they are implemented by us.
         </p>
 
         {/* ── 12 ── */}
@@ -1068,9 +1088,9 @@ export default function PrivacyPolicy() {
           information about your personal data that are processed by us,
           correction of any errors in your personal data, termination of
           processing of your personal data, or erasure of your personal data –
-          subject to mandatory legal provisions or obligations to the contrary. In
-          particular, if you qualify as the &quot;data subject&quot; under the
-          terms of (GDPR), you have the right to:
+          subject to mandatory legal provisions or obligations to the contrary.
+          In particular, if you qualify as the &quot;data subject&quot; under
+          the terms of (GDPR), you have the right to:
         </p>
 
         <ul className="terms__list terms__list--bullet">
@@ -1087,8 +1107,8 @@ export default function PrivacyPolicy() {
             pursuant to Art. 17 GDPR, to request deletion of your personal data
             stored by us, unless the processing of the data is required for the
             exercise of the right to freedom of expression and information, for
-            the fulfillment of a legal obligation, for reasons of public interest
-            or for the assertion, exercise or defense of legal claims;
+            the fulfillment of a legal obligation, for reasons of public
+            interest or for the assertion, exercise or defense of legal claims;
           </li>
           <li>
             in accordance with Art. 18 GDPR, to request the restriction of the
@@ -1101,26 +1121,28 @@ export default function PrivacyPolicy() {
             or to request transmission to another controller;
           </li>
           <li>
-            in accordance with Art. 7 (3) GDPR, to revoke at any time your consent
-            previously granted to us. As a result, we will be no longer able to
-            continue the data processing based on this consent for the future;
+            in accordance with Art. 7 (3) GDPR, to revoke at any time your
+            consent previously granted to us. As a result, we will be no longer
+            able to continue the data processing based on this consent for the
+            future;
           </li>
           <li>
             in accordance with Art. 77 GDPR, users have the right to lodge a
             complaint with a supervisory authority. As a rule, you can contact
-            the supervisory authority of your usual place of residence or work or
-            our company headquarters for this purpose.
+            the supervisory authority of your usual place of residence or work
+            or our company headquarters for this purpose.
           </li>
         </ul>
 
         <p>
           also, if your personal data is processed based on legitimate interests
           in accordance with Art. 6 (1) (f) GDPR, you have the right to file an
-          objection against the processing of your personal data in accordance with
-          Art. 21 GDPR, provided that there are reasons based on your particular
-          situation or the objection is directed against direct marketing. In the
-          latter case, you have a general right of objection, which shall be
-          implemented by us without you specifying any particular situation.
+          objection against the processing of your personal data in accordance
+          with Art. 21 GDPR, provided that there are reasons based on your
+          particular situation or the objection is directed against direct
+          marketing. In the latter case, you have a general right of objection,
+          which shall be implemented by us without you specifying any particular
+          situation.
         </p>
 
         {/* ── 13 ── */}

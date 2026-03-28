@@ -29,6 +29,7 @@ import PaymentSuccess from "../pages/PaymentSuccess";
 import Placeholder from "../pages/Placeholder";
 import Podcast from "../pages/Podcast";
 import PrivacyPolicy from "../pages/PrivacyPolicy";
+import RefundPolicy from "../pages/RefundPolicy";
 import Terms from "../pages/Terms";
 import { WellnessLibrary } from "../components/WellnessLibrary";
 import AdminRoute from "./AdminRoute";
@@ -52,6 +53,7 @@ export const router = createBrowserRouter([
       { path: "/faqs", element: placeholderForRouteTitle("FAQs") },
       { path: "/terms", element: <Terms /> },
       { path: "/privacy-policy", element: <PrivacyPolicy /> },
+      { path: "/refund-policy", element: <RefundPolicy /> },
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
       { path: "/forgot-password", element: <ForgotPassword /> },

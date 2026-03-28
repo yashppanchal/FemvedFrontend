@@ -92,12 +92,17 @@ export function Footer() {
                 </li>
                 <li className="footer__item">
                   <Link className="footer__link" to="/terms">
-                    Terms
+                    Terms & conditions
                   </Link>
                 </li>
                 <li className="footer__item">
                   <Link className="footer__link" to="/privacy-policy">
                     Privacy policy
+                  </Link>
+                </li>
+                <li className="footer__item">
+                  <Link className="footer__link" to="/refund-policy">
+                    Refund policy
                   </Link>
                 </li>
               </ul>
