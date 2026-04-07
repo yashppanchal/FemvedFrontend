@@ -9,6 +9,7 @@ import {
   NAV_SECTIONS,
   STATIC_NAV_ITEM_LABEL_BY_PATH,
   WELLNESS_LIBRARY_NAV_PATH,
+  WELLNESS_LIBRARY_NAV_SECTION,
   type NavItem,
   type NavSection,
 } from "../nav/menu";
@@ -193,7 +194,10 @@ export function NavBar() {
     treeNavPayload.country === country &&
     treeNavPayload.sections.length > 0
       ? [
-          ...treeNavPayload.sections,
+          ...treeNavPayload.sections.filter(
+            (s) => !isWellnessLibraryDomainName(s.label),
+          ),
+          WELLNESS_LIBRARY_NAV_SECTION,
           HOLISTIC_TREATMENTS_NAV_SECTION,
           LEARN_NAV_SECTION,
         ]

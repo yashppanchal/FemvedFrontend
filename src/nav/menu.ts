@@ -108,6 +108,10 @@ export const NAV_SECTIONS: NavSection[] = [
   },
 ];
 
+/** Wellness Library nav section — always shown as a single link (no dropdown). */
+export const WELLNESS_LIBRARY_NAV_SECTION: NavSection =
+  NAV_SECTIONS.find((s) => s.id === "library")!;
+
 /** Learn is not backed by a guided-tree domain; appended in the nav after API-driven domain sections. */
 export const LEARN_NAV_SECTION: NavSection =
   NAV_SECTIONS.find((s) => s.id === "learn")!;
