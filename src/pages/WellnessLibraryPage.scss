@@ -1,0 +1,42 @@
+.wellnessLibraryPage {
+  padding-top: 20px;
+  padding-bottom: 56px;
+}
+
+.wellnessLibraryPage__header {
+  margin-bottom: 20px;
+}
+
+.wellnessLibraryPage__resultsCount {
+  margin: 0 0 14px;
+  color: rgba(15, 15, 16, 0.72);
+  font-size: 14px;
+}
+
+.wellnessLibraryPage__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.wellnessLibraryPage__emptyState {
+  margin-top: 12px;
+}
+
+@media (max-width: 1200px) {
+  .wellnessLibraryPage__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .wellnessLibraryPage__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .wellnessLibraryPage__grid {
+    grid-template-columns: 1fr;
+  }
+}

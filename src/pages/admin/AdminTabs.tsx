@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import type { AdminTab } from "./types";
 
 type AdminTabsProps = {
@@ -43,6 +44,12 @@ export function AdminTabs({ activeTab, onTabChange, userName }: AdminTabsProps) 
           {tab.label}
         </button>
       ))}
+      <Link
+        to="/admin-dashboard/library"
+        className="adminTabs__tab adminTabs__tab--link"
+      >
+        Wellness Library →
+      </Link>
     </nav>
   );
 }

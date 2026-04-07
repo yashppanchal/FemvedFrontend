@@ -5,7 +5,8 @@ export type PaymentGateway = "CashFree" | "PayPal" | "Stripe";
 export type OrderStatus = "Pending" | "Paid" | "Failed" | "Cancelled";
 
 export interface InitiateOrderRequest {
-  durationId: string;
+  durationId?: string;
+  videoId?: string;
   countryCode: string;
   gateway: PaymentGateway;
   couponCode?: string;

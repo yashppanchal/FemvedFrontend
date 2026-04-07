@@ -5,7 +5,8 @@ import { ApiError } from "../api/client";
 import "./PaymentProviderSelection.scss";
 
 interface SelectProviderState {
-  durationId: string;
+  durationId?: string;
+  videoId?: string;
   countryCode: string;
 }
 
@@ -17,7 +18,7 @@ export default function PaymentProviderSelection() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  if (!state?.durationId || !state?.countryCode) {
+  if ((!state?.durationId && !state?.videoId) || !state?.countryCode) {
     return (
       <section className="page page--providerSelection">
         <div className="providerCard">
@@ -44,7 +45,8 @@ export default function PaymentProviderSelection() {
 
     try {
       const order = await initiateOrder({
-        durationId: state.durationId,
+        ...(state.durationId ? { durationId: state.durationId } : {}),
+        ...(state.videoId ? { videoId: state.videoId } : {}),
         countryCode: state.countryCode,
         gateway,
         idempotencyKey: crypto.randomUUID(),

@@ -1,0 +1,139 @@
+.episodePlayer {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+  align-items: start;
+}
+
+.episodePlayer__main {
+  min-width: 0;
+}
+
+.episodePlayer__nowPlaying {
+  margin: 14px 0 0;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  font-size: 20px;
+  color: var(--black);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.episodePlayer__epNum {
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--primary, #56131b);
+}
+
+.episodePlayer__missing {
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(15, 15, 16, 0.06);
+  color: rgba(15, 15, 16, 0.55);
+  font-size: 14px;
+}
+
+.episodePlayer__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.episodePlayer__item {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 15, 16, 0.08);
+  background: rgba(255, 255, 255, 0.85);
+  text-align: left;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+
+  &:hover {
+    background: rgba(86, 19, 27, 0.04);
+    border-color: rgba(86, 19, 27, 0.2);
+  }
+}
+
+.episodePlayer__item--active {
+  background: rgba(86, 19, 27, 0.08);
+  border-color: rgba(86, 19, 27, 0.35);
+}
+
+.episodePlayer__itemNum {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 15, 16, 0.06);
+  color: rgba(15, 15, 16, 0.7);
+  font-size: 12px;
+  font-weight: 600;
+
+  .episodePlayer__item--active & {
+    background: var(--primary, #56131b);
+    color: #fff;
+  }
+}
+
+.episodePlayer__itemText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.episodePlayer__itemTitle {
+  font-size: 13px;
+  color: var(--black);
+  line-height: 1.4;
+}
+
+.episodePlayer__itemBadge {
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #2a7a3b;
+  background: rgba(42, 122, 59, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.episodePlayer__empty {
+  padding: 20px;
+  text-align: center;
+  color: rgba(15, 15, 16, 0.55);
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .episodePlayer {
+    grid-template-columns: 1fr;
+  }
+
+  .episodePlayer__list {
+    max-height: 320px;
+  }
+}

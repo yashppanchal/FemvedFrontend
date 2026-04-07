@@ -2,17 +2,19 @@ import { useState } from "react";
 import { useAuth } from "../auth/useAuth";
 import ProfileTab from "./user/ProfileTab";
 import MyProgramsTab from "./user/MyProgramsTab";
+import LibraryTab from "./user/LibraryTab";
 import OrdersTab from "./user/OrdersTab";
 import RefundsTab from "./user/RefundsTab";
 import ScheduleTab from "./user/ScheduleTab";
 import { usePageTitle } from "../usePageTitle";
 import "./Dashboard.scss";
 
-type DashTab = "profile" | "programs" | "orders" | "refunds" | "schedule";
+type DashTab = "profile" | "programs" | "library" | "orders" | "refunds" | "schedule";
 
 const TABS: { id: DashTab; label: string }[] = [
   { id: "profile", label: "Profile" },
   { id: "programs", label: "My Programs" },
+  { id: "library", label: "My Library" },
   { id: "schedule", label: "Schedule" },
   { id: "orders", label: "Orders" },
   { id: "refunds", label: "Refunds" },
@@ -48,6 +50,7 @@ export default function Dashboard() {
         <div className="dashContent">
           {activeTab === "profile" && <ProfileTab />}
           {activeTab === "programs" && <MyProgramsTab />}
+          {activeTab === "library" && <LibraryTab />}
           {activeTab === "schedule" && <ScheduleTab />}
           {activeTab === "orders" && <OrdersTab />}
           {activeTab === "refunds" && <RefundsTab />}

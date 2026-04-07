@@ -28,6 +28,11 @@ import PaymentProviderSelection from "../pages/PaymentProviderSelection";
 import PaymentSuccess from "../pages/PaymentSuccess";
 import Placeholder from "../pages/Placeholder";
 import Podcast from "../pages/Podcast";
+import WellnessLibraryPage from "../pages/WellnessLibraryPage";
+import LibraryDetailPage from "../pages/LibraryDetailPage";
+import MyLibraryPage from "../pages/MyLibraryPage";
+import AdminLibraryPage from "../pages/AdminLibraryPage";
+import CategoryLibraryPage from "../pages/CategoryLibraryPage";
 import PrivacyPolicy from "../pages/PrivacyPolicy";
 import RefundPolicy from "../pages/RefundPolicy";
 import Terms from "../pages/Terms";
@@ -61,6 +66,7 @@ export const router = createBrowserRouter([
         element: <AuthenticatedRoute />,
         children: [
           { path: "/dashboard", element: <Dashboard /> },
+          { path: "/dashboard/library", element: <MyLibraryPage /> },
           { path: "/orders", element: <OrderHistory /> },
         ],
       },
@@ -68,6 +74,7 @@ export const router = createBrowserRouter([
         element: <AdminRoute />,
         children: [
           { path: "/admin-dashboard", element: <AdminDashboard /> },
+          { path: "/admin-dashboard/library", element: <AdminLibraryPage /> },
         ],
       },
       {
@@ -85,7 +92,9 @@ export const router = createBrowserRouter([
       { path: "/learn/founders-story", element: <FoundersStory /> },
       { path: "/learn/know-your-experts", element: <KnowYourExperts /> },
       { path: "/learn/podcast", element: <Podcast /> },
-      { path: "/wellness-library", element: placeholderForRouteTitle("Wellness Library") },
+      { path: "/wellness-library", element: <WellnessLibraryPage /> },
+      { path: "/wellness-library/:categorySlug", element: <CategoryLibraryPage /> },
+      { path: "/wellness-library/:categorySlug/:videoSlug", element: <LibraryDetailPage /> },
       { path: "/guided/:categorySlug/programs", element: <CategoryProgramsPage /> },
       { path: "/guided/:programSlug", element: <GuidedProgramDetail /> },
       { path: "/guided/:programSlug/:programId", element: <ProgramDetailPage /> },

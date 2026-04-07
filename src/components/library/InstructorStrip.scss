@@ -1,0 +1,60 @@
+.instructorStrip {
+  margin-top: 32px;
+}
+
+.instructorStrip__heading {
+  margin: 0 0 14px;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  font-size: 22px;
+  color: var(--black);
+  letter-spacing: -0.02em;
+}
+
+.instructorStrip__card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 15, 16, 0.08);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.instructorStrip__avatar {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(86, 19, 27, 0.08);
+  color: var(--primary, #56131b);
+  display: grid;
+  place-items: center;
+  font-family: var(--fontTitle);
+  font-size: 22px;
+  font-weight: 400;
+}
+
+.instructorStrip__info {
+  flex: 1 1 auto;
+}
+
+.instructorStrip__name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--black);
+}
+
+.instructorStrip__title {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: rgba(15, 15, 16, 0.6);
+}
+
+.instructorStrip__bio {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: rgba(15, 15, 16, 0.68);
+  line-height: 1.55;
+}

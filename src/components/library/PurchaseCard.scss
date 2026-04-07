@@ -1,0 +1,102 @@
+.purchaseCard {
+  position: sticky;
+  top: 100px;
+  border: 1px solid rgba(15, 15, 16, 0.1);
+  border-radius: 16px;
+  background: var(--white);
+  box-shadow: 0 12px 28px rgba(15, 15, 16, 0.06);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.purchaseCard__priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.purchaseCard__price {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--black);
+  letter-spacing: -0.02em;
+}
+
+.purchaseCard__originalPrice {
+  font-size: 16px;
+  color: rgba(15, 15, 16, 0.5);
+  text-decoration: line-through;
+}
+
+.purchaseCard__access {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(15, 15, 16, 0.6);
+}
+
+.purchaseCard__btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: var(--primary, #56131b);
+  color: var(--white, #fff);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+
+  &:hover {
+    background: var(--primaryHover, #3e0d13);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &--owned {
+    background: rgba(15, 15, 16, 0.08);
+    color: rgba(15, 15, 16, 0.55);
+    cursor: default;
+
+    &:hover {
+      background: rgba(15, 15, 16, 0.08);
+      transform: none;
+    }
+  }
+}
+
+.purchaseCard__features {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid rgba(15, 15, 16, 0.08);
+  padding-top: 14px;
+}
+
+.purchaseCard__feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: rgba(15, 15, 16, 0.72);
+  line-height: 1.45;
+}
+
+.purchaseCard__featureIcon {
+  flex-shrink: 0;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+@media (max-width: 900px) {
+  .purchaseCard {
+    position: static;
+  }
+}
