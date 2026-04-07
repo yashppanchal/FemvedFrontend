@@ -11,10 +11,10 @@ import LibraryVideoEditPanel from "./LibraryVideoEditPanel";
 
 const VIDEO_TYPES = ["MASTERCLASS", "SERIES"] as const;
 
-const CURRENCY_DEFAULTS: Record<string, { code: string; symbol: string }> = {
-  IN: { code: "INR", symbol: "\u20B9" },
-  GB: { code: "GBP", symbol: "\u00A3" },
-  US: { code: "USD", symbol: "$" },
+const CURRENCY_DEFAULTS: Record<string, { currencyCode: string; currencySymbol: string }> = {
+  IN: { currencyCode: "INR", currencySymbol: "\u20B9" },
+  GB: { currencyCode: "GBP", currencySymbol: "\u00A3" },
+  US: { currencyCode: "USD", currencySymbol: "$" },
 };
 
 type CreateForm = {
