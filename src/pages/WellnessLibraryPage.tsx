@@ -15,7 +15,7 @@ import FilterTabs from "../components/library/FilterTabs";
 import FeaturedRow from "../components/library/FeaturedRow";
 import LibraryCard from "../components/library/LibraryCard";
 
-/** Maps a category slug from the video's parent category for card links. */
+/** Maps a video id to its parent category slug for card links. */
 function buildCategorySlugMap(
   categories: LibraryCategoryDto[],
 ): Map<string, string> {
@@ -28,45 +28,38 @@ function buildCategorySlugMap(
   return map;
 }
 
-/** Applies the active filter key against the tree data. */
-function applyFilter(
+/** Filters videos by category slug and video type. */
+function applyFilters(
   tree: LibraryTreeResponse,
-  filterKey: string,
+  categorySlug: string,
+  videoType: string,
 ): LibraryVideoCardDto[] {
-  if (filterKey === "all") {
-    return tree.categories.flatMap((c) => c.videos);
+  let videos: LibraryVideoCardDto[];
+
+  if (categorySlug === "all") {
+    videos = tree.categories.flatMap((c) => c.videos);
+  } else {
+    const cat = tree.categories.find((c) => c.categorySlug === categorySlug);
+    videos = cat?.videos ?? [];
   }
 
-  const filter = tree.filters.find((f) => f.filterKey === filterKey);
-  if (!filter) return tree.categories.flatMap((c) => c.videos);
-
-  if (filter.filterTarget === "VIDEO_TYPE") {
-    const typeUpper = filterKey.toUpperCase();
-    return tree.categories.flatMap((c) =>
-      c.videos.filter((v) => v.videoType === typeUpper),
-    );
+  if (videoType !== "all") {
+    videos = videos.filter((v) => v.videoType === videoType);
   }
 
-  if (filter.filterTarget === "CATEGORY") {
-    const cat = tree.categories.find(
-      (c) => c.categorySlug === filterKey || c.categoryName.toLowerCase() === filterKey.toLowerCase(),
-    );
-    return cat?.videos ?? [];
-  }
-
-  return tree.categories.flatMap((c) => c.videos);
+  return videos;
 }
 
 export default function WellnessLibraryPage() {
   const { country } = useCountry();
 
-  // Initialise synchronously from snapshot
   const [tree, setTree] = useState<LibraryTreeResponse | null>(() =>
     getLibrarySnapshot(country),
   );
   const [loading, setLoading] = useState(() => getLibrarySnapshot(country) === null);
   const [hasError, setHasError] = useState(false);
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [activeType, setActiveType] = useState("all");
 
   useEffect(() => {
     let isActive = true;
@@ -100,14 +93,15 @@ export default function WellnessLibraryPage() {
     };
   }, [country]);
 
-  // Reset filter when country changes (in case category slugs differ)
+  // Reset filters when country changes
   useEffect(() => {
-    setActiveFilter("all");
+    setActiveCategory("all");
+    setActiveType("all");
   }, [country]);
 
   const filteredVideos = useMemo(
-    () => (tree ? applyFilter(tree, activeFilter) : []),
-    [tree, activeFilter],
+    () => (tree ? applyFilters(tree, activeCategory, activeType) : []),
+    [tree, activeCategory, activeType],
   );
 
   const categorySlugMap = useMemo(
@@ -115,9 +109,11 @@ export default function WellnessLibraryPage() {
     [tree],
   );
 
-  const showFeatured = activeFilter === "all" && (tree?.featuredVideos.length ?? 0) > 0;
+  const showFeatured =
+    activeCategory === "all" &&
+    activeType === "all" &&
+    (tree?.featuredVideos.length ?? 0) > 0;
 
-  // ── Loading state ──────────────────────────────────────────────────────────
   if (loading) {
     return (
       <section className="page wellnessLibraryPage">
@@ -126,7 +122,6 @@ export default function WellnessLibraryPage() {
     );
   }
 
-  // ── Error state ────────────────────────────────────────────────────────────
   if (hasError || !tree) {
     return (
       <section className="page wellnessLibraryPage">
@@ -139,7 +134,6 @@ export default function WellnessLibraryPage() {
     );
   }
 
-  // ── Loaded ─────────────────────────────────────────────────────────────────
   return (
     <section className="page wellnessLibraryPage">
       <header className="wellnessLibraryPage__header">
@@ -152,11 +146,13 @@ export default function WellnessLibraryPage() {
         </p>
       </header>
 
-      {tree.filters.length > 0 && (
+      {tree.categories.length > 0 && (
         <FilterTabs
-          filters={tree.filters}
-          activeKey={activeFilter}
-          onSelect={setActiveFilter}
+          categories={tree.categories}
+          activeCategory={activeCategory}
+          activeType={activeType}
+          onCategoryChange={setActiveCategory}
+          onTypeChange={setActiveType}
         />
       )}
 
