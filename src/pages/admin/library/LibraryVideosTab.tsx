@@ -269,6 +269,11 @@ export default function LibraryVideosTab() {
               placeholder="https://youtube.com/watch?v=..."
             />
           </label>
+          {form.videoType === "SERIES" && (
+            <p style={{ margin: "4px 0 8px", padding: "10px 14px", fontSize: 13, background: "rgba(86,19,27,0.06)", borderRadius: 6, color: "rgba(15,15,16,0.7)" }}>
+              After creating this series, click <strong>Edit</strong> to add individual episodes with their YouTube links.
+            </p>
+          )}
           {form.videoType === "MASTERCLASS" && (
             <label className="field">
               <span className="field__label">YouTube Video Link (paid, only after purchase)</span>
