@@ -54,12 +54,13 @@ export default function LibraryVideoEditPanel({
   const [tagsStr, setTagsStr] = useState("");
   const [featuresStr, setFeaturesStr] = useState("");
 
-  // Episode add form
+  // Episode add/edit form
   const [epTitle, setEpTitle] = useState("");
   const [epNumber, setEpNumber] = useState("");
   const [epStreamUrl, setEpStreamUrl] = useState("");
   const [epDuration, setEpDuration] = useState("");
   const [epFreePreview, setEpFreePreview] = useState(false);
+  const [editingEpId, setEditingEpId] = useState<string | null>(null);
 
   // Testimonial add form
   const [tName, setTName] = useState("");
@@ -162,23 +163,51 @@ export default function LibraryVideoEditPanel({
   };
 
   // ── Episodes ──────────────────────────────────────────────────────────────
-  const addEpisode = async () => {
+  const clearEpForm = () => {
+    setEpTitle("");
+    setEpNumber("");
+    setEpStreamUrl("");
+    setEpDuration("");
+    setEpFreePreview(false);
+    setEditingEpId(null);
+  };
+
+  const startEditEpisode = (ep: AdminLibraryVideoDetail["episodes"][number]) => {
+    setEditingEpId(ep.episodeId);
+    setEpNumber(String(ep.episodeNumber));
+    setEpTitle(ep.title);
+    setEpStreamUrl(ep.streamUrl ?? "");
+    setEpDuration(ep.duration ?? "");
+    setEpFreePreview(ep.isFreePreview);
+    setTimeout(() => {
+      document.getElementById("episode-form")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 50);
+  };
+
+  const saveOrAddEpisode = async () => {
     if (!epTitle.trim()) return;
     try {
-      const r: AddLibraryEpisodeRequest = {
-        episodeNumber: Number(epNumber) || (video?.episodes.length ?? 0) + 1,
-        title: epTitle.trim(),
-        streamUrl: epStreamUrl.trim() || null,
-        duration: epDuration.trim() || null,
-        isFreePreview: epFreePreview,
-      };
-      await adminLibrary.addEpisode(videoId, r);
-      setEpTitle("");
-      setEpNumber("");
-      setEpStreamUrl("");
-      setEpDuration("");
-      setEpFreePreview(false);
-      flash("Episode added.");
+      if (editingEpId) {
+        await adminLibrary.updateEpisode(editingEpId, {
+          episodeNumber: Number(epNumber) || undefined,
+          title: epTitle.trim(),
+          streamUrl: epStreamUrl.trim() || null,
+          duration: epDuration.trim() || null,
+          isFreePreview: epFreePreview,
+        });
+        flash("Episode updated.");
+      } else {
+        const r: AddLibraryEpisodeRequest = {
+          episodeNumber: Number(epNumber) || (video?.episodes.length ?? 0) + 1,
+          title: epTitle.trim(),
+          streamUrl: epStreamUrl.trim() || null,
+          duration: epDuration.trim() || null,
+          isFreePreview: epFreePreview,
+        };
+        await adminLibrary.addEpisode(videoId, r);
+        flash("Episode added.");
+      }
+      clearEpForm();
       load();
     } catch (err) {
       flashErr(err);
@@ -189,6 +218,7 @@ export default function LibraryVideoEditPanel({
     if (!confirm("Delete episode?")) return;
     try {
       await adminLibrary.deleteEpisode(epId);
+      if (editingEpId === epId) clearEpForm();
       flash("Episode deleted.");
       load();
     } catch (err) {
@@ -463,12 +493,20 @@ export default function LibraryVideoEditPanel({
                     <td>{ep.duration ?? "\u2014"}</td>
                     <td>{ep.isFreePreview ? "Yes" : "No"}</td>
                     <td>
-                      <button
-                        className="adminActionButton adminActionButton--danger"
-                        onClick={() => deleteEpisode(ep.episodeId)}
-                      >
-                        Delete
-                      </button>
+                      <div className="adminActionGroup">
+                        <button
+                          className="adminActionButton"
+                          onClick={() => startEditEpisode(ep)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="adminActionButton adminActionButton--danger"
+                          onClick={() => deleteEpisode(ep.episodeId)}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -476,7 +514,12 @@ export default function LibraryVideoEditPanel({
             </table>
           </div>
 
-          <div className="form adminForm" style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-end" }}>
+          {editingEpId && (
+            <p style={{ margin: "8px 0", fontSize: 13, fontWeight: 600, color: "var(--primary, #56131b)" }}>
+              Editing episode — update fields below and click Save Episode
+            </p>
+          )}
+          <div id="episode-form" className="form adminForm" style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-end", border: editingEpId ? "2px solid var(--primary, #56131b)" : undefined, borderRadius: editingEpId ? 8 : undefined, padding: editingEpId ? 12 : undefined }}>
             <label className="field" style={{ flex: "0 0 60px" }}>
               <span className="field__label">#</span>
               <input className="field__input" type="number" value={epNumber} onChange={(e) => setEpNumber(e.target.value)} placeholder="auto" />
@@ -497,9 +540,14 @@ export default function LibraryVideoEditPanel({
               <input type="checkbox" checked={epFreePreview} onChange={(e) => setEpFreePreview(e.target.checked)} />
               <span className="field__label" style={{ margin: 0 }}>Free</span>
             </label>
-            <button type="button" className="button" onClick={addEpisode}>
-              + Episode
+            <button type="button" className="button" onClick={saveOrAddEpisode}>
+              {editingEpId ? "Save Episode" : "+ Episode"}
             </button>
+            {editingEpId && (
+              <button type="button" className="adminActionButton" onClick={clearEpForm}>
+                Cancel
+              </button>
+            )}
           </div>
         </>
       )}

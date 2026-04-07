@@ -52,6 +52,9 @@ export default function PaymentSuccess() {
           <Link to="/orders" className="button paymentSuccessCard__button">
             View order history
           </Link>
+          <Link to="/dashboard?tab=library" className="paymentSuccessCard__link">
+            Go to My Library
+          </Link>
           <Link to="/dashboard" className="paymentSuccessCard__link">
             Go to dashboard
           </Link>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 import ProfileTab from "./user/ProfileTab";
 import MyProgramsTab from "./user/MyProgramsTab";
@@ -20,10 +21,17 @@ const TABS: { id: DashTab; label: string }[] = [
   { id: "refunds", label: "Refunds" },
 ];
 
+function getInitialTab(params: URLSearchParams): DashTab {
+  const tab = params.get("tab");
+  if (tab && TABS.some((t) => t.id === tab)) return tab as DashTab;
+  return "profile";
+}
+
 export default function Dashboard() {
   usePageTitle("My Dashboard");
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<DashTab>("profile");
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState<DashTab>(() => getInitialTab(searchParams));
 
   return (
     <section className="page page--dashboard">

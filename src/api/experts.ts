@@ -200,3 +200,34 @@ export function getExpertEarnings(): Promise<ExpertEarningsBalance> {
 export function getExpertPayoutHistory(): Promise<ExpertPayoutRecord[]> {
   return apiFetch<ExpertPayoutRecord[]>("/experts/me/payouts");
 }
+
+/* ------------------------------------------------------------------ */
+/*  Library Sales                                                       */
+/* ------------------------------------------------------------------ */
+
+export interface ExpertLibrarySalesResponse {
+  totalVideos: number;
+  totalPurchases: number;
+  videos: ExpertLibraryVideoSalesDto[];
+  revenueByurrency: ExpertLibrarySalesCurrencyDto[];
+}
+
+export interface ExpertLibraryVideoSalesDto {
+  videoId: string;
+  title: string;
+  videoType: string;
+  status: string;
+  purchaseCount: number;
+  createdAt: string;
+}
+
+export interface ExpertLibrarySalesCurrencyDto {
+  currencyCode: string;
+  currencySymbol: string;
+  totalRevenue: number;
+  orderCount: number;
+}
+
+export function getExpertLibrarySales(): Promise<ExpertLibrarySalesResponse> {
+  return apiFetch<ExpertLibrarySalesResponse>("/experts/me/library-sales");
+}

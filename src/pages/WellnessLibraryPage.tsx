@@ -2,6 +2,10 @@ import "./WellnessLibraryPage.scss";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCountry } from "../country/useCountry";
+import Placeholder from "./Placeholder";
+
+/** Flip to false to show "Coming Soon" instead of the live library. */
+const LIBRARY_LIVE = true;
 import {
   getLibrarySnapshot,
   loadLibraryTree,
@@ -51,6 +55,10 @@ function applyFilters(
 }
 
 export default function WellnessLibraryPage() {
+  if (!LIBRARY_LIVE) {
+    return <Placeholder title="Wellness Library" description="Coming Soon" />;
+  }
+
   const { country } = useCountry();
 
   const [tree, setTree] = useState<LibraryTreeResponse | null>(() =>

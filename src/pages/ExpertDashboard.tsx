@@ -4,19 +4,21 @@ import ExpertProfileTab from "./expert/ExpertProfileTab";
 import ExpertProgramsTab from "./expert/ExpertProgramsTab";
 import ExpertEnrollmentsTab from "./expert/ExpertEnrollmentsTab";
 import ExpertEarningsTab from "./expert/ExpertEarningsTab";
+import ExpertLibrarySalesTab from "./expert/ExpertLibrarySalesTab";
 import ExpertCreateProgramTab from "./expert/ExpertCreateProgramTab";
 import { usePageTitle } from "../usePageTitle";
 import "./ExpertDashboard.scss";
 
 const ENABLE_CREATE_PROGRAM = import.meta.env.VITE_ENABLE_CREATE_PROGRAM !== "false";
 
-type ExpertTab = "profile" | "programs" | "enrollments" | "earnings" | "create";
+type ExpertTab = "profile" | "programs" | "enrollments" | "earnings" | "librarySales" | "create";
 
 const ALL_TABS: { id: ExpertTab; label: string; hidden?: boolean }[] = [
   { id: "profile", label: "Profile" },
   { id: "programs", label: "My Programs" },
   { id: "enrollments", label: "Enrollments" },
   { id: "earnings", label: "Earnings" },
+  { id: "librarySales", label: "Library Sales" },
   { id: "create", label: "Create Program", hidden: !ENABLE_CREATE_PROGRAM },
 ];
 
@@ -76,6 +78,7 @@ export default function ExpertDashboard() {
             />
           )}
           {activeTab === "earnings" && <ExpertEarningsTab />}
+          {activeTab === "librarySales" && <ExpertLibrarySalesTab />}
           {activeTab === "create" && <ExpertCreateProgramTab />}
         </div>
       </div>
