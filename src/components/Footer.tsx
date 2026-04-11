@@ -29,12 +29,7 @@ export function Footer() {
               <div className="footer__heading">WHO WE ARE</div>
               <ul className="footer__list">
                 <li className="footer__item">
-                  <Link className="footer__link" to="/about">
-                    About us
-                  </Link>
-                </li>
-                <li className="footer__item">
-                  <Link className="footer__link" to="/learn/founders-story">
+                  <Link className="footer__link" to="/our-story">
                     Our story
                   </Link>
                 </li>

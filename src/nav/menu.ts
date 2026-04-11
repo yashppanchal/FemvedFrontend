@@ -91,13 +91,8 @@ export const NAV_SECTIONS: NavSection[] = [
       { type: "internal", label: "Articles", path: "/learn/articles" },
       {
         type: "internal",
-        label: "About",
-        path: "/about",
-      },
-      {
-        type: "internal",
-        label: "Founders Story",
-        path: "/learn/founders-story",
+        label: "Our story",
+        path: "/our-story",
       },
       // {
       //   type: "internal",

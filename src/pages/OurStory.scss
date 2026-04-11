@@ -1,0 +1,225 @@
+/* Our Story – small additions on top of About + Founders Story styles */
+
+/* Trust badges row (reference: icon box + label + serif value) */
+.ourStory__trustStrip {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  padding: clamp(40px, 6vw, 72px) clamp(20px, 5vw, 48px);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.ourStory__trustGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(28px, 4vw, 44px);
+  max-width: 1100px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.ourStory__trustItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  text-align: center;
+}
+
+.ourStory__trustIconWrap {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(15, 15, 16, 0.12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.ourStory__trustIcon {
+  width: 26px;
+  height: 26px;
+  color: #65555c;
+}
+
+.ourStory__trustCopy {
+  min-width: 0;
+  width: 100%;
+  text-align: center;
+}
+
+.ourStory__trustLabel {
+  margin: 0 0 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(15, 15, 16, 0.52);
+  line-height: 1.35;
+}
+
+.ourStory__trustValue {
+  margin: 0;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  font-size: clamp(17px, 1.9vw, 20px);
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  color: #65555c;
+}
+
+.ourStory__trustDetail {
+  margin: 6px 0 0;
+  font-family: var(--fontTitle);
+  font-size: clamp(14px, 1.5vw, 15px);
+  font-style: italic;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+  color: rgba(101, 85, 92, 0.88);
+}
+
+@media (max-width: 960px) {
+  .ourStory__trustGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(28px, 5vw, 36px);
+  }
+}
+
+@media (max-width: 520px) {
+  .ourStory__trustGrid {
+    grid-template-columns: 1fr;
+    max-width: 420px;
+  }
+}
+
+.ourStory__sectionHeading {
+  margin: 0 0 20px;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  font-size: clamp(26px, 3.5vw, 36px);
+  letter-spacing: -0.02em;
+  color: var(--primary);
+  line-height: 1.15;
+}
+
+.ourStory__supportLine {
+  margin-top: 28px !important;
+  font-family: var(--fontTitle);
+  font-size: clamp(18px, 2.2vw, 22px) !important;
+  letter-spacing: -0.02em;
+  color: rgba(15, 15, 16, 0.85) !important;
+}
+
+.ourStory__foundersSubtitle {
+  margin: 16px 0 0;
+  max-width: 42ch;
+  font-size: clamp(17px, 2vw, 20px);
+  line-height: 1.5;
+  color: rgba(15, 15, 16, 0.72);
+  font-weight: 400;
+}
+
+/* Second “revolution” band — slightly tighter than the founders title block */
+.ourStory__miniRevolution {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  display: grid;
+  place-items: center;
+  text-align: center;
+
+  padding: clamp(40px, 6vw, 72px) clamp(20px, 5vw, 60px);
+
+  background:
+    radial-gradient(
+      ellipse 110% 100% at 50% 50%,
+      rgba(86, 19, 27, 0.05) 0%,
+      rgba(86, 19, 27, 0) 65%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.5) 0%,
+      rgba(227, 200, 174, 0.1) 100%
+    );
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Core Values */
+.ourStory__values {
+  width: 100%;
+  max-width: 720px;
+}
+
+.ourStory__valuesList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ourStory__value {
+  display: grid;
+  grid-template-columns: minmax(44px, 52px) 1fr;
+  gap: clamp(16px, 3vw, 28px);
+  padding: clamp(22px, 4vw, 32px) 0;
+  border-top: 1px solid var(--border);
+}
+
+.ourStory__value:first-of-type {
+  border-top: none;
+  padding-top: 8px;
+}
+
+.ourStory__valueIndex {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--secondary);
+  line-height: 1.4;
+  padding-top: 3px;
+}
+
+.ourStory__valueBody p {
+  margin: 0;
+  font-size: clamp(16px, 1.8vw, 18px);
+  line-height: 1.85;
+  color: rgba(15, 15, 16, 0.78);
+}
+
+.ourStory__valueTitle {
+  margin: 0 0 10px;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  font-size: clamp(20px, 2.4vw, 24px);
+  letter-spacing: -0.02em;
+  color: var(--primary);
+  line-height: 1.25;
+}
+
+.ourStory__revolutionLine {
+  margin: 0;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--primary);
+  font-size: clamp(28px, 4.5vw, 48px);
+  line-height: 1.12;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .ourStory__foundersSubtitle {
+    margin-top: 12px;
+  }
+
+  .ourStory__value {
+    grid-template-columns: 40px 1fr;
+    gap: 14px;
+  }
+}

@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "../App";
 import { INTERNAL_NAV_ROUTES } from "../nav/menu";
-import About from "../pages/About";
 import AllPrograms from "../pages/AllPrograms";
 import Contact from "../pages/Contact";
 import CategoryProgramsPage from "../pages/CategoryProgramsPage";
@@ -18,7 +17,7 @@ import Dashboard from "../pages/Dashboard";
 import ExpertClients from "../pages/ExpertClients";
 import AdminDashboard from "../pages/AdminDashboard";
 import ExpertDashboard from "../pages/ExpertDashboard";
-import FoundersStory from "../pages/FoundersStory";
+import OurStory from "../pages/OurStory";
 import KnowYourExperts from "../pages/KnowYourExperts";
 import NotFound from "../pages/NotFound";
 import OrderHistory from "../pages/OrderHistory";
@@ -50,7 +49,8 @@ export const router = createBrowserRouter([
     element: <App />,
     children: [
       { index: true, element: <Home /> },
-      { path: "/about", element: <About /> },
+      { path: "/our-story", element: <OurStory /> },
+      { path: "/about", element: <Navigate to="/our-story" replace /> },
       { path: "/meet-the-team", element: <MeetTheTeam /> },
       { path: "/contact", element: <Contact /> },
       { path: "/all-guided-programs", element: <AllPrograms /> },
@@ -89,7 +89,10 @@ export const router = createBrowserRouter([
       { path: "/payment-cancel", element: <PaymentCancel /> },
       { path: "/payment/success", element: <PaymentSuccess /> },
       { path: "/payment/processing", element: <PaymentProcessing /> },
-      { path: "/learn/founders-story", element: <FoundersStory /> },
+      {
+        path: "/learn/founders-story",
+        element: <Navigate to="/our-story" replace />,
+      },
       { path: "/learn/know-your-experts", element: <KnowYourExperts /> },
       { path: "/learn/podcast", element: <Podcast /> },
       { path: "/wellness-library", element: <WellnessLibraryPage /> },
@@ -101,7 +104,7 @@ export const router = createBrowserRouter([
       ...INTERNAL_NAV_ROUTES.filter(
         (r) =>
           !r.path.startsWith("/guided/") &&
-          r.path !== "/about" &&
+          r.path !== "/our-story" &&
           r.path !== "/meet-the-team" &&
           r.path !== "/learn/founders-story" &&
           r.path !== "/learn/know-your-experts" &&
