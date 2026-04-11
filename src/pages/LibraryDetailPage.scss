@@ -14,7 +14,8 @@
 
 .libraryDetailPage__backBtn {
   align-self: flex-start;
-  margin-bottom: clamp(20px, 3vw, 36px);
+  margin-bottom: 16px;
+  margin-top: 16px;
   padding: 8px 18px;
   border-radius: 999px;
   border: 1px solid var(--border);
@@ -51,12 +52,23 @@
 
 .libraryDetailPage__sidebar {
   min-width: 0;
+  align-self: stretch;
 }
 
 // ── Media block (video + meta + lead) ───────────────────────────────────────
 
 .libraryDetailPage__mediaBlock {
   margin-bottom: 28px;
+}
+
+.libraryDetailPage__title {
+  margin: 0 0 16px;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  font-size: clamp(26px, 3vw, 34px);
+  color: $primary;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
 }
 
 .libraryDetailPage__poster {

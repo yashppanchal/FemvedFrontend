@@ -47,7 +47,7 @@ export default function PurchaseCard({
   return (
     <aside className="purchaseCard">
       <p className="purchaseCard__eyebrow">{eyebrow}</p>
-      <h2 className="purchaseCard__title">{title}</h2>
+      <p className="purchaseCard__title">{title}</p>
       <p className="purchaseCard__instructor">
         Led by <strong>{expertName}</strong>
       </p>

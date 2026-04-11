@@ -2,7 +2,7 @@
 
 .purchaseCard {
   position: sticky;
-  top: 100px;
+  top: 202px !important;
   border-radius: 16px;
   background: var(--white);
   box-shadow: 0 8px 32px rgba(15, 15, 16, 0.08);
@@ -71,7 +71,9 @@
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
+  transition:
+    background 0.15s,
+    transform 0.1s;
 
   &:hover {
     background: $primary-hover;
@@ -118,7 +120,6 @@
   font-size: 16px;
   line-height: 1.2;
 }
-
 @media (max-width: 900px) {
   .purchaseCard {
     position: static;

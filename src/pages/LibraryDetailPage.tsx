@@ -127,6 +127,7 @@ export default function LibraryDetailPage() {
       <div className="libraryDetailPage__layout">
         <div className="libraryDetailPage__main">
           <div className="libraryDetailPage__mediaBlock">
+            <h1 className="libraryDetailPage__title">{video.title}</h1>
             {video.trailerUrl ? (
               <TrailerEmbed trailerUrl={video.trailerUrl} title={video.title} />
             ) : posterSrc ? (
@@ -155,7 +156,10 @@ export default function LibraryDetailPage() {
                   className="libraryDetailPage__shareBtn"
                   onClick={handleShare}
                 >
-                  <FiShare2 aria-hidden className="libraryDetailPage__shareIcon" />
+                  <FiShare2
+                    aria-hidden
+                    className="libraryDetailPage__shareIcon"
+                  />
                   Share
                 </button>
               </div>
@@ -193,7 +197,10 @@ export default function LibraryDetailPage() {
               </h2>
               <div className="libraryDetailPage__testimonialGrid">
                 {video.testimonials.map((t, i) => (
-                  <blockquote key={i} className="libraryDetailPage__testimonial">
+                  <blockquote
+                    key={i}
+                    className="libraryDetailPage__testimonial"
+                  >
                     <div
                       className="libraryDetailPage__stars"
                       aria-label={`${t.rating} out of 5 stars`}
@@ -201,7 +208,9 @@ export default function LibraryDetailPage() {
                       {"★".repeat(t.rating)}
                       {"☆".repeat(5 - t.rating)}
                     </div>
-                    <p className="libraryDetailPage__reviewText">{t.reviewText}</p>
+                    <p className="libraryDetailPage__reviewText">
+                      {t.reviewText}
+                    </p>
                     <footer className="libraryDetailPage__reviewer">
                       — {t.reviewerName}
                     </footer>
