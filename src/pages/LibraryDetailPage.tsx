@@ -1,14 +1,34 @@
 import "./LibraryDetailPage.scss";
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { FiShare2 } from "react-icons/fi";
 import { useCountry } from "../country/useCountry";
-import { fetchVideoBySlug, type LibraryVideoDetailResponse } from "../api/library";
+import {
+  fetchVideoBySlug,
+  type LibraryVideoDetailResponse,
+} from "../api/library";
 import TrailerEmbed from "../components/library/TrailerEmbed";
 import EpisodeList from "../components/library/EpisodeList";
 import PurchaseCard from "../components/library/PurchaseCard";
 import InstructorStrip from "../components/library/InstructorStrip";
 
+function detailEyebrow(video: LibraryVideoDetailResponse): string {
+  if (video.tags.length > 0) {
+    return video.tags[0].toUpperCase();
+  }
+  return video.videoType === "SERIES" ? "SERIES" : "MASTERCLASS";
+}
+
+function formatMetaLine(video: LibraryVideoDetailResponse): string | null {
+  const parts: string[] = [];
+  if (video.releaseYear) parts.push(String(video.releaseYear));
+  if (video.totalDuration) parts.push(video.totalDuration);
+  if (parts.length === 0) return null;
+  return parts.join(" · ");
+}
+
 export default function LibraryDetailPage() {
+  const navigate = useNavigate();
   const { videoSlug } = useParams<{
     categorySlug: string;
     videoSlug: string;
@@ -18,6 +38,7 @@ export default function LibraryDetailPage() {
   const [video, setVideo] = useState<LibraryVideoDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [shareHint, setShareHint] = useState<string | null>(null);
 
   useEffect(() => {
     if (!videoSlug) return;
@@ -47,6 +68,27 @@ export default function LibraryDetailPage() {
     };
   }, [videoSlug, country]);
 
+  const handleShare = useCallback(async () => {
+    if (!video) return;
+    const url = window.location.href;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: video.title, url });
+        return;
+      }
+    } catch {
+      // user cancelled or share failed — fall through to clipboard
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareHint("Link copied");
+      window.setTimeout(() => setShareHint(null), 2000);
+    } catch {
+      setShareHint("Copy the address from your browser bar");
+      window.setTimeout(() => setShareHint(null), 3000);
+    }
+  }, [video]);
+
   // ── Loading ────────────────────────────────────────────────────────────────
   if (loading) {
     return (
@@ -69,62 +111,61 @@ export default function LibraryDetailPage() {
     );
   }
 
-  const typeBadge = video.videoType === "SERIES" ? "Series" : "Masterclass";
+  const posterSrc = video.heroImage ?? video.cardImage ?? null;
+  const metaLine = formatMetaLine(video);
 
   return (
     <section className="page libraryDetailPage">
-      {/* Breadcrumb */}
-      <nav className="libraryDetailPage__breadcrumb" aria-label="Breadcrumb">
-        <Link to="/wellness-library">Wellness Library</Link>
-        <span aria-hidden="true"> / </span>
-        <span>{video.title}</span>
-      </nav>
+      <button
+        type="button"
+        className="libraryDetailPage__backBtn"
+        onClick={() => navigate(-1)}
+      >
+        ← Back
+      </button>
 
       <div className="libraryDetailPage__layout">
-        {/* ── Main column ───────────────────────────────────────────────── */}
         <div className="libraryDetailPage__main">
-          {/* Hero area */}
-          <header className="libraryDetailPage__hero">
-            <div className="libraryDetailPage__badges">
-              <span className="libraryDetailPage__typeBadge">{typeBadge}</span>
-              {video.releaseYear && (
-                <span className="libraryDetailPage__year">{video.releaseYear}</span>
-              )}
-            </div>
+          <div className="libraryDetailPage__mediaBlock">
+            {video.trailerUrl ? (
+              <TrailerEmbed trailerUrl={video.trailerUrl} title={video.title} />
+            ) : posterSrc ? (
+              <div className="libraryDetailPage__poster">
+                <img src={posterSrc} alt="" />
+              </div>
+            ) : (
+              <div
+                className="libraryDetailPage__poster libraryDetailPage__poster--empty"
+                aria-hidden
+              />
+            )}
 
-            <h1 className="libraryDetailPage__title">{video.title}</h1>
+            <div className="libraryDetailPage__mediaRow">
+              {metaLine && (
+                <p className="libraryDetailPage__mediaMeta">{metaLine}</p>
+              )}
+              <div className="libraryDetailPage__shareWrap">
+                {shareHint && (
+                  <span className="libraryDetailPage__shareHint" role="status">
+                    {shareHint}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  className="libraryDetailPage__shareBtn"
+                  onClick={handleShare}
+                >
+                  <FiShare2 aria-hidden className="libraryDetailPage__shareIcon" />
+                  Share
+                </button>
+              </div>
+            </div>
 
             {video.synopsis && (
-              <p className="libraryDetailPage__synopsis">{video.synopsis}</p>
+              <p className="libraryDetailPage__lead">{video.synopsis}</p>
             )}
+          </div>
 
-            <div className="libraryDetailPage__meta">
-              <span>By <strong>{video.expertName}</strong></span>
-              {video.totalDuration && <span>{video.totalDuration}</span>}
-              {video.episodes.length > 0 && (
-                <span>
-                  {video.episodes.length} episode{video.episodes.length !== 1 ? "s" : ""}
-                </span>
-              )}
-            </div>
-
-            {video.tags.length > 0 && (
-              <div className="libraryDetailPage__tags">
-                {video.tags.map((tag) => (
-                  <span className="libraryDetailPage__tag" key={tag}>{tag}</span>
-                ))}
-              </div>
-            )}
-          </header>
-
-          {/* Trailer */}
-          {video.trailerUrl && (
-            <div className="libraryDetailPage__trailer">
-              <TrailerEmbed trailerUrl={video.trailerUrl} title={video.title} />
-            </div>
-          )}
-
-          {/* Description (HTML) */}
           {video.description && (
             <div
               className="libraryDetailPage__description"
@@ -132,7 +173,6 @@ export default function LibraryDetailPage() {
             />
           )}
 
-          {/* Episodes */}
           {video.episodes.length > 0 && (
             <EpisodeList
               episodes={video.episodes}
@@ -140,14 +180,12 @@ export default function LibraryDetailPage() {
             />
           )}
 
-          {/* Instructor */}
           <InstructorStrip
             name={video.expertName}
             title={video.expertTitle}
             bio={video.expertGridDescription}
           />
 
-          {/* Testimonials */}
           {video.testimonials.length > 0 && (
             <section className="libraryDetailPage__testimonials">
               <h2 className="libraryDetailPage__sectionHeading">
@@ -156,7 +194,10 @@ export default function LibraryDetailPage() {
               <div className="libraryDetailPage__testimonialGrid">
                 {video.testimonials.map((t, i) => (
                   <blockquote key={i} className="libraryDetailPage__testimonial">
-                    <div className="libraryDetailPage__stars" aria-label={`${t.rating} out of 5 stars`}>
+                    <div
+                      className="libraryDetailPage__stars"
+                      aria-label={`${t.rating} out of 5 stars`}
+                    >
                       {"★".repeat(t.rating)}
                       {"☆".repeat(5 - t.rating)}
                     </div>
@@ -171,10 +212,12 @@ export default function LibraryDetailPage() {
           )}
         </div>
 
-        {/* ── Sidebar ────────────────────────────────────────────────────── */}
         <div className="libraryDetailPage__sidebar">
           <PurchaseCard
             videoId={video.videoId}
+            title={video.title}
+            eyebrow={detailEyebrow(video)}
+            expertName={video.expertName}
             price={video.price}
             originalPrice={video.originalPrice}
             features={video.features}

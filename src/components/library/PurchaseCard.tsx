@@ -5,6 +5,9 @@ import { hasValidAccessToken, useAuth } from "../../auth/useAuth";
 
 interface PurchaseCardProps {
   videoId: string;
+  title: string;
+  eyebrow: string;
+  expertName: string;
   price: string;
   originalPrice?: string | null;
   features: LibraryFeatureDto[];
@@ -14,6 +17,9 @@ interface PurchaseCardProps {
 
 export default function PurchaseCard({
   videoId,
+  title,
+  eyebrow,
+  expertName,
   price,
   originalPrice,
   features,
@@ -40,14 +46,17 @@ export default function PurchaseCard({
 
   return (
     <aside className="purchaseCard">
-      <div className="purchaseCard__priceRow">
-        <span className="purchaseCard__price">{price}</span>
-        {originalPrice && (
-          <span className="purchaseCard__originalPrice">{originalPrice}</span>
-        )}
-      </div>
+      <p className="purchaseCard__eyebrow">{eyebrow}</p>
+      <h2 className="purchaseCard__title">{title}</h2>
+      <p className="purchaseCard__instructor">
+        Led by <strong>{expertName}</strong>
+      </p>
 
-      <p className="purchaseCard__access">One-time purchase. Lifetime access.</p>
+      {originalPrice && (
+        <p className="purchaseCard__originalLine">
+          <span className="purchaseCard__originalPrice">{originalPrice}</span>
+        </p>
+      )}
 
       {isPurchased ? (
         <button type="button" className="purchaseCard__btn purchaseCard__btn--owned" disabled>
@@ -55,9 +64,11 @@ export default function PurchaseCard({
         </button>
       ) : (
         <button type="button" className="purchaseCard__btn" onClick={handlePurchase}>
-          Purchase now
+          Purchase — {price}
         </button>
       )}
+
+      <p className="purchaseCard__access">One-time purchase. Lifetime access.</p>
 
       {features.length > 0 && (
         <ul className="purchaseCard__features">
