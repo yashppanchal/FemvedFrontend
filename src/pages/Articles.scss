@@ -1,0 +1,112 @@
+@use "../styles/variables" as *;
+
+/* ================================================================
+   Articles – hero + intro (matches Podcast editorial layout)
+   ================================================================ */
+
+/* ── Hero ── */
+.articles__hero {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  padding: clamp(60px, 10vw, 120px) clamp(20px, 5vw, 60px);
+  min-height: 52vh;
+
+  background:
+    radial-gradient(
+      ellipse 120% 90% at 30% 80%,
+      rgba($primary, 0.09) 0%,
+      rgba($primary, 0) 60%
+    ),
+    radial-gradient(
+      ellipse 100% 80% at 80% 20%,
+      rgba($secondary-soft, 0.5) 0%,
+      rgba($secondary-soft, 0) 60%
+    ),
+    linear-gradient(
+      180deg,
+      rgba($white, 0.1) 0%,
+      rgba($secondary-soft, 0.18) 100%
+    );
+}
+
+.articles__heroTitle {
+  margin: 0;
+  max-width: min(95vw, 40ch);
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--primary);
+  font-size: clamp(28px, 4.2vw, 52px);
+  line-height: 1.12;
+}
+
+/* ── Intro copy ── */
+.articles__intro {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  display: flex;
+  justify-content: center;
+  padding: clamp(48px, 7vw, 80px) clamp(20px, 5vw, 60px);
+
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.articles__introProse {
+  max-width: 62ch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 28px;
+}
+
+.articles__introProse p {
+  margin: 0;
+  font-size: clamp(16px, 1.8vw, 18px);
+  line-height: 1.85;
+  color: rgba($black, 0.78);
+}
+
+.articles__introProse p + p {
+  margin-top: 1.25em;
+}
+
+/* ── CTA (same treatment as Podcast subscribe) ── */
+.articles__subscribeBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 26px;
+  border-radius: 8px;
+  background: var(--primary);
+  color: $white;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
+
+  &:hover {
+    background: var(--primaryHover);
+    color: $white;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba($primary, 0.22);
+  }
+}
+
+.articles__subscribeIcon {
+  font-size: 18px;
+}

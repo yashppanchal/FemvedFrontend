@@ -42,7 +42,13 @@ const episodes: Episode[] = [
   },
 ];
 
-function FeaturedPlayer({ videoId, title }: { videoId: string; title: string }) {
+function FeaturedPlayer({
+  videoId,
+  title,
+}: {
+  videoId: string;
+  title: string;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
@@ -132,7 +138,6 @@ function EpisodeCard({ ep }: { ep: Episode }) {
 export default function Podcast() {
   return (
     <section className="page podcast">
-
       {/* ── Hero ── */}
       <RevealOnScroll className="podcast__hero">
         <p className="podcast__heroLabel">Tune In</p>
@@ -150,7 +155,7 @@ export default function Podcast() {
           </p>
           <a
             className="podcast__subscribeBtn"
-            href="https://www.youtube.com/@FemvedWellness"
+            href="https://www.youtube.com/@HERdailyrhythm"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -192,7 +197,7 @@ export default function Podcast() {
         </p>
         <a
           className="podcast__subscribeBtn podcast__subscribeBtn--light"
-          href="https://www.youtube.com/@FemvedWellness"
+          href="https://www.youtube.com/@HERdailyrhythm"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -200,7 +205,6 @@ export default function Podcast() {
           Subscribe on YouTube
         </a>
       </RevealOnScroll>
-
     </section>
   );
 }

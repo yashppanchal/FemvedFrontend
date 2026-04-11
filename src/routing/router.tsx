@@ -27,6 +27,7 @@ import PaymentProviderSelection from "../pages/PaymentProviderSelection";
 import PaymentSuccess from "../pages/PaymentSuccess";
 import Placeholder from "../pages/Placeholder";
 import Podcast from "../pages/Podcast";
+import Articles from "../pages/Articles";
 import WellnessLibraryPage from "../pages/WellnessLibraryPage";
 import LibraryDetailPage from "../pages/LibraryDetailPage";
 import MyLibraryPage from "../pages/MyLibraryPage";
@@ -95,6 +96,7 @@ export const router = createBrowserRouter([
       },
       { path: "/learn/know-your-experts", element: <KnowYourExperts /> },
       { path: "/learn/podcast", element: <Podcast /> },
+      { path: "/learn/articles", element: <Articles /> },
       { path: "/wellness-library", element: <WellnessLibraryPage /> },
       { path: "/wellness-library/:categorySlug", element: <CategoryLibraryPage /> },
       { path: "/wellness-library/:categorySlug/:videoSlug", element: <LibraryDetailPage /> },
@@ -108,7 +110,8 @@ export const router = createBrowserRouter([
           r.path !== "/meet-the-team" &&
           r.path !== "/learn/founders-story" &&
           r.path !== "/learn/know-your-experts" &&
-          r.path !== "/learn/podcast",
+          r.path !== "/learn/podcast" &&
+          r.path !== "/learn/articles",
       ).map(
         (r) => ({
           path: r.path,
