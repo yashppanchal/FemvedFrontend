@@ -195,7 +195,7 @@
 /* Enrollment card */
 .pdp__enrollCard {
   position: sticky;
-  top: 96px;
+  top: var(--layout-sticky-header-offset);
   border-radius: 20px;
   background: var(--white);
   border: 1px solid rgba(15, 15, 16, 0.09);

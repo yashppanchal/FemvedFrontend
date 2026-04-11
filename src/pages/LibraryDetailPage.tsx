@@ -127,7 +127,7 @@ export default function LibraryDetailPage() {
       <div className="libraryDetailPage__layout">
         <div className="libraryDetailPage__main">
           <div className="libraryDetailPage__mediaBlock">
-            <h1 className="libraryDetailPage__title">{video.title}</h1>
+            {/* <h1 className="libraryDetailPage__title">{video.title}</h1> */}
             {video.trailerUrl ? (
               <TrailerEmbed trailerUrl={video.trailerUrl} title={video.title} />
             ) : posterSrc ? (

@@ -2,7 +2,7 @@
 
 .purchaseCard {
   position: sticky;
-  top: 202px !important;
+  top: var(--layout-sticky-header-offset);
   border-radius: 16px;
   background: var(--white);
   box-shadow: 0 8px 32px rgba(15, 15, 16, 0.08);
