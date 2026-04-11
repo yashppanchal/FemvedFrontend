@@ -118,7 +118,7 @@ export default function MyProgramsTab() {
   if (error) return <p className="dashCard__error">{error}</p>;
 
   return (
-    <div className="dashCard dashCard--wide">
+    <div className="dashCard">
       <div className="dashCard__header">
         <h2 className="dashCard__heading">My Programs</h2>
       </div>

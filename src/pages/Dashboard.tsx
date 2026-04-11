@@ -10,7 +10,13 @@ import ScheduleTab from "./user/ScheduleTab";
 import { usePageTitle } from "../usePageTitle";
 import "./Dashboard.scss";
 
-type DashTab = "profile" | "programs" | "library" | "orders" | "refunds" | "schedule";
+type DashTab =
+  | "profile"
+  | "programs"
+  | "library"
+  | "orders"
+  | "refunds"
+  | "schedule";
 
 const TABS: { id: DashTab; label: string }[] = [
   { id: "profile", label: "Profile" },
@@ -31,17 +37,17 @@ export default function Dashboard() {
   usePageTitle("My Dashboard");
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState<DashTab>(() => getInitialTab(searchParams));
+  const [activeTab, setActiveTab] = useState<DashTab>(() =>
+    getInitialTab(searchParams),
+  );
 
   return (
     <section className="page page--dashboard">
       <div className="dashLayout">
         <nav className="dashSidebar" aria-label="Dashboard sections">
           <div className="dashSidebar__greeting">
-            <h1 className="dashSidebar__title">Dashboard</h1>
-            <p className="dashSidebar__lead">
-              Welcome back, {user?.firstName ?? "there"}
-            </p>
+            <p className="dashSidebar__lead">Welcome back,</p>
+            <h1 className="dashSidebar__title">{user?.firstName ?? ""}</h1>
           </div>
           {TABS.map((tab) => (
             <button

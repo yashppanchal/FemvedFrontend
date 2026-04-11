@@ -5,11 +5,12 @@
 .page--dashboard {
   padding: 0 24px;
   min-height: 100vh;
-  background: #f7f7f8;
+  // background: #f7f7f8;
   text-align: left;
   width: 100vw;
   margin-left: calc(-1 * (100vw - 100%) / 2);
   max-width: none;
+  border-top: 1px solid var(--border);
 }
 
 /* ── Sidebar + content layout ─────────────────────────────────────── */
@@ -19,11 +20,6 @@
   grid-template-columns: 220px 1fr;
   min-height: 100vh;
   gap: 0;
-  border-radius: 16px;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  background: var(--white);
-  box-shadow: 0 1px 3px rgba(15, 15, 16, 0.04);
 }
 
 /* ── Sidebar ─────────────────────────────────────────────────────── */
@@ -49,7 +45,7 @@
 
 .dashSidebar__title {
   margin: 0;
-  font-size: 18px;
+  font-size: 22px;
   font-family: var(--fontTitle);
   font-weight: 400;
   color: var(--black);
@@ -74,7 +70,9 @@
   font-weight: 500;
   cursor: pointer;
   text-align: left;
-  transition: color 150ms ease, background-color 150ms ease;
+  transition:
+    color 150ms ease,
+    background-color 150ms ease;
 }
 
 .dashSidebar__tab:hover {
@@ -97,25 +95,20 @@
 
 .dashContent {
   width: 100%;
+  max-width: none;
   text-align: left;
-  padding: 24px 28px;
+  padding: 24px 32px;
+  background: var(--white);
+  min-width: 0;
 }
 
 /* ── Dashboard card ──────────────────────────────────────────────── */
 
 .dashCard {
   width: 100%;
-  max-width: 600px;
-  padding: 28px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  background: var(--white);
-  box-shadow: 0 1px 3px rgba(15, 15, 16, 0.04);
+  max-width: none;
+  padding: 0;
   text-align: left;
-}
-
-.dashCard--wide {
-  max-width: 100%;
 }
 
 .dashCard__header {
@@ -203,9 +196,8 @@
   overflow-x: auto;
   margin-top: 4px;
   border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--white);
-  box-shadow: 0 1px 3px rgba(15, 15, 16, 0.04);
+  border-radius: 0;
+  background: transparent;
 }
 
 .dashTable {
@@ -412,7 +404,9 @@
   border: 1px solid var(--border);
   border-radius: 10px;
   overflow: hidden;
-  transition: border-color 180ms ease, box-shadow 180ms ease;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .page--dashboard .phoneField:focus-within {
@@ -627,10 +621,6 @@
     padding: 12px;
   }
 
-  .dashCard {
-    padding: 20px;
-  }
-
   .dashCard__row {
     grid-template-columns: 1fr;
   }
@@ -712,9 +702,18 @@
   font-size: 13px;
 }
 
-.scheduleTab__event--active { border-left-color: #168732; background: rgba(22, 135, 50, 0.04); }
-.scheduleTab__event--milestone { border-left-color: #c59000; background: rgba(197, 144, 0, 0.04); }
-.scheduleTab__event--completed { border-left-color: var(--muted, #6b6b6b); opacity: 0.7; }
+.scheduleTab__event--active {
+  border-left-color: #168732;
+  background: rgba(22, 135, 50, 0.04);
+}
+.scheduleTab__event--milestone {
+  border-left-color: #c59000;
+  background: rgba(197, 144, 0, 0.04);
+}
+.scheduleTab__event--completed {
+  border-left-color: var(--muted, #6b6b6b);
+  opacity: 0.7;
+}
 
 .scheduleTab__event strong {
   font-size: 13px;

@@ -28,7 +28,7 @@ export default function RefundsTab() {
   if (error) return <p className="dashCard__error">{error}</p>;
 
   return (
-    <div className="dashCard dashCard--wide">
+    <div className="dashCard">
       <div className="dashCard__header">
         <h2 className="dashCard__heading">Refunds</h2>
       </div>
