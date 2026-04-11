@@ -9,6 +9,7 @@ import {
 } from "../nav/dashboardTabs";
 import {
   HOLISTIC_TREATMENTS_NAV_SECTION,
+  WORKPLACES_NAV_SECTION,
   LEARN_NAV_SECTION,
   NAV_SECTIONS,
   STATIC_NAV_ITEM_LABEL_BY_PATH,
@@ -206,6 +207,7 @@ export function NavBar() {
           ),
           WELLNESS_LIBRARY_NAV_SECTION,
           HOLISTIC_TREATMENTS_NAV_SECTION,
+          WORKPLACES_NAV_SECTION,
           LEARN_NAV_SECTION,
         ]
       : NAV_SECTIONS;

@@ -28,6 +28,7 @@ import PaymentSuccess from "../pages/PaymentSuccess";
 import Placeholder from "../pages/Placeholder";
 import Podcast from "../pages/Podcast";
 import Articles from "../pages/Articles";
+import Workplaces from "../pages/Workplaces";
 import WellnessLibraryPage from "../pages/WellnessLibraryPage";
 import LibraryDetailPage from "../pages/LibraryDetailPage";
 import MyLibraryPage from "../pages/MyLibraryPage";
@@ -97,6 +98,11 @@ export const router = createBrowserRouter([
       { path: "/learn/know-your-experts", element: <KnowYourExperts /> },
       { path: "/learn/podcast", element: <Podcast /> },
       { path: "/learn/articles", element: <Articles /> },
+      { path: "/workplaces", element: <Workplaces /> },
+      {
+        path: "/learn/workplaces",
+        element: <Navigate to="/workplaces" replace />,
+      },
       { path: "/wellness-library", element: <WellnessLibraryPage /> },
       { path: "/wellness-library/:categorySlug", element: <CategoryLibraryPage /> },
       { path: "/wellness-library/:categorySlug/:videoSlug", element: <LibraryDetailPage /> },

@@ -23,6 +23,9 @@ export type NavSection = {
 /** Target route for the Wellness Library top-level nav (single click, no dropdown). */
 export const WELLNESS_LIBRARY_NAV_PATH = "/wellness-library";
 
+/** Target route for Workplaces top-level nav (single click, no dropdown). */
+export const WORKPLACES_NAV_PATH = "/workplaces";
+
 /** Legacy library category URLs still registered as placeholder routes. */
 const LIBRARY_CATEGORY_PLACEHOLDER_ROUTES: Array<{ path: string; title: string }> = [
   { path: "/library/address-health-concerns", title: "Address Health Concerns" },
@@ -84,6 +87,12 @@ export const NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
+    id: "workplaces",
+    label: "Workplaces",
+    linkPath: WORKPLACES_NAV_PATH,
+    items: [],
+  },
+  {
     id: "learn",
     label: "Learn",
     items: [
@@ -115,17 +124,26 @@ export const LEARN_NAV_SECTION: NavSection =
 export const HOLISTIC_TREATMENTS_NAV_SECTION: NavSection =
   NAV_SECTIONS.find((s) => s.id === "treatments")!;
 
+/** Workplaces — single top-level link between Holistic Treatments and Learn. */
+export const WORKPLACES_NAV_SECTION: NavSection =
+  NAV_SECTIONS.find((s) => s.id === "workplaces")!;
+
 /** Fallback labels for category paths when `categoryType` is missing from the tree. */
 export const STATIC_NAV_ITEM_LABEL_BY_PATH: ReadonlyMap<string, string> =
   new Map([
-    ...NAV_SECTIONS.filter((s) => s.id !== "learn").flatMap((s) =>
-      s.items
+    ...NAV_SECTIONS.filter((s) => s.id !== "learn").flatMap((s) => {
+      const fromItems = s.items
         .filter(
           (i): i is Extract<NavItem, { type: "internal" }> =>
             i.type === "internal",
         )
-        .map((i) => [i.path, i.label] as const),
-    ),
+        .map((i) => [i.path, i.label] as const);
+      const fromWorkplacesLink =
+        s.id === "workplaces" && s.linkPath
+          ? ([[s.linkPath, s.label]] as const)
+          : [];
+      return [...fromItems, ...fromWorkplacesLink];
+    }),
     ...LIBRARY_CATEGORY_PLACEHOLDER_ROUTES.map(
       (r) => [r.path, r.title] as const,
     ),
