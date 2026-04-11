@@ -9,7 +9,7 @@
   padding: clamp(40px, 6vw, 72px) clamp(20px, 5vw, 48px);
   background: var(--surface);
   border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+  // border-bottom: 1px solid var(--border);
 }
 
 .ourStory__trustGrid {
@@ -95,6 +95,38 @@
     grid-template-columns: 1fr;
     max-width: 420px;
   }
+}
+
+/* Founders story — intro (title + lead line, matches editorial banner) */
+.ourStory__foundersStoryIntro {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  padding: clamp(44px, 7vw, 80px) clamp(20px, 5vw, 60px);
+  background: rgba(227, 200, 174, 0.32);
+  border-top: 1px solid rgba(15, 15, 16, 0.06);
+  border-bottom: 1px solid rgba(15, 15, 16, 0.06);
+}
+
+.ourStory__foundersStoryTitle {
+  margin: 0 0 clamp(16px, 3vw, 24px);
+}
+
+.ourStory__foundersStoryLead {
+  margin: 0;
+  max-width: 52ch;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: rgba(86, 19, 27, 0.82);
+  font-size: clamp(20px, 2.6vw, 28px);
+  line-height: 1.35;
 }
 
 .ourStory__sectionHeading {
@@ -213,6 +245,89 @@
   text-align: center;
 }
 
+/* Letter sign-off — minimal, no panel */
+.ourStory__letterClosing {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  display: flex;
+  justify-content: center;
+
+  padding: clamp(40px, 8vw, 88px) clamp(20px, 5vw, 60px) clamp(56px, 10vw, 100px);
+}
+
+.ourStory__letterClosingInner {
+  max-width: 360px;
+  width: 100%;
+  text-align: right;
+  transform: translateX(clamp(18px, 4vw, 52px));
+}
+
+.ourStory__letterSalutation {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.01em;
+  color: rgba(15, 15, 16, 0.62);
+  line-height: 1.5;
+}
+
+.ourStory__letterName {
+  margin: 0 0 8px;
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(40px, 6vw, 56px);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--primary);
+  line-height: 1.15;
+}
+
+.ourStory__letterRole {
+  margin: 0 0 18px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(15, 15, 16, 0.45);
+  line-height: 1.45;
+}
+
+.ourStory__letterLinkedIn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--secondary);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 2px;
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.ourStory__letterLinkedIn:hover {
+  color: var(--primary);
+  border-bottom-color: rgba(86, 19, 27, 0.35);
+}
+
+.ourStory__letterLinkedIn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.ourStory__letterLinkedInIcon {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+
 @media (max-width: 640px) {
   .ourStory__foundersSubtitle {
     margin-top: 12px;
@@ -221,5 +336,14 @@
   .ourStory__value {
     grid-template-columns: 40px 1fr;
     gap: 14px;
+  }
+
+  .ourStory__letterClosingInner {
+    transform: none;
+    text-align: center;
+  }
+
+  .ourStory__letterLinkedIn {
+    justify-content: center;
   }
 }
