@@ -168,7 +168,7 @@ export default function WellnessLibraryPage() {
           <div className="wellnessLibraryPage__heroMedia">
             <img
               className="wellnessLibraryPage__heroImage"
-              src="https://res.cloudinary.com/dh8aj0hzw/image/upload/v1773496368/thlt-lcx-VsI_74zRzAo-unsplash_musrjk.jpg"
+              src="https://res.cloudinary.com/dh8aj0hzw/image/upload/v1775887326/kaboompics_laptop-computer-macbook-notebook-organizer-32243_bijnwi.jpg"
               alt=""
               width={960}
               height={640}
