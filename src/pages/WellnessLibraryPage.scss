@@ -182,9 +182,10 @@
   font-size: 14px;
 }
 
+/* Align with .featuredRow__grid: 3 columns × 16px gap (same card width as Featured) */
 .wellnessLibraryPage__grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
 }
 
@@ -192,19 +193,7 @@
   margin-top: 12px;
 }
 
-@media (max-width: 1200px) {
-  .wellnessLibraryPage__grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
 @media (max-width: 900px) {
-  .wellnessLibraryPage__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 560px) {
   .wellnessLibraryPage__grid {
     grid-template-columns: 1fr;
   }
