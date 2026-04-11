@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { FaRegUser } from "react-icons/fa";
 import { IoChevronDown, IoMenu, IoClose } from "react-icons/io5";
+import {
+  DASHBOARD_TABS,
+  dashboardTabFromSearchParams,
+} from "../nav/dashboardTabs";
 import {
   HOLISTIC_TREATMENTS_NAV_SECTION,
   LEARN_NAV_SECTION,
@@ -88,8 +92,11 @@ function navSectionsFromTree(response: GuidedTreeResponse): NavSection[] {
     .filter((s): s is NavSection => s !== null);
 }
 
+const MOBILE_ACCOUNT_DASHBOARD_ID = "account-user-dashboard";
+
 export function NavBar() {
   const { pathname } = useLocation();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { country } = useCountry();
   const { user, tokens, logout } = useAuth();
@@ -211,6 +218,7 @@ export function NavBar() {
     ? "/expert-dashboard"
     : "/dashboard";
   const expertClientsPath = "/expert-dashboard/clients";
+  const dashboardTab = dashboardTabFromSearchParams(searchParams);
 
   const closeMobileMenu = () => {
     setMobileMenuOpen(false);
@@ -587,13 +595,40 @@ export function NavBar() {
                     </>
                   ) : (
                     <>
-                      <Link
-                        className="mobileDrawer__item"
-                        to="/dashboard"
-                        onClick={closeMobileMenu}
+                      <div
+                        className={`mobileDrawer__section ${openMobileSections.has(MOBILE_ACCOUNT_DASHBOARD_ID) ? "mobileDrawer__section--open" : ""}`}
                       >
-                        Dashboard
-                      </Link>
+                        <button
+                          type="button"
+                          className="mobileDrawer__sectionToggle"
+                          aria-expanded={openMobileSections.has(
+                            MOBILE_ACCOUNT_DASHBOARD_ID,
+                          )}
+                          onClick={() =>
+                            toggleMobileSection(MOBILE_ACCOUNT_DASHBOARD_ID)
+                          }
+                        >
+                          <span>Dashboard</span>
+                          <IoChevronDown
+                            className="mobileDrawer__chevron"
+                            aria-hidden="true"
+                          />
+                        </button>
+                        <div className="mobileDrawer__sectionItems">
+                          <div className="mobileDrawer__sectionItemsInner">
+                            {DASHBOARD_TABS.map((tab) => (
+                              <Link
+                                key={tab.id}
+                                className={`mobileDrawer__item ${pathname === "/dashboard" && dashboardTab === tab.id ? "mobileDrawer__item--active" : ""}`}
+                                to={`/dashboard?tab=${encodeURIComponent(tab.id)}`}
+                                onClick={closeMobileMenu}
+                              >
+                                {tab.label}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
                       <Link
                         className="mobileDrawer__item"
                         to="/orders"

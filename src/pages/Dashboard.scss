@@ -37,27 +37,6 @@
   overflow-y: auto;
 }
 
-.dashSidebar__greeting {
-  padding: 0 14px 20px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 12px;
-}
-
-.dashSidebar__title {
-  margin: 0;
-  font-size: 22px;
-  font-family: var(--fontTitle);
-  font-weight: 400;
-  color: var(--black);
-  letter-spacing: -0.02em;
-}
-
-.dashSidebar__lead {
-  margin: 4px 0 0;
-  font-size: 13px;
-  color: var(--muted);
-}
-
 .dashSidebar__tab {
   height: 38px;
   padding: 0 14px;
@@ -571,6 +550,13 @@
   justify-content: flex-end;
 }
 
+/* Align with NavBar hamburger breakpoint — tabs live in mobile drawer */
+@media (max-width: 903px) {
+  .dashSidebar {
+    display: none;
+  }
+}
+
 /* ── Responsive ──────────────────────────────────────────────────── */
 
 @media (max-width: 1024px) {
@@ -589,12 +575,6 @@
     height: auto;
     overflow-y: visible;
     align-items: center;
-  }
-
-  .dashSidebar__greeting {
-    width: 100%;
-    padding: 0 2px 12px;
-    margin-bottom: 4px;
   }
 
   .dashSidebar__tab {

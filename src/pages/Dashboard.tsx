@@ -1,6 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useAuth } from "../auth/useAuth";
+import {
+  DASHBOARD_TABS,
+  dashboardTabFromSearchParams,
+  type DashboardTabId,
+} from "../nav/dashboardTabs";
 import ProfileTab from "./user/ProfileTab";
 import MyProgramsTab from "./user/MyProgramsTab";
 import LibraryTab from "./user/LibraryTab";
@@ -10,51 +14,30 @@ import ScheduleTab from "./user/ScheduleTab";
 import { usePageTitle } from "../usePageTitle";
 import "./Dashboard.scss";
 
-type DashTab =
-  | "profile"
-  | "programs"
-  | "library"
-  | "orders"
-  | "refunds"
-  | "schedule";
-
-const TABS: { id: DashTab; label: string }[] = [
-  { id: "profile", label: "Profile" },
-  { id: "programs", label: "My Programs" },
-  { id: "library", label: "My Library" },
-  { id: "schedule", label: "Schedule" },
-  { id: "orders", label: "Orders" },
-  { id: "refunds", label: "Refunds" },
-];
-
-function getInitialTab(params: URLSearchParams): DashTab {
-  const tab = params.get("tab");
-  if (tab && TABS.some((t) => t.id === tab)) return tab as DashTab;
-  return "profile";
-}
-
 export default function Dashboard() {
   usePageTitle("My Dashboard");
-  const { user } = useAuth();
-  const [searchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState<DashTab>(() =>
-    getInitialTab(searchParams),
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState<DashboardTabId>(() =>
+    dashboardTabFromSearchParams(searchParams),
   );
+
+  useEffect(() => {
+    setActiveTab(dashboardTabFromSearchParams(searchParams));
+  }, [searchParams]);
 
   return (
     <section className="page page--dashboard">
       <div className="dashLayout">
         <nav className="dashSidebar" aria-label="Dashboard sections">
-          <div className="dashSidebar__greeting">
-            <p className="dashSidebar__lead">Welcome back,</p>
-            <h1 className="dashSidebar__title">{user?.firstName ?? ""}</h1>
-          </div>
-          {TABS.map((tab) => (
+          {DASHBOARD_TABS.map((tab) => (
             <button
               key={tab.id}
               type="button"
               className={`dashSidebar__tab${activeTab === tab.id ? " dashSidebar__tab--active" : ""}`}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => {
+                setActiveTab(tab.id);
+                setSearchParams({ tab: tab.id }, { replace: true });
+              }}
             >
               {tab.label}
             </button>
