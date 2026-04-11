@@ -1,0 +1,170 @@
+@use "../styles/variables" as *;
+
+/* ================================================================
+   Retreats – full-bleed hero (reference: two columns + stat cards)
+   ================================================================ */
+
+$retreats-hero-img: "https://res.cloudinary.com/dh8aj0hzw/image/upload/v1775902083/retreat_j9nnyw.jpg";
+
+.retreats__hero {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  min-height: min(92vh, 900px);
+  display: flex;
+  align-items: stretch;
+
+  background:
+    linear-gradient(
+      105deg,
+      rgba(15, 15, 16, 0.72) 0%,
+      rgba(15, 15, 16, 0.45) 45%,
+      rgba(15, 15, 16, 0.35) 100%
+    ),
+    url($retreats-hero-img) center / cover no-repeat;
+}
+
+.retreats__heroOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(15, 15, 16, 0.15) 0%,
+    rgba(15, 15, 16, 0.25) 100%
+  );
+}
+
+.retreats__heroInner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: $container-max-width;
+  margin-left: auto;
+  margin-right: auto;
+  padding: clamp(72px, 12vw, 120px) $container-padding-x clamp(48px, 8vw, 80px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.85fr) minmax(0, 1fr);
+  gap: clamp(32px, 5vw, 56px);
+  align-items: center;
+}
+
+.retreats__heroMain {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(20px, 3vw, 28px);
+  max-width: 52ch;
+}
+
+.retreats__heroTitle {
+  margin: 0;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: $white;
+  font-size: clamp(28px, 3.8vw, 46px);
+  line-height: 1.15;
+}
+
+.retreats__heroEm {
+  font-style: italic;
+  font-weight: 400;
+}
+
+.retreats__heroSubtext {
+  margin: 0;
+  font-family: $font-body;
+  font-size: clamp(15px, 1.65vw, 17px);
+  line-height: 1.75;
+  color: rgba($white, 0.92);
+  max-width: 48ch;
+}
+
+.retreats__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  padding: 14px 28px;
+  border-radius: 999px;
+  background: $white;
+  color: var(--primary);
+  font-family: $font-body;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
+
+  &:hover {
+    background: var(--primaryHover);
+    color: $white;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba($primary, 0.28);
+  }
+}
+
+.retreats__ctaIcon {
+  font-size: 16px;
+}
+
+.retreats__stats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.retreats__statCard {
+  margin: 0;
+  padding: 16px 18px;
+  border-radius: 12px;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.retreats__statHeadline {
+  margin: 0 0 8px;
+  font-family: $font-body;
+  font-size: clamp(20px, 2.2vw, 26px);
+  font-weight: 700;
+  line-height: 1.2;
+  color: $white;
+  letter-spacing: -0.02em;
+}
+
+.retreats__statBody {
+  margin: 0;
+  font-family: $font-body;
+  font-size: clamp(13px, 1.35vw, 14px);
+  line-height: 1.55;
+  color: rgba($white, 0.88);
+}
+
+@media (max-width: 900px) {
+  .retreats__heroInner {
+    grid-template-columns: 1fr;
+    align-items: start;
+    padding-top: clamp(56px, 14vw, 88px);
+  }
+
+  .retreats__heroMain {
+    max-width: none;
+  }
+
+  .retreats__stats {
+    width: 100%;
+    max-width: 420px;
+  }
+}

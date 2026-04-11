@@ -41,6 +41,7 @@ export default function App() {
   const isLibraryDetailPage = /^\/wellness-library\/[^/]+\/[^/]+$/.test(
     location.pathname,
   );
+  const isRetreatsPage = location.pathname === "/holistic-treatments/retreats";
 
   useEffect(() => {
     let raf = 0;
@@ -100,7 +101,7 @@ export default function App() {
         id="main-content"
         className={`layout__main ${isHome ? "layout__main--home" : ""}${
           isLibraryDetailPage ? " layout__main--libraryDetail" : ""
-        }`}
+        }${isRetreatsPage ? " layout__main--retreats" : ""}`}
       >
         {isHome ? (
           <RevealOnScroll className="layout__pageReveal">

@@ -28,6 +28,7 @@ import PaymentSuccess from "../pages/PaymentSuccess";
 import Placeholder from "../pages/Placeholder";
 import Podcast from "../pages/Podcast";
 import Articles from "../pages/Articles";
+import Retreats from "../pages/Retreats";
 import Workplaces from "../pages/Workplaces";
 import WellnessLibraryPage from "../pages/WellnessLibraryPage";
 import LibraryDetailPage from "../pages/LibraryDetailPage";
@@ -98,6 +99,7 @@ export const router = createBrowserRouter([
       { path: "/learn/know-your-experts", element: <KnowYourExperts /> },
       { path: "/learn/podcast", element: <Podcast /> },
       { path: "/learn/articles", element: <Articles /> },
+      { path: "/holistic-treatments/retreats", element: <Retreats /> },
       { path: "/workplaces", element: <Workplaces /> },
       {
         path: "/learn/workplaces",
@@ -117,7 +119,8 @@ export const router = createBrowserRouter([
           r.path !== "/learn/founders-story" &&
           r.path !== "/learn/know-your-experts" &&
           r.path !== "/learn/podcast" &&
-          r.path !== "/learn/articles",
+          r.path !== "/learn/articles" &&
+          r.path !== "/holistic-treatments/retreats",
       ).map(
         (r) => ({
           path: r.path,

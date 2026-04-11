@@ -81,8 +81,8 @@ export const NAV_SECTIONS: NavSection[] = [
       },
       {
         type: "internal",
-        label: "Events",
-        path: "/holistic-treatments/events",
+        label: "Wellness Kits",
+        path: "/holistic-treatments/wellness-kits",
       },
     ],
   },
@@ -120,7 +120,7 @@ export const WELLNESS_LIBRARY_NAV_SECTION: NavSection =
 export const LEARN_NAV_SECTION: NavSection =
   NAV_SECTIONS.find((s) => s.id === "learn")!;
 
-/** Static dropdown (Retreats, Events); inserted before Learn when the guided tree drives other sections. */
+/** Static dropdown (Retreats, Wellness Kits); inserted before Learn when the guided tree drives other sections. */
 export const HOLISTIC_TREATMENTS_NAV_SECTION: NavSection =
   NAV_SECTIONS.find((s) => s.id === "treatments")!;
 
