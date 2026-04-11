@@ -158,8 +158,6 @@ export default function WellnessLibraryPage() {
             >
               Expert-led self-care solutions. <br />
               Created from what women truly need.
-              <br />
-              Made for you.
             </h1>
             <p className="wellnessLibraryPage__heroBody">
               Femved courses are shaped by the real needs and lived experiences

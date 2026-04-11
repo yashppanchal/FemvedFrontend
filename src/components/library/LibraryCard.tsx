@@ -41,38 +41,35 @@ export default function LibraryCard({ video, categorySlug }: LibraryCardProps) {
           )}
           {video.episodeCount != null && video.episodeCount > 0 && (
             <span className="libraryCard__episodes">
+              <span className="libraryCard__episodesSeparator">•</span>
               {video.episodeCount} episode{video.episodeCount !== 1 ? "s" : ""}
             </span>
           )}
         </div>
-
         <Link to={detailPath} className="libraryCard__titleLink">
           <h3 className="libraryCard__title">{video.title}</h3>
         </Link>
-
         {video.synopsis && (
           <p className="libraryCard__synopsis">{video.synopsis}</p>
         )}
-
         <p className="libraryCard__expert">
           By <strong>{video.expertName}</strong>
-          {video.expertTitle && (
-            <span className="libraryCard__expertTitle"> &middot; {video.expertTitle}</span>
-          )}
         </p>
-
         {video.tags.length > 0 && (
           <div className="libraryCard__tags">
             {video.tags.slice(0, 3).map((tag) => (
-              <span className="libraryCard__tag" key={tag}>{tag}</span>
+              <span className="libraryCard__tag" key={tag}>
+                {tag}
+              </span>
             ))}
           </div>
         )}
-
         <div className="libraryCard__priceRow">
           <span className="libraryCard__price">{video.price}</span>
           {video.originalPrice && (
-            <span className="libraryCard__originalPrice">{video.originalPrice}</span>
+            <span className="libraryCard__originalPrice">
+              {video.originalPrice}
+            </span>
           )}
         </div>
       </div>

@@ -1,3 +1,5 @@
+@use "../../styles/variables" as *;
+
 .libraryCard {
   border: 1px solid rgba(15, 15, 16, 0.1);
   border-radius: 16px;
@@ -6,7 +8,11 @@
   box-shadow: 0 12px 28px rgba(15, 15, 16, 0.05);
   display: flex;
   flex-direction: column;
-  transition: box-shadow 0.2s, transform 0.2s;
+  height: 100%;
+  min-height: 0;
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s;
 
   &:hover {
     box-shadow: 0 16px 36px rgba(15, 15, 16, 0.1);
@@ -14,12 +20,12 @@
   }
 }
 
-// ── Image area (3:4 aspect ratio) ────────────────────────────────────────────
+// ── Image area (slightly taller than 16:9) ───────────────────────────────────
 
 .libraryCard__imageWrap {
   position: relative;
   display: block;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 16 / 9.5;
   overflow: hidden;
   background:
     radial-gradient(
@@ -30,6 +36,10 @@
     linear-gradient(135deg, rgba(243, 230, 231, 0.88), rgba(255, 255, 255, 1));
 }
 
+.libraryCard__episodesSeparator {
+  color: rgba(15, 15, 16, 0.5);
+  margin-right: 8px;
+}
 .libraryCard__image {
   width: 100%;
   height: 100%;
@@ -54,7 +64,11 @@
   background: linear-gradient(135deg, #fff3e0, #fce4ec);
 }
 .libraryCard__gradient.grad-default {
-  background: linear-gradient(135deg, rgba(243, 230, 231, 0.88), rgba(255, 255, 255, 1));
+  background: linear-gradient(
+    135deg,
+    rgba(243, 230, 231, 0.88),
+    rgba(255, 255, 255, 1)
+  );
 }
 
 .libraryCard__emoji {
@@ -81,10 +95,11 @@
 
 .libraryCard__body {
   padding: 14px;
-  display: grid;
-  row-gap: 8px;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   flex: 1 1 auto;
+  min-height: 0;
 }
 
 .libraryCard__meta {
@@ -103,7 +118,7 @@
   margin: 0;
   font-family: var(--fontTitle);
   font-weight: 400;
-  color: var(--black);
+  color: $primary;
   font-size: 18px;
   letter-spacing: -0.02em;
   line-height: 1.25;
@@ -152,20 +167,30 @@
 
 .libraryCard__priceRow {
   display: flex;
+  flex-wrap: nowrap;
   align-items: baseline;
+  justify-content: flex-end;
   gap: 8px;
+  width: 100%;
   margin-top: auto;
   padding-top: 4px;
+  min-width: 0;
 }
 
 .libraryCard__price {
   font-size: 16px;
   font-weight: 700;
-  color: var(--black);
+  // color: var(--black);
+  color: $primary;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .libraryCard__originalPrice {
   font-size: 13px;
-  color: rgba(15, 15, 16, 0.5);
+  color: $primary;
+  // color: rgba(15, 15, 16, 0.5);
   text-decoration: line-through;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
