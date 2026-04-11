@@ -245,6 +245,10 @@ export default function WellnessLibraryPage() {
           activeType={activeType}
           onCategoryChange={setActiveCategory}
           onTypeChange={setActiveType}
+          onClearFilters={() => {
+            setActiveCategory("all");
+            setActiveType("all");
+          }}
         />
       )}
 
@@ -273,8 +277,10 @@ export default function WellnessLibraryPage() {
         </>
       ) : (
         <div className="card wellnessLibraryPage__emptyState">
-          <h2 className="card__title">No programs match this filter</h2>
-          <p className="card__text">Try selecting a different filter above.</p>
+          <h2 className="card__title">No programs match these filters</h2>
+          <p className="card__text">
+            Try another topic or format, or use &quot;Clear filters&quot; above.
+          </p>
         </div>
       )}
     </section>
