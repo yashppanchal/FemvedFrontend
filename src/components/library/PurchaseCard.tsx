@@ -6,7 +6,7 @@ import { hasValidAccessToken, useAuth } from "../../auth/useAuth";
 interface PurchaseCardProps {
   videoId: string;
   title: string;
-  eyebrow: string;
+  videoType: string;
   expertName: string;
   price: string;
   originalPrice?: string | null;
@@ -18,7 +18,7 @@ interface PurchaseCardProps {
 export default function PurchaseCard({
   videoId,
   title,
-  eyebrow,
+  videoType,
   expertName,
   price,
   originalPrice,
@@ -28,6 +28,7 @@ export default function PurchaseCard({
 }: PurchaseCardProps) {
   const navigate = useNavigate();
   const { tokens } = useAuth();
+  const typeLabel = videoType === "SERIES" ? "Series" : "Masterclass";
 
   function handlePurchase() {
     if (!hasValidAccessToken(tokens)) {
@@ -46,7 +47,7 @@ export default function PurchaseCard({
 
   return (
     <aside className="purchaseCard">
-      <p className="purchaseCard__eyebrow">{eyebrow}</p>
+      <p className="purchaseCard__eyebrow">{typeLabel}</p>
       <p className="purchaseCard__title">{title}</p>
       <p className="purchaseCard__instructor">
         Led by <strong>{expertName}</strong>
@@ -59,16 +60,26 @@ export default function PurchaseCard({
       )}
 
       {isPurchased ? (
-        <button type="button" className="purchaseCard__btn purchaseCard__btn--owned" disabled>
+        <button
+          type="button"
+          className="purchaseCard__btn purchaseCard__btn--owned"
+          disabled
+        >
           Already purchased
         </button>
       ) : (
-        <button type="button" className="purchaseCard__btn" onClick={handlePurchase}>
+        <button
+          type="button"
+          className="purchaseCard__btn"
+          onClick={handlePurchase}
+        >
           Purchase — {price}
         </button>
       )}
 
-      <p className="purchaseCard__access">One-time purchase. Lifetime access.</p>
+      <p className="purchaseCard__access">
+        One-time purchase. Lifetime access.
+      </p>
 
       {features.length > 0 && (
         <ul className="purchaseCard__features">

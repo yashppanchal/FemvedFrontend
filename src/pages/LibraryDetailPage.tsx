@@ -12,13 +12,6 @@ import EpisodeList from "../components/library/EpisodeList";
 import PurchaseCard from "../components/library/PurchaseCard";
 import InstructorStrip from "../components/library/InstructorStrip";
 
-function detailEyebrow(video: LibraryVideoDetailResponse): string {
-  if (video.tags.length > 0) {
-    return video.tags[0].toUpperCase();
-  }
-  return video.videoType === "SERIES" ? "SERIES" : "MASTERCLASS";
-}
-
 function formatMetaLine(video: LibraryVideoDetailResponse): string | null {
   const parts: string[] = [];
   if (video.releaseYear) parts.push(String(video.releaseYear));
@@ -225,7 +218,7 @@ export default function LibraryDetailPage() {
           <PurchaseCard
             videoId={video.videoId}
             title={video.title}
-            eyebrow={detailEyebrow(video)}
+            videoType={video.videoType}
             expertName={video.expertName}
             price={video.price}
             originalPrice={video.originalPrice}
