@@ -1,5 +1,5 @@
 import "./LibraryDetailPage.scss";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { FiShare2 } from "react-icons/fi";
 import { useCountry } from "../country/useCountry";
@@ -32,6 +32,15 @@ export default function LibraryDetailPage() {
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [shareHint, setShareHint] = useState<string | null>(null);
+  const [trailerPlayNonce, setTrailerPlayNonce] = useState(0);
+  const mediaBlockRef = useRef<HTMLDivElement>(null);
+
+  const handleFreePreviewClick = useCallback(() => {
+    mediaBlockRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (video?.trailerUrl) {
+      setTrailerPlayNonce((n) => n + 1);
+    }
+  }, [video?.trailerUrl]);
 
   useEffect(() => {
     if (!videoSlug) return;
@@ -60,6 +69,10 @@ export default function LibraryDetailPage() {
       isActive = false;
     };
   }, [videoSlug, country]);
+
+  useEffect(() => {
+    setTrailerPlayNonce(0);
+  }, [videoSlug, video?.videoId]);
 
   const handleShare = useCallback(async () => {
     if (!video) return;
@@ -119,10 +132,14 @@ export default function LibraryDetailPage() {
 
       <div className="libraryDetailPage__layout">
         <div className="libraryDetailPage__main">
-          <div className="libraryDetailPage__mediaBlock">
+          <div ref={mediaBlockRef} className="libraryDetailPage__mediaBlock">
             {/* <h1 className="libraryDetailPage__title">{video.title}</h1> */}
             {video.trailerUrl ? (
-              <TrailerEmbed trailerUrl={video.trailerUrl} title={video.title} />
+              <TrailerEmbed
+                trailerUrl={video.trailerUrl}
+                title={video.title}
+                playNonce={trailerPlayNonce}
+              />
             ) : posterSrc ? (
               <div className="libraryDetailPage__poster">
                 <img src={posterSrc} alt="" />
@@ -187,6 +204,7 @@ export default function LibraryDetailPage() {
             <EpisodeList
               episodes={video.episodes}
               isPurchased={video.isPurchased}
+              onFreePreviewClick={handleFreePreviewClick}
             />
           )}
 

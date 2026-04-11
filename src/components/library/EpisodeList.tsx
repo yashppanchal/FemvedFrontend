@@ -4,9 +4,15 @@ import type { LibraryEpisodeDto } from "../../api/library";
 interface EpisodeListProps {
   episodes: LibraryEpisodeDto[];
   isPurchased: boolean;
+  /** Called when a non-purchaser taps a free-preview episode row — scroll to trailer and play. */
+  onFreePreviewClick?: () => void;
 }
 
-export default function EpisodeList({ episodes, isPurchased }: EpisodeListProps) {
+export default function EpisodeList({
+  episodes,
+  isPurchased,
+  onFreePreviewClick,
+}: EpisodeListProps) {
   if (episodes.length === 0) return null;
 
   return (
@@ -17,16 +23,16 @@ export default function EpisodeList({ episodes, isPurchased }: EpisodeListProps)
       <ol className="episodeList__items">
         {episodes.map((ep) => {
           const unlocked = isPurchased || ep.isFreePreview;
-          return (
-            <li
-              key={ep.episodeId}
-              className={`episodeList__item${unlocked ? "" : " episodeList__item--locked"}`}
-            >
+          const isFreePreviewRow = ep.isFreePreview && !isPurchased;
+          const itemClass = `episodeList__item${unlocked ? "" : " episodeList__item--locked"}`;
+
+          const rowInner = (
+            <>
               <span className="episodeList__number">{ep.episodeNumber}</span>
               <div className="episodeList__info">
                 <span className="episodeList__title">
                   {ep.title}
-                  {ep.isFreePreview && !isPurchased && (
+                  {isFreePreviewRow && (
                     <span className="episodeList__freeTag">Free preview</span>
                   )}
                 </span>
@@ -54,6 +60,23 @@ export default function EpisodeList({ episodes, isPurchased }: EpisodeListProps)
                     <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                   </svg>
                 </span>
+              )}
+            </>
+          );
+
+          return (
+            <li key={ep.episodeId} className="episodeList__row">
+              {isFreePreviewRow && onFreePreviewClick ? (
+                <button
+                  type="button"
+                  className={itemClass}
+                  onClick={onFreePreviewClick}
+                  aria-label={`${ep.title} — play free preview`}
+                >
+                  {rowInner}
+                </button>
+              ) : (
+                <div className={itemClass}>{rowInner}</div>
               )}
             </li>
           );
