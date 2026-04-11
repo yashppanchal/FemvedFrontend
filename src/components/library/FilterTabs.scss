@@ -1,11 +1,14 @@
 @use "../../styles/variables" as *;
 
+/* Same outer height for topic chips and format segment (incl. borders / track padding) */
+$libraryFilterPillH: 34px;
+
 .libraryFilters {
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
-  margin-bottom: 28px;
-  padding: clamp(28px, 4vw, 44px) 0;
+  margin-bottom: 22px;
+  padding: clamp(18px, 3vw, 28px) 0;
   // background: #faf8f5;
   background: linear-gradient(
     0deg,
@@ -27,15 +30,15 @@
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
 .libraryFilters__title {
-  margin: 0 0 8px;
+  margin: 0 0 4px;
   font-family: $font-title;
   font-weight: 400;
-  font-size: clamp(22px, 2.4vw, 26px);
+  font-size: clamp(18px, 2vw, 22px);
   line-height: 1.2;
   letter-spacing: -0.02em;
   color: $primary;
@@ -44,20 +47,20 @@
 .libraryFilters__subtitle {
   margin: 0;
   max-width: 52ch;
-  font-size: 15px;
-  line-height: 1.5;
-  color: rgba($black, 0.68);
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba($black, 0.65);
 }
 
 .libraryFilters__clear {
   flex-shrink: 0;
-  margin-top: 2px;
-  padding: 8px 14px;
+  margin-top: 0;
+  padding: 6px 12px;
   border-radius: 999px;
   border: 1px solid rgba($primary, 0.35);
   background: $white;
   color: $primary;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.02em;
   cursor: pointer;
@@ -77,44 +80,48 @@
   }
 }
 
-.libraryFilters__stack {
+/* Topic (label above pills) + format; no horizontal scroll — chips wrap */
+.libraryFilters__row {
   display: flex;
-  flex-direction: column;
-  gap: 22px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 14px 22px;
 }
 
 .libraryFilters__group {
   min-width: 0;
+  display: flex;
+}
+
+.libraryFilters__group--topic {
+  flex: 1 1 220px;
+  min-width: 0;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.libraryFilters__group--format {
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  align-self: flex-start;
 }
 
 .libraryFilters__label {
-  margin: 0 0 10px;
-  font-size: 11px;
+  margin: 0;
+  flex-shrink: 0;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba($black, 0.48);
 }
 
-/* Topic row: horizontal chip rail (many categories) */
-.libraryFilters__rail {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: rgba($primary, 0.25) transparent;
-  padding-bottom: 4px;
-  margin: 0 -4px;
-  padding-left: 4px;
-  padding-right: 4px;
-
-  &::-webkit-scrollbar {
-    height: 6px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba($primary, 0.22);
-    border-radius: 999px;
-  }
+.libraryFilters__topicWrap {
+  width: 100%;
+  min-width: 0;
 }
 
 .libraryFilters__chips {
@@ -122,24 +129,25 @@
   margin: 0;
   padding: 0;
   display: flex;
-  flex-wrap: nowrap;
-  gap: 10px;
-  width: max-content;
-  min-width: 100%;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
 }
 
 .libraryFilters__chip {
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 18px;
+  height: $libraryFilterPillH;
+  padding: 0 12px;
   border-radius: 999px;
   border: 1px solid rgba($black, 0.12);
   background: $white;
   color: rgba($black, 0.75);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-  line-height: 1.25;
+  line-height: 1;
   white-space: nowrap;
   cursor: pointer;
   transition:
@@ -168,12 +176,16 @@
   }
 }
 
-/* Format row: compact segmented control (few options) */
+/* Format: compact segmented control (few options) */
 .libraryFilters__segment {
+  box-sizing: border-box;
   display: inline-flex;
-  flex-wrap: wrap;
-  border-radius: 12px;
-  padding: 4px;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  align-items: stretch;
+  height: $libraryFilterPillH;
+  border-radius: 10px;
+  padding: 0;
   background: rgba($black, 0.05);
   border: 1px solid rgba($black, 0.08);
   gap: 0;
@@ -181,13 +193,18 @@
 
 .libraryFilters__segmentBtn {
   position: relative;
-  padding: 10px 20px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 0 12px;
   border: none;
   background: transparent;
   color: rgba($black, 0.65);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-  line-height: 1.25;
+  line-height: 1;
   cursor: pointer;
   transition:
     color 0.15s ease,
@@ -212,7 +229,7 @@
   }
 
   &--first {
-    border-radius: 8px 0 0 8px;
+    border-radius: 7px 0 0 7px;
   }
 
   &--mid {
@@ -220,15 +237,20 @@
   }
 
   &--last {
-    border-radius: 0 8px 8px 0;
+    border-radius: 0 7px 7px 0;
   }
 
   &--first.libraryFilters__segmentBtn--last {
-    border-radius: 8px;
+    border-radius: 7px;
   }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 680px) {
+  .libraryFilters__group--format {
+    flex: 1 1 100%;
+    align-items: stretch;
+  }
+
   .libraryFilters__segment {
     width: 100%;
     justify-content: stretch;
@@ -237,8 +259,9 @@
   .libraryFilters__segmentBtn {
     flex: 1 1 auto;
     min-width: 0;
-    padding-left: 12px;
-    padding-right: 12px;
-    font-size: 13px;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 12px;
+    min-height: 100%;
   }
 }

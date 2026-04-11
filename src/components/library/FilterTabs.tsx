@@ -53,8 +53,8 @@ export default function FilterTabs({
           )}
         </div>
 
-        <div className="libraryFilters__stack">
-          <div className="libraryFilters__group">
+        <div className="libraryFilters__row">
+          <div className="libraryFilters__group libraryFilters__group--topic">
             <p
               className="libraryFilters__label"
               id="libraryFilters-topic-label"
@@ -62,7 +62,7 @@ export default function FilterTabs({
               Topic
             </p>
             <div
-              className="libraryFilters__rail"
+              className="libraryFilters__topicWrap"
               role="radiogroup"
               aria-labelledby="libraryFilters-topic-label"
             >
@@ -98,7 +98,7 @@ export default function FilterTabs({
             </div>
           </div>
 
-          <div className="libraryFilters__group">
+          <div className="libraryFilters__group libraryFilters__group--format">
             <p
               className="libraryFilters__label"
               id="libraryFilters-format-label"
