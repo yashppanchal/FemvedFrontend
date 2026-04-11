@@ -10,7 +10,6 @@
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
-  margin-bottom: 28px;
   background: #faf8f5;
 }
 
@@ -91,6 +90,90 @@
     min-height: 100%;
     position: absolute;
     inset: 0;
+  }
+}
+
+.wellnessLibraryPage__why {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  margin-bottom: 36px;
+  padding: clamp(40px, 6vw, 72px) 0;
+  background: #faf8f5;
+}
+
+.wellnessLibraryPage__whyInner {
+  max-width: $container-max-width;
+  margin: 0 auto;
+  padding: 0 $container-padding-x;
+}
+
+.wellnessLibraryPage__whyLabel {
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba($black, 0.52);
+}
+
+.wellnessLibraryPage__whyTitle {
+  margin: 0 0 16px;
+  // max-width: 22ch;
+  font-family: $font-title;
+  font-weight: 400;
+  font-size: clamp(24px, 2.8vw, 30px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: $primary;
+}
+
+.wellnessLibraryPage__whyLead {
+  margin: 0 0 32px;
+  max-width: 62ch;
+  font-size: 16px;
+  line-height: 1.55;
+  color: rgba($black, 0.72);
+}
+
+.wellnessLibraryPage__whyGrid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.wellnessLibraryPage__whyCard {
+  margin: 0;
+  padding: 24px 26px;
+  background: $white;
+  border-radius: 10px;
+  box-shadow: 0 4px 24px rgba($black, 0.06);
+}
+
+.wellnessLibraryPage__whyCardTitle {
+  margin: 0 0 10px;
+  font-family: $font-title;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: $primary;
+  text-transform: uppercase;
+}
+
+.wellnessLibraryPage__whyCardBody {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba($black, 0.68);
+}
+
+@media (max-width: 640px) {
+  .wellnessLibraryPage__whyGrid {
+    grid-template-columns: 1fr;
   }
 }
 

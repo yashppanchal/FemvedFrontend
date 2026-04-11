@@ -180,6 +180,64 @@ export default function WellnessLibraryPage() {
         </div>
       </header>
 
+      <section
+        className="wellnessLibraryPage__why"
+        aria-labelledby="wellnessLibraryWhyTitle"
+      >
+        <div className="wellnessLibraryPage__whyInner">
+          <p className="wellnessLibraryPage__whyLabel">Why this library</p>
+          <h2
+            className="wellnessLibraryPage__whyTitle"
+            id="wellnessLibraryWhyTitle"
+          >
+            Courses built from what women actually ask.
+          </h2>
+          <p className="wellnessLibraryPage__whyLead">
+            Most health platforms guess what you need. FemVed&apos;s course
+            library is driven by a closed analytics loop between community
+            signals and expert content so nothing is created in a vacuum.
+          </p>
+          <ul className="wellnessLibraryPage__whyGrid">
+            <li className="wellnessLibraryPage__whyCard">
+              <h3 className="wellnessLibraryPage__whyCardTitle">
+                Precision course creation
+              </h3>
+              <p className="wellnessLibraryPage__whyCardBody">
+                Experts craft targeted, evidence-based programs around the exact
+                needs identified — not assumptions or generic curricula.
+              </p>
+            </li>
+            <li className="wellnessLibraryPage__whyCard">
+              <h3 className="wellnessLibraryPage__whyCardTitle">
+                You learn &amp; apply
+              </h3>
+              <p className="wellnessLibraryPage__whyCardBody">
+                Access from home, at your pace, returning whenever you need.
+                Practical protocols to integrate into your daily rhythm.
+              </p>
+            </li>
+            <li className="wellnessLibraryPage__whyCard">
+              <h3 className="wellnessLibraryPage__whyCardTitle">
+                Loop continues
+              </h3>
+              <p className="wellnessLibraryPage__whyCardBody">
+                Your progress and questions update the signal pool. Experts
+                refine and expand the library and keep getting better for
+                everyone.
+              </p>
+            </li>
+            <li className="wellnessLibraryPage__whyCard">
+              <h3 className="wellnessLibraryPage__whyCardTitle">
+                Democratised care
+              </h3>
+              <p className="wellnessLibraryPage__whyCardBody">
+                Accredited expert solutions, delivered in a democratised format.
+              </p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
       {tree.categories.length > 0 && (
         <FilterTabs
           categories={tree.categories}
