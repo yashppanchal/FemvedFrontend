@@ -7,10 +7,7 @@ import Placeholder from "./Placeholder";
 /** Flip to false to show "Coming Soon" instead of the live library. */
 /* Adding comment just to deploy */
 const LIBRARY_LIVE = true;
-import {
-  getLibrarySnapshot,
-  loadLibraryTree,
-} from "../data/libraryPrograms";
+import { getLibrarySnapshot, loadLibraryTree } from "../data/libraryPrograms";
 import type {
   LibraryTreeResponse,
   LibraryVideoCardDto,
@@ -65,7 +62,9 @@ export default function WellnessLibraryPage() {
   const [tree, setTree] = useState<LibraryTreeResponse | null>(() =>
     getLibrarySnapshot(country),
   );
-  const [loading, setLoading] = useState(() => getLibrarySnapshot(country) === null);
+  const [loading, setLoading] = useState(
+    () => getLibrarySnapshot(country) === null,
+  );
   const [hasError, setHasError] = useState(false);
   const [activeCategory, setActiveCategory] = useState("all");
   const [activeType, setActiveType] = useState("all");
@@ -114,7 +113,8 @@ export default function WellnessLibraryPage() {
   );
 
   const categorySlugMap = useMemo(
-    () => (tree ? buildCategorySlugMap(tree.categories) : new Map<string, string>()),
+    () =>
+      tree ? buildCategorySlugMap(tree.categories) : new Map<string, string>(),
     [tree],
   );
 
@@ -145,14 +145,39 @@ export default function WellnessLibraryPage() {
 
   return (
     <section className="page wellnessLibraryPage">
-      <header className="wellnessLibraryPage__header">
-        <h1 className="page__title">
-          {tree.domain.domainName || "Wellness Library"}
-        </h1>
-        <p className="page__lead">
-          Expert-led recorded programs you can watch at your own pace.
-          One-time purchase, lifetime access.
-        </p>
+      <header
+        className="wellnessLibraryPage__hero"
+        aria-labelledby="wellnessLibraryHeroTitle"
+      >
+        <div className="wellnessLibraryPage__heroInner">
+          <div className="wellnessLibraryPage__heroCopy">
+            <p className="wellnessLibraryPage__heroLabel">Femved Originals</p>
+            <h1
+              className="wellnessLibraryPage__heroTitle"
+              id="wellnessLibraryHeroTitle"
+            >
+              Expert-led self-care solutions. <br />
+              Created from what women truly need.
+              <br />
+              Made for you.
+            </h1>
+            <p className="wellnessLibraryPage__heroBody">
+              Femved courses are shaped by the real needs and lived experiences
+              of our community, so experts can create exactly what women are
+              searching for.
+            </p>
+          </div>
+          <div className="wellnessLibraryPage__heroMedia">
+            <img
+              className="wellnessLibraryPage__heroImage"
+              src="https://res.cloudinary.com/dh8aj0hzw/image/upload/v1773496368/thlt-lcx-VsI_74zRzAo-unsplash_musrjk.jpg"
+              alt=""
+              width={960}
+              height={640}
+              decoding="async"
+            />
+          </div>
+        </div>
       </header>
 
       {tree.categories.length > 0 && (
@@ -175,7 +200,8 @@ export default function WellnessLibraryPage() {
       {filteredVideos.length > 0 ? (
         <>
           <p className="wellnessLibraryPage__resultsCount">
-            {filteredVideos.length} program{filteredVideos.length !== 1 ? "s" : ""}
+            {filteredVideos.length} program
+            {filteredVideos.length !== 1 ? "s" : ""}
           </p>
           <div className="wellnessLibraryPage__grid">
             {filteredVideos.map((video) => (
@@ -190,9 +216,7 @@ export default function WellnessLibraryPage() {
       ) : (
         <div className="card wellnessLibraryPage__emptyState">
           <h2 className="card__title">No programs match this filter</h2>
-          <p className="card__text">
-            Try selecting a different filter above.
-          </p>
+          <p className="card__text">Try selecting a different filter above.</p>
         </div>
       )}
     </section>
