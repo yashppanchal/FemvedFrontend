@@ -6,6 +6,7 @@ import {
   type CurrencyAmount,
 } from "../../api/admin";
 import { ApiError } from "../../api/client";
+import { LoadingScreen } from "../../components/LoadingScreen";
 import { PAGE_SIZE } from "../../constants";
 import { useToast } from "../../useToast";
 
@@ -83,7 +84,7 @@ export default function ExpertPayoutsTab() {
     }
   };
 
-  if (loading) return <p className="adminPanel__loading">Loading payouts…</p>;
+  if (loading) return <LoadingScreen compact message="Loading payouts…" />;
   if (error) return <p className="adminPanel__error">{error}</p>;
 
   return (

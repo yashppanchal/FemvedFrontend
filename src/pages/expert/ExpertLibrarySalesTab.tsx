@@ -4,6 +4,7 @@ import {
   type ExpertLibrarySalesResponse,
 } from "../../api/experts";
 import { ApiError } from "../../api/client";
+import { LoadingScreen } from "../../components/LoadingScreen";
 
 export default function ExpertLibrarySalesTab() {
   const [data, setData] = useState<ExpertLibrarySalesResponse | null>(null);
@@ -19,7 +20,7 @@ export default function ExpertLibrarySalesTab() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p className="expertSection__loading">Loading library sales...</p>;
+  if (loading) return <LoadingScreen compact message="Loading library sales…" />;
   if (error) return <p className="expertSection__error">{error}</p>;
   if (!data) return <p className="expertSection__empty">No data available.</p>;
 

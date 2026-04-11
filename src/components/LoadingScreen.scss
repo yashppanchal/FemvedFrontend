@@ -1,0 +1,134 @@
+@use "../styles/variables" as *;
+
+// ── Outer wrapper ──────────────────────────────────────────────────────────────
+
+.loadingScreen {
+  // Full-bleed: break out of `.container` (max-width + padding) to span the viewport
+  position: relative;
+  width: 100svw;
+  max-width: 100svw;
+  margin-left: calc(50% - 50svw);
+  margin-right: calc(50% - 50svw);
+  box-sizing: border-box;
+  // Fill the remaining viewport height between the sticky header and footer
+  min-height: calc(100svh - 80px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 36px;
+  background: linear-gradient(
+    158deg,
+    rgba($secondary-soft, 0.28) 0%,
+    $white 55%,
+    rgba($secondary-soft, 0.14) 100%
+  );
+}
+
+.loadingScreen--compact {
+  width: auto;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  min-height: min(320px, 55vh);
+  padding-block: 20px;
+  gap: 24px;
+}
+
+// ── Scene ──────────────────────────────────────────────────────────────────────
+
+.loadingScreen__scene {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// ── Expanding halo rings ───────────────────────────────────────────────────────
+
+.loadingScreen__halo {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba($secondary, 0.55);
+  animation: loadingScreenHalo 2.8s ease-out infinite;
+
+  &--1 { width: 70px; height: 70px; animation-delay: 0s; }
+  &--2 { width: 70px; height: 70px; animation-delay: 0.93s; }
+  &--3 { width: 70px; height: 70px; animation-delay: 1.86s; }
+}
+
+// ── Moon body ──────────────────────────────────────────────────────────────────
+
+.loadingScreen__moon {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: $secondary-soft;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  animation: loadingScreenMoonGlow 5s ease-in-out infinite;
+}
+
+// ── Phase shadow ───────────────────────────────────────────────────────────────
+
+.loadingScreen__shadow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: $primary;
+  animation: loadingScreenPhase 5s ease-in-out infinite;
+}
+
+// ── Label ──────────────────────────────────────────────────────────────────────
+
+.loadingScreen__label {
+  font-family: $font-title;
+  font-size: 1rem;
+  color: $muted;
+  letter-spacing: 0.06em;
+  margin: 0;
+  animation: loadingScreenFade 1.8s ease-in-out infinite;
+}
+
+// ── Keyframes ──────────────────────────────────────────────────────────────────
+
+@keyframes loadingScreenPhase {
+  0%, 8%    { transform: translateX(0%); }
+  50%       { transform: translateX(-110%); }
+  92%, 100% { transform: translateX(0%); }
+}
+
+@keyframes loadingScreenMoonGlow {
+  0%, 40%   { box-shadow: 0 0 10px rgba($secondary, 0.2), 0 0 24px rgba($secondary, 0.1); }
+  50%        { box-shadow: 0 0 32px rgba($secondary, 0.6), 0 0 64px rgba($secondary, 0.25); }
+  60%, 100% { box-shadow: 0 0 10px rgba($secondary, 0.2), 0 0 24px rgba($secondary, 0.1); }
+}
+
+@keyframes loadingScreenHalo {
+  0%   { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
+
+@keyframes loadingScreenFade {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 1; }
+}
+
+// ── Accessibility ──────────────────────────────────────────────────────────────
+
+@media (prefers-reduced-motion: reduce) {
+  .loadingScreen__halo,
+  .loadingScreen__shadow,
+  .loadingScreen__moon,
+  .loadingScreen__label {
+    animation: none;
+  }
+
+  // Show a static half-moon as a still fallback
+  .loadingScreen__shadow {
+    transform: translateX(-50%);
+  }
+}

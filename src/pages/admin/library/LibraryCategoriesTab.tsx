@@ -4,6 +4,7 @@ import {
   type AdminLibraryCategoryDto,
 } from "../../../api/adminLibrary";
 import { ApiError } from "../../../api/client";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 
 // Wellness Library domain is always this fixed ID (seeded in migration)
 const WELLNESS_DOMAIN_ID = "22222222-0000-0000-0000-000000000001";
@@ -103,7 +104,7 @@ export default function LibraryCategoriesTab() {
         <p className="adminPanel__hint">Group your videos into browsable categories (e.g. Masterclasses, Mindfulness, Yoga).</p>
       </div>
 
-      {loading && <p className="adminPanel__hint">Loading...</p>}
+      {loading && <LoadingScreen compact message="Loading…" />}
       {loadError && <p className="adminPanel__error">{loadError}</p>}
       {formSuccess && <p className="adminPanel__success">{formSuccess}</p>}
       {formError && <p className="adminPanel__error">{formError}</p>}

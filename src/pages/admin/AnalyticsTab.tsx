@@ -9,6 +9,7 @@ import {
   type CurrencyAmount,
 } from "../../api/admin";
 import { ApiError } from "../../api/client";
+import { LoadingScreen } from "../../components/LoadingScreen";
 
 type SubTab = "sales" | "users" | "programs";
 
@@ -47,7 +48,7 @@ function SalesTab() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p className="adminPanel__loading">Loading sales analytics…</p>;
+  if (loading) return <LoadingScreen compact message="Loading sales analytics…" />;
   if (error) return <p className="adminPanel__error">{error}</p>;
   if (!data) return null;
 
@@ -172,7 +173,7 @@ function UsersTab() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p className="adminPanel__loading">Loading user analytics…</p>;
+  if (loading) return <LoadingScreen compact message="Loading user analytics…" />;
   if (error) return <p className="adminPanel__error">{error}</p>;
   if (!data) return null;
 
@@ -255,7 +256,7 @@ function ProgramsTab() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p className="adminPanel__loading">Loading program analytics…</p>;
+  if (loading) return <LoadingScreen compact message="Loading program analytics…" />;
   if (error) return <p className="adminPanel__error">{error}</p>;
   if (!data) return null;
 

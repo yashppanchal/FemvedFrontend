@@ -10,6 +10,7 @@ import {
   type ExpertEnrollment,
 } from "../api/experts";
 import { ApiError } from "../api/client";
+import { LoadingScreen } from "../components/LoadingScreen";
 
 const today = () => new Date().toISOString().split("T")[0];
 
@@ -79,7 +80,7 @@ export default function ExpertClients() {
 
       <div className="expertContent">
         <section className="expertSection">
-          {loading && <p className="expertSection__loading">Loading clients…</p>}
+          {loading && <LoadingScreen compact message="Loading clients…" />}
           {error && <p className="form__error">{error}</p>}
           {actionError && <p className="form__error">{actionError}</p>}
 

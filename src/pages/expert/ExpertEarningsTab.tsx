@@ -6,6 +6,7 @@ import {
   type ExpertPayoutRecord,
 } from "../../api/experts";
 import { ApiError } from "../../api/client";
+import { LoadingScreen } from "../../components/LoadingScreen";
 
 import { PAGE_SIZE } from "../../constants";
 
@@ -35,7 +36,7 @@ export default function ExpertEarningsTab() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p className="expertSection__loading">Loading earnings…</p>;
+  if (loading) return <LoadingScreen compact message="Loading earnings…" />;
   if (error) return <p className="form__error">{error}</p>;
 
   return (

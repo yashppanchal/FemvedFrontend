@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getAdminSummary, getAdminOrders, type AdminSummary } from "../../api/admin";
 import { ApiError } from "../../api/client";
+import { LoadingScreen } from "../../components/LoadingScreen";
 
 function StatCard({ label, value }: { label: string; value: string | number }) {
   return (
@@ -48,7 +49,7 @@ export default function SummaryTab() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p className="adminPanel__loading">Loading summary…</p>;
+  if (loading) return <LoadingScreen compact message="Loading summary…" />;
   if (error) return <p className="adminPanel__error">{error}</p>;
   if (!summary) return null;
 

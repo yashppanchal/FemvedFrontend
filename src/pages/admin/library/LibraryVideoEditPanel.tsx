@@ -9,6 +9,7 @@ import {
   type AddLibraryVideoPriceRequest,
 } from "../../../api/adminLibrary";
 import { ApiError } from "../../../api/client";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 
 const LOCATIONS = ["IN", "GB", "US"] as const;
 const CURRENCY_DEFAULTS: Record<string, { code: string; symbol: string }> = {
@@ -293,7 +294,7 @@ export default function LibraryVideoEditPanel({
   if (loading) {
     return (
       <section className="adminPanel">
-        <p className="adminPanel__hint">Loading video details...</p>
+        <LoadingScreen compact message="Loading video details…" />
       </section>
     );
   }

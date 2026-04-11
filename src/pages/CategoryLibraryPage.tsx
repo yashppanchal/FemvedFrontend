@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useCountry } from "../country/useCountry";
 import { fetchLibraryCategory, type LibraryCategoryDto } from "../api/library";
+import { LoadingScreen } from "../components/LoadingScreen";
 import LibraryCard from "../components/library/LibraryCard";
 import { usePageTitle } from "../usePageTitle";
 import "./WellnessLibraryPage.scss";
@@ -47,7 +48,7 @@ export default function CategoryLibraryPage() {
   if (loading) {
     return (
       <section className="page wellnessLibraryPage">
-        <h1 className="page__title">Loading...</h1>
+        <LoadingScreen message="Loading…" />
       </section>
     );
   }

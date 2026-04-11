@@ -4,6 +4,7 @@ import {
   fetchGuidedTree,
 } from "../../api/guided";
 import { ApiError } from "../../api/client";
+import { LoadingScreen } from "../../components/LoadingScreen";
 import { useAuth } from "../../auth/useAuth";
 import { isValidUrl } from "../../validation";
 
@@ -179,7 +180,7 @@ export default function ExpertCreateProgramTab() {
 
       {success && <p className="expertSection__success">{success}</p>}
       {error && <p className="form__error">{error}</p>}
-      {loading && <p className="expertSection__loading">Loading categories…</p>}
+      {loading && <LoadingScreen compact message="Loading categories…" />}
 
       {!loading && (
         <form className="form expertForm" onSubmit={handleSubmit} noValidate>

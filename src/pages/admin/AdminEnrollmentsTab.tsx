@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Spinner } from "../../components/Spinner";
+import { LoadingScreen } from "../../components/LoadingScreen";
 import { useEscapeKey } from "../../useEscapeKey";
 import {
   getAdminEnrollments,
@@ -172,7 +172,7 @@ export default function AdminEnrollmentsTab({ filterExpertId, filterProgramId }:
     return true;
   });
 
-  if (loading) return <Spinner message="Loading enrollments…" />;
+  if (loading) return <LoadingScreen compact message="Loading enrollments…" />;
   if (error) return <p className="adminPanel__error">{error}</p>;
 
   return (
@@ -420,7 +420,7 @@ export default function AdminEnrollmentsTab({ filterExpertId, filterProgramId }:
             </div>
             <div className="adminModal__body">
               {commentsLoading ? (
-                <Spinner message="Loading…" size="sm" />
+                <LoadingScreen compact message="Loading…" />
               ) : comments.length === 0 ? (
                 <p className="adminPanel__empty">No comments yet.</p>
               ) : (

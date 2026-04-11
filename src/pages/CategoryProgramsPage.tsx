@@ -9,6 +9,7 @@ import {
   type GuidedProgramCard,
   type GuidedProgramInfo,
 } from "../data/guidedPrograms";
+import { LoadingScreen } from "../components/LoadingScreen";
 import {
   buildCloudinarySrcSet,
   optimizeCloudinaryImageUrl,
@@ -124,7 +125,7 @@ export default function CategoryProgramsPage() {
   if (loading) {
     return (
       <section className="page categoryProgramsPage" ref={pageRef}>
-        <p className="categoryProgramsPage__loading">Loading programs…</p>
+        <LoadingScreen message="Loading programs…" />
       </section>
     );
   }

@@ -1,6 +1,7 @@
 import { type FormEvent, useEffect, useState } from "react";
 import type { DomainForm, DomainRow } from "./types";
 
+import { LoadingScreen } from "../../components/LoadingScreen";
 import { PAGE_SIZE } from "../../constants";
 
 type DomainsTabProps = {
@@ -50,7 +51,7 @@ export function DomainsTab({
         <p className="adminPanel__hint">Create top-level program domains.</p>
       </div>
 
-      {isDomainsLoading && <p className="adminPanel__hint">Loading domains...</p>}
+      {isDomainsLoading && <LoadingScreen compact message="Loading domains…" />}
       {domainLoadError && <p className="adminPanel__error">{domainLoadError}</p>}
       {domainCreateSuccess && (
         <p className="adminPanel__success">{domainCreateSuccess}</p>

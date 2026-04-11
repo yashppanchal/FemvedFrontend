@@ -15,6 +15,7 @@ import {
   buildCloudinarySrcSet,
   optimizeCloudinaryImageUrl,
 } from "../cloudinary/image";
+import { LoadingScreen } from "../components/LoadingScreen";
 import RevealOnScroll from "../components/RevealOnScroll";
 
 export default function ProgramDetailPage() {
@@ -220,10 +221,7 @@ export default function ProgramDetailPage() {
   if (loading) {
     return (
       <section className="page pdp pdp--state">
-        <div className="pdp__stateInner">
-          <div className="pdp__stateSpinner" aria-label="Loading" />
-          <p className="pdp__stateText">Loading program…</p>
-        </div>
+        <LoadingScreen message="Loading program…" />
       </section>
     );
   }

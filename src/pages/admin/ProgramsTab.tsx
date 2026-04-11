@@ -10,6 +10,7 @@ import type {
 } from "./types";
 
 import { CloudinaryImageUrlField } from "../../components/CloudinaryImageUrlField";
+import { LoadingScreen } from "../../components/LoadingScreen";
 import { PAGE_SIZE } from "../../constants";
 import { useEscapeKey } from "../../useEscapeKey";
 
@@ -166,9 +167,9 @@ export function ProgramsTab({
           <p className="adminPanel__error">{programCreateError}</p>
         )}
         {isLoadingProgramEdit && (
-          <p className="adminPanel__hint" style={{ marginBottom: "12px" }}>
-            Loading program details…
-          </p>
+          <div style={{ marginBottom: "12px" }}>
+            <LoadingScreen compact message="Loading program details…" />
+          </div>
         )}
 
         <form className="form adminForm" onSubmit={onSubmit} noValidate>

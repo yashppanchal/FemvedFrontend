@@ -8,6 +8,7 @@ import {
   type CreateCouponRequest,
 } from "../../api/admin";
 import { ApiError } from "../../api/client";
+import { LoadingScreen } from "../../components/LoadingScreen";
 import { PAGE_SIZE } from "../../constants";
 import { useToast } from "../../useToast";
 
@@ -105,7 +106,7 @@ export default function CouponsTab() {
 
   const filtered = coupons.filter(c => c.code.toLowerCase().includes(search.toLowerCase()));
 
-  if (loading) return <p className="adminPanel__loading">Loading coupons…</p>;
+  if (loading) return <LoadingScreen compact message="Loading coupons…" />;
   if (error) return <p className="adminPanel__error">{error}</p>;
 
   return (

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getMyOrders, type MyOrder } from "../../api/users";
 import { ApiError } from "../../api/client";
+import { LoadingScreen } from "../../components/LoadingScreen";
 
 import { PAGE_SIZE } from "../../constants";
 const STATUS_OPTIONS = ["All", "Paid", "Pending", "Failed", "Cancelled", "Refunded"];
@@ -37,7 +38,7 @@ export default function OrdersTab() {
     return (o.programName ?? "").toLowerCase().includes(q) || (o.couponCode ?? "").toLowerCase().includes(q);
   });
 
-  if (loading) return <p className="dashCard__loading">Loading orders…</p>;
+  if (loading) return <LoadingScreen compact message="Loading orders…" />;
   if (error) return <p className="dashCard__error">{error}</p>;
 
   return (

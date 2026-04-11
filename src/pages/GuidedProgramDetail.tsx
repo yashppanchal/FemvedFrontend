@@ -8,6 +8,7 @@ import { MoreSection } from "../components/guided-care-components/MoreSection";
 import { ChooseSection } from "../components/guided-care-components/ChooseSection";
 import { CtaBanner } from "../components/guided-care-components/CtaBanner";
 import { ZigzagSection } from "../components/guided-care-components/ZigzagSection";
+import { LoadingScreen } from "../components/LoadingScreen";
 import { useCountry } from "../country/useCountry";
 import {
   loadGuidedPrograms,
@@ -89,7 +90,7 @@ export default function GuidedProgramDetail() {
   if (loading) {
     return (
       <section className="page guidedProgramDetail">
-        <h1 className="page__title">Loading guided program...</h1>
+        <LoadingScreen message="Loading guided program…" />
       </section>
     );
   }

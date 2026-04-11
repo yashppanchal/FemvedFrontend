@@ -9,6 +9,7 @@ import {
   type Testimonial,
 } from "../../api/admin";
 import { ApiError } from "../../api/client";
+import { LoadingScreen } from "../../components/LoadingScreen";
 import { PAGE_SIZE } from "../../constants";
 import { useEscapeKey } from "../../useEscapeKey";
 
@@ -210,7 +211,7 @@ export default function TestimonialsTab() {
     }
   };
 
-  if (loading) return <p className="adminPanel__loading">Loading programs…</p>;
+  if (loading) return <LoadingScreen compact message="Loading programs…" />;
   if (error) return <p className="adminPanel__error">{error}</p>;
 
   return (
@@ -249,7 +250,7 @@ export default function TestimonialsTab() {
       )}
 
       {loadingTestimonials ? (
-        <p className="adminPanel__loading">Loading testimonials…</p>
+        <LoadingScreen compact message="Loading testimonials…" />
       ) : sorted.length === 0 ? (
         <p className="adminPanel__empty">No testimonials for this program yet. Click "+ Add Testimonial" to create one.</p>
       ) : (

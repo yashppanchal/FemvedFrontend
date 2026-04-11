@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { adminLibrary, type LibraryAnalyticsDto } from "../../../api/adminLibrary";
 import { ApiError } from "../../../api/client";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 
 export default function LibraryAnalyticsTab() {
   const [data, setData] = useState<LibraryAnalyticsDto | null>(null);
@@ -17,7 +18,7 @@ export default function LibraryAnalyticsTab() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p className="adminPanel__hint">Loading analytics...</p>;
+  if (loading) return <LoadingScreen compact message="Loading analytics…" />;
   if (error) return <p className="adminPanel__error">{error}</p>;
   if (!data) return null;
 

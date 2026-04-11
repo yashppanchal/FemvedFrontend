@@ -5,6 +5,7 @@ import {
   type AdminLibraryDomainDto,
 } from "../../../api/adminLibrary";
 import { ApiError } from "../../../api/client";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 
 type FormState = {
   domainId: string;
@@ -119,7 +120,7 @@ export default function LibraryFiltersTab() {
         <p className="adminPanel__hint">Dynamic filter tabs shown on the catalog page.</p>
       </div>
 
-      {loading && <p className="adminPanel__hint">Loading...</p>}
+      {loading && <LoadingScreen compact message="Loading…" />}
       {loadError && <p className="adminPanel__error">{loadError}</p>}
       {formSuccess && <p className="adminPanel__success">{formSuccess}</p>}
       {formError && <p className="adminPanel__error">{formError}</p>}

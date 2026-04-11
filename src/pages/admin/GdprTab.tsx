@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getGdprRequests, processGdprRequest, type GdprRequest } from "../../api/admin";
 import { ApiError } from "../../api/client";
+import { LoadingScreen } from "../../components/LoadingScreen";
 
 type StatusFilter = "Pending" | "Completed" | "all";
 import { PAGE_SIZE } from "../../constants";
@@ -39,7 +40,7 @@ export default function GdprTab() {
     }
   };
 
-  if (loading) return <p className="adminPanel__loading">Loading data requests…</p>;
+  if (loading) return <LoadingScreen compact message="Loading data requests…" />;
   if (error) return <p className="adminPanel__error">{error}</p>;
 
   const totalPages = Math.ceil(requests.length / PAGE_SIZE);

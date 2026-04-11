@@ -21,6 +21,7 @@ import {
   type AdminEnrollment,
 } from "../../api/admin";
 import { ApiError } from "../../api/client";
+import { LoadingScreen } from "../../components/LoadingScreen";
 
 // ── Expert edit form shape ────────────────────────────────────────────────────
 
@@ -289,7 +290,7 @@ export default function ExpertsTab() {
       (e.userEmail ?? "").toLowerCase().includes(search.toLowerCase()),
   );
 
-  if (loading) return <p className="adminPanel__loading">Loading experts…</p>;
+  if (loading) return <LoadingScreen compact message="Loading experts…" />;
   if (error) return <p className="adminPanel__error">{error}</p>;
 
   return (
@@ -513,7 +514,7 @@ export default function ExpertsTab() {
                     <tr key={`${e.expertId}-expand`}>
                       <td colSpan={6} className="adminTable__expandedRow">
                         {expandedLoading ? (
-                          <p className="adminPanel__loading">Loading programs…</p>
+                          <LoadingScreen compact message="Loading programs…" />
                         ) : expandedError ? (
                           <p className="adminPanel__error">{expandedError}</p>
                         ) : (

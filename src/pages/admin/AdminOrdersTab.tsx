@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Spinner } from "../../components/Spinner";
+import { LoadingScreen } from "../../components/LoadingScreen";
 
 import { PAGE_SIZE } from "../../constants";
 import { getAdminOrders, refundOrder, type AdminOrder } from "../../api/admin";
@@ -91,7 +91,7 @@ export default function AdminOrdersTab() {
   // Reset to page 1 when search or filter changes
   useEffect(() => { setPage(1); }, [search, statusFilter]);
 
-  if (loading) return <Spinner message="Loading orders…" />;
+  if (loading) return <LoadingScreen compact message="Loading orders…" />;
   if (error) return <p className="adminPanel__error">{error}</p>;
 
   return (

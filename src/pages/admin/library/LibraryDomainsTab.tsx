@@ -1,6 +1,7 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { adminLibrary, type AdminLibraryDomainDto } from "../../../api/adminLibrary";
 import { ApiError } from "../../../api/client";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 
 type FormState = { name: string; slug: string; sortOrder: string };
 const emptyForm: FormState = { name: "", slug: "", sortOrder: "0" };
@@ -89,7 +90,7 @@ export default function LibraryDomainsTab() {
         <p className="adminPanel__hint">Top-level domains for the Wellness Library.</p>
       </div>
 
-      {loading && <p className="adminPanel__hint">Loading...</p>}
+      {loading && <LoadingScreen compact message="Loading…" />}
       {loadError && <p className="adminPanel__error">{loadError}</p>}
       {formSuccess && <p className="adminPanel__success">{formSuccess}</p>}
       {formError && <p className="adminPanel__error">{formError}</p>}

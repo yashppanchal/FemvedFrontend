@@ -15,6 +15,7 @@ import type {
 } from "../api/library";
 import FilterTabs from "../components/library/FilterTabs";
 import FeaturedRow from "../components/library/FeaturedRow";
+import { LoadingScreen } from "../components/LoadingScreen";
 import LibraryCard from "../components/library/LibraryCard";
 
 /** Maps a video id to its parent category slug for card links. */
@@ -126,7 +127,7 @@ export default function WellnessLibraryPage() {
   if (loading) {
     return (
       <section className="page wellnessLibraryPage">
-        <h1 className="page__title">Loading Wellness Library...</h1>
+        <LoadingScreen message="Loading Wellness Library…" />
       </section>
     );
   }

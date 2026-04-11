@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useEscapeKey } from "../../useEscapeKey";
 import { getMyProgramAccess, pauseMyEnrollment, resumeMyEnrollment, endMyEnrollment, requestStartDate, type MyProgramAccess } from "../../api/users";
 import { ApiError } from "../../api/client";
+import { LoadingScreen } from "../../components/LoadingScreen";
 
 import { PAGE_SIZE } from "../../constants";
 const today = () => new Date().toISOString().split("T")[0];
@@ -113,7 +114,7 @@ export default function MyProgramsTab() {
     return p.status;
   };
 
-  if (loading) return <p className="dashCard__loading">Loading programs…</p>;
+  if (loading) return <LoadingScreen compact message="Loading programs…" />;
   if (error) return <p className="dashCard__error">{error}</p>;
 
   return (

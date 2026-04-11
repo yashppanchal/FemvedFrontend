@@ -2,6 +2,7 @@ import "./AllPrograms.scss";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCountry } from "../country/useCountry";
+import { LoadingScreen } from "../components/LoadingScreen";
 import { getGuidedProgramsSnapshot, loadGuidedPrograms, normalizeSlug, type GuidedProgramInfo } from "../data/guidedPrograms";
 
 type ParsedPrice = {
@@ -203,7 +204,7 @@ export default function AllPrograms() {
   if (loading) {
     return (
       <section className="page allProgramsPage">
-        <h1 className="page__title">Loading all guided programs...</h1>
+        <LoadingScreen message="Loading all guided programs…" />
       </section>
     );
   }

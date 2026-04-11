@@ -14,6 +14,7 @@ import {
   type EnrollmentComment,
 } from "../../api/experts";
 import { ApiError } from "../../api/client";
+import { LoadingScreen } from "../../components/LoadingScreen";
 import { getStatusBadgeClass, formatStatus } from "../../statusBadge";
 import { formatDate, formatDateTime, parseISODate, calculateEndDate, todayISO } from "../../dateUtils";
 
@@ -161,7 +162,7 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
     return true;
   });
 
-  if (loading) return <p className="expertSection__loading">Loading enrollments…</p>;
+  if (loading) return <LoadingScreen compact message="Loading enrollments…" />;
   if (error) return <p className="form__error">{error}</p>;
 
   return (
@@ -425,7 +426,7 @@ export default function ExpertEnrollmentsTab({ filterProgramId, filterProgramNam
               </button>
             </div>
             {commentsLoading ? (
-              <p className="expertSection__loading">Loading…</p>
+              <LoadingScreen compact message="Loading…" />
             ) : comments.length === 0 ? (
               <p className="expertSection__empty">No comments yet.</p>
             ) : (

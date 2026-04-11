@@ -14,6 +14,7 @@ import {
   type AdminCreateExpertProfileRequest,
 } from "../../api/admin";
 import { ApiError } from "../../api/client";
+import { LoadingScreen } from "../../components/LoadingScreen";
 
 // ── Expert profile form shape (all optional) ─────────────────────────────────
 
@@ -215,7 +216,7 @@ export default function AdminUsersTab() {
   // Reset to page 1 whenever search/filter changes
   useEffect(() => { setPage(1); }, [search, statusFilter]);
 
-  if (loading) return <p className="adminPanel__loading">Loading users…</p>;
+  if (loading) return <LoadingScreen compact message="Loading users…" />;
   if (error) return <p className="adminPanel__error">{error}</p>;
 
   return (

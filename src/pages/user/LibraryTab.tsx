@@ -9,6 +9,7 @@ import {
 } from "../../api/library";
 import { ApiError } from "../../api/client";
 import VideoPlayer from "../../components/library/VideoPlayer";
+import { LoadingScreen } from "../../components/LoadingScreen";
 import EpisodePlayer from "../../components/library/EpisodePlayer";
 import "../MyLibraryPage.scss";
 
@@ -65,7 +66,7 @@ export default function LibraryTab() {
   }, [activeVideo]);
 
   if (loading) {
-    return <p className="page__lead">Loading your purchased videos...</p>;
+    return <LoadingScreen compact message="Loading your purchased videos…" />;
   }
 
   if (error) {
@@ -109,7 +110,11 @@ export default function LibraryTab() {
             </button>
           </div>
 
-          {streamLoading && <p className="myLibraryPage__status">Loading stream...</p>}
+          {streamLoading && (
+            <div className="myLibraryPage__status">
+              <LoadingScreen compact message="Loading stream…" />
+            </div>
+          )}
           {streamError && <p className="myLibraryPage__status">{streamError}</p>}
 
           {stream && stream.videoType === "SERIES" && (

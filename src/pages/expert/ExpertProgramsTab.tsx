@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getExpertPrograms, type ExpertProgram } from "../../api/experts";
 import { ApiError } from "../../api/client";
+import { LoadingScreen } from "../../components/LoadingScreen";
 
 import { PAGE_SIZE } from "../../constants";
 import { getStatusBadgeClass, formatStatus } from "../../statusBadge";
@@ -24,7 +25,7 @@ export default function ExpertProgramsTab({ onViewEnrollments }: Props) {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p className="expertSection__loading">Loading programs…</p>;
+  if (loading) return <LoadingScreen compact message="Loading programs…" />;
   if (error) return <p className="form__error">{error}</p>;
 
   return (

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getMyRefunds, type MyRefund } from "../../api/users";
 import { ApiError } from "../../api/client";
+import { LoadingScreen } from "../../components/LoadingScreen";
 
 import { PAGE_SIZE } from "../../constants";
 
@@ -23,7 +24,7 @@ export default function RefundsTab() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p className="dashCard__loading">Loading refunds…</p>;
+  if (loading) return <LoadingScreen compact message="Loading refunds…" />;
   if (error) return <p className="dashCard__error">{error}</p>;
 
   return (

@@ -1,6 +1,6 @@
 import "./LibraryDetailPage.scss";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { FiShare2 } from "react-icons/fi";
 import { useCountry } from "../country/useCountry";
 import {
@@ -9,6 +9,7 @@ import {
 } from "../api/library";
 import TrailerEmbed from "../components/library/TrailerEmbed";
 import EpisodeList from "../components/library/EpisodeList";
+import { LoadingScreen } from "../components/LoadingScreen";
 import PurchaseCard from "../components/library/PurchaseCard";
 import InstructorStrip from "../components/library/InstructorStrip";
 
@@ -22,11 +23,16 @@ function formatMetaLine(video: LibraryVideoDetailResponse): string | null {
 
 export default function LibraryDetailPage() {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { videoSlug } = useParams<{
     categorySlug: string;
     videoSlug: string;
   }>();
   const { country } = useCountry();
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   const [video, setVideo] = useState<LibraryVideoDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -99,7 +105,7 @@ export default function LibraryDetailPage() {
   if (loading) {
     return (
       <section className="page libraryDetailPage">
-        <h1 className="page__title">Loading...</h1>
+        <LoadingScreen message="Loading…" />
       </section>
     );
   }

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getOrder } from "../api/orders";
+import { LoadingScreen } from "../components/LoadingScreen";
 import "./PaymentProcessing.scss";
 
 const POLL_INTERVAL_MS = 2000;
@@ -70,11 +71,7 @@ export default function PaymentProcessing() {
   if (phase === "polling") {
     return (
       <section className="page page--paymentProcessing">
-        <div className="processingCard">
-          <div className="processingCard__spinner" aria-label="Processing payment" />
-          <h1 className="page__title">Processing your payment</h1>
-          <p className="page__lead">Please wait while we confirm your payment.</p>
-        </div>
+        <LoadingScreen message="Processing your payment…" />
       </section>
     );
   }

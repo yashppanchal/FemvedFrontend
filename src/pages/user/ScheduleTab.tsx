@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Calendar, { type CalendarEvent } from "../../components/Calendar";
-import { Spinner } from "../../components/Spinner";
+import { LoadingScreen } from "../../components/LoadingScreen";
 import { getMyProgramAccess, type MyProgramAccess } from "../../api/users";
 
 function toDateKey(d: Date): string {
@@ -75,7 +75,7 @@ export default function ScheduleTab() {
     [events, todayStr],
   );
 
-  if (loading) return <Spinner message="Loading your schedule\u2026" />;
+  if (loading) return <LoadingScreen compact message="Loading your schedule…" />;
   if (error) return <p className="adminPanel__error">{error}</p>;
 
   return (

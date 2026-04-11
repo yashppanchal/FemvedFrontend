@@ -8,6 +8,7 @@ import {
   type UpdateExpertProfileRequest,
 } from "../../api/experts";
 import { ApiError } from "../../api/client";
+import { LoadingScreen } from "../../components/LoadingScreen";
 
 type ProfileForm = {
   displayName: string;
@@ -136,7 +137,7 @@ export default function ExpertProfileTab() {
     }
   };
 
-  if (loading) return <p className="expertSection__loading">Loading profile…</p>;
+  if (loading) return <LoadingScreen compact message="Loading profile…" />;
 
   return (
     <section className="expertSection">

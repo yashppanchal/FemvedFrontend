@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getAuditLog, type AuditLogEntry } from "../../api/admin";
 import { ApiError } from "../../api/client";
+import { LoadingScreen } from "../../components/LoadingScreen";
 import { PAGE_SIZE } from "../../constants";
 
 export default function AuditLogTab() {
@@ -21,7 +22,7 @@ export default function AuditLogTab() {
       .finally(() => setLoading(false));
   }, [page]);
 
-  if (loading) return <p className="adminPanel__loading">Loading audit log…</p>;
+  if (loading) return <LoadingScreen compact message="Loading audit log…" />;
   if (error) return <p className="adminPanel__error">{error}</p>;
 
   return (

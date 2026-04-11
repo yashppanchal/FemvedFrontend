@@ -1,6 +1,7 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { adminLibrary, type AdminPriceTierDto } from "../../../api/adminLibrary";
 import { ApiError } from "../../../api/client";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 
 const LOCATIONS = ["IN", "GB", "US"] as const;
 const CURRENCY_DEFAULTS: Record<string, { code: string; symbol: string }> = {
@@ -97,7 +98,7 @@ export default function LibraryPriceTiersTab() {
         </p>
       </div>
 
-      {loading && <p className="adminPanel__hint">Loading...</p>}
+      {loading && <LoadingScreen compact message="Loading…" />}
       {loadError && <p className="adminPanel__error">{loadError}</p>}
       {formSuccess && <p className="adminPanel__success">{formSuccess}</p>}
       {formError && <p className="adminPanel__error">{formError}</p>}

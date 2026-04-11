@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { adminLibrary, type LibraryPurchaseDto } from "../../../api/adminLibrary";
 import { ApiError } from "../../../api/client";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 import { PAGE_SIZE } from "../../../constants";
 
 export default function LibraryPurchasesTab() {
@@ -41,7 +42,7 @@ export default function LibraryPurchasesTab() {
         <p className="adminPanel__hint">Who bought what — all library purchase records.</p>
       </div>
 
-      {loading && <p className="adminPanel__hint">Loading...</p>}
+      {loading && <LoadingScreen compact message="Loading…" />}
       {error && <p className="adminPanel__error">{error}</p>}
 
       <div className="adminPanel__toolbar">

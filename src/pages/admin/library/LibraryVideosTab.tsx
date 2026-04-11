@@ -7,6 +7,7 @@ import {
 } from "../../../api/adminLibrary";
 import { getAdminExperts, type AdminExpert } from "../../../api/admin";
 import { ApiError } from "../../../api/client";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 import LibraryVideoEditPanel from "./LibraryVideoEditPanel";
 
 const VIDEO_TYPES = ["MASTERCLASS", "SERIES"] as const;
@@ -168,7 +169,7 @@ export default function LibraryVideosTab() {
         <p className="adminPanel__hint">Add and manage videos. Each video is a purchasable product.</p>
       </div>
 
-      {loading && <p className="adminPanel__hint">Loading...</p>}
+      {loading && <LoadingScreen compact message="Loading…" />}
       {loadError && <p className="adminPanel__error">{loadError}</p>}
       {formSuccess && <p className="adminPanel__success">{formSuccess}</p>}
       {formError && <p className="adminPanel__error">{formError}</p>}
