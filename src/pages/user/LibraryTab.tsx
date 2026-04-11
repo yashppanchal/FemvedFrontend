@@ -11,6 +11,12 @@ import { ApiError } from "../../api/client";
 import VideoPlayer from "../../components/library/VideoPlayer";
 import { LoadingScreen } from "../../components/LoadingScreen";
 import EpisodePlayer from "../../components/library/EpisodePlayer";
+import {
+  USE_MOCK_MY_LIBRARY_FOR_DESIGN,
+  MOCK_MY_LIBRARY_VIDEOS,
+  isMockLibraryVideo,
+  buildMockLibraryStream,
+} from "../../data/mockMyLibrary";
 import "../MyLibraryPage.scss";
 
 /**
@@ -28,6 +34,11 @@ export default function LibraryTab() {
   const [streamError, setStreamError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (USE_MOCK_MY_LIBRARY_FOR_DESIGN) {
+      setLibrary({ videos: MOCK_MY_LIBRARY_VIDEOS });
+      setLoading(false);
+      return;
+    }
     fetchMyLibrary()
       .then((data) => setLibrary(data))
       .catch((err) => {
@@ -40,6 +51,16 @@ export default function LibraryTab() {
     if (!activeVideo) {
       setStream(null);
       return;
+    }
+    if (isMockLibraryVideo(activeVideo)) {
+      setStream(null);
+      setStreamError(null);
+      setStreamLoading(true);
+      const t = window.setTimeout(() => {
+        setStream(buildMockLibraryStream(activeVideo));
+        setStreamLoading(false);
+      }, 180);
+      return () => window.clearTimeout(t);
     }
     let isActive = true;
     setStream(null);
@@ -104,9 +125,8 @@ export default function LibraryTab() {
               type="button"
               className="myLibraryPage__close"
               onClick={() => setActiveVideo(null)}
-              aria-label="Close player"
             >
-              ×
+              Close
             </button>
           </div>
 
@@ -129,45 +149,52 @@ export default function LibraryTab() {
         </div>
       )}
 
-      <div className="myLibraryPage__grid">
+      <ul className="myLibraryPage__list">
         {videos.map((video) => {
           const progressPct = progressPercent(video);
+          const isActive = activeVideo?.videoId === video.videoId;
           return (
-            <button
-              key={video.videoId}
-              type="button"
-              className="myLibraryPage__card"
-              onClick={() => setActiveVideo(video)}
-            >
-              <div className={`myLibraryPage__cardMedia ${video.gradientClass ?? "grad-default"}`}>
-                {video.cardImage ? (
-                  <img src={video.cardImage} alt="" className="myLibraryPage__cardImage" />
-                ) : (
-                  <span className="myLibraryPage__cardEmoji">{video.iconEmoji ?? "🎬"}</span>
-                )}
-                <span className="myLibraryPage__cardTypeBadge">
-                  {video.videoType === "SERIES" ? "Series" : "Masterclass"}
-                </span>
-              </div>
-              <div className="myLibraryPage__cardBody">
-                <h3 className="myLibraryPage__cardTitle">{video.title}</h3>
-                <p className="myLibraryPage__cardExpert">{video.expertName}</p>
-                {video.totalDuration && (
-                  <p className="myLibraryPage__cardMeta">{video.totalDuration}</p>
-                )}
-                {progressPct !== null && (
-                  <div className="myLibraryPage__progress" aria-label={`${progressPct}% watched`}>
-                    <div
-                      className="myLibraryPage__progressBar"
-                      style={{ width: `${progressPct}%` }}
-                    />
+            <li key={video.videoId} className="myLibraryPage__item">
+              <button
+                type="button"
+                className={`myLibraryPage__row${isActive ? " myLibraryPage__row--active" : ""}`}
+                onClick={() => setActiveVideo(video)}
+              >
+                <div
+                  className={`myLibraryPage__thumb ${video.gradientClass ?? "myLibraryPage__thumb--default"}`}
+                  aria-hidden
+                >
+                  {video.cardImage ? (
+                    <img src={video.cardImage} alt="" className="myLibraryPage__thumbImg" />
+                  ) : (
+                    <span className="myLibraryPage__thumbEmoji">{video.iconEmoji ?? "🎬"}</span>
+                  )}
+                </div>
+                <div className="myLibraryPage__rowBody">
+                  <div className="myLibraryPage__rowHead">
+                    <h3 className="myLibraryPage__rowTitle">{video.title}</h3>
+                    <span className="myLibraryPage__rowKind">
+                      {video.videoType === "SERIES" ? "Series" : "Masterclass"}
+                    </span>
                   </div>
-                )}
-              </div>
-            </button>
+                  <p className="myLibraryPage__rowMeta">
+                    {video.expertName}
+                    {video.totalDuration ? ` · ${video.totalDuration}` : ""}
+                  </p>
+                  {progressPct !== null && (
+                    <div className="myLibraryPage__progress" aria-label={`${progressPct}% watched`}>
+                      <div
+                        className="myLibraryPage__progressBar"
+                        style={{ width: `${progressPct}%` }}
+                      />
+                    </div>
+                  )}
+                </div>
+              </button>
+            </li>
           );
         })}
-      </div>
+      </ul>
     </div>
   );
 }

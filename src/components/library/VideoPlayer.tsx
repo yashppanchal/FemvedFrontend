@@ -19,7 +19,7 @@ export default function VideoPlayer({ streamUrl, title }: VideoPlayerProps) {
         paddingBottom: "56.25%",
         height: 0,
         overflow: "hidden",
-        borderRadius: "12px",
+        borderRadius: 0,
         background: "#000",
       }}
     >

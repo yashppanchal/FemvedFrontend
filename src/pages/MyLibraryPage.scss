@@ -4,11 +4,9 @@
 }
 
 .myLibraryPage__player {
-  margin: 20px 0 32px;
-  padding: 20px;
-  border-radius: 16px;
-  border: 1px solid rgba(15, 15, 16, 0.08);
-  background: rgba(255, 255, 255, 0.9);
+  margin: 0 0 24px;
+  padding: 0 0 20px;
+  border-bottom: 1px solid rgba(15, 15, 16, 0.08);
 }
 
 .myLibraryPage__playerHeader {
@@ -16,7 +14,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .myLibraryPage__playerTitle {
@@ -36,18 +34,20 @@
 
 .myLibraryPage__close {
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  border: 1px solid rgba(15, 15, 16, 0.12);
-  background: #fff;
-  font-size: 22px;
-  line-height: 1;
-  color: rgba(15, 15, 16, 0.7);
+  margin: 0;
+  padding: 4px 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(15, 15, 16, 0.5);
   cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 
   &:hover {
-    background: rgba(15, 15, 16, 0.04);
+    color: var(--primary, #56131b);
   }
 }
 
@@ -57,97 +57,116 @@
   font-size: 14px;
 }
 
-// ── Grid ─────────────────────────────────────────────────────────────────────
+// ── List (replaces card grid) ────────────────────────────────────────────────
 
-.myLibraryPage__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
-}
-
-.myLibraryPage__card {
+.myLibraryPage__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  border-radius: 14px;
-  border: 1px solid rgba(15, 15, 16, 0.08);
-  background: rgba(255, 255, 255, 0.95);
-  overflow: hidden;
-  padding: 0;
+  gap: 0;
+  border-top: 1px solid rgba(15, 15, 16, 0.08);
+}
+
+.myLibraryPage__item {
+  margin: 0;
+  border-bottom: 1px solid rgba(15, 15, 16, 0.08);
+}
+
+.myLibraryPage__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 4px;
+  border: none;
+  background: transparent;
   text-align: left;
   cursor: pointer;
-  transition: transform 120ms ease, box-shadow 120ms ease;
+  font: inherit;
+  color: inherit;
+  transition: background-color 120ms ease;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(15, 15, 16, 0.08);
+    background: rgba(15, 15, 16, 0.03);
+  }
+
+  &--active {
+    background: rgba(86, 19, 27, 0.05);
   }
 }
 
-.myLibraryPage__cardMedia {
-  position: relative;
-  aspect-ratio: 3 / 4;
+.myLibraryPage__thumb {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   background: linear-gradient(135deg, #b8a2ff, #56131b);
+
+  &--default {
+    background: linear-gradient(135deg, #b8a2ff, #56131b);
+  }
 
   &.grad-1 { background: linear-gradient(135deg, #ffd5a5, #ff8a5c); }
   &.grad-2 { background: linear-gradient(135deg, #a5e7ff, #5c7aff); }
   &.grad-3 { background: linear-gradient(135deg, #ffb8d9, #7c2d8f); }
 }
 
-.myLibraryPage__cardImage {
+.myLibraryPage__thumbImg {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.myLibraryPage__cardEmoji {
-  font-size: 54px;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2));
+.myLibraryPage__thumbEmoji {
+  font-size: 26px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.15));
 }
 
-.myLibraryPage__cardTypeBadge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: #fff;
-  background: rgba(15, 15, 16, 0.7);
-  padding: 4px 8px;
-  border-radius: 6px;
-}
-
-.myLibraryPage__cardBody {
-  padding: 12px;
+.myLibraryPage__rowBody {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.myLibraryPage__cardTitle {
+.myLibraryPage__rowHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.myLibraryPage__rowTitle {
   margin: 0;
   font-family: var(--fontTitle);
   font-weight: 400;
-  font-size: 15px;
+  font-size: 16px;
   color: var(--black);
   line-height: 1.3;
   letter-spacing: -0.01em;
 }
 
-.myLibraryPage__cardExpert {
-  margin: 0;
-  font-size: 12px;
-  color: rgba(15, 15, 16, 0.65);
+.myLibraryPage__rowKind {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(15, 15, 16, 0.45);
 }
 
-.myLibraryPage__cardMeta {
+.myLibraryPage__rowMeta {
   margin: 0;
-  font-size: 11px;
-  color: rgba(15, 15, 16, 0.5);
+  font-size: 13px;
+  color: rgba(15, 15, 16, 0.6);
 }
 
 .myLibraryPage__progress {
