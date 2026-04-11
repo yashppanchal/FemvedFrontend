@@ -135,8 +135,21 @@ export default function LibraryDetailPage() {
             )}
 
             <div className="libraryDetailPage__mediaRow">
-              {metaLine && (
-                <p className="libraryDetailPage__mediaMeta">{metaLine}</p>
+              {(metaLine || video.tags.length > 0) && (
+                <div className="libraryDetailPage__mediaRowMain">
+                  {metaLine && (
+                    <p className="libraryDetailPage__mediaMeta">{metaLine}</p>
+                  )}
+                  {video.tags.length > 0 && (
+                    <div className="libraryDetailPage__tags">
+                      {video.tags.slice(0, 3).map((tag) => (
+                        <span className="libraryDetailPage__tag" key={tag}>
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               )}
               <div className="libraryDetailPage__shareWrap">
                 {shareHint && (
