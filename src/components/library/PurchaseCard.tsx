@@ -2,7 +2,7 @@ import "./PurchaseCard.scss";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { LibraryFeatureDto } from "../../api/library";
-import { hasValidAccessToken, useAuth } from "../../auth/useAuth";
+import { hasValidAccessToken, useAuth, ROLE_ADMIN, ROLE_EXPERT } from "../../auth/useAuth";
 import { useCountry } from "../../country/useCountry";
 import { initiateOrder } from "../../api/orders";
 import { ApiError } from "../../api/client";
@@ -31,7 +31,7 @@ export default function PurchaseCard({
   videoSlug,
 }: PurchaseCardProps) {
   const navigate = useNavigate();
-  const { tokens } = useAuth();
+  const { tokens, user } = useAuth();
   const { country } = useCountry();
   const typeLabel = videoType === "SERIES" ? "Series" : "Masterclass";
 
@@ -40,7 +40,15 @@ export default function PurchaseCard({
 
   async function handlePurchase() {
     if (!hasValidAccessToken(tokens)) {
-      navigate("/login", { state: { from: window.location.pathname } });
+      navigate("/login", {
+        state: {
+          from: {
+            pathname: window.location.pathname,
+            search: window.location.search,
+            hash: window.location.hash,
+          },
+        },
+      });
       return;
     }
 
@@ -86,13 +94,22 @@ export default function PurchaseCard({
           setError("Unexpected payment gateway. Please try again or contact support.");
         }
       } catch (err) {
-        setError(
-          err instanceof ApiError
-            ? err.message
-            : err instanceof Error
+        if (err instanceof ApiError && err.status === 403) {
+          const roleId = user?.role?.id;
+          if (roleId === ROLE_ADMIN.id) {
+            setError("Admin accounts cannot purchase videos. Use a regular user account.");
+          } else if (roleId === ROLE_EXPERT.id) {
+            setError("Expert accounts cannot purchase videos as a client. Please contact an administrator if you need access.");
+          } else {
+            setError("You do not have permission to purchase. Please contact support.");
+          }
+        } else {
+          setError(
+            err instanceof Error
               ? err.message
               : "Payment failed. Please try again.",
-        );
+          );
+        }
       } finally {
         setLoading(false);
       }
