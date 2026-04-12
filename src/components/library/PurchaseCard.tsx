@@ -31,7 +31,7 @@ export default function PurchaseCard({
   videoSlug,
 }: PurchaseCardProps) {
   const navigate = useNavigate();
-  const { tokens, user } = useAuth();
+  const { tokens } = useAuth();
   const { country } = useCountry();
   const typeLabel = videoType === "SERIES" ? "Series" : "Masterclass";
 

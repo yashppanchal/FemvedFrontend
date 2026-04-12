@@ -27,6 +27,7 @@ export interface AdminExpert {
   title: string;
   userEmail: string;
   isActive: boolean;
+  isDeleted: boolean;
   locationCountry: string;
   createdAt: string;
   bio: string | null;
