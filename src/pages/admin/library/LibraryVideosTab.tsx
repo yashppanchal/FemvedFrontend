@@ -246,7 +246,7 @@ export default function LibraryVideosTab() {
               required
             >
               <option value="">Select expert...</option>
-              {experts.map((e) => (
+              {experts.filter((e) => !e.isDeleted).map((e) => (
                 <option key={e.expertId} value={e.expertId}>{e.displayName}</option>
               ))}
             </select>

@@ -1,7 +1,11 @@
 import "./PurchaseCard.scss";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { LibraryFeatureDto } from "../../api/library";
 import { hasValidAccessToken, useAuth } from "../../auth/useAuth";
+import { useCountry } from "../../country/useCountry";
+import { initiateOrder } from "../../api/orders";
+import { ApiError } from "../../api/client";
 
 interface PurchaseCardProps {
   videoId: string;
@@ -27,20 +31,80 @@ export default function PurchaseCard({
   videoSlug,
 }: PurchaseCardProps) {
   const navigate = useNavigate();
-  const { tokens } = useAuth();
+  const { tokens, user } = useAuth();
+  const { country } = useCountry();
   const typeLabel = videoType === "SERIES" ? "Series" : "Masterclass";
 
-  function handlePurchase() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handlePurchase() {
     if (!hasValidAccessToken(tokens)) {
       navigate("/login", { state: { from: window.location.pathname } });
       return;
     }
 
+    // Map "UK" → "GB" for the backend price/location lookup
+    const apiCountryCode = country === "UK" ? "GB" : country;
+
+    // Indian users must use CashFree — bypass the provider-selection page
+    if (apiCountryCode === "IN") {
+      setLoading(true);
+      setError(null);
+      try {
+        const order = await initiateOrder({
+          videoId,
+          countryCode: "IN",
+          gateway: "CashFree",
+          idempotencyKey: crypto.randomUUID(),
+        });
+
+        if (order.gateway === "CASHFREE") {
+          const { load } = await import("@cashfreepayments/cashfree-js");
+          const mode = (import.meta.env.VITE_CASHFREE_MODE ?? "sandbox") as
+            | "sandbox"
+            | "production";
+          const cashfree = await load({ mode });
+
+          const result = await cashfree.checkout({
+            paymentSessionId: order.paymentSessionId,
+            redirectTarget: "_modal",
+          });
+
+          if (result?.error) {
+            setError(
+              result.error.message ?? "Payment was not completed. Please try again.",
+            );
+            return;
+          }
+
+          const returnTo = encodeURIComponent(window.location.pathname);
+          navigate(
+            `/payment/processing?orderId=${encodeURIComponent(order.orderId)}&returnTo=${returnTo}`,
+          );
+        } else {
+          setError("Unexpected payment gateway. Please try again or contact support.");
+        }
+      } catch (err) {
+        setError(
+          err instanceof ApiError
+            ? err.message
+            : err instanceof Error
+              ? err.message
+              : "Payment failed. Please try again.",
+        );
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    // Non-India: choose PayPal or Stripe on the provider-selection page
     navigate("/payment/select-provider", {
       state: {
         videoId,
         videoSlug,
-        countryCode: "GB", // will be resolved by the backend
+        countryCode: apiCountryCode,
       },
     });
   }
@@ -72,9 +136,14 @@ export default function PurchaseCard({
           type="button"
           className="purchaseCard__btn"
           onClick={handlePurchase}
+          disabled={loading}
         >
-          Purchase — {price}
+          {loading ? "Processing…" : `Purchase — ${price}`}
         </button>
+      )}
+
+      {error && (
+        <p className="purchaseCard__error" role="alert">{error}</p>
       )}
 
       <p className="purchaseCard__access">
