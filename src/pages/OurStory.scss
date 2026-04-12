@@ -1,5 +1,110 @@
 /* Our Story – small additions on top of About + Founders Story styles */
 
+/* ── Three main sections + decorative dividers ── */
+.ourStory__mainSection {
+  position: relative;
+}
+
+/* Soft band behind the values + revolution + trust block */
+.ourStory__mainSection--values {
+  background:
+    radial-gradient(
+      ellipse 90% 70% at 50% 0%,
+      rgba(227, 200, 174, 0.14) 0%,
+      rgba(227, 200, 174, 0) 55%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(250, 247, 244, 0.65) 45%,
+      rgba(255, 255, 255, 0.5) 100%
+    );
+}
+
+/* Avoid double rule: divider already separates from previous section */
+.ourStory__valuesBand.about__section--searching {
+  border-top: none;
+}
+
+.ourStory__sectionDivider {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(14px, 3.5vw, 22px);
+
+  padding: clamp(20px, 4vw, 36px) clamp(20px, 6vw, 80px);
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(227, 200, 174, 0.08) 50%,
+    rgba(255, 255, 255, 0.35) 100%
+  );
+}
+
+.ourStory__sectionDividerLine {
+  flex: 1;
+  min-width: 40px;
+  height: 1px;
+  border: none;
+  background: linear-gradient(
+    90deg,
+    rgba(15, 15, 16, 0),
+    rgba(167, 127, 96, 0.45) 50%,
+    rgba(15, 15, 16, 0)
+  );
+}
+
+.ourStory__sectionDividerGem {
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  border: 1px solid rgba(167, 127, 96, 0.55);
+  background: rgba(255, 255, 255, 0.95);
+  transform: rotate(45deg);
+  box-shadow: 0 0 0 3px rgba(227, 200, 174, 0.35);
+}
+
+/* Compact ornament between founder prose blocks (no hard section borders) */
+.ourStory__proseBridge {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 2vw, 12px);
+
+  padding: clamp(10px, 2.2vw, 20px) clamp(20px, 5vw, 60px);
+}
+
+.ourStory__proseBridgeLine {
+  flex: 0 0 auto;
+  width: min(56px, 14vw);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(167, 127, 96, 0),
+    rgba(167, 127, 96, 0.38) 50%,
+    rgba(167, 127, 96, 0)
+  );
+}
+
+.ourStory__proseBridgeGem {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border: 1px solid rgba(167, 127, 96, 0.42);
+  background: rgba(255, 255, 255, 0.98);
+  transform: rotate(45deg);
+  box-shadow: 0 0 0 2px rgba(227, 200, 174, 0.28);
+}
+
 /* Trust badges row (reference: icon box + label + serif value) */
 .ourStory__trustStrip {
   width: 100vw;
@@ -8,8 +113,6 @@
 
   padding: clamp(40px, 6vw, 72px) clamp(20px, 5vw, 48px);
   background: var(--surface);
-  border-top: 1px solid var(--border);
-  // border-bottom: 1px solid var(--border);
 }
 
 .ourStory__trustGrid {
@@ -97,7 +200,7 @@
   }
 }
 
-/* Founders story — intro (title + lead line, matches editorial banner) */
+/* Founders story — title block */
 .ourStory__foundersStoryIntro {
   width: 100vw;
   margin-left: calc(50% - 50vw);
@@ -108,10 +211,7 @@
   align-items: center;
   text-align: center;
 
-  padding: clamp(44px, 7vw, 80px) clamp(20px, 5vw, 60px);
-  background: rgba(227, 200, 174, 0.32);
-  border-top: 1px solid rgba(15, 15, 16, 0.06);
-  border-bottom: 1px solid rgba(15, 15, 16, 0.06);
+  padding: clamp(36px, 6vw, 64px) clamp(20px, 5vw, 60px) clamp(28px, 5vw, 48px);
 }
 
 .ourStory__foundersStoryTitle {
@@ -179,8 +279,6 @@
       rgba(255, 255, 255, 0.5) 0%,
       rgba(227, 200, 174, 0.1) 100%
     );
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
 }
 
 /* Core Values */
@@ -199,13 +297,27 @@
   display: grid;
   grid-template-columns: minmax(44px, 52px) 1fr;
   gap: clamp(16px, 3vw, 28px);
-  padding: clamp(22px, 4vw, 32px) 0;
-  border-top: 1px solid var(--border);
+  padding: clamp(20px, 3.5vw, 30px) 0;
 }
 
 .ourStory__value:first-of-type {
-  border-top: none;
   padding-top: 8px;
+}
+
+/* Soft hairline between value rows — not a full border */
+.ourStory__value:not(:last-child) {
+  background-image: linear-gradient(
+    90deg,
+    rgba(167, 127, 96, 0),
+    rgba(167, 127, 96, 0.22) 20%,
+    rgba(167, 127, 96, 0.22) 80%,
+    rgba(167, 127, 96, 0)
+  );
+  background-size: 100% 1px;
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  padding-bottom: clamp(26px, 4.5vw, 36px);
+  margin-bottom: clamp(4px, 1vw, 8px);
 }
 
 .ourStory__valueIndex {
@@ -326,6 +438,20 @@
   width: 17px;
   height: 17px;
   flex-shrink: 0;
+}
+
+/* Strip hard top borders on full-bleed prose bands; rhythm comes from padding + prose bridges */
+section.page.ourStory {
+  .foundersStory__section--opening,
+  .foundersStory__section--awakening,
+  .foundersStory__section--philosophy {
+    border-top: none;
+  }
+
+  .foundersStory__section {
+    padding-top: clamp(40px, 6.5vw, 76px);
+    padding-bottom: clamp(40px, 6.5vw, 76px);
+  }
 }
 
 @media (max-width: 640px) {

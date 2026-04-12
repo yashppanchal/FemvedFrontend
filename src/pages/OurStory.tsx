@@ -48,8 +48,9 @@ export default function OurStory() {
         </h1>
       </RevealOnScroll>
 
-      {/* ── We hear you ── */}
-      <RevealOnScroll className="foundersStory__section foundersStory__section--awakening">
+      {/* ── Section 1: We hear you ── */}
+      <div className="ourStory__mainSection ourStory__mainSection--voice">
+        <RevealOnScroll className="foundersStory__section foundersStory__section--awakening">
         <div className="about__prose">
           <h2 className="ourStory__sectionHeading">We hear you</h2>
           <p>
@@ -79,9 +80,17 @@ export default function OurStory() {
           </p>
         </div>
       </RevealOnScroll>
+      </div>
 
-      {/* ── Our Core Values ── */}
-      <RevealOnScroll className="about__section about__section--searching">
+      <div className="ourStory__sectionDivider" aria-hidden="true">
+        <span className="ourStory__sectionDividerLine" />
+        <span className="ourStory__sectionDividerGem" />
+        <span className="ourStory__sectionDividerLine" />
+      </div>
+
+      {/* ── Section 2: Our Core Values + trust ── */}
+      <div className="ourStory__mainSection ourStory__mainSection--values">
+      <RevealOnScroll className="about__section about__section--searching ourStory__valuesBand">
         <div className="ourStory__values">
           <h2 className="ourStory__sectionHeading">Our Core Values</h2>
           <ul className="ourStory__valuesList">
@@ -175,13 +184,27 @@ export default function OurStory() {
           ))}
         </div>
       </RevealOnScroll>
+      </div>
 
-      {/* ── Founders story ── */}
+      <div className="ourStory__sectionDivider" aria-hidden="true">
+        <span className="ourStory__sectionDividerLine" />
+        <span className="ourStory__sectionDividerGem" />
+        <span className="ourStory__sectionDividerLine" />
+      </div>
+
+      {/* ── Section 3: Founders story ── */}
+      <div className="ourStory__mainSection ourStory__mainSection--founders">
       <RevealOnScroll className="ourStory__foundersStoryIntro">
         <h2 className="ourStory__sectionHeading ourStory__foundersStoryTitle">
           Founders story
         </h2>
       </RevealOnScroll>
+
+      <div className="ourStory__proseBridge" aria-hidden="true">
+        <span className="ourStory__proseBridgeLine" />
+        <span className="ourStory__proseBridgeGem" />
+        <span className="ourStory__proseBridgeLine" />
+      </div>
 
       <RevealOnScroll className="foundersStory__section foundersStory__section--opening">
         <div className="foundersStory__prose">
@@ -199,6 +222,12 @@ export default function OurStory() {
         </div>
       </RevealOnScroll>
 
+      <div className="ourStory__proseBridge" aria-hidden="true">
+        <span className="ourStory__proseBridgeLine" />
+        <span className="ourStory__proseBridgeGem" />
+        <span className="ourStory__proseBridgeLine" />
+      </div>
+
       <RevealOnScroll className="foundersStory__section foundersStory__section--awakening">
         <div className="foundersStory__prose">
           <p>
@@ -213,6 +242,12 @@ export default function OurStory() {
           </p>
         </div>
       </RevealOnScroll>
+
+      <div className="ourStory__proseBridge" aria-hidden="true">
+        <span className="ourStory__proseBridgeLine" />
+        <span className="ourStory__proseBridgeGem" />
+        <span className="ourStory__proseBridgeLine" />
+      </div>
 
       <RevealOnScroll className="foundersStory__section foundersStory__section--philosophy">
         <div className="foundersStory__prose">
@@ -245,6 +280,7 @@ export default function OurStory() {
           </a>
         </div>
       </RevealOnScroll>
+      </div>
     </section>
   );
 }
