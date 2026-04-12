@@ -53,21 +53,20 @@ export default function OurStory() {
         <div className="about__prose">
           <h2 className="ourStory__sectionHeading">We hear you</h2>
           <p>
-            Are you searching everywhere, not just for solutions, but for
-            permission? Permission to slow down. Permission to not follow every
-            trend. Permission to admit that what works for someone else&apos;s
-            algorithm does not always work for your body.
+            Are you searching everywhere for solutions, or really for
+            permission? Permission to slow down, to stop following every trend,
+            to admit that what works for someone else&apos;s body may not work
+            for yours.
           </p>
           <p>
-            Maybe wellness is not about fixing yourself. Maybe it is about
-            finally realising you were never broken.
+            Maybe wellness was never about fixing yourself. Maybe you were never
+            broken.
           </p>
           <p>
-            What if wellness is quieter than you thought? Not a transformation,
-            but a relationship. Listening when your body whispers instead of
-            waiting for it to scream. Honouring your energy instead of pushing
-            through exhaustion like it is a badge of honour. Nurturing yourself
-            not as a reward after burnout, but as a daily ritual of respect.
+            What if it is quieter than you thought. Not a transformation, but a
+            relationship. Listening when your body whispers instead of waiting for
+            it to scream. Nurturing yourself not as a reward after burnout, but
+            as a daily act of respect.
           </p>
           <p>
             And maybe the most modern thing you can say today is, &quot;I do not
@@ -75,7 +74,7 @@ export default function OurStory() {
           </p>
           <p>If this hits home, Femved is the space just for you.</p>
           <p className="ourStory__supportLine">
-            We&apos;re here to make sure you&apos;re seen, heard, and supported
+            we&apos;re here to make sure you&apos;re seen, heard, and supported
             on this journey.
           </p>
         </div>
@@ -182,25 +181,20 @@ export default function OurStory() {
         <h2 className="ourStory__sectionHeading ourStory__foundersStoryTitle">
           Founders story
         </h2>
-        <p className="ourStory__foundersStoryLead">
-          Change is happening all around the globe, and Femved is honoured to be
-          part of this. So, what&apos;s our role?
-        </p>
       </RevealOnScroll>
 
       <RevealOnScroll className="foundersStory__section foundersStory__section--opening">
         <div className="foundersStory__prose">
           <p>
-            We are living in the era of women taking full ownership of their
-            hormonal health, longevity, and preventive care, and the
-            conversation has never been louder. It is on your TikTok feed, in
-            your Reddit threads, across your Instagram reels and private
-            WhatsApp groups. Women are tracking their cycles, running their own
-            labs, sharing cortisol protocols and seed cycling results and
-            Ayurvedic rituals with millions of followers. The information is
-            everywhere, and that is exactly the problem. Awareness has exploded
-            faster than trustworthy solutions, and a new crisis was born:
-            experts underpowered by data, and women drowning in it.
+            Change is happening all around the globe, and Femved is honoured to
+            be part of this. So, what&apos;s our role?
+          </p>
+          <p>
+            Women have always known something was off. We track, research, share,
+            and self-advocate because the system was never built with us in mind.
+            The information is everywhere now, but so is the overwhelm. Awareness
+            has outpaced answers, and women are left drowning in noise with no one
+            they truly trust.
           </p>
         </div>
       </RevealOnScroll>
@@ -208,17 +202,14 @@ export default function OurStory() {
       <RevealOnScroll className="foundersStory__section foundersStory__section--awakening">
         <div className="foundersStory__prose">
           <p>
-            The ancient sciences have always held the answers. Ayurveda&apos;s
-            bioindividual approach to the body, naturopathy&apos;s
-            evidence-rooted trust in nature, yoga&apos;s neuroscience-backed
-            mind-body connection, Traditional Chinese Medicine&apos;s
-            sophisticated systems of hormonal balance. But these are not your
-            grandmother&apos;s remedies. Ayurveda is now being validated by
-            genomics. Breathwork is being studied in clinical trials.
-            Adaptogenic herbs are entering functional medicine protocols. These
-            are living, evolving sciences, and the world&apos;s leading
-            integrative experts are finally speaking the same language as your
-            body.
+            The ancient sciences knew our bodies before modern medicine tried to.
+            Ayurveda, naturopathy, yoga, Traditional Chinese Medicine. These were
+            never just remedies, they were entire philosophies built around the
+            female body. And today, science is finally catching up. Genomics is
+            validating what Ayurveda always knew. Breathwork is in clinical
+            trials. Adaptogens are in functional medicine. The wisdom was never
+            wrong, it just needed the research and credibility, modern
+            authenticity and data driven evidence.
           </p>
         </div>
       </RevealOnScroll>
