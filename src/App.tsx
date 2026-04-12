@@ -38,10 +38,6 @@ export default function App() {
   const location = useLocation();
   const [isAtTop, setIsAtTop] = useState(true);
   const isHome = location.pathname === "/";
-  const isLibraryDetailPage = /^\/wellness-library\/[^/]+\/[^/]+$/.test(
-    location.pathname,
-  );
-  const isRetreatsPage = location.pathname === "/holistic-treatments/retreats";
 
   useEffect(() => {
     let raf = 0;
@@ -97,12 +93,7 @@ export default function App() {
         </div>
       </header>
 
-      <main
-        id="main-content"
-        className={`layout__main ${isHome ? "layout__main--home" : ""}${
-          isLibraryDetailPage ? " layout__main--libraryDetail" : ""
-        }${isRetreatsPage ? " layout__main--retreats" : ""}`}
-      >
+      <main id="main-content" className="layout__main">
         {isHome ? (
           <RevealOnScroll className="layout__pageReveal">
             <PageTransition key={location.key}>
