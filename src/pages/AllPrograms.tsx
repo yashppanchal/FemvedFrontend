@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useCountry } from "../country/useCountry";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { getGuidedProgramsSnapshot, loadGuidedPrograms, normalizeSlug, type GuidedProgramInfo } from "../data/guidedPrograms";
+import { buildProgramUrl } from "../config/programUrlMode";
 
 type ParsedPrice = {
   currency: string;
@@ -12,6 +13,7 @@ type ParsedPrice = {
 
 type FlattenedProgram = {
   id: string;
+  programSlug: string;
   name: string;
   expertName: string;
   body: string;
@@ -56,6 +58,7 @@ function flattenCategories(categories: GuidedProgramInfo[]): FlattenedProgram[] 
       }));
       flattened.push({
         id: program.programId || `${categorySlug}-${normalizeSlug(program.programName)}`,
+        programSlug: program.programSlug ?? "",
         name: normalizeText(program.programName),
         expertName: normalizeText(program.expertName),
         body: program.body.trim(),
@@ -391,7 +394,7 @@ export default function AllPrograms() {
 
                 <Link
                   className="allProgramsPage__detailsLink"
-                  to={`/guided/${program.categorySlug}/${program.id}`}
+                  to={buildProgramUrl(program.categorySlug, program.programSlug, program.id)}
                 >
                   View Details
                 </Link>

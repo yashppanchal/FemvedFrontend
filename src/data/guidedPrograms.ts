@@ -8,6 +8,7 @@ export type GuidedProgramCard = {
     durationPrice: string;
   }>;
   programId?: string;
+  programSlug?: string;
   programName: string;
   expertName: string;
   expertTitle?: string;
@@ -69,6 +70,7 @@ type GuidedTreeResponse = {
           durationPrice?: string;
         }>;
         programId?: string;
+        programSlug?: string;
         programName?: string;
         programGridDescription?: string;
         programGridImage?: string;
@@ -182,6 +184,7 @@ function mapApiCategoryToProgram(
           durationPrice: duration.durationPrice ?? "",
         })),
         programId: program.programId ?? "",
+        programSlug: program.programSlug ?? "",
         programName: program.programName ?? "",
         expertName: program.expertName ?? "",
         expertTitle: program.expertTitle ?? expertDetails.expertTitle ?? "",

@@ -9,6 +9,7 @@ import {
   type GuidedProgramCard,
   type GuidedProgramInfo,
 } from "../data/guidedPrograms";
+import { buildProgramUrl } from "../config/programUrlMode";
 import { LoadingScreen } from "../components/LoadingScreen";
 import {
   buildCloudinarySrcSet,
@@ -261,7 +262,7 @@ export default function CategoryProgramsPage() {
                   {program.programId && (
                     <Link
                       className="categoryProgramsPage__cardLink"
-                      to={`/guided/${categorySlug}/${program.programId}`}
+                      to={buildProgramUrl(categorySlug ?? "", program.programSlug ?? "", program.programId)}
                       aria-label={`View details for ${program.programName}`}
                     />
                   )}

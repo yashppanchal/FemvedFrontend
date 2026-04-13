@@ -110,7 +110,7 @@ export const router = createBrowserRouter([
       { path: "/wellness-library/:categorySlug/:videoSlug", element: <LibraryDetailPage /> },
       { path: "/guided/:categorySlug/programs", element: <CategoryProgramsPage /> },
       { path: "/guided/:programSlug", element: <GuidedProgramDetail /> },
-      { path: "/guided/:programSlug/:programId", element: <ProgramDetailPage /> },
+      { path: "/guided/:categorySlug/:programSegment", element: <ProgramDetailPage /> },
       ...INTERNAL_NAV_ROUTES.filter(
         (r) =>
           !r.path.startsWith("/guided/") &&

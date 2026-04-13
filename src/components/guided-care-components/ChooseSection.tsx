@@ -5,9 +5,11 @@ import {
   buildCloudinarySrcSet,
   optimizeCloudinaryImageUrl,
 } from "../../cloudinary/image";
+import { buildProgramUrl } from "../../config/programUrlMode";
 
 export type ProgramCard = {
   programId?: string;
+  programSlug?: string;
   programName: string;
   expertName: string;
   body: string;
@@ -138,7 +140,7 @@ export function ChooseSection({
                   {c.programId ? (
                     <Link
                       className="guidedProgramDetail__productDetailsLink"
-                      to={`/guided/${programSlug}/${c.programId}`}
+                      to={buildProgramUrl(programSlug, c.programSlug ?? "", c.programId)}
                     >
                       View Details
                     </Link>

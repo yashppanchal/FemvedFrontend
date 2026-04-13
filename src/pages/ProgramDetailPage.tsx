@@ -23,9 +23,9 @@ export default function ProgramDetailPage() {
   const { user, tokens } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const { programSlug, programId } = useParams<{
-    programSlug: string;
-    programId: string;
+  const { categorySlug, programSegment } = useParams<{
+    categorySlug: string;
+    programSegment: string;
   }>();
   const [categories, setCategories] = useState<GuidedProgramInfo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -67,13 +67,13 @@ export default function ProgramDetailPage() {
   }, [isCountryReady, selectedCountryCode]);
 
   const selectedProgram = useMemo(() => {
-    if (!programId) return null;
+    if (!programSegment) return null;
 
-    const desiredCategorySlug = normalizeSlug(programSlug);
+    const desiredCategorySlug = normalizeSlug(categorySlug);
     const selectedCategory = categories.find((category) => {
       const mappedSlug = normalizeSlug(category.slug);
       return (
-        mappedSlug === desiredCategorySlug || category.slug === programSlug
+        mappedSlug === desiredCategorySlug || category.slug === categorySlug
       );
     });
 
@@ -81,10 +81,12 @@ export default function ProgramDetailPage() {
 
     return (
       selectedCategory.programsInCategory?.find(
-        (program) => program.programId === programId,
+        (program) =>
+          program.programSlug === programSegment ||
+          program.programId === programSegment,
       ) ?? null
     );
-  }, [categories, programId, programSlug]);
+  }, [categories, programSegment, categorySlug]);
 
   useEffect(() => {
     const firstDurationLabel =
