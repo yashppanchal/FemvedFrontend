@@ -320,7 +320,7 @@ export default function LibraryVideoEditPanel({
       </div>
 
       <p className="adminPanel__hint">
-        Status: <strong>{video.status}</strong> &middot; Type: <strong>{video.videoType}</strong>
+        Type: <strong>{video.videoType}</strong>
       </p>
 
       {msg && <p className="adminPanel__success">{msg}</p>}

@@ -121,7 +121,7 @@ export default function LibraryVideosTab() {
         prices: prices.length > 0 ? prices : undefined,
       };
       await adminLibrary.createVideo(payload);
-      setFormSuccess("Video created (DRAFT). Click Edit to add episodes, testimonials, and more.");
+      setFormSuccess("Video created and published. Click Edit to add episodes, testimonials, and more.");
       setForm(emptyCreate);
       setShowCreate(false);
       load();
@@ -377,7 +377,6 @@ export default function LibraryVideosTab() {
               <th>Type</th>
               <th>Category</th>
               <th>Expert</th>
-              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -397,9 +396,6 @@ export default function LibraryVideosTab() {
                   <td>{v.categoryName}</td>
                   <td>{v.expertName}</td>
                   <td>
-                    <span style={statusStyle(v.status)}>{v.status}</span>
-                  </td>
-                  <td>
                     <div className="adminActionGroup">
                       <button
                         className="adminActionButton"
@@ -407,44 +403,6 @@ export default function LibraryVideosTab() {
                       >
                         Edit
                       </button>
-                      {v.status === "DRAFT" && (
-                        <button
-                          className="adminActionButton"
-                          disabled={actionId === v.videoId}
-                          onClick={() => runAction(v.videoId, adminLibrary.submitVideo)}
-                        >
-                          Submit
-                        </button>
-                      )}
-                      {v.status === "PENDING_REVIEW" && (
-                        <>
-                          <button
-                            className="adminActionButton"
-                            disabled={actionId === v.videoId}
-                            onClick={() => runAction(v.videoId, adminLibrary.publishVideo)}
-                          >
-                            Publish
-                          </button>
-                          <button
-                            className="adminActionButton"
-                            disabled={actionId === v.videoId}
-                            onClick={() => runAction(v.videoId, adminLibrary.rejectVideo)}
-                          >
-                            Reject
-                          </button>
-                        </>
-                      )}
-                      {v.status === "PUBLISHED" && (
-                        <button
-                          className="adminActionButton"
-                          disabled={actionId === v.videoId}
-                          onClick={() =>
-                            runAction(v.videoId, adminLibrary.archiveVideo, "Archive this video?")
-                          }
-                        >
-                          Archive
-                        </button>
-                      )}
                       <button
                         className="adminActionButton adminActionButton--danger"
                         disabled={actionId === v.videoId}
@@ -460,7 +418,7 @@ export default function LibraryVideosTab() {
               ))
             ) : (
               <tr>
-                <td colSpan={6} className="adminTable__empty">
+                <td colSpan={5} className="adminTable__empty">
                   No videos yet.
                 </td>
               </tr>
@@ -472,24 +430,3 @@ export default function LibraryVideosTab() {
   );
 }
 
-function statusStyle(status: string): React.CSSProperties {
-  const base: React.CSSProperties = {
-    fontSize: 10,
-    fontWeight: 600,
-    textTransform: "uppercase",
-    letterSpacing: "0.04em",
-    padding: "3px 8px",
-    borderRadius: 4,
-  };
-  switch (status) {
-    case "PUBLISHED":
-      return { ...base, background: "rgba(42, 122, 59, 0.12)", color: "#2a7a3b" };
-    case "PENDING_REVIEW":
-      return { ...base, background: "rgba(245, 166, 35, 0.12)", color: "#b37300" };
-    case "ARCHIVED":
-      return { ...base, background: "rgba(15, 15, 16, 0.08)", color: "rgba(15, 15, 16, 0.5)" };
-    case "DRAFT":
-    default:
-      return { ...base, background: "rgba(86, 19, 27, 0.08)", color: "var(--primary, #56131b)" };
-  }
-}
