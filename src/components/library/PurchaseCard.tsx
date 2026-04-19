@@ -68,6 +68,14 @@ export default function PurchaseCard({
         });
 
         if (order.gateway === "CASHFREE") {
+          const sessionId = order.paymentSessionId?.trim();
+          if (!sessionId) {
+            setError(
+              "Payment could not start: the server did not return a valid Cashfree session. Please try again or contact support.",
+            );
+            return;
+          }
+
           const { load } = await import("@cashfreepayments/cashfree-js");
           const mode = (import.meta.env.VITE_CASHFREE_MODE ?? "sandbox") as
             | "sandbox"
@@ -75,7 +83,7 @@ export default function PurchaseCard({
           const cashfree = await load({ mode });
 
           const result = await cashfree.checkout({
-            paymentSessionId: order.paymentSessionId,
+            paymentSessionId: sessionId,
             redirectTarget: "_modal",
           });
 
