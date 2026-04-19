@@ -24,22 +24,20 @@ export default function FilterTabs({
   onTypeChange,
   onClearFilters,
 }: FilterTabsProps) {
-  const hasActiveFilters =
-    activeCategory !== "all" || activeType !== "all";
+  const hasActiveFilters = activeCategory !== "all" || activeType !== "all";
 
   return (
-    <section
-      className="libraryFilters"
-      aria-labelledby="libraryFiltersTitle"
-    >
+    <section className="libraryFilters" aria-labelledby="libraryFiltersTitle">
       <div className="libraryFilters__inner">
         <div className="libraryFilters__header">
           <div>
             <h2 className="libraryFilters__title" id="libraryFiltersTitle">
-              Browse programs
+              Explore by category
             </h2>
             <p className="libraryFilters__subtitle">
-              Pick a topic and a format to narrow the list.
+              Honor where you are. Start with the beginner's masterclass or
+              embrace a deeper transformation with our recorded course by
+              experts.
             </p>
           </div>
           {hasActiveFilters && (

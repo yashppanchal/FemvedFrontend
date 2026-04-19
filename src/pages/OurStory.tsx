@@ -120,8 +120,7 @@ export default function OurStory() {
               myself.&quot;
             </p>
             <p>If this hits home, Femved is the space just for you.</p>
-            <p className="ourStory__supportLine">
-              {/* big size ourStory__coreValuesHeadingSoft */}
+            <p className="ourStory__supportLine ourStory__coreValuesHeading ourStory__coreValuesHeadingSoft">
               we&apos;re here to make sure you&apos;re seen, heard, and
               supported on this journey.
             </p>
