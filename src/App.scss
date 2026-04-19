@@ -65,8 +65,8 @@
 
 .pageTransition {
   will-change: opacity;
-  transition:
-    opacity var(--pageTransitionMs, 320ms) cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity var(--pageTransitionMs, 320ms)
+    cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .pageTransition--enter {

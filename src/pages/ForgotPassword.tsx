@@ -22,7 +22,11 @@ export default function ForgotPassword() {
       await forgotPassword(email.trim());
       setSent(true);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Something went wrong. Please try again.");
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : "Something went wrong. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -32,15 +36,16 @@ export default function ForgotPassword() {
     <section className="page page--login">
       <h1 className="page__title">Forgot password</h1>
       <p className="page__lead">
-        Enter your email address and we&rsquo;ll send you a link to reset your password.
+        Enter your email address and we&rsquo;ll send you a link to reset your
+        password.
       </p>
 
       <div className="authCard">
         {sent ? (
           <>
             <p className="authCard__success">
-              If an account exists for <strong>{email}</strong>, a password reset link has been
-              sent. Check your inbox (and spam folder).
+              If an account exists for <strong>{email}</strong>, a password
+              reset link has been sent. Check your inbox (and spam folder).
             </p>
             <p className="authCard__footer">
               <Link to="/login">Back to sign in</Link>
@@ -65,7 +70,11 @@ export default function ForgotPassword() {
                 />
               </label>
 
-              <button type="submit" className="button authCard__submit" disabled={loading}>
+              <button
+                type="submit"
+                className="button authCard__submit"
+                disabled={loading}
+              >
                 {loading ? "Sending…" : "Send reset link"}
               </button>
             </form>
