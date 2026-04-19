@@ -2,6 +2,7 @@ import { type FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { resetPassword } from "../api/auth";
 import { ApiError } from "../api/client";
+import { LoadingScreen } from "../components/LoadingScreen";
 import "./Login.scss";
 
 export default function ResetPassword() {
@@ -54,21 +55,14 @@ export default function ResetPassword() {
 
   return (
     <section className="page page--login">
-      <h1 className="page__title">Reset password</h1>
-      <p className="page__lead">Choose a new password for your account.</p>
+      {done ? (
+        <LoadingScreen message="Redirecting you to the sign-in page in a moment ..." />
+      ) : (
+        <>
+          <h1 className="page__title">Reset password</h1>
+          <p className="page__lead">Choose a new password for your account.</p>
 
-      <div className="authCard">
-        {done ? (
-          <>
-            <p className="authCard__success">
-              Your password has been reset successfully. Redirecting to sign in…
-            </p>
-            <p className="authCard__footer">
-              <Link to="/login">Sign in now</Link>
-            </p>
-          </>
-        ) : (
-          <>
+          <div className="authCard">
             <form className="form" onSubmit={handleSubmit} noValidate>
               {error && <p className="authCard__error">{error}</p>}
 
@@ -111,9 +105,9 @@ export default function ResetPassword() {
             <p className="authCard__footer">
               <Link to="/forgot-password">Request a new reset link</Link>
             </p>
-          </>
-        )}
-      </div>
+          </div>
+        </>
+      )}
     </section>
   );
 }
