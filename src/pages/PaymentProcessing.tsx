@@ -2,7 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getOrder } from "../api/orders";
 import { LoadingScreen } from "../components/LoadingScreen";
-import "./PaymentProcessing.scss";
+import {
+  PAYMENT_SUCCESS_REDIRECT_CARD_DELAY_MS,
+  PAYMENT_SUCCESS_REDIRECT_CARD_VISIBLE_MS,
+  PaymentProcessingSuccessView,
+} from "./PaymentProcessingSuccessView";
 
 const POLL_INTERVAL_MS = 2000;
 const POLL_MAX_MS = 30000;
@@ -61,10 +65,14 @@ export default function PaymentProcessing() {
     };
   }, [orderId]);
 
-  // Redirect to dashboard after successful payment
+  // Success card, then redirect card for 5s, then dashboard
   useEffect(() => {
     if (phase !== "paid") return;
-    const t = setTimeout(() => navigate("/dashboard"), 3000);
+    const t = setTimeout(
+      () => navigate("/dashboard"),
+      PAYMENT_SUCCESS_REDIRECT_CARD_DELAY_MS +
+        PAYMENT_SUCCESS_REDIRECT_CARD_VISIBLE_MS,
+    );
     return () => clearTimeout(t);
   }, [phase, navigate]);
 
@@ -78,18 +86,9 @@ export default function PaymentProcessing() {
 
   if (phase === "paid") {
     return (
-      <section className="page page--paymentProcessing">
-        <div className="processingCard">
-          <div
-            className="processingCard__icon processingCard__icon--success"
-            aria-hidden="true"
-          />
-          <h1 className="page__title">Payment successful!</h1>
-          <p className="page__lead">
-            Thank you! Redirecting you to your dashboard in a moment...
-          </p>
-        </div>
-      </section>
+      <PaymentProcessingSuccessView
+        showRedirectCardAfterMs={PAYMENT_SUCCESS_REDIRECT_CARD_DELAY_MS}
+      />
     );
   }
 
