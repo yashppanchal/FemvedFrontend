@@ -413,14 +413,6 @@ export function NavBar() {
                     >
                       Dashboard
                     </Link>
-                    <Link
-                      className="userMenu__item"
-                      to="/orders"
-                      role="menuitem"
-                      onClick={() => setUserMenuOpen(false)}
-                    >
-                      Order History
-                    </Link>
                   </>
                 )}
                 <button
@@ -631,13 +623,6 @@ export function NavBar() {
                           </div>
                         </div>
                       </div>
-                      <Link
-                        className="mobileDrawer__item"
-                        to="/orders"
-                        onClick={closeMobileMenu}
-                      >
-                        Order History
-                      </Link>
                     </>
                   )}
                   <button
