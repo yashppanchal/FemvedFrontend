@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useEscapeKey } from "../../useEscapeKey";
 import { getMyProgramAccess, pauseMyEnrollment, resumeMyEnrollment, endMyEnrollment, requestStartDate, type MyProgramAccess } from "../../api/users";
 import { ApiError } from "../../api/client";
@@ -228,41 +229,67 @@ export default function MyProgramsTab() {
         </>
       )}
 
-      {/* Request start date modal */}
-      {requestStartId && (
-        <div className="dashModal__backdrop" onClick={() => setRequestStartId(null)}>
-          <div className="dashModal" onClick={(ev) => ev.stopPropagation()}>
-            <div className="dashModal__header">
-              <h3 className="dashModal__title">Request Start Date</h3>
-              <button type="button" className="dashModal__close" onClick={() => setRequestStartId(null)} aria-label="Close">✕</button>
-            </div>
-            <div className="dashModal__body">
-              <label className="field">
-                <span className="field__label">Preferred start date</span>
-                <input
-                  className="field__input"
-                  type="date"
-                  value={requestDate}
-                  min={today()}
-                  onChange={(ev) => setRequestDate(ev.target.value)}
+      {/* Request start date modal — portaled so fixed overlay covers full viewport (RevealOnScroll uses transform) */}
+      {requestStartId &&
+        createPortal(
+          <div
+            className="dashModal__backdrop"
+            role="presentation"
+            onClick={() => setRequestStartId(null)}
+          >
+            <div
+              className="dashModal"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="dashModal-request-start-title"
+              onClick={(ev) => ev.stopPropagation()}
+            >
+              <div className="dashModal__header">
+                <h3 className="dashModal__title" id="dashModal-request-start-title">
+                  Request Start Date
+                </h3>
+                <button
+                  type="button"
+                  className="dashModal__close"
+                  onClick={() => setRequestStartId(null)}
+                  aria-label="Close"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="dashModal__body">
+                <label className="field">
+                  <span className="field__label">Preferred start date</span>
+                  <input
+                    className="field__input"
+                    type="date"
+                    value={requestDate}
+                    min={today()}
+                    onChange={(ev) => setRequestDate(ev.target.value)}
+                    disabled={requesting}
+                  />
+                </label>
+                <p className="dashModal__hint">
+                  Your expert will review and confirm or suggest an alternative date.
+                </p>
+              </div>
+              <div className="dashModal__footer">
+                <button
+                  type="button"
+                  className="dashTable__btn"
+                  onClick={() => setRequestStartId(null)}
                   disabled={requesting}
-                />
-              </label>
-              <p className="dashModal__hint">
-                Your expert will review and confirm or suggest an alternative date.
-              </p>
+                >
+                  Cancel
+                </button>
+                <button type="button" className="button" onClick={handleRequestStart} disabled={requesting}>
+                  {requesting ? "Requesting…" : "Request"}
+                </button>
+              </div>
             </div>
-            <div className="dashModal__footer">
-              <button type="button" className="dashTable__btn" onClick={() => setRequestStartId(null)} disabled={requesting}>
-                Cancel
-              </button>
-              <button type="button" className="button" onClick={handleRequestStart} disabled={requesting}>
-                {requesting ? "Requesting…" : "Request"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

@@ -475,11 +475,12 @@
 .dashModal__backdrop {
   position: fixed;
   inset: 0;
-  z-index: 200;
+  /* Above .layout__header (1000) so the dimmer covers the whole app chrome */
+  z-index: 1100;
   background: rgba(15, 15, 16, 0.55);
   backdrop-filter: blur(4px);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   padding: 40px 24px;
   overflow-y: auto;
@@ -540,6 +541,26 @@
   padding: 4px 0;
   overflow-y: auto;
   flex: 1;
+}
+
+.dashModal__footer {
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+/* Match primary `.button` (42px) — table actions use shorter `.dashTable__btn` (30px) */
+.dashModal__footer .dashTable__btn {
+  height: 42px;
+  min-height: 42px;
+  padding: 0 16px;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .dashModal__actions {
