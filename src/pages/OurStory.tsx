@@ -87,7 +87,7 @@ export default function OurStory() {
     <section className="page ourStory">
       {/* ── Hero ── */}
       <RevealOnScroll className="about__hero">
-        <p className="about__heroLabel">Our story</p>
+        {/* <p className="about__heroLabel">Our story</p> */}
         <h1 className="about__heroTitle">
           Own your wellness — your well-being matters.
         </h1>
@@ -97,7 +97,7 @@ export default function OurStory() {
       <div className="ourStory__mainSection ourStory__mainSection--voice">
         <RevealOnScroll className="foundersStory__section foundersStory__section--awakening">
           <div className="about__prose">
-            <h2 className="ourStory__sectionHeading">We hear you</h2>
+            {/* <h2 className="ourStory__sectionHeading">We hear you</h2> */}
             <p>
               Are you searching everywhere for solutions, or really for
               permission? Permission to slow down, to stop following every
@@ -121,6 +121,7 @@ export default function OurStory() {
             </p>
             <p>If this hits home, Femved is the space just for you.</p>
             <p className="ourStory__supportLine">
+              {/* big size ourStory__coreValuesHeadingSoft */}
               we&apos;re here to make sure you&apos;re seen, heard, and
               supported on this journey.
             </p>

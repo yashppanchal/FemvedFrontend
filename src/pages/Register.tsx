@@ -1,4 +1,5 @@
 import { type FormEvent, useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth, type RegisterData } from "../auth/useAuth";
 import { useCountry, validatePhone, COUNTRY_LIST, type CountryCode } from "../country/useCountry";
@@ -26,6 +27,8 @@ export default function Register() {
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const set =
     (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -184,28 +187,52 @@ export default function Register() {
 
           <label className="field">
             <span className="field__label">Password *</span>
-            <input
-              className="field__input"
-              type="password"
-              value={form.password}
-              onChange={set("password")}
-              placeholder="At least 6 characters"
-              autoComplete="new-password"
-              disabled={loading}
-            />
+            <div className="passwordField">
+              <input
+                className="field__input passwordField__input"
+                type={showPassword ? "text" : "password"}
+                value={form.password}
+                onChange={set("password")}
+                placeholder="At least 6 characters"
+                autoComplete="new-password"
+                disabled={loading}
+              />
+              <button
+                type="button"
+                className="passwordField__toggle"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+                disabled={loading}
+              >
+                {showPassword ? <FaEyeSlash aria-hidden /> : <FaEye aria-hidden />}
+              </button>
+            </div>
           </label>
 
           <label className="field">
             <span className="field__label">Confirm password *</span>
-            <input
-              className="field__input"
-              type="password"
-              value={form.confirmPassword}
-              onChange={set("confirmPassword")}
-              placeholder="Repeat your password"
-              autoComplete="new-password"
-              disabled={loading}
-            />
+            <div className="passwordField">
+              <input
+                className="field__input passwordField__input"
+                type={showConfirmPassword ? "text" : "password"}
+                value={form.confirmPassword}
+                onChange={set("confirmPassword")}
+                placeholder="Repeat your password"
+                autoComplete="new-password"
+                disabled={loading}
+              />
+              <button
+                type="button"
+                className="passwordField__toggle"
+                onClick={() => setShowConfirmPassword((v) => !v)}
+                aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                aria-pressed={showConfirmPassword}
+                disabled={loading}
+              >
+                {showConfirmPassword ? <FaEyeSlash aria-hidden /> : <FaEye aria-hidden />}
+              </button>
+            </div>
           </label>
 
           <button
