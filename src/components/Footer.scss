@@ -52,6 +52,14 @@
   color: var(--primaryHover);
 }
 
+.footer__linkButton {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
 .footer__link:focus-visible,
 .footer__countrySelect:focus-visible,
 .footer__promoBtn:focus-visible,

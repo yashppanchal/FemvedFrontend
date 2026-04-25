@@ -6,6 +6,7 @@ import {
   COUNTRY_LIST,
   type CountryCode,
 } from "../country/useCountry";
+import { useCookieConsent } from "../consent/useCookieConsent";
 import { optimizeCloudinaryImageUrl } from "../cloudinary/image";
 import logo from "../assets/logo.png";
 // import footerImage from "../assets/footerimage.jpg";
@@ -16,6 +17,7 @@ const footerImage =
 export function Footer() {
   const countrySelectId = useId();
   const { country, setCountry } = useCountry();
+  const { openPreferences } = useCookieConsent();
   const optimizedFooterImage = optimizeCloudinaryImageUrl(footerImage, {
     width: 1000,
   });
@@ -99,6 +101,15 @@ export function Footer() {
                   <Link className="footer__link" to="/refund-policy">
                     Refund policy
                   </Link>
+                </li>
+                <li className="footer__item">
+                  <button
+                    type="button"
+                    className="footer__link footer__linkButton"
+                    onClick={openPreferences}
+                  >
+                    Cookie settings
+                  </button>
                 </li>
               </ul>
             </div>

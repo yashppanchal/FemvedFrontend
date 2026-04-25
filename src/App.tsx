@@ -2,11 +2,13 @@ import "./App.scss";
 import { AuthProvider } from "./auth/useAuth";
 import { CountryProvider } from "./country/useCountry";
 import { Footer } from "./components/Footer";
+import { CookieConsentBanner } from "./components/CookieConsentBanner";
 import { NavBar } from "./components/NavBar";
 import RevealOnScroll from "./components/RevealOnScroll";
 import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
+import { CookieConsentProvider } from "./consent/useCookieConsent";
 
 const PAGE_TRANSITION_MS = 320;
 
@@ -82,42 +84,45 @@ export default function App() {
 
   return (
     <CountryProvider>
-    <AuthProvider>
-    <div className="layout">
-      <a href="#main-content" className="skipLink">Skip to content</a>
-      <header
-        className={`layout__header ${isAtTop ? "layout__header--atTop" : "layout__header--scrolled"}`}
-      >
-        <div className="container">
-          <NavBar />
-        </div>
-      </header>
+      <AuthProvider>
+        <CookieConsentProvider>
+          <div className="layout">
+            <a href="#main-content" className="skipLink">Skip to content</a>
+            <header
+              className={`layout__header ${isAtTop ? "layout__header--atTop" : "layout__header--scrolled"}`}
+            >
+              <div className="container">
+                <NavBar />
+              </div>
+            </header>
 
-      <main id="main-content" className="layout__main">
-        {isHome ? (
-          <RevealOnScroll className="layout__pageReveal">
-            <PageTransition key={location.key}>
-              <Outlet />
-            </PageTransition>
-          </RevealOnScroll>
-        ) : (
-          <div className="container">
-            <RevealOnScroll className="layout__pageReveal">
-              <PageTransition key={location.key}>
-                <Outlet />
-              </PageTransition>
-            </RevealOnScroll>
+            <main id="main-content" className="layout__main">
+              {isHome ? (
+                <RevealOnScroll className="layout__pageReveal">
+                  <PageTransition key={location.key}>
+                    <Outlet />
+                  </PageTransition>
+                </RevealOnScroll>
+              ) : (
+                <div className="container">
+                  <RevealOnScroll className="layout__pageReveal">
+                    <PageTransition key={location.key}>
+                      <Outlet />
+                    </PageTransition>
+                  </RevealOnScroll>
+                </div>
+              )}
+            </main>
+
+            <footer className="layout__footer">
+              <div className="container">
+                <Footer />
+              </div>
+            </footer>
+            <CookieConsentBanner />
           </div>
-        )}
-      </main>
-
-      <footer className="layout__footer">
-        <div className="container">
-          <Footer />
-        </div>
-      </footer>
-    </div>
-    </AuthProvider>
+        </CookieConsentProvider>
+      </AuthProvider>
     </CountryProvider>
   );
 }
