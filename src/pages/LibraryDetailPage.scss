@@ -2,7 +2,6 @@
 
 .libraryDetailPage {
   padding-top: 8px;
-  padding-bottom: 56px;
   background: #f9f7f4;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
@@ -226,6 +225,91 @@
   }
 }
 
+// ── Expert ───────────────────────────────────────────────────────────────────
+
+.libraryDetailPage__expertSection {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-top: 34px;
+  background: #f0ebe9;
+  padding: clamp(40px, 5vw, 72px) 0;
+  border-top: 1px solid var(--border);
+}
+
+.libraryDetailPage__expertInner {
+  display: grid;
+  grid-template-columns: minmax(220px, 340px) minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 64px);
+  align-items: stretch;
+}
+
+.libraryDetailPage__expertLeft {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  min-height: clamp(300px, 36vw, 480px);
+  height: 100%;
+  background: #d5c3bd;
+}
+
+.libraryDetailPage__expertPhoto,
+.libraryDetailPage__expertPhotoFallback {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.libraryDetailPage__expertPhotoFallback {
+  display: grid;
+  place-items: center;
+  color: rgba(15, 15, 16, 0.65);
+  font-size: clamp(56px, 6vw, 88px);
+  font-weight: 600;
+}
+
+.libraryDetailPage__expertOverlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 20px 18px;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.58) 42%,
+    rgba(0, 0, 0, 0.78) 100%
+  );
+}
+
+.libraryDetailPage__expertName {
+  margin: 0;
+  font-family: var(--fontTitle);
+  font-size: clamp(22px, 2vw, 36px);
+  line-height: 1.2;
+  color: var(--white);
+  font-weight: 400;
+}
+
+.libraryDetailPage__expertTitle {
+  margin: 4px 0 0;
+  font-size: clamp(13px, 1vw, 17px);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.libraryDetailPage__expertRight {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  p {
+    margin: 0;
+    font-size: clamp(16px, 1.3vw, 22px);
+    line-height: 1.8;
+    color: rgba(15, 15, 16, 0.82);
+  }
+}
+
 // ── Testimonials ─────────────────────────────────────────────────────────────
 
 .libraryDetailPage__testimonials {
@@ -280,5 +364,15 @@
   .libraryDetailPage__layout {
     grid-template-columns: 1fr;
     gap: 28px;
+  }
+}
+
+@media (max-width: 860px) {
+  .libraryDetailPage__expertInner {
+    grid-template-columns: 1fr;
+  }
+
+  .libraryDetailPage__expertLeft {
+    min-height: clamp(260px, 58vw, 440px);
   }
 }

@@ -87,6 +87,8 @@ export interface LibraryVideoDetailResponse {
   expertId: string;
   expertName: string;
   expertTitle: string;
+  expertGridImageUrl?: string | null;
+  expertImageUrl?: string | null;
   expertGridDescription?: string | null;
   tags: string[];
   episodes: LibraryEpisodeDto[];

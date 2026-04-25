@@ -11,7 +11,11 @@ import TrailerEmbed from "../components/library/TrailerEmbed";
 import EpisodeList from "../components/library/EpisodeList";
 import { LoadingScreen } from "../components/LoadingScreen";
 import PurchaseCard from "../components/library/PurchaseCard";
-import InstructorStrip from "../components/library/InstructorStrip";
+import RevealOnScroll from "../components/RevealOnScroll";
+import {
+  buildCloudinarySrcSet,
+  optimizeCloudinaryImageUrl,
+} from "../cloudinary/image";
 
 function formatMetaLine(video: LibraryVideoDetailResponse): string | null {
   const parts: string[] = [];
@@ -125,6 +129,17 @@ export default function LibraryDetailPage() {
 
   const posterSrc = video.heroImage ?? video.cardImage ?? null;
   const metaLine = formatMetaLine(video);
+  const expertGridImageUrl =
+    video.expertGridImageUrl ?? video.expertImageUrl ?? undefined;
+  const optimizedExpertImage = optimizeCloudinaryImageUrl(expertGridImageUrl, {
+    width: 720,
+    crop: "fill",
+  });
+  const expertImageSrcSet = buildCloudinarySrcSet(
+    expertGridImageUrl,
+    [320, 480, 640, 720, 960],
+    { crop: "fill" },
+  );
 
   return (
     <section className="page libraryDetailPage">
@@ -214,12 +229,6 @@ export default function LibraryDetailPage() {
             />
           )}
 
-          <InstructorStrip
-            name={video.expertName}
-            title={video.expertTitle}
-            bio={video.expertGridDescription}
-          />
-
           {video.testimonials.length > 0 && (
             <section className="libraryDetailPage__testimonials">
               <h2 className="libraryDetailPage__sectionHeading">
@@ -265,6 +274,42 @@ export default function LibraryDetailPage() {
           />
         </div>
       </div>
+
+      <section className="libraryDetailPage__expertSection">
+        <div className="libraryDetailPage__expertInner container">
+          <div className="libraryDetailPage__expertLeft">
+            {expertGridImageUrl ? (
+              <img
+                src={optimizedExpertImage}
+                srcSet={expertImageSrcSet}
+                sizes="(max-width: 768px) 92vw, 420px"
+                alt={video.expertName}
+                className="libraryDetailPage__expertPhoto"
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <div
+                className="libraryDetailPage__expertPhotoFallback"
+                aria-hidden="true"
+              >
+                {video.expertName.charAt(0)}
+              </div>
+            )}
+            <RevealOnScroll
+              className="libraryDetailPage__expertOverlay"
+              triggerBottomPercent={10}
+            >
+              <h3 className="libraryDetailPage__expertName">{video.expertName}</h3>
+              <p className="libraryDetailPage__expertTitle">{video.expertTitle}</p>
+            </RevealOnScroll>
+          </div>
+
+          <RevealOnScroll className="libraryDetailPage__expertRight">
+            {video.expertGridDescription && <p>{video.expertGridDescription}</p>}
+          </RevealOnScroll>
+        </div>
+      </section>
     </section>
   );
 }
