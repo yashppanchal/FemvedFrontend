@@ -61,6 +61,7 @@ export default function LibraryVideoEditPanel({
   const [epNumber, setEpNumber] = useState("");
   const [epStreamUrl, setEpStreamUrl] = useState("");
   const [epDuration, setEpDuration] = useState("");
+  const [epDescription, setEpDescription] = useState("");
   const [epFreePreview, setEpFreePreview] = useState(false);
   const [editingEpId, setEditingEpId] = useState<string | null>(null);
 
@@ -170,6 +171,7 @@ export default function LibraryVideoEditPanel({
     setEpNumber("");
     setEpStreamUrl("");
     setEpDuration("");
+    setEpDescription("");
     setEpFreePreview(false);
     setEditingEpId(null);
   };
@@ -180,6 +182,7 @@ export default function LibraryVideoEditPanel({
     setEpTitle(ep.title);
     setEpStreamUrl(ep.streamUrl ?? "");
     setEpDuration(ep.duration ?? "");
+    setEpDescription(ep.description ?? "");
     setEpFreePreview(ep.isFreePreview);
     setTimeout(() => {
       document.getElementById("episode-form")?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -193,6 +196,7 @@ export default function LibraryVideoEditPanel({
         await adminLibrary.updateEpisode(editingEpId, {
           episodeNumber: Number(epNumber) || undefined,
           title: epTitle.trim(),
+          description: epDescription.trim() || null,
           streamUrl: epStreamUrl.trim() || null,
           duration: epDuration.trim() || null,
           isFreePreview: epFreePreview,
@@ -202,6 +206,7 @@ export default function LibraryVideoEditPanel({
         const r: AddLibraryEpisodeRequest = {
           episodeNumber: Number(epNumber) || (video?.episodes.length ?? 0) + 1,
           title: epTitle.trim(),
+          description: epDescription.trim() || null,
           streamUrl: epStreamUrl.trim() || null,
           duration: epDuration.trim() || null,
           isFreePreview: epFreePreview,
@@ -550,6 +555,16 @@ export default function LibraryVideoEditPanel({
             <label className="field" style={{ flex: "0 0 100px" }}>
               <span className="field__label">Duration</span>
               <input className="field__input" value={epDuration} onChange={(e) => setEpDuration(e.target.value)} placeholder="12 min" />
+            </label>
+            <label className="field" style={{ flex: "1 1 240px", minWidth: 200 }}>
+              <span className="field__label">Description</span>
+              <textarea
+                className="field__input"
+                rows={2}
+                value={epDescription}
+                onChange={(e) => setEpDescription(e.target.value)}
+                placeholder="Short description shown in the episode list"
+              />
             </label>
             <label className="field" style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
               <input type="checkbox" checked={epFreePreview} onChange={(e) => setEpFreePreview(e.target.checked)} />

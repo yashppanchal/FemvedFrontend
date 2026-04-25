@@ -83,13 +83,14 @@ export interface LibraryVideoDetailResponse {
   releaseYear?: string | null;
   price: string;
   originalPrice?: string | null;
-  priceTier: string;
+  priceTier?: string | null;
   expertId: string;
   expertName: string;
   expertTitle: string;
   expertGridImageUrl?: string | null;
   expertImageUrl?: string | null;
   expertGridDescription?: string | null;
+  expertDetailedDescription?: string | null;
   tags: string[];
   episodes: LibraryEpisodeDto[];
   features: LibraryFeatureDto[];
@@ -197,6 +198,7 @@ export interface LibraryStreamEpisodeDto {
   episodeId: string;
   episodeNumber: number;
   title: string;
+  description?: string | null;
   streamUrl?: string | null;
   watchProgressSeconds: number;
   isCompleted: boolean;

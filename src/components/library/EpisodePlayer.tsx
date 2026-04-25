@@ -43,6 +43,9 @@ export default function EpisodePlayer({ episodes, videoTitle }: EpisodePlayerPro
           <span className="episodePlayer__epNum">Episode {selected.episodeNumber}</span>
           {selected.title}
         </h2>
+        {selected.description && (
+          <p className="episodePlayer__desc">{selected.description}</p>
+        )}
       </div>
 
       <ol className="episodePlayer__list">
