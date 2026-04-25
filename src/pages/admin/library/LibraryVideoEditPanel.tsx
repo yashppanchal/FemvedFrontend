@@ -9,6 +9,7 @@ import {
   type AddLibraryVideoPriceRequest,
 } from "../../../api/adminLibrary";
 import { ApiError } from "../../../api/client";
+import { CloudinaryImageUrlField } from "../../../components/CloudinaryImageUrlField";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 
 const LOCATIONS = ["IN", "GB", "US"] as const;
@@ -370,13 +371,26 @@ export default function LibraryVideoEditPanel({
           <span className="field__label">Release Year</span>
           <input className="field__input" value={releaseYear} onChange={(e) => setReleaseYear(e.target.value)} placeholder="e.g. 2026" />
         </label>
-        <label className="field">
-          <span className="field__label">Card Image URL (thumbnail)</span>
-          <input className="field__input" value={cardImage} onChange={(e) => setCardImage(e.target.value)} placeholder="https://..." />
-        </label>
+        <CloudinaryImageUrlField
+          label="Card Image URL (thumbnail)"
+          hint="Upload once (or paste a URL) to populate both Card and Hero image URLs."
+          value={cardImage}
+          onUrlChange={(url) => {
+            setCardImage(url);
+            setHeroImage(url);
+          }}
+          disabled={saving}
+          uploadFolder="library-image"
+        />
         <label className="field">
           <span className="field__label">Hero Image URL (detail page banner)</span>
-          <input className="field__input" value={heroImage} onChange={(e) => setHeroImage(e.target.value)} placeholder="https://..." />
+          <input
+            className="field__input"
+            value={heroImage}
+            onChange={(e) => setHeroImage(e.target.value)}
+            placeholder="https://..."
+            disabled={saving}
+          />
         </label>
         <label className="field">
           <span className="field__label">Icon Emoji (fallback if no image)</span>
