@@ -4,7 +4,7 @@ import type {
 } from "../api/library";
 
 /** Flip to `false` to use only live `/users/me/library` data. */
-export const USE_MOCK_MY_LIBRARY_FOR_DESIGN = true;
+export const USE_MOCK_MY_LIBRARY_FOR_DESIGN = false;
 
 export function isMockLibraryVideo(video: MyLibraryVideoDto): boolean {
   return video.videoId.startsWith("mock-");
