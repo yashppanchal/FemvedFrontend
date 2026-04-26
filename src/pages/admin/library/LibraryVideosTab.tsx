@@ -374,6 +374,7 @@ export default function LibraryVideosTab() {
           <thead>
             <tr>
               <th>Title</th>
+              <th>Type</th>
               <th>Expert</th>
               <th>Category</th>
               <th>Status</th>
@@ -386,6 +387,16 @@ export default function LibraryVideosTab() {
                 const isArchived = v.status === "Archived";
                 const isPublished = v.status === "Published";
                 const canRestore = isArchived || v.isDeleted;
+                const typeLabel =
+                  v.videoType === "SERIES"
+                    ? "Series"
+                    : v.videoType === "MASTERCLASS"
+                      ? "Individual Video"
+                      : v.videoType;
+                const typeClass =
+                  v.videoType === "SERIES"
+                    ? "typePill typePill--series"
+                    : "typePill typePill--masterclass";
                 return (
                   <tr key={v.videoId}>
                     <td>
@@ -395,6 +406,14 @@ export default function LibraryVideosTab() {
                           FEATURED
                         </span>
                       )}
+                    </td>
+                    <td>
+                      <span className={typeClass}>
+                        {typeLabel}
+                        {v.videoType === "SERIES" && typeof v.episodeCount === "number" && (
+                          <span className="typePill__count">{v.episodeCount} ep</span>
+                        )}
+                      </span>
                     </td>
                     <td>{v.expertName}</td>
                     <td>{v.categoryName}</td>
@@ -451,7 +470,7 @@ export default function LibraryVideosTab() {
               })
             ) : (
               <tr>
-                <td colSpan={5} className="adminTable__empty">
+                <td colSpan={6} className="adminTable__empty">
                   No videos yet.
                 </td>
               </tr>
