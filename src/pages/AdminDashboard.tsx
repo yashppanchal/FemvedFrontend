@@ -13,6 +13,7 @@ import {
   publishProgram,
   rejectProgram,
   archiveProgram,
+  restoreProgram,
   type GuidedTreeDomain,
   updateGuidedCategory,
   updateGuidedDomain,
@@ -1411,7 +1412,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleProgramStatusChange = async (programId: string, action: "submit" | "publish" | "reject" | "archive") => {
+  const handleProgramStatusChange = async (programId: string, action: "submit" | "publish" | "reject" | "archive" | "restore") => {
     setProgramCreateError(null);
     setProgramCreateSuccess(null);
     setStatusChangingId(programId);
@@ -1432,6 +1433,10 @@ export default function AdminDashboard() {
         await archiveProgram(programId);
         setPrograms((prev) => prev.map((p) => p.id === programId ? { ...p, status: "Archived" } : p));
         setProgramCreateSuccess("Program archived.");
+      } else if (action === "restore") {
+        await restoreProgram(programId);
+        setPrograms((prev) => prev.map((p) => p.id === programId ? { ...p, status: "Published" } : p));
+        setProgramCreateSuccess("Program restored and published.");
       }
     } catch (err) {
       setProgramCreateError(err instanceof ApiError ? err.message : `Failed to ${action} program.`);

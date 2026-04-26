@@ -374,48 +374,81 @@ export default function LibraryVideosTab() {
           <thead>
             <tr>
               <th>Title</th>
-              <th>Type</th>
-              <th>Category</th>
               <th>Expert</th>
+              <th>Category</th>
+              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {videos.length > 0 ? (
-              videos.map((v) => (
-                <tr key={v.videoId}>
-                  <td>
-                    {v.title}
-                    {v.isFeatured && (
-                      <span style={{ marginLeft: 8, fontSize: 10, color: "var(--primary, #56131b)" }}>
-                        FEATURED
+              videos.map((v) => {
+                const isArchived = v.status === "Archived";
+                const isPublished = v.status === "Published";
+                const canRestore = isArchived || v.isDeleted;
+                return (
+                  <tr key={v.videoId}>
+                    <td>
+                      {v.title}
+                      {v.isFeatured && (
+                        <span style={{ marginLeft: 8, fontSize: 10, color: "var(--primary, #56131b)" }}>
+                          FEATURED
+                        </span>
+                      )}
+                    </td>
+                    <td>{v.expertName}</td>
+                    <td>{v.categoryName}</td>
+                    <td>
+                      <span
+                        className={`statusPill statusPill--${v.status.toLowerCase()}${v.isDeleted ? " statusPill--deleted" : ""}`}
+                      >
+                        {v.isDeleted ? "Deleted" : v.status}
                       </span>
-                    )}
-                  </td>
-                  <td>{v.videoType}</td>
-                  <td>{v.categoryName}</td>
-                  <td>{v.expertName}</td>
-                  <td>
-                    <div className="adminActionGroup">
-                      <button
-                        className="adminActionButton"
-                        onClick={() => setEditingVideoId(v.videoId)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="adminActionButton adminActionButton--danger"
-                        disabled={actionId === v.videoId}
-                        onClick={() =>
-                          runAction(v.videoId, adminLibrary.deleteVideo, "Delete this video?")
-                        }
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
+                    </td>
+                    <td>
+                      <div className="adminActionGroup">
+                        <button
+                          className="adminActionButton"
+                          onClick={() => setEditingVideoId(v.videoId)}
+                        >
+                          Edit
+                        </button>
+                        {isPublished && !v.isDeleted && (
+                          <button
+                            className="adminActionButton adminActionButton--danger"
+                            disabled={actionId === v.videoId}
+                            onClick={() =>
+                              runAction(v.videoId, adminLibrary.archiveVideo, "Archive this video? It will no longer be available for purchase, but existing purchasers keep access.")
+                            }
+                          >
+                            Archive
+                          </button>
+                        )}
+                        {canRestore && (
+                          <button
+                            className="adminActionButton"
+                            disabled={actionId === v.videoId}
+                            onClick={() =>
+                              runAction(v.videoId, adminLibrary.restoreVideo, "Restore this video? It will become Published and available for purchase again.")
+                            }
+                          >
+                            Restore
+                          </button>
+                        )}
+                        <button
+                          className="adminActionButton adminActionButton--danger"
+                          disabled={actionId === v.videoId}
+                          onClick={() =>
+                            runAction(v.videoId, adminLibrary.deleteVideo, "Permanently delete this video? This cannot be undone.")
+                          }
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
                 <td colSpan={5} className="adminTable__empty">

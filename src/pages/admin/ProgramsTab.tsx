@@ -38,7 +38,7 @@ type ProgramsTabProps = {
   expertsList: AdminExpert[];
   onStatusChange?: (
     programId: string,
-    action: "submit" | "publish" | "reject" | "archive",
+    action: "submit" | "publish" | "reject" | "archive" | "restore",
   ) => void;
   statusChangingId?: string | null;
 };
@@ -1009,6 +1009,21 @@ export function ProgramsTab({
                             {statusChangingId === program.id
                               ? "Archiving…"
                               : "Archive"}
+                          </button>
+                        )}
+                        {program.status === "Archived" && onStatusChange && (
+                          <button
+                            type="button"
+                            className="adminActionButton"
+                            onClick={() =>
+                              onStatusChange(program.id, "restore")
+                            }
+                            disabled={statusChangingId === program.id}
+                            aria-label={`Restore program ${program.name}`}
+                          >
+                            {statusChangingId === program.id
+                              ? "Restoring…"
+                              : "Restore"}
                           </button>
                         )}
                       </div>

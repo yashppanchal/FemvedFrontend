@@ -405,6 +405,13 @@ export async function archiveProgram(programId: string): Promise<void> {
   bumpGuidedProgramsCacheVersion();
 }
 
+export async function restoreProgram(programId: string): Promise<void> {
+  await apiFetch<void>(`/guided/programs/${encodeURIComponent(programId)}/restore`, {
+    method: "POST",
+  });
+  bumpGuidedProgramsCacheVersion();
+}
+
 export function fetchGuidedTree(
   countryCode?: string,
 ): Promise<GuidedTreeResponse> {

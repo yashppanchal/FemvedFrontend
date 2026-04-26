@@ -995,3 +995,43 @@ fieldset.expertForm__section {
     width: calc(100% - 8px);
   }
 }
+
+/* ── Status pills (library video table) ──────────────────────────── */
+
+.statusPill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: capitalize;
+  background: rgba(15, 15, 16, 0.06);
+  color: rgba(15, 15, 16, 0.7);
+}
+
+.statusPill--published {
+  background: rgba(34, 139, 84, 0.12);
+  color: #1f7a4b;
+}
+
+.statusPill--archived {
+  background: rgba(86, 19, 27, 0.12);
+  color: #56131b;
+}
+
+.statusPill--draft {
+  background: rgba(120, 90, 0, 0.12);
+  color: #8a6500;
+}
+
+.statusPill--pendingreview {
+  background: rgba(28, 100, 160, 0.12);
+  color: #1c6499;
+}
+
+.statusPill--deleted {
+  background: rgba(120, 0, 0, 0.16);
+  color: #8a0000;
+  text-decoration: line-through;
+}

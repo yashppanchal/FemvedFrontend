@@ -475,6 +475,8 @@ export const adminLibrary = {
     apiFetch<void>(`${BASE}/videos/${id}/reject`, { method: "POST" }),
   archiveVideo: (id: string) =>
     apiFetch<void>(`${BASE}/videos/${id}/archive`, { method: "POST" }),
+  restoreVideo: (id: string) =>
+    apiFetch<void>(`${BASE}/videos/${id}/restore`, { method: "POST" }),
 
   // Episodes
   addEpisode: (videoId: string, r: AddLibraryEpisodeRequest) =>
