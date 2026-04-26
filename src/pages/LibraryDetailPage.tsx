@@ -307,6 +307,11 @@ export default function LibraryDetailPage() {
 
           <RevealOnScroll className="libraryDetailPage__expertRight">
             {video.expertGridDescription && <p>{video.expertGridDescription}</p>}
+            {video.expertDetailedDescription && (
+              <p className="libraryDetailPage__expertDetailed">
+                {video.expertDetailedDescription}
+              </p>
+            )}
           </RevealOnScroll>
         </div>
       </section>
