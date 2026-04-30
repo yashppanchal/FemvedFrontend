@@ -149,6 +149,64 @@ export default function LibraryVideosTab() {
     }
   };
 
+  // Sentinel emitted by DeleteLibraryVideoCommandHandler when the video has buyers.
+  // Matches the C# constant `PurchasedBlockMarker`.
+  const PURCHASED_BLOCK_MARKER = "VIDEO_HAS_PURCHASES";
+
+  const tryDeleteVideo = async (id: string, title: string) => {
+    if (!confirm(`Permanently delete "${title}"? This cannot be undone.`)) return;
+    setActionId(id);
+    setFormError(null);
+    setFormSuccess(null);
+    try {
+      await adminLibrary.deleteVideo(id);
+      setFormSuccess("Video deleted.");
+      load();
+    } catch (err) {
+      const message =
+        err instanceof ApiError ? err.message : "Delete failed.";
+
+      // If the backend blocked the delete because the video has purchases,
+      // pivot to the Archive flow instead of dead-ending the admin.
+      if (
+        err instanceof ApiError &&
+        message.includes(PURCHASED_BLOCK_MARKER)
+      ) {
+        const userMessage = message.replace(
+          new RegExp(`^${PURCHASED_BLOCK_MARKER}:\\s*`),
+          "",
+        );
+        if (
+          confirm(
+            `${userMessage}\n\nArchive this video now?`,
+          )
+        ) {
+          try {
+            await adminLibrary.archiveVideo(id);
+            setFormSuccess(
+              "Video archived. It is hidden from the catalog; existing purchasers keep access.",
+            );
+            load();
+          } catch (archiveErr) {
+            setFormError(
+              archiveErr instanceof ApiError
+                ? archiveErr.message
+                : "Archive failed.",
+            );
+          }
+        } else {
+          // Admin declined the archive prompt — surface the original message
+          // (without the sentinel) so they understand why delete didn't happen.
+          setFormError(userMessage);
+        }
+      } else {
+        setFormError(message);
+      }
+    } finally {
+      setActionId(null);
+    }
+  };
+
   if (editingVideoId) {
     return (
       <LibraryVideoEditPanel
@@ -385,7 +443,7 @@ export default function LibraryVideosTab() {
             {videos.length > 0 ? (
               videos.map((v) => {
                 const isArchived = v.status === "Archived";
-                const isPublished = v.status === "Published";
+                const canArchive = !isArchived && !v.isDeleted;
                 const canRestore = isArchived || v.isDeleted;
                 const typeLabel =
                   v.videoType === "SERIES"
@@ -432,12 +490,12 @@ export default function LibraryVideosTab() {
                         >
                           Edit
                         </button>
-                        {isPublished && !v.isDeleted && (
+                        {canArchive && (
                           <button
                             className="adminActionButton adminActionButton--danger"
                             disabled={actionId === v.videoId}
                             onClick={() =>
-                              runAction(v.videoId, adminLibrary.archiveVideo, "Archive this video? It will no longer be available for purchase, but existing purchasers keep access.")
+                              runAction(v.videoId, adminLibrary.archiveVideo, "Archive this video? It will no longer be available for purchase, but existing purchasers keep access from their dashboard.")
                             }
                           >
                             Archive
@@ -457,9 +515,7 @@ export default function LibraryVideosTab() {
                         <button
                           className="adminActionButton adminActionButton--danger"
                           disabled={actionId === v.videoId}
-                          onClick={() =>
-                            runAction(v.videoId, adminLibrary.deleteVideo, "Permanently delete this video? This cannot be undone.")
-                          }
+                          onClick={() => tryDeleteVideo(v.videoId, v.title)}
                         >
                           Delete
                         </button>
