@@ -442,7 +442,10 @@ export default function LibraryVideosTab() {
           <tbody>
             {videos.length > 0 ? (
               videos.map((v) => {
-                const isArchived = v.status === "Archived";
+                // API serialises status in UPPERCASE (see GetAllLibraryVideosQueryHandler).
+                // Compare case-insensitively to be robust if that ever changes.
+                const statusUpper = (v.status ?? "").toUpperCase();
+                const isArchived = statusUpper === "ARCHIVED";
                 const canArchive = !isArchived && !v.isDeleted;
                 const canRestore = isArchived || v.isDeleted;
                 const typeLabel =
