@@ -506,10 +506,16 @@ export default function LibraryVideosTab() {
                             className="adminActionButton"
                             disabled={actionId === v.videoId}
                             onClick={() =>
-                              runAction(v.videoId, adminLibrary.restoreVideo, "Restore this video? It will become Published and available for purchase again.")
+                              runAction(
+                                v.videoId,
+                                adminLibrary.restoreVideo,
+                                isArchived
+                                  ? "Unarchive this video? It will become Published and available for purchase again."
+                                  : "Restore this video? It will become Published and available for purchase again.",
+                              )
                             }
                           >
-                            Restore
+                            {isArchived ? "Unarchive" : "Restore"}
                           </button>
                         )}
                         <button
