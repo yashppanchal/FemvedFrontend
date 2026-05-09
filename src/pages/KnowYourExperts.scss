@@ -1,27 +1,184 @@
 @use "../styles/variables" as *;
 
+/* ================================================================
+   Know Your Experts – editorial layout (matches Learn pages)
+   ================================================================ */
+
 /* ── Hero ── */
 .experts__hero {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  margin-bottom: 48px;
+  justify-content: center;
+
+  padding: clamp(60px, 10vw, 120px) clamp(20px, 5vw, 60px);
+  min-height: 52vh;
+
+  background:
+    radial-gradient(
+      ellipse 120% 90% at 30% 80%,
+      rgba($primary, 0.09) 0%,
+      rgba($primary, 0) 60%
+    ),
+    radial-gradient(
+      ellipse 100% 80% at 80% 20%,
+      rgba($secondary-soft, 0.5) 0%,
+      rgba($secondary-soft, 0) 60%
+    ),
+    linear-gradient(
+      180deg,
+      rgba($white, 0.1) 0%,
+      rgba($secondary-soft, 0.18) 100%
+    );
 }
 
-.experts__title {
-  font-size: 38px;
+.experts__heroLabel {
+  margin: 0 0 16px;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--secondary);
+  font-weight: 600;
 }
 
-.experts__lead {
-  max-width: 640px;
-  margin-left: auto;
-  margin-right: auto;
+.experts__heroTitle {
+  margin: 0;
+  max-width: min(95vw, 20ch);
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: var(--primary);
+  font-size: clamp(36px, 5.5vw, 64px);
+  line-height: 1.08;
 }
 
-/* ── Grid ── */
+/* ── Intro ── */
+.experts__intro {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  display: flex;
+  justify-content: center;
+  padding: clamp(48px, 7vw, 80px) clamp(20px, 5vw, 60px);
+
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.experts__introText {
+  margin: 0;
+  max-width: 62ch;
+  font-size: clamp(16px, 1.8vw, 18px);
+  line-height: 1.85;
+  color: rgba($black, 0.78);
+}
+
+/* ── Loading / error ── */
+.experts__status {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 180px;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.experts__status--error p {
+  color: $primary;
+}
+
+.experts__spinner {
+  display: inline-block;
+  width: 38px;
+  height: 38px;
+  border: 3px solid rgba($primary, 0.15);
+  border-top-color: $primary;
+  border-radius: 50%;
+  animation: experts-spin 0.7s linear infinite;
+}
+
+@keyframes experts-spin {
+  to { transform: rotate(360deg); }
+}
+
+.expertCard__experience {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: $secondary;
+  letter-spacing: 0.02em;
+}
+
+/* ── Grid section ── */
+.experts__gridSection {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(48px, 7vw, 80px) clamp(20px, 5vw, 60px);
+
+  background:
+    radial-gradient(
+      ellipse 80% 80% at 15% 50%,
+      rgba($secondary-soft, 0.22) 0%,
+      rgba($secondary-soft, 0) 60%
+    ),
+    rgba($white, 0.96);
+  border-top: 1px solid var(--border);
+}
+
+.experts__gridHeader {
+  width: 100%;
+  max-width: 1100px;
+}
+
+.experts__sectionLabel {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--secondary);
+}
+
+.experts__sectionTitle {
+  margin: 0 0 32px;
+  font-family: var(--fontTitle);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--primary);
+  font-size: clamp(22px, 3vw, 34px);
+  line-height: 1.15;
+}
+
+.experts__empty {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0;
+  font-size: 15px;
+  color: var(--muted);
+}
+
 .experts__grid {
+  width: 100%;
+  max-width: 1100px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 28px;
-  margin-bottom: 60px;
 }
 
 /* ── Expert card ── */
@@ -102,57 +259,6 @@
   color: $primary;
 }
 
-/* ── LinkedIn button ── */
-.expertCard__linkedin {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: 10px;
-  background: var(--primary);
-  color: var(--white);
-  text-decoration: none;
-  transition: background 180ms ease, transform 180ms ease;
-
-  svg {
-    font-size: 14px;
-  }
-}
-
-.expertCard__linkedin:hover {
-  background: var(--primaryHover);
-  color: var(--white);
-  transform: translateY(-1px);
-}
-
-/* ── CTA section ── */
-.experts__cta {
-  text-align: center;
-  padding: 48px 24px;
-  border-radius: 18px;
-  background: rgba($secondary-soft, 0.3);
-  margin-bottom: 20px;
-}
-
-.experts__ctaTitle {
-  margin: 0 0 10px;
-  font-family: var(--fontTitle);
-  font-size: 26px;
-  font-weight: 400;
-  color: var(--primary);
-}
-
-.experts__ctaText {
-  margin: 0 0 22px;
-  color: var(--muted);
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
-  line-height: 1.65;
-}
-
 /* ── Responsive ── */
 @media (max-width: 900px) {
   .experts__grid {
@@ -161,13 +267,10 @@
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 640px) {
   .experts__hero {
-    margin-bottom: 32px;
-  }
-
-  .experts__title {
-    font-size: 30px;
+    min-height: 40vh;
+    padding: clamp(40px, 8vw, 80px) 20px;
   }
 
   .experts__grid {
@@ -175,11 +278,5 @@
     gap: 18px;
   }
 
-  .experts__cta {
-    padding: 32px 18px;
-  }
-
-  .experts__ctaTitle {
-    font-size: 22px;
-  }
+  .experts__sectionTitle { margin-bottom: 24px; }
 }

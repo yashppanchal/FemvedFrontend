@@ -231,3 +231,29 @@ export interface ExpertLibrarySalesCurrencyDto {
 export function getExpertLibrarySales(): Promise<ExpertLibrarySalesResponse> {
   return apiFetch<ExpertLibrarySalesResponse>("/experts/me/library-sales");
 }
+
+/* ------------------------------------------------------------------ */
+/*  Public experts listing                                             */
+/* ------------------------------------------------------------------ */
+
+export interface PublicExpert {
+  userEmail: string;
+  displayName: string;
+  title: string;
+  locationCountry: string;
+  isActive: boolean;
+  isDeleted: boolean;
+  createdAt: string;
+  bio: string;
+  gridDescription: string;
+  detailedDescription: string;
+  profileImageUrl: string;
+  gridImageUrl: string;
+  specialisations: string[];
+  credentials: string[];
+  yearsExperience: number;
+}
+
+export function fetchPublicExperts(): Promise<PublicExpert[]> {
+  return apiFetch<PublicExpert[]>("/experts", { skipAuth: true });
+}
