@@ -103,11 +103,11 @@ export const NAV_SECTIONS: NavSection[] = [
         label: "Our story",
         path: "/our-story",
       },
-      {
-        type: "internal",
-        label: "Know Your Experts",
-        path: "/learn/know-your-experts",
-      },
+      // {
+      //   type: "internal",
+      //   label: "Know Your Experts",
+      //   path: "/learn/know-your-experts",
+      // },
     ],
   },
 ];
