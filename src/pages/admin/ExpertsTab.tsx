@@ -4,7 +4,7 @@ import {
   getAdminExperts,
   activateAdminExpert,
   deactivateAdminExpert,
-  deleteAdminUser,
+  deleteAdminExpert,
   adminCreateExpertProfile,
   adminChangeUserEmail,
   getAdminExpertPrograms,
@@ -139,10 +139,10 @@ export default function ExpertsTab() {
     }
   };
 
-  const handleDelete = async (expertId: string, userId: string, name: string) => {
+  const handleDelete = async (expertId: string, name: string) => {
     if (!confirm(`Delete expert profile for ${name}? This cannot be undone.`)) return;
     try {
-      await deleteAdminUser(userId);
+      await deleteAdminExpert(expertId);
       setExperts((prev) => prev.filter((e) => e.expertId !== expertId));
       if (editingExpert?.expertId === expertId) setEditingExpert(null);
       if (expandedExpertId === expertId) setExpandedExpertId(null);
@@ -447,7 +447,7 @@ export default function ExpertsTab() {
                       <button type="button" className="adminActionButton" onClick={() => handleToggleActive(e)} aria-label={`${e.isActive ? "Deactivate" : "Activate"} ${e.displayName || e.userEmail}`}>
                         {e.isActive ? "Deactivate" : "Activate"}
                       </button>
-                      <button type="button" className="adminActionButton adminActionButton--danger" onClick={() => handleDelete(e.expertId, e.userId, e.displayName || e.userEmail)} aria-label={`Delete ${e.displayName || e.userEmail}`}>
+                      <button type="button" className="adminActionButton adminActionButton--danger" onClick={() => handleDelete(e.expertId, e.displayName || e.userEmail)} aria-label={`Delete ${e.displayName || e.userEmail}`}>
                         Delete
                       </button>
                     </td>
