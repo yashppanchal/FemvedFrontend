@@ -18,6 +18,16 @@ export type NavSection = {
   linkPath?: string;
   /** Label only with a “Coming soon” badge; no link or dropdown. */
   comingSoon?: boolean;
+  /** Reserved slot while guided-tree data is loading. */
+  loading?: boolean;
+};
+
+/** Placeholder shown while guided-tree nav data is loading (first visit / no cache). */
+export const GUIDED_NAV_LOADING_SECTION: NavSection = {
+  id: "__guided-nav-loading__",
+  label: "Guided 1:1 Care",
+  items: [],
+  loading: true,
 };
 
 /** Target route for the Wellness Library top-level nav (single click, no dropdown). */

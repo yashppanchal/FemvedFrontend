@@ -1,4 +1,5 @@
 import { apiFetch } from "./client";
+import { clearGuidedNavCache } from "../nav/guidedNavTree";
 const GUIDED_PROGRAMS_VERSION_STORAGE_KEY = "femved.guidedPrograms.version";
 
 function bumpGuidedProgramsCacheVersion(): void {
@@ -12,6 +13,7 @@ function bumpGuidedProgramsCacheVersion(): void {
       GUIDED_PROGRAMS_VERSION_STORAGE_KEY,
       String(nextVersion),
     );
+    clearGuidedNavCache();
   } catch {
     // Cache invalidation is best-effort and should not block admin actions.
   }

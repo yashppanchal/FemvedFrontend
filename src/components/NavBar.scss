@@ -77,6 +77,11 @@
   color: var(--primary);
 }
 
+.menu__button--loading {
+  cursor: default;
+  pointer-events: none;
+}
+
 .menu__link {
   text-decoration: none;
 }
@@ -428,6 +433,11 @@
 
 .mobileDrawer__sectionLink--active {
   color: var(--primary);
+}
+
+.mobileDrawer__sectionLink--loading {
+  cursor: default;
+  pointer-events: none;
 }
 
 .mobileDrawer__comingSoon {

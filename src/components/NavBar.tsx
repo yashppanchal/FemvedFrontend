@@ -8,86 +8,18 @@ import {
   dashboardTabFromSearchParams,
 } from "../nav/dashboardTabs";
 import {
-  STATIC_NAV_ITEM_LABEL_BY_PATH,
+  GUIDED_NAV_LOADING_SECTION,
   STATIC_NAV_SECTIONS,
-  WELLNESS_LIBRARY_NAV_PATH,
-  type NavItem,
   type NavSection,
 } from "../nav/menu";
+import {
+  getGuidedNavSectionsSnapshot,
+  loadGuidedNavSections,
+} from "../nav/guidedNavTree";
 import { hasValidAccessToken, ROLE_ADMIN, ROLE_EXPERT, useAuth } from "../auth/useAuth";
 import { useCountry, type CountryCode } from "../country/useCountry";
-import {
-  fetchGuidedTree,
-  type GuidedTreeCategory,
-  type GuidedTreeResponse,
-} from "../api/guided";
-import { normalizeSlug } from "../data/guidedPrograms";
 import logoUrl from "../assets/femvedlogo.png";
 import "./NavBar.scss";
-
-function isEntityActive(entity: {
-  isActive?: boolean;
-  is_active?: boolean;
-}): boolean {
-  if (typeof entity.isActive === "boolean") return entity.isActive;
-  if (typeof entity.is_active === "boolean") return entity.is_active;
-  return true;
-}
-
-function titleCaseFromSlug(value: string | undefined): string {
-  return (value ?? "")
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function categoryToNavItem(category: GuidedTreeCategory): NavItem | null {
-  if (!isEntityActive(category)) return null;
-  const page = category.categoryPageData ?? {};
-  const cta = page.categoryCtaTo?.trim();
-  const slug = normalizeSlug(category.categoryName);
-  const path =
-    cta || (slug ? `/guided/${slug}` : "");
-  if (!path) return null;
-
-  const label =
-    page.categoryType?.trim() ||
-    STATIC_NAV_ITEM_LABEL_BY_PATH.get(path) ||
-    titleCaseFromSlug(category.categoryName);
-
-  return { type: "internal", label, path };
-}
-
-function isWellnessLibraryDomainName(name: string): boolean {
-  return name.trim().toLowerCase() === "wellness library";
-}
-
-function navSectionsFromTree(response: GuidedTreeResponse): NavSection[] {
-  return (response.domains ?? [])
-    .filter((d) => isEntityActive(d))
-    .map((domain, index) => {
-      const domainId =
-        domain.domainId ?? domain.id ?? domain._id ?? `domain-${index}`;
-      const label = (domain.domainName ?? domain.name ?? "").trim();
-      if (!label) return null;
-
-      if (isWellnessLibraryDomainName(label)) {
-        const section: NavSection = {
-          id: domainId,
-          label,
-          items: [],
-          linkPath: WELLNESS_LIBRARY_NAV_PATH,
-        };
-        return section;
-      }
-
-      const items = (domain.categories ?? [])
-        .map((c) => categoryToNavItem(c))
-        .filter((item): item is NavItem => item !== null);
-
-      return { id: domainId, label, items };
-    })
-    .filter((s): s is NavSection => s !== null);
-}
 
 const MOBILE_ACCOUNT_DASHBOARD_ID = "account-user-dashboard";
 
@@ -101,7 +33,13 @@ export function NavBar() {
   const [treeNavPayload, setTreeNavPayload] = useState<{
     country: CountryCode;
     sections: NavSection[];
-  } | null>(null);
+  } | null>(() => {
+    const sections = getGuidedNavSectionsSnapshot(country);
+    return sections?.length ? { country, sections } : null;
+  });
+  const [guidedNavLoading, setGuidedNavLoading] = useState(
+    () => !getGuidedNavSectionsSnapshot(country)?.length,
+  );
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAccessTokenValid, setIsAccessTokenValid] = useState(() =>
@@ -170,20 +108,30 @@ export function NavBar() {
 
   useEffect(() => {
     let cancelled = false;
-    const apiCountryCode = country === "UK" ? "GB" : country;
+    const snapshot = getGuidedNavSectionsSnapshot(country);
 
-    fetchGuidedTree(apiCountryCode)
-      .then((tree) => {
+    if (snapshot?.length) {
+      setTreeNavPayload({ country, sections: snapshot });
+      setGuidedNavLoading(false);
+    } else {
+      setTreeNavPayload(null);
+      setGuidedNavLoading(true);
+    }
+
+    loadGuidedNavSections(country)
+      .then((sections) => {
         if (cancelled) return;
-        const built = navSectionsFromTree(tree);
-        if (built.length > 0) {
-          setTreeNavPayload({ country, sections: built });
+        if (sections.length > 0) {
+          setTreeNavPayload({ country, sections });
         } else {
           setTreeNavPayload(null);
         }
       })
       .catch(() => {
         if (!cancelled) setTreeNavPayload(null);
+      })
+      .finally(() => {
+        if (!cancelled) setGuidedNavLoading(false);
       });
 
     return () => {
@@ -194,15 +142,14 @@ export function NavBar() {
   const isAuthenticated = Boolean(user) && isAccessTokenValid;
 
   const treeGuidedSections =
-    treeNavPayload &&
-    treeNavPayload.country === country &&
-    treeNavPayload.sections.length > 0
-      ? treeNavPayload.sections.filter(
-          (s) => !isWellnessLibraryDomainName(s.label),
-        )
-      : [];
+    treeNavPayload?.country === country ? treeNavPayload.sections : [];
 
-  const navSections = [...treeGuidedSections, ...STATIC_NAV_SECTIONS];
+  const guidedNavSections =
+    guidedNavLoading && treeGuidedSections.length === 0
+      ? [GUIDED_NAV_LOADING_SECTION]
+      : treeGuidedSections;
+
+  const navSections = [...guidedNavSections, ...STATIC_NAV_SECTIONS];
 
   const isAdmin = user?.role.id === ROLE_ADMIN.id;
   const canViewExpertDashboard =
@@ -246,6 +193,20 @@ export function NavBar() {
       {/* ---- Desktop menu ---- */}
       <div className="menu" aria-label="Primary navigation">
         {navSections.map((section) => {
+          if (section.loading) {
+            return (
+              <div key={section.id} className="menu__section">
+                <span
+                  className="menu__button menu__button--loading"
+                  aria-busy="true"
+                  aria-label={`Loading ${section.label} menu`}
+                >
+                  {section.label}
+                </span>
+              </div>
+            );
+          }
+
           if (section.linkPath) {
             const isLinkActive =
               pathname === section.linkPath ||
@@ -457,6 +418,20 @@ export function NavBar() {
 
             <div className="mobileDrawer__body">
               {navSections.map((section) => {
+                if (section.loading) {
+                  return (
+                    <div key={section.id} className="mobileDrawer__section">
+                      <span
+                        className="mobileDrawer__sectionLink mobileDrawer__sectionLink--loading"
+                        aria-busy="true"
+                        aria-label={`Loading ${section.label} menu`}
+                      >
+                        {section.label}
+                      </span>
+                    </div>
+                  );
+                }
+
                 if (section.linkPath) {
                   const isLinkActive =
                     pathname === section.linkPath ||
