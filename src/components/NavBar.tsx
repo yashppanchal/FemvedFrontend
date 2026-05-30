@@ -8,13 +8,9 @@ import {
   dashboardTabFromSearchParams,
 } from "../nav/dashboardTabs";
 import {
-  HOLISTIC_TREATMENTS_NAV_SECTION,
-  WORKPLACES_NAV_SECTION,
-  LEARN_NAV_SECTION,
-  NAV_SECTIONS,
   STATIC_NAV_ITEM_LABEL_BY_PATH,
+  STATIC_NAV_SECTIONS,
   WELLNESS_LIBRARY_NAV_PATH,
-  WELLNESS_LIBRARY_NAV_SECTION,
   type NavItem,
   type NavSection,
 } from "../nav/menu";
@@ -197,20 +193,16 @@ export function NavBar() {
 
   const isAuthenticated = Boolean(user) && isAccessTokenValid;
 
-  const navSections =
+  const treeGuidedSections =
     treeNavPayload &&
     treeNavPayload.country === country &&
     treeNavPayload.sections.length > 0
-      ? [
-          ...treeNavPayload.sections.filter(
-            (s) => !isWellnessLibraryDomainName(s.label),
-          ),
-          WELLNESS_LIBRARY_NAV_SECTION,
-          HOLISTIC_TREATMENTS_NAV_SECTION,
-          WORKPLACES_NAV_SECTION,
-          LEARN_NAV_SECTION,
-        ]
-      : NAV_SECTIONS;
+      ? treeNavPayload.sections.filter(
+          (s) => !isWellnessLibraryDomainName(s.label),
+        )
+      : [];
+
+  const navSections = [...treeGuidedSections, ...STATIC_NAV_SECTIONS];
 
   const isAdmin = user?.role.id === ROLE_ADMIN.id;
   const canViewExpertDashboard =
