@@ -424,7 +424,7 @@ export function ProgramsTab({
                 <span className="field__techTerm">(what you get)</span>
               </span>
               <span className="field__hint">
-                One bullet point per line. Shown on the program page.
+                Separate bullets with <code>~</code>. Shown on the program page.
               </span>
               <textarea
                 className="field__input expertForm__textarea"
@@ -432,7 +432,7 @@ export function ProgramsTab({
                 onChange={set("whatYouGet")}
                 rows={4}
                 placeholder={
-                  "Weekly 1:1 video consultation (60 min)\nPersonalised nutrition plan\nWhatsApp support between sessions"
+                  "Weekly 1:1 video consultation (60 min) ~ Personalised nutrition plan ~ WhatsApp support between sessions"
                 }
                 disabled={isCreatingProgram || isLoadingProgramEdit}
               />
@@ -444,7 +444,7 @@ export function ProgramsTab({
                 <span className="field__techTerm">(who is this for)</span>
               </span>
               <span className="field__hint">
-                One description per line. Helps clients self-identify.
+                Separate descriptions with <code>~</code>. Helps clients self-identify.
               </span>
               <textarea
                 className="field__input expertForm__textarea expertForm__textarea--sm"
@@ -452,7 +452,7 @@ export function ProgramsTab({
                 onChange={set("whoIsThisFor")}
                 rows={3}
                 placeholder={
-                  "Women experiencing irregular or painful periods\nThose struggling with fatigue or mood swings"
+                  "Women experiencing irregular or painful periods ~ Those struggling with fatigue or mood swings"
                 }
                 disabled={isCreatingProgram || isLoadingProgramEdit}
               />

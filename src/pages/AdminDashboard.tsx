@@ -123,6 +123,18 @@ const parseTextareaItems = (value: string): string[] =>
 const joinTextareaItems = (items: string[] | undefined): string =>
   (items ?? []).map((item) => item.trim()).filter(Boolean).join("\n");
 
+// Bullet-list textareas (whatYouGet, whoIsThisFor) use "~" as the on-screen
+// separator so multi-line bullets render on a single line. Parsing also accepts
+// newlines for backwards compatibility with existing data.
+const parseBulletItems = (value: string): string[] =>
+  value
+    .split(/~|\r?\n/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+const joinBulletItems = (items: string[] | undefined): string =>
+  (items ?? []).map((item) => item.trim()).filter(Boolean).join(" ~ ");
+
 const parseNonNegativeNumber = (value: string): number => {
   const parsed = Number(value);
   if (!Number.isFinite(parsed) || parsed < 0) return 0;
@@ -388,8 +400,8 @@ const mapGuidedTreeToRows = (
               gridImageUrl: program.programGridImage?.trim() ?? "",
               overview: pageDetails?.overview?.trim() ?? "",
               sortOrder: pageDetails?.sortOrder != null ? String(pageDetails.sortOrder) : "0",
-              whatYouGet: joinTextareaItems(pageDetails?.whatYouGet),
-              whoIsThisFor: joinTextareaItems(pageDetails?.whoIsThisFor),
+              whatYouGet: joinBulletItems(pageDetails?.whatYouGet),
+              whoIsThisFor: joinBulletItems(pageDetails?.whoIsThisFor),
               tags: joinTextareaItems(pageDetails?.tags),
               detailHeading: firstSection?.heading?.trim() ?? "",
               detailDescription: firstSection?.description?.trim() ?? "",
@@ -1174,8 +1186,8 @@ export default function AdminDashboard() {
 
     const sortOrder = parseNonNegativeNumber(programForm.sortOrder);
 
-    const whatYouGet = parseTextareaItems(programForm.whatYouGet);
-    const whoIsThisFor = parseTextareaItems(programForm.whoIsThisFor);
+    const whatYouGet = parseBulletItems(programForm.whatYouGet);
+    const whoIsThisFor = parseBulletItems(programForm.whoIsThisFor);
     const tags = parseTextareaItems(programForm.tags);
     const detailHeading = programForm.detailHeading.trim();
     const detailDescription = programForm.detailDescription.trim();

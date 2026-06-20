@@ -314,6 +314,11 @@ export default function AdminUsersTab() {
             <textarea className="field__input adminForm__textarea adminForm__textarea--sm" value={expertForm.gridDescription} onChange={setF("gridDescription")} disabled={promoting} placeholder="1–2 sentences shown on browse cards. Defaults to bio if blank." />
           </label>
 
+          <label className="field">
+            <span className="field__label">Detailed description</span>
+            <textarea className="field__input adminForm__textarea" value={expertForm.detailedDescription} onChange={setF("detailedDescription")} disabled={promoting} placeholder="Longer description shown on the program detail page (multiple paragraphs welcome)." />
+          </label>
+
           <div className="adminForm__row adminForm__row--two">
             <CloudinaryImageUrlField
               label="Profile image URL"

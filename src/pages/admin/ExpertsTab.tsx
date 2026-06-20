@@ -30,6 +30,7 @@ type EditForm = {
   title: string;
   bio: string;
   gridDescription: string;
+  detailedDescription: string;
   specialisations: string;
   credentials: string;
   yearsExperience: string;
@@ -45,6 +46,7 @@ function expertToForm(e: AdminExpert): EditForm {
     title: e.title ?? "",
     bio: e.bio ?? "",
     gridDescription: e.gridDescription ?? "",
+    detailedDescription: e.detailedDescription ?? "",
     specialisations: e.specialisations?.join(", ") ?? "",
     credentials: e.credentials?.join(", ") ?? "",
     yearsExperience: e.yearsExperience != null ? String(e.yearsExperience) : "",
@@ -61,6 +63,7 @@ function formToRequest(f: EditForm): AdminCreateExpertProfileRequest {
   if (f.title.trim()) req.title = f.title.trim();
   if (f.bio.trim()) req.bio = f.bio.trim();
   if (f.gridDescription.trim()) req.gridDescription = f.gridDescription.trim();
+  if (f.detailedDescription.trim()) req.detailedDescription = f.detailedDescription.trim();
   if (f.locationCountry.trim()) req.locationCountry = f.locationCountry.trim();
   if (f.profileImageUrl.trim()) req.profileImageUrl = f.profileImageUrl.trim();
   if (f.gridImageUrl.trim()) req.gridImageUrl = f.gridImageUrl.trim();
@@ -372,6 +375,11 @@ export default function ExpertsTab() {
           <label className="field">
             <span className="field__label">Short card description</span>
             <textarea className="field__input adminForm__textarea adminForm__textarea--sm" value={editForm.gridDescription} onChange={setF("gridDescription")} disabled={saving} placeholder="1–2 sentences shown on browse cards." />
+          </label>
+
+          <label className="field">
+            <span className="field__label">Detailed description</span>
+            <textarea className="field__input adminForm__textarea" value={editForm.detailedDescription} onChange={setF("detailedDescription")} disabled={saving} placeholder="Longer description shown on the program detail page (multiple paragraphs welcome)." />
           </label>
 
           <div className="adminForm__row adminForm__row--two">
