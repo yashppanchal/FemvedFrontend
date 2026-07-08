@@ -13,7 +13,7 @@ import RevealOnScroll from "./RevealOnScroll";
 // import community6 from "../assets/homepage/community/6.png";
 
 const WHATSAPP_COMMUNITY_URL =
-  "https://chat.whatsapp.com/ESpk7Ruh6wWFlFuFfx423s";
+  "https://chat.whatsapp.com/LddWvDj6pKGLC1gHRhfKje?mode=gi_t";
 
 const community1 =
   "https://res.cloudinary.com/dh8aj0hzw/image/upload/v1772965686/1_zjy3rp.png";
