@@ -1,15 +1,28 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { submitContact } from "../api/contact";
 import { ApiError } from "../api/client";
+import Turnstile, { type TurnstileHandle } from "../components/Turnstile";
 import "./Contact.scss";
+
+// Real site key from Netlify env in production. Falls back to Cloudflare's
+// always-passing TEST key in local dev so the form works without config.
+// In production a missing key is left empty on purpose — the widget won't render,
+// which surfaces the misconfiguration rather than silently disabling protection.
+const TURNSTILE_SITE_KEY =
+  import.meta.env.VITE_TURNSTILE_SITE_KEY ||
+  (import.meta.env.DEV ? "1x00000000000000000000AA" : "");
 
 export default function Contact() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot
+  const [captchaToken, setCaptchaToken] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const turnstileRef = useRef<TurnstileHandle>(null);
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -21,15 +34,22 @@ export default function Contact() {
       return;
     }
 
+    if (!captchaToken) {
+      setErrorMsg("Please complete the bot verification below.");
+      return;
+    }
+
     setSubmitting(true);
     try {
       await submitContact({
         name: name.trim(),
         email: email.trim(),
         message: message.trim(),
+        captchaToken,
+        website,
       });
       setSuccessMsg(
-        "Thanks — your message is on its way. We've also sent you a confirmation email.",
+        "Thanks — your message is on its way. We'll get back to you soon.",
       );
       setName("");
       setEmail("");
@@ -41,6 +61,9 @@ export default function Contact() {
           : "Could not send your message. Please try again.",
       );
     } finally {
+      // Turnstile tokens are single-use — re-arm the widget for the next attempt.
+      turnstileRef.current?.reset();
+      setCaptchaToken("");
       setSubmitting(false);
     }
   };
@@ -97,6 +120,41 @@ export default function Contact() {
               />
             </label>
 
+            {/*
+              Honeypot: hidden from humans, off the tab order, and excluded from
+              autofill. Bots fill it in and the API silently drops the submission.
+            */}
+            <div
+              aria-hidden="true"
+              style={{
+                position: "absolute",
+                left: "-9999px",
+                width: "1px",
+                height: "1px",
+                overflow: "hidden",
+              }}
+            >
+              <label>
+                Website
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                />
+              </label>
+            </div>
+
+            <Turnstile
+              ref={turnstileRef}
+              siteKey={TURNSTILE_SITE_KEY}
+              onVerify={setCaptchaToken}
+              onExpire={() => setCaptchaToken("")}
+              onError={() => setCaptchaToken("")}
+            />
+
             {successMsg && (
               <p className="contact-success" role="status">
                 {successMsg}
@@ -108,7 +166,11 @@ export default function Contact() {
               </p>
             )}
 
-            <button className="button" type="submit" disabled={submitting}>
+            <button
+              className="button"
+              type="submit"
+              disabled={submitting || !captchaToken}
+            >
               {submitting ? "Sending…" : "Send Message"}
             </button>
           </form>

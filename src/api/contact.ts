@@ -4,6 +4,10 @@ export interface SubmitContactRequest {
   name: string;
   email: string;
   message: string;
+  /** Cloudflare Turnstile token from the widget — required by the API. */
+  captchaToken: string;
+  /** Honeypot. Always empty for real users; bots fill it and the API silently drops them. */
+  website?: string;
 }
 
 /**
@@ -13,6 +17,7 @@ export interface SubmitContactRequest {
 export function submitContact(request: SubmitContactRequest): Promise<void> {
   return apiFetch<void>("/contact", {
     method: "POST",
+    skipAuth: true,
     body: JSON.stringify(request),
   });
 }
