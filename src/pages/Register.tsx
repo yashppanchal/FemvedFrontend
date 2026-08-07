@@ -1,9 +1,13 @@
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useRef, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth, type RegisterData } from "../auth/useAuth";
 import { useCountry, validatePhone, COUNTRY_LIST, type CountryCode } from "../country/useCountry";
 import { usePageTitle } from "../usePageTitle";
+import Turnstile, {
+  type TurnstileHandle,
+  TURNSTILE_SITE_KEY,
+} from "../components/Turnstile";
 import "./Register.scss";
 
 export default function Register() {
@@ -16,7 +20,7 @@ export default function Register() {
   const selectedCountryInfo = COUNTRY_LIST.find((c) => c.code === selectedCountry) ?? countryInfo;
 
   const [form, setForm] = useState<
-    Omit<RegisterData, "countryCode" | "mobileNumber"> & { phone: string }
+    Omit<RegisterData, "countryCode" | "mobileNumber" | "captchaToken"> & { phone: string }
   >({
     email: "",
     password: "",
@@ -25,10 +29,12 @@ export default function Register() {
     lastName: "",
     phone: "",
   });
+  const [captchaToken, setCaptchaToken] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const turnstileRef = useRef<TurnstileHandle>(null);
 
   const set =
     (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -65,6 +71,11 @@ export default function Register() {
     }
     setPhoneError(null);
 
+    if (!captchaToken) {
+      setError("Please complete the bot verification below.");
+      return;
+    }
+
     const mobileNumber = form.phone.trim();
 
     setLoading(true);
@@ -77,9 +88,13 @@ export default function Register() {
       lastName: lastName.trim(),
       countryCode: selectedCountryInfo.dialCode,
       mobileNumber,
+      captchaToken,
     });
 
     setLoading(false);
+    // Turnstile tokens are single-use — re-arm for the next attempt (e.g. after an error).
+    turnstileRef.current?.reset();
+    setCaptchaToken("");
 
     if (result.error) {
       setError(result.error);
@@ -235,10 +250,18 @@ export default function Register() {
             </div>
           </label>
 
+          <Turnstile
+            ref={turnstileRef}
+            siteKey={TURNSTILE_SITE_KEY}
+            onVerify={setCaptchaToken}
+            onExpire={() => setCaptchaToken("")}
+            onError={() => setCaptchaToken("")}
+          />
+
           <button
             type="submit"
             className="button authCard__submit"
-            disabled={loading}
+            disabled={loading || !captchaToken}
           >
             {loading ? "Creating account…" : "Create account"}
           </button>

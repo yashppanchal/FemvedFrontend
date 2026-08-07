@@ -1,8 +1,12 @@
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useRef, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 import { usePageTitle } from "../usePageTitle";
+import Turnstile, {
+  type TurnstileHandle,
+  TURNSTILE_SITE_KEY,
+} from "../components/Turnstile";
 import "./Login.scss";
 
 export default function Login() {
@@ -13,9 +17,11 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const turnstileRef = useRef<TurnstileHandle>(null);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -26,9 +32,14 @@ export default function Login() {
       return;
     }
 
+    if (!captchaToken) {
+      setError("Please complete the bot verification below.");
+      return;
+    }
+
     setLoading(true);
     try {
-      const result = await login(email.trim(), password);
+      const result = await login(email.trim(), password, captchaToken);
       if (result.error) {
         setError(result.error);
         return;
@@ -47,6 +58,9 @@ export default function Login() {
         navigate(destination, { replace: true });
       }
     } finally {
+      // Turnstile tokens are single-use — re-arm for the next attempt (e.g. after an error).
+      turnstileRef.current?.reset();
+      setCaptchaToken("");
       setLoading(false);
     }
   };
@@ -100,7 +114,19 @@ export default function Login() {
             </div>
           </label>
 
-          <button type="submit" className="button authCard__submit" disabled={loading}>
+          <Turnstile
+            ref={turnstileRef}
+            siteKey={TURNSTILE_SITE_KEY}
+            onVerify={setCaptchaToken}
+            onExpire={() => setCaptchaToken("")}
+            onError={() => setCaptchaToken("")}
+          />
+
+          <button
+            type="submit"
+            className="button authCard__submit"
+            disabled={loading || !captchaToken}
+          >
             {loading ? "Signing in\u2026" : "Sign in"}
           </button>
         </form>

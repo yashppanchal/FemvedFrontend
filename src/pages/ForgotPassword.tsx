@@ -1,14 +1,20 @@
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { forgotPassword } from "../api/auth";
 import { ApiError } from "../api/client";
+import Turnstile, {
+  type TurnstileHandle,
+  TURNSTILE_SITE_KEY,
+} from "../components/Turnstile";
 import "./Login.scss";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
+  const turnstileRef = useRef<TurnstileHandle>(null);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -16,10 +22,14 @@ export default function ForgotPassword() {
       setError("Please enter your email address.");
       return;
     }
+    if (!captchaToken) {
+      setError("Please complete the bot verification below.");
+      return;
+    }
     setError(null);
     setLoading(true);
     try {
-      await forgotPassword(email.trim());
+      await forgotPassword(email.trim(), captchaToken);
       setSent(true);
     } catch (err) {
       setError(
@@ -28,6 +38,8 @@ export default function ForgotPassword() {
           : "Something went wrong. Please try again.",
       );
     } finally {
+      turnstileRef.current?.reset();
+      setCaptchaToken("");
       setLoading(false);
     }
   };
@@ -70,10 +82,18 @@ export default function ForgotPassword() {
                 />
               </label>
 
+              <Turnstile
+                ref={turnstileRef}
+                siteKey={TURNSTILE_SITE_KEY}
+                onVerify={setCaptchaToken}
+                onExpire={() => setCaptchaToken("")}
+                onError={() => setCaptchaToken("")}
+              />
+
               <button
                 type="submit"
                 className="button authCard__submit"
-                disabled={loading}
+                disabled={loading || !captchaToken}
               >
                 {loading ? "Sending…" : "Send reset link"}
               </button>

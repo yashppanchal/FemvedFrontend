@@ -13,6 +13,8 @@ export interface RegisterRequest {
   lastName: string;
   countryCode: string;
   mobileNumber: string;
+  /** Cloudflare Turnstile token — required by the API. */
+  captchaToken: string;
 }
 
 export interface AuthTokens {
@@ -33,6 +35,8 @@ export interface RegisterResponse {
 export interface LoginRequest {
   email: string;
   password: string;
+  /** Cloudflare Turnstile token — required by the API. */
+  captchaToken: string;
 }
 
 export interface LoginResponseUser {
@@ -87,10 +91,10 @@ export function logoutUser(refreshToken: string): Promise<void> {
   });
 }
 
-export function forgotPassword(email: string): Promise<void> {
+export function forgotPassword(email: string, captchaToken: string): Promise<void> {
   return apiFetch<void>("/auth/forgot-password", {
     method: "POST",
-    body: JSON.stringify({ email }),
+    body: JSON.stringify({ email, captchaToken }),
   });
 }
 

@@ -57,7 +57,7 @@ export interface LoginResult {
 interface AuthContextValue {
   user: User | null;
   tokens: AuthTokens | null;
-  login: (email: string, password: string) => Promise<LoginResult>;
+  login: (email: string, password: string, captchaToken: string) => Promise<LoginResult>;
   register: (data: RegisterData) => Promise<LoginResult>;
   updateUser: (data: UpdateProfileData) => string | null;
   updateAuthUser: (update: { firstName?: string; lastName?: string }) => void;
@@ -73,6 +73,8 @@ export interface RegisterData {
   mobileNumber: string;
   /** Dial code sent to the API (e.g. "+91", "+44", "+1") */
   countryCode: string;
+  /** Cloudflare Turnstile token — required by the API. */
+  captchaToken: string;
 }
 
 /* ------------------------------------------------------------------ */
@@ -250,9 +252,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   /** Returns LoginResult with error (null on success) and redirectTo path. */
   const login = useCallback(
-    async (email: string, password: string): Promise<LoginResult> => {
+    async (email: string, password: string, captchaToken: string): Promise<LoginResult> => {
       try {
-        const res = await loginUser({ email, password });
+        const res = await loginUser({ email, password, captchaToken });
         const accessToken = res.accessToken ?? res.token ?? "";
         const accessTokenExpiresAt = res.accessTokenExpiresAt ?? res.expiresAt ?? "";
         if (!accessToken || !accessTokenExpiresAt) {
@@ -311,6 +313,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         lastName: data.lastName,
         countryCode: data.countryCode,
         mobileNumber: data.mobileNumber,
+        captchaToken: data.captchaToken,
       };
 
       const res = await registerUser(payload);

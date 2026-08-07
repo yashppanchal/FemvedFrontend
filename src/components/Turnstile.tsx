@@ -2,6 +2,16 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 
 const SCRIPT_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js";
 
+/**
+ * Turnstile site key. Uses the real key from Netlify env in production, and falls back
+ * to Cloudflare's always-passing TEST key in local dev so forms work without config.
+ * In production a missing key is left empty on purpose — the widget won't render, which
+ * surfaces the misconfiguration rather than silently disabling bot protection.
+ */
+export const TURNSTILE_SITE_KEY: string =
+  import.meta.env.VITE_TURNSTILE_SITE_KEY ||
+  (import.meta.env.DEV ? "1x00000000000000000000AA" : "");
+
 interface TurnstileRenderOptions {
   sitekey: string;
   callback?: (token: string) => void;

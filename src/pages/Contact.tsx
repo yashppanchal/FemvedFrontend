@@ -1,16 +1,11 @@
 import { useRef, useState, type FormEvent } from "react";
 import { submitContact } from "../api/contact";
 import { ApiError } from "../api/client";
-import Turnstile, { type TurnstileHandle } from "../components/Turnstile";
+import Turnstile, {
+  type TurnstileHandle,
+  TURNSTILE_SITE_KEY,
+} from "../components/Turnstile";
 import "./Contact.scss";
-
-// Real site key from Netlify env in production. Falls back to Cloudflare's
-// always-passing TEST key in local dev so the form works without config.
-// In production a missing key is left empty on purpose — the widget won't render,
-// which surfaces the misconfiguration rather than silently disabling protection.
-const TURNSTILE_SITE_KEY =
-  import.meta.env.VITE_TURNSTILE_SITE_KEY ||
-  (import.meta.env.DEV ? "1x00000000000000000000AA" : "");
 
 export default function Contact() {
   const [name, setName] = useState("");
